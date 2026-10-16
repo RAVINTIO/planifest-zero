@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# REGRESSION-CANDIDATE: guards a setup contract that older installs depend on.
 # Tests for feature 0000034-setup-hardening, req-001: retired flags.
 #
 # Covers ADR-001 (retired setup flags warn and continue): setup accepts four

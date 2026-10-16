@@ -104,3 +104,21 @@ Gate accepted: P3 (2026-10-16T21:22:24Z), continuous run. 6 requirements TDD red
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Full suite run, regression pack, consistency check, bash -n. |
+P4 results: feature suites 49 passed, 1 failed. Regression 12 passed, 0 failed. consistency-check clean. bash -n clean.
+P4 failure: test-0000031-req-001-rename.sh cases (a) and (b), pre-existing, overridden by the human in 0000033, tracked by backlog 0000097. Carried forward under continuous run.
+P4 self-corrections: 3 older suites encoded the exit-1 behaviour that ADR-001 supersedes (0000031 req-004, 0000033 req-002, 0000033 req-003), updated with a retired-flag block carve-out. One req-006 assertion reworded to match the template guidance.
+Regression candidates tagged: test-0000034-req-001, test-0000034-req-003.
+Gate accepted: P4 (2026-10-16T21:25:54Z), continuous run.
+
+### P5: Security
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T21:25:54Z` |
+| Model tier | primary |
+| Skills loaded | planifest-security-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Fresh-context reviewer over the feature diff. |

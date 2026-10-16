@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# REGRESSION-CANDIDATE: guards a setup contract that older installs depend on.
 # Tests for feature 0000034-setup-hardening, req-003: atomic settings writes.
 #
 # Covers ADR-002: every settings.json write goes to settings.json.planifest-tmp
