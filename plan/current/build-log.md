@@ -119,3 +119,16 @@ Gate accepted: P4 (2026-10-16T23:38:59Z), continuous run. Zero self-corrections 
 P5 findings: Medium overall. S-001 Medium (5.1 reads settings.json as ANSI), S-002 to S-008 Low.
 P5 fixes: all eight fixed in `setup.ps1`, with a new 19-assertion suite. Three static checks updated to follow the new code: 0000034 req-003 (c) in both its feature and regression copies, now naming `Remove-SettingsTmpEntry`, plus 0000035 req-003 and req-005 (d).
 Gate accepted: P5 (2026-10-16T23:51:10Z), continuous run. Rating after fixes: Low. Suites: 53 of 54 feature, 14 of 14 regression. The one failure is the known rename suite.
+
+### P6: Docs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T23:51:38Z` |
+| Model tier | primary |
+| Skills loaded | planifest-docs-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | P6 Gate B (continuous run, auto-accepted): this run brings `setup.ps1` level with `setup.sh`. Updating `architecture-overview.md` and `decisions-index.md`, plus the Last updated line on all four living docs. No `api-index.md`, because no component exposes an API. Inline, because the edits are a few lines each. |

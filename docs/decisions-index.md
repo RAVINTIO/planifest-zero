@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000034-setup-hardening
+Last updated: 0000035-powershell-setup-parity
 
 ---
 
@@ -68,3 +68,11 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | ADR-002 | settings.json writes go through a temporary file and a rename | accepted | Every `settings.json` write uses a same-folder temporary file, keeps the original's mode, and never follows a planted link. |
 | ADR-003 | The stack stays as it is | accepted | No new language, runtime, or test framework. |
 
+
+### Feature 0000035: powershell-setup-parity
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | setup.ps1 writes the same hook entries as setup.sh | accepted | `setup.ps1` wires all six enforcement hooks in the `setup.sh` entry shape, and a static parity suite checks the match. |
+| ADR-002 | setup.ps1 supports Windows PowerShell 5.1 | accepted | `setup.ps1` uses no PowerShell 7-only feature, so it runs on the PowerShell that ships with Windows. |
+| ADR-003 | setup.ps1 flags are case-sensitive | accepted | The flag `switch` matches case, as `setup.sh` does. Both scripts remove a leftover temporary file at the start of each run. |
