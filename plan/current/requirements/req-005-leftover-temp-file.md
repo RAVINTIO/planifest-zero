@@ -22,8 +22,7 @@ As a user, I re-run setup after a hard stop, so that no `settings.json.planifest
 - The removal prints nothing.
 
 ## Acceptance Criteria
-- [ ] A `setup.sh` run with a planted leftover file ends with no leftover.
-- [ ] A `setup.sh` run with `node` hidden from the `PATH` still removes the leftover.
+- [ ] A `setup.sh` run removes a planted leftover file, with or without `node` on the `PATH`.
 - [ ] A planted symlink at the temporary path is removed and its target survives.
 - [ ] `setup.ps1` holds the same removal before its first settings write (static check).
 

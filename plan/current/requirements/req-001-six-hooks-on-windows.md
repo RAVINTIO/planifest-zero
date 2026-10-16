@@ -24,9 +24,8 @@ As a Windows user, I run `setup.ps1`, so that it wires the same six enforcement 
 
 ## Acceptance Criteria
 - [ ] A static parity suite extracts the hook modules each script wires per event and finds the same list in the same order.
-- [ ] The suite finds `Write` and `Edit` matchers for each `PreToolUse` module in `setup.ps1`.
+- [ ] The suite finds `Write` and `Edit` matchers for each `PreToolUse` module in `setup.ps1`, and no `Write|Edit` matcher.
 - [ ] The `PreToolUse` filter in `setup.ps1` names all three `PreToolUse` modules.
-- [ ] `setup.ps1` no longer writes a `Write|Edit` matcher.
 
 ## Dependencies
 - None

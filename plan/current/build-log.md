@@ -61,3 +61,17 @@ Gate accepted: P0
 | Telemetry | confirmed-disabled |
 | Notes | Continuous run. Five short requirements written inline from one design, too small to justify dispatch. No OpenAPI, operational model, SLO, or cost model triggers. |
 Gate accepted: P1 (2026-10-16T23:32:51Z), continuous run. 5 requirements, scope, risk register (5 risks), glossary, execution plan, component.yml 0.4.2.
+
+### P2: ADRs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T23:33:23Z` |
+| Model tier | primary |
+| Skills loaded | planifest-adr-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Three short ADRs written inline. design_critic toggle absent, so off. |
+Gate accepted: P2 (2026-10-16T23:33:31Z), continuous run. ADR-001 hook entries match setup.sh, ADR-002 PowerShell 5.1 support, ADR-003 case-sensitive flags and leftover removal. consistency-check clean after merging two acceptance criteria in req-001 and req-005.
