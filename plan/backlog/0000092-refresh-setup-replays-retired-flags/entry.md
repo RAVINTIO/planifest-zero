@@ -36,3 +36,7 @@ Choose one of these approaches, then add a test:
 
 The choice changes how setup treats retired flags, which is a design decision outside 0000033's
 confirmed scope. The P5 review found it as an operational issue, not a security one.
+
+## Decision (2026-10-16)
+
+The human chose to fix this in `setup.sh` and `setup.ps1`. When setup reads a retired flag, it prints a warning, skips the flag, and continues. The refresh skill stays unchanged. Planned for the next release with 0000088, 0000091, 0000096, and 0000102.
