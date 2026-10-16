@@ -37,7 +37,8 @@ while ($i -lt $args.Count) {
         if ($isBackendUrl -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
         continue
     }
-    switch ($args[$i]) {
+    # Case-sensitive, the same as setup.sh (0000035 ADR-003).
+    switch -CaseSensitive ($args[$i]) {
         '--strict-orchestrator' { $StrictOrchestrator = $true; $i++ }
         default {
             if ($args[$i] -like '-*') { Write-Host "Unknown flag: $(("$($args[$i])" -split '=', 2)[0])"; exit 1 }
@@ -332,19 +333,21 @@ function Merge-AllowedTools {
     # Preserves existing allowedTools entries — additive merge only.
     param([string]$SettingsPath)
 
-    $settings = @{}
+    # Plain ConvertFrom-Json, with no hashtable switch, so this runs on Windows
+    # PowerShell 5.1 (0000035 ADR-002).
+    $settings = [PSCustomObject]@{}
     if (Test-Path $SettingsPath) {
         $raw = Get-Content -Raw -Path $SettingsPath -Encoding UTF8
-        $settings = $raw | ConvertFrom-Json -AsHashtable -ErrorAction SilentlyContinue
-        if (-not $settings) { $settings = @{} }
+        try { $parsed = $raw | ConvertFrom-Json -ErrorAction Stop } catch { $parsed = $null }
+        if ($parsed -is [System.Management.Automation.PSCustomObject]) { $settings = $parsed }
     }
 
-    $existing = if ($settings.ContainsKey('allowedTools') -and $settings['allowedTools']) {
-        @($settings['allowedTools'])
+    $existing = if ($settings.PSObject.Properties['allowedTools'] -and $settings.allowedTools) {
+        @($settings.allowedTools)
     } else { @() }
 
     if ($existing -notcontains 'Agent') {
-        $settings['allowedTools'] = $existing + @('Agent')
+        $settings | Add-Member -NotePropertyName 'allowedTools' -NotePropertyValue ($existing + @('Agent')) -Force
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
         Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
@@ -394,6 +397,8 @@ function Remove-LegacyTelemetryWiring {
 
             if ($existing.hooks) {
                 foreach ($event in @($existing.hooks.PSObject.Properties.Name)) {
+                    # A non-array value stays as it was, as in setup.sh (0000035 req-002).
+                    if ($existing.hooks.$event -isnot [System.Array]) { continue }
                     $entries = @($existing.hooks.$event)
                     $kept = @()
                     foreach ($entry in $entries) {
