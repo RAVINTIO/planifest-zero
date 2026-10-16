@@ -188,7 +188,7 @@ Gate accepted: P4 re-run after reversal (2026-10-16). Human confirmed continuous
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
-| Notes | Version 0.4.0 from product-version.mjs, higher than the last tag. product.yml version and feature updated. Tag v0.4.0 created locally. Push and PR decision asked of the human. |
+| Notes | Version 0.4.0 from product-version.mjs, higher than the last tag. product.yml version and feature updated. Tag v0.4.0 created locally. Push and PR decision asked of the human. The human answered by adding override custom-004: the agent pushes and raises the PR at P9, and never merges. Gate accepted: P9 (2026-10-16). |
 
 ---
 
