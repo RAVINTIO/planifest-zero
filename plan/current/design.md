@@ -105,4 +105,4 @@ None
 - `custom-004-p9-push-and-raise-pr.md`: at P9, push and raise the PR without asking. Never merge. The human merges to `main`.
 
 ## Confirmation
-Human confirmed this design before proceeding: pending
+Human confirmed this design before proceeding: yes // Date and Time confirmed: 17 Oct 2026 @ 12:31 a.m. BST
