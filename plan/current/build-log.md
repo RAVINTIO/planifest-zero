@@ -47,3 +47,5 @@ Scope Lock (error): a replayed retired flag warns and exits 0, an unknown flag s
 Scope Lock (cross-session): settings.json is always old or new, a rerun finishes the job, a leftover temp file is replaced next run, and a pending marker makes the next refresh offer the same command. [source: agent-draft-accepted]
 P0 exchange (scope lock gaps): Q: resolve gaps a to g / A: accept all recommendations. (a) setup already rewrites the marker with current flags only, no marker change. (b) --backend-url skips the next argument only if it does not start with --, and a missing value warns and exits 0. (c) each write keeps its current failure behaviour, plus original survives and temp removed. (d) temp file is settings.json.planifest-tmp in the same folder. (e) the new node warning fires only when settings.json exists. (f) other writes stay non-atomic, rerun recovers. (g) PowerShell gets static checks only.
 Scope Lock complete. All four scenario paths captured.
+P0 exchange (run mode and design): Q: run mode, then confirm design / A: "Get on with it", read as continuous run and design confirmed.
+Gate accepted: P0 (2026-10-16T21:16:15Z)

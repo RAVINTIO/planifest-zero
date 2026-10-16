@@ -1,7 +1,7 @@
 ---
 title: "Feature Brief - setup hardening"
 summary: "The business case, scope, and product requirements for the feature."
-status: "draft"
+status: "approved"
 version: "0.1.0"
 ---
 # Feature Brief - setup hardening
