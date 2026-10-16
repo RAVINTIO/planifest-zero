@@ -196,3 +196,4 @@ P7 note: backlog entries 0000088, 0000091, 0000092, 0000096, and 0000102 removed
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Override custom-004: push and raise the PR without asking, never merge. |
+P9: tag v0.4.1 pushed, PR #7 raised (https://github.com/planifest/planifest-zero/pull/7). Not merged. Marker pre-flight clean.
