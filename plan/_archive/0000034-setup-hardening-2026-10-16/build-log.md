@@ -167,3 +167,19 @@ P7 note: backlog entries 0000088, 0000091, 0000092, 0000096, and 0000102 removed
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | none |
+
+---
+
+## Summary (filled at P7)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | 10 (P0 to P9) |
+| Total agents spawned | 6 (4 Scope Lock drafts, 1 security reviewer, 1 build assessment) |
+| Total MCP calls | 0 |
+| Phases using parallelism | 1 (P0 Scope Lock) |
+| Primary tier agent calls | 1 |
+| Cheaper tier agent calls | 5 |
+| Self-corrections | 3 |
+| Phases skipped | none |
+| Phases with a recorded telemetry gap | 0 |
