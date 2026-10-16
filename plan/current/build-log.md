@@ -35,3 +35,5 @@ summary: "Working telemetry file maintained by the orchestrator throughout the p
 
 P0 exchange (backlog pickup): Q: which backlog items join the next release / A: the human chose 0000088, 0000091, 0000092, 0000096, and 0000102 on 2026-10-16. All other entries stay.
 P0 exchange (0000092 approach): Q: setup warns and skips retired flags, or refresh skill drops them / A: setup warns and skips.
+P0 exchange (adoption mode): Q: confirm standard-iterative / A: standard-iterative, confirmed by human on 2026-10-16. Human asked for a backlog item to assume this mode without asking.
+Adoption mode: standard-iterative, confirmed by human on 2026-10-16
