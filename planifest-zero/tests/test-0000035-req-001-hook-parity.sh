@@ -78,7 +78,7 @@ echo ""
 echo "=== req-001 (b): both settings branches use the declared entries ==="
 
 BODY="$(extract_function_body 'Merge-EnforcementHookSettings')"
-assert_equals "0" "$(grep -c "Write|Edit" "$SETUP_PS1" || true)" \
+assert_equals "0" "$(grep -c "'Write|Edit'" "$SETUP_PS1" || true)" \
   "req-001 (b): setup.ps1 writes no Write|Edit matcher"
 assert_contains '$filtered + $preToolEntries' "$BODY" \
   "req-001 (b): an existing settings.json gets the declared PreToolUse entries"

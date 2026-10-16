@@ -241,31 +241,39 @@ function Write-SettingsAtomic {
     }
 }
 
+function New-HookEntry {
+    # One settings.json hook entry: a matcher and one node command.
+    param([string]$Matcher, [string]$Module, [string]$HooksDir)
+    [ordered]@{
+        matcher = $Matcher
+        hooks   = @([ordered]@{ type = 'command'; command = "node $HooksDir/$Module.mjs" })
+    }
+}
+
 function Merge-EnforcementHookSettings {
-    # Merge gate-write (PreToolUse), auto-trigger-orchestrator,
-    # check-orchestrator-presence, and check-design (UserPromptSubmit) into
-    # settings.json. Idempotent.
+    # Merge the six enforcement hooks into settings.json: gate-write,
+    # ratchet-check, and em-dash-guard (PreToolUse), then
+    # auto-trigger-orchestrator, check-orchestrator-presence, and check-design
+    # (UserPromptSubmit). Idempotent. The entries match setup.sh in event,
+    # matcher, and order (0000035 ADR-001), and a parity suite checks it.
     param(
         [string]$SettingsPath,
         [string]$HooksDir
     )
 
-    $preToolEntry = @{
-        matcher = 'Write|Edit'
-        hooks   = @(@{ type = 'command'; command = "node $HooksDir/gate-write.mjs" })
-    }
-    $autoTriggerEntry = @{
-        matcher = '.*'
-        hooks   = @(@{ type = 'command'; command = "node $HooksDir/auto-trigger-orchestrator.mjs" })
-    }
-    $presenceEntry = @{
-        matcher = '.*'
-        hooks   = @(@{ type = 'command'; command = "node $HooksDir/check-orchestrator-presence.mjs" })
-    }
-    $userPromptEntry = @{
-        matcher = '.*'
-        hooks   = @(@{ type = 'command'; command = "node $HooksDir/check-design.mjs" })
-    }
+    $preToolEntries = @(
+        (New-HookEntry 'Write' 'gate-write' $HooksDir),
+        (New-HookEntry 'Edit' 'gate-write' $HooksDir),
+        (New-HookEntry 'Write' 'ratchet-check' $HooksDir),
+        (New-HookEntry 'Edit' 'ratchet-check' $HooksDir),
+        (New-HookEntry 'Write' 'em-dash-guard' $HooksDir),
+        (New-HookEntry 'Edit' 'em-dash-guard' $HooksDir)
+    )
+    $userPromptEntries = @(
+        (New-HookEntry '.*' 'auto-trigger-orchestrator' $HooksDir),
+        (New-HookEntry '.*' 'check-orchestrator-presence' $HooksDir),
+        (New-HookEntry '.*' 'check-design' $HooksDir)
+    )
 
     if (Test-Path $SettingsPath) {
         $existing = Get-Content -Raw -Path $SettingsPath | ConvertFrom-Json
@@ -274,16 +282,21 @@ function Merge-EnforcementHookSettings {
             $existing | Add-Member -NotePropertyName 'hooks' -NotePropertyValue ([PSCustomObject]@{}) -Force
         }
 
-        # Merge PreToolUse — remove stale gate-write entry, append fresh one
+        # Merge PreToolUse. Remove every earlier entry for the three modules,
+        # on any matcher, so an old single Write|Edit entry goes too.
         if (-not $existing.hooks.PreToolUse) {
             $existing.hooks | Add-Member -NotePropertyName 'PreToolUse' -NotePropertyValue @() -Force
         }
         $filtered = @($existing.hooks.PreToolUse | Where-Object {
-            -not ($_.hooks | Where-Object { $_.command -match 'gate-write' })
+            -not ($_.hooks | Where-Object {
+                $_.command -match 'gate-write' -or
+                $_.command -match 'ratchet-check' -or
+                $_.command -match 'em-dash-guard'
+            })
         })
-        $existing.hooks.PreToolUse = $filtered + $preToolEntry
+        $existing.hooks.PreToolUse = $filtered + $preToolEntries
 
-        # Merge UserPromptSubmit — remove stale entries, append fresh ones in order
+        # Merge UserPromptSubmit. Remove stale entries, append fresh ones in order.
         if (-not $existing.hooks.UserPromptSubmit) {
             $existing.hooks | Add-Member -NotePropertyName 'UserPromptSubmit' -NotePropertyValue @() -Force
         }
@@ -294,7 +307,7 @@ function Merge-EnforcementHookSettings {
                 $_.command -match 'check-design'
             })
         })
-        $existing.hooks.UserPromptSubmit = $filtered + $autoTriggerEntry + $presenceEntry + $userPromptEntry
+        $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
 
         Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 10)
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
@@ -305,8 +318,8 @@ function Merge-EnforcementHookSettings {
 
         $settings = [PSCustomObject]@{
             hooks = [PSCustomObject]@{
-                PreToolUse       = @($preToolEntry)
-                UserPromptSubmit = @($autoTriggerEntry, $presenceEntry, $userPromptEntry)
+                PreToolUse       = @($preToolEntries)
+                UserPromptSubmit = @($userPromptEntries)
             }
         }
         Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
@@ -443,7 +456,7 @@ function Remove-LegacyTelemetryWiring {
 }
 
 function Install-EnforcementHooks {
-    # Copy gate-write.mjs + check-design.mjs and wire settings.json.
+    # Copy the enforcement hook modules and wire all six into settings.json.
     # Always runs — no flag required.
     param(
         [string]$HooksSrcRel,
