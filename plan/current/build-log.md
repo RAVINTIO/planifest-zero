@@ -62,3 +62,17 @@ Gate accepted: P0 (2026-10-16T21:16:15Z)
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Continuous run. Requirements written inline: six short, independent files sharing one design, too small to justify dispatch. No OpenAPI, operational model, SLO, or cost model triggers. |
+Gate accepted: P1 (2026-10-16T21:17:49Z), continuous run. 6 requirements, scope, risk register (6 risks), glossary, execution plan, component.yml 0.4.1.
+
+### P2: ADRs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T21:17:49Z` |
+| Model tier | primary |
+| Skills loaded | planifest-adr-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Two ADRs, written inline because each is short and the second reads the first. design_critic toggle absent, so off. |
