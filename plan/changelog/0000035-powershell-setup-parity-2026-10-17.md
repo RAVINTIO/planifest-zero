@@ -2,7 +2,7 @@
 
 **Feature:** PowerShell setup parity
 **Pipeline run:** P0 to P9 completed. No phases skipped.
-**PR:** pending
+**PR:** https://github.com/planifest/planifest-zero/pull/8
 
 ## What Was Built
 
