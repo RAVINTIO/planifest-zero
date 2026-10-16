@@ -973,10 +973,23 @@ MARKER_EOF
 
 # --- Main ---
 
+# Flags that earlier releases removed (0000034 ADR-001). An older install's
+# flags marker can still list them, so setup warns and skips each one instead
+# of failing the refresh. --backend-url also took a value: skip the next
+# argument unless it is another flag, and never print or store it.
+retired_flag_warning() {
+  echo "  ! Warning: ignoring retired flag $1 (removed in an earlier release)" >&2
+}
+
 TOOL=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --strict-orchestrator) STRICT_ORCHESTRATOR=true; shift ;;
+    --structured-telemetry-mcp|--context-mode-mcp|--include-full-skill-library)
+      retired_flag_warning "$1"; shift ;;
+    --backend-url)
+      retired_flag_warning "$1"; shift
+      if [[ $# -gt 0 && "$1" != --* ]]; then shift; fi ;;
     -*) echo "Unknown flag: $1"; exit 1 ;;
     *) TOOL="$1"; shift ;;
   esac
@@ -1027,7 +1040,13 @@ run_tool_setup() {
   write_setup_flags_marker "$t" "$(dirname "$TOOL_SKILLS_DIR")"
 }
 
-if echo "$VALID_TOOLS" | grep -qw "$TOOL"; then
+# Exact match only, the same as setup.ps1's -contains check (0000034 req-002).
+tool_is_valid=false
+for t in $VALID_TOOLS; do
+  if [ "$t" = "$TOOL" ]; then tool_is_valid=true; fi
+done
+
+if [ "$tool_is_valid" = true ]; then
   run_tool_setup "$TOOL"
 else
   echo "Unknown tool: $TOOL"

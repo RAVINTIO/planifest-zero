@@ -14,8 +14,20 @@
 # Manual arg parsing — supports --flag style for cross-platform consistency
 $Tool = $null
 $StrictOrchestrator = $false
+# Flags that earlier releases removed (0000034 ADR-001). An older install's
+# flags marker can still list them, so setup warns and skips each one instead
+# of failing the refresh. --backend-url also took a value: skip the next
+# argument unless it is another flag, and never print or store it.
+$RetiredFlags = @('--structured-telemetry-mcp', '--backend-url', '--context-mode-mcp', '--include-full-skill-library')
 $i = 0
 while ($i -lt $args.Count) {
+    if ($RetiredFlags -contains $args[$i]) {
+        Write-Host "  ! Warning: ignoring retired flag $($args[$i]) (removed in an earlier release)"
+        $isBackendUrl = $args[$i] -eq '--backend-url'
+        $i++
+        if ($isBackendUrl -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--')) { $i++ }
+        continue
+    }
     switch ($args[$i]) {
         '--strict-orchestrator' { $StrictOrchestrator = $true; $i++ }
         default {
