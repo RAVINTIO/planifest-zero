@@ -73,19 +73,26 @@ echo "=== req-002 (a): setup.sh and setup/claude-code.sh mention no telemetry ==
 # sits inside that block, and that no flag, install, or sentinel write survives
 # outside it. The block runs from its module-name constants to the end of
 # remove_legacy_telemetry_wiring().
-OUTSIDE_CLEANUP="$(awk '
+# 0000034 ADR-001 adds a second allowed block: the retired-flag handling,
+# from its comment to the end of the argument loop, names the old flags so it
+# can warn about them and skip them.
+SH_OUTSIDE_ALLOWED="$(awk '
   /^# Telemetry hook module names/ { in_block = 1 }
+  /^# Flags that earlier releases removed/ { in_flags = 1 }
   in_block && /^}/ { in_block = 0; next }
-  !in_block { print }
-' "$FRAMEWORK/setup.sh" | grep -i "telemetry" | grep -vc "remove_legacy_telemetry_wiring" || true)"
+  in_flags && /^done/ { in_flags = 0; next }
+  !in_block && !in_flags { print }
+' "$FRAMEWORK/setup.sh")"
+OUTSIDE_CLEANUP="$(printf '%s\n' "$SH_OUTSIDE_ALLOWED" | grep -i "telemetry" | grep -vc "remove_legacy_telemetry_wiring" || true)"
 assert_equals "0" "$OUTSIDE_CLEANUP" \
   "req-002 (a): setup.sh has no telemetry string outside the legacy-cleanup block except references to it"
 
-# No telemetry flag is accepted: the argument parser has no case label for it.
-assert_equals "0" "$(grep -cE '^\s*--structured-telemetry-mcp\)' "$FRAMEWORK/setup.sh" || true)" \
-  "req-002 (a): setup.sh parses no --structured-telemetry-mcp argument"
-assert_equals "0" "$(grep -cE '^\s*--backend-url\)' "$FRAMEWORK/setup.sh" || true)" \
-  "req-002 (a): setup.sh parses no --backend-url argument"
+# No telemetry flag sets any state: outside the retired-flag block (0000034
+# ADR-001) the argument parser has no case label for either flag.
+assert_equals "0" "$(printf '%s\n' "$SH_OUTSIDE_ALLOWED" | grep -cE '^\s*--structured-telemetry-mcp' || true)" \
+  "req-002 (a): setup.sh parses no --structured-telemetry-mcp argument outside the retired-flag block"
+assert_equals "0" "$(printf '%s\n' "$SH_OUTSIDE_ALLOWED" | grep -cE '^\s*--backend-url' || true)" \
+  "req-002 (a): setup.sh parses no --backend-url argument outside the retired-flag block"
 
 # No telemetry install path survives.
 for FORBIDDEN in "install_telemetry_hooks" "merge_telemetry_hook_settings" "verify_telemetry_hooks_installed" "STRUCTURED_TELEMETRY_MCP"; do
@@ -101,9 +108,9 @@ TOOL_HITS="$(grep -c -i "telemetry" "$FRAMEWORK/setup/claude-code.sh")"
 assert_equals "0" "$TOOL_HITS" \
   "req-002 (a): setup/claude-code.sh contains no telemetry string"
 
-BACKEND_HITS="$(grep -c -i "backend.url\|backendUrl\|BACKEND_URL" "$FRAMEWORK/setup.sh")"
+BACKEND_HITS="$(printf '%s\n' "$SH_OUTSIDE_ALLOWED" | grep -c -i "backend.url\|backendUrl\|BACKEND_URL" || true)"
 assert_equals "0" "$BACKEND_HITS" \
-  "req-002 (a): setup.sh contains no backend-url string"
+  "req-002 (a): setup.sh contains no backend-url string outside the retired-flag block"
 
 SYNTAX_OUTPUT="$(bash -n "$FRAMEWORK/setup.sh" 2>&1)"
 assert_exit_zero $? "req-002 (a): setup.sh still parses as valid bash"
@@ -114,23 +121,24 @@ assert_exit_zero $? "req-002 (a): setup/claude-code.sh still parses as valid bas
 # ── (b): the removed flag is now an unknown argument ────────────────────────
 
 echo ""
-echo "=== req-002 (b): --structured-telemetry-mcp is rejected as an unknown argument ==="
+echo "=== req-002 (b): --structured-telemetry-mcp is a retired flag that installs nothing ==="
 
+# 0000034 ADR-001 supersedes the original exit-1 case: the flag now warns and
+# is skipped, so a refresh of an older install completes. It still installs
+# no telemetry.
 WS=$(make_workspace); cd "$WS"
 
 FLAG_OUTPUT="$(bash planifest-zero/setup.sh claude-code --structured-telemetry-mcp 2>&1)"
 FLAG_EXIT=$?
 
-if [ "$FLAG_EXIT" -ne 0 ]; then
-  FLAG_NONZERO="yes"
-else
-  FLAG_NONZERO="no"
-fi
-assert_equals "yes" "$FLAG_NONZERO" \
-  "req-002 (b): setup.sh claude-code --structured-telemetry-mcp exits non-zero"
+assert_exit_zero "$FLAG_EXIT" \
+  "req-002 (b): setup.sh claude-code --structured-telemetry-mcp exits 0 (0000034 ADR-001)"
 
-assert_contains "Unknown flag" "$FLAG_OUTPUT" \
-  "req-002 (b): the run prints an unknown-argument error"
+assert_contains "ignoring retired flag --structured-telemetry-mcp" "$FLAG_OUTPUT" \
+  "req-002 (b): the run warns that the flag is retired"
+
+assert_equals "no" "$([ -d .claude/hooks/telemetry ] && echo yes || echo no)" \
+  "req-002 (b): the run installs no telemetry hook directory"
 
 cd "$SCRIPT_DIR"
 rm -rf "$WS"

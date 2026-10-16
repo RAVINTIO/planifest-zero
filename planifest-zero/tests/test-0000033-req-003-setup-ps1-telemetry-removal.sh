@@ -40,25 +40,31 @@ echo "=== req-003: setup.ps1 carries no telemetry string ==="
 # telemetry modules, matcher, and paths. So the check is that every telemetry
 # string sits inside that block, and that no flag, install, or sentinel write
 # survives outside it.
-OUTSIDE_CLEANUP="$(awk '
+# 0000034 ADR-001 adds a second allowed block: the retired-flag handling,
+# from its comment to the end of the argument loop, names the old flags so it
+# can warn about them and skip them.
+PS1_OUTSIDE_ALLOWED="$(awk '
   /^# Telemetry hook module names/ { in_block = 1 }
+  /^# Flags that earlier releases removed/ { in_flags = 1 }
   in_block && /^}/ { in_block = 0; next }
-  !in_block { print }
-' "$SETUP_PS1" | grep -i "telemetry" | grep -vc "Remove-LegacyTelemetryWiring" || true)"
+  in_flags && /^}/ { in_flags = 0; next }
+  !in_block && !in_flags { print }
+' "$SETUP_PS1")"
+OUTSIDE_CLEANUP="$(printf '%s\n' "$PS1_OUTSIDE_ALLOWED" | grep -i "telemetry" | grep -vc "Remove-LegacyTelemetryWiring" || true)"
 assert_equals "0" "$OUTSIDE_CLEANUP" \
   "req-003: setup.ps1 has no telemetry string outside the legacy-cleanup block except references to it"
 
 for FORBIDDEN in "StructuredTelemetryMcp" "Install-TelemetryHooks" "Merge-TelemetryHookSettings" "Test-TelemetryHooksInstalled" "BackendUrl"; do
-  assert_equals "0" "$(grep -c -- "$FORBIDDEN" "$SETUP_PS1" || true)" \
+  assert_equals "0" "$(printf '%s\n' "$PS1_OUTSIDE_ALLOWED" | grep -c -- "$FORBIDDEN" || true)" \
     "req-003: setup.ps1 declares no $FORBIDDEN"
 done
 
 assert_equals "0" "$(grep -c 'New-Item.*telemetry-enabled\|Set-Content.*telemetry-enabled' "$SETUP_PS1" || true)" \
   "req-003: setup.ps1 never writes the telemetry-enabled sentinel"
 
-BACKEND_HITS="$(grep -c -i 'backend' "$SETUP_PS1")"
+BACKEND_HITS="$(printf '%s\n' "$PS1_OUTSIDE_ALLOWED" | grep -c -i 'backend' || true)"
 assert_equals "0" "$BACKEND_HITS" \
-  "req-003: setup.ps1 contains no backend-url string"
+  "req-003: setup.ps1 contains no backend-url string outside the retired-flag block"
 
 echo ""
 echo "=== req-003: telemetry functions are gone ==="

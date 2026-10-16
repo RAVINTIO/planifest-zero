@@ -42,9 +42,10 @@ assert_equals "no" "$([ -d "$WS/clone2/.claude/hooks/telemetry" ] && echo yes ||
 echo "=== (c2) retired telemetry flags are rejected ==="
 mkdir -p "$WS/clone3"
 cp -R "$FRAMEWORK" "$WS/clone3/planifest-zero"
+# 0000034 ADR-001: the retired flag now warns and is skipped, so setup exits 0.
 ( cd "$WS/clone3" && git init -q . && bash planifest-zero/setup.sh claude-code --structured-telemetry-mcp >/dev/null 2>&1 )
-assert_equals "1" "$?" "setup.sh exits non-zero for --structured-telemetry-mcp"
-assert_equals "no" "$([ -d "$WS/clone3/.claude/hooks/telemetry" ] && echo yes || echo no)" "no telemetry hook directory after a rejected run"
+assert_equals "0" "$?" "setup.sh exits 0 and skips the retired --structured-telemetry-mcp"
+assert_equals "no" "$([ -d "$WS/clone3/.claude/hooks/telemetry" ] && echo yes || echo no)" "no telemetry hook directory after a run with the retired flag"
 
 echo "=== (d) installed tree references no old name ==="
 HITS=$(grep -rl "$OLD_NAME" "$WS/clone/.claude" 2>/dev/null | wc -l | tr -d ' ')
