@@ -177,6 +177,19 @@ Gate accepted: P4 re-run after reversal (2026-10-16). Human confirmed continuous
 | Telemetry | confirmed-disabled |
 | Notes | Build assessment dispatched over the archived build log. It found the P7 summary table wrong on agent tiers, parallel phases, and self-corrections. Summary corrected from the phase blocks. |
 
+### P9: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Version 0.4.0 from product-version.mjs, higher than the last tag. product.yml version and feature updated. Tag v0.4.0 created locally. Push and PR decision asked of the human. |
+
 ---
 
 ## Summary (filled at P7)
