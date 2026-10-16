@@ -1,7 +1,7 @@
 ---
-version: "0.4.1"
-feature: "0000034-setup-hardening"
-updated: "16 Oct 2026"
+version: "0.4.2"
+feature: "0000035-powershell-setup-parity"
+updated: "17 Oct 2026"
 ---
 # About
 

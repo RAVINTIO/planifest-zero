@@ -146,3 +146,4 @@ Gate accepted: P6 (2026-10-16T23:52:13Z), continuous run. Zero drift. Recommenda
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Regression candidate `test-0000035-req-001-hook-parity.sh` promoted under the continuous run, before the tag. |
+Archived to `plan/_archive/0000035-powershell-setup-parity-2026-10-17/`. Changelog and test report written. Gate accepted: P7 (2026-10-16T23:52:46Z).
