@@ -164,6 +164,19 @@ Gate accepted: P4 re-run after reversal (2026-10-16). Human confirmed continuous
 | Telemetry | confirmed-disabled |
 | Notes | Cross-reference check: no living doc links to plan/current/. No .skips file. No REGRESSION-CANDIDATE tags, so nothing to promote. docs/about.md already reads 0.4.0 from P6. Archive path plan/_archive/0000033-remove-telemetry-mcp-2026-10-16/. |
 
+### P8: Build Assessment
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16` |
+| Model tier | cheaper |
+| Skills loaded | planifest-ship-agent, planifest-build-assessment-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Build assessment dispatched over the archived build log. |
+
 ---
 
 ## Summary (filled at P7)
