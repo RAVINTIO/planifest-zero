@@ -175,3 +175,4 @@ P8 correction: the P0 row first recorded 0 agents. It now records the 4 Scope Lo
 | Telemetry | confirmed-disabled |
 | Notes | Version 0.4.2 from `product-version.mjs`. Tag `v0.4.2`. Push and PR per custom-004. The PR targets `feat/0000034-setup-hardening`, because this branch stacks on PR #7. |
 PR raised: https://github.com/planifest/planifest-zero/pull/8, based on `feat/0000034-setup-hardening`. Not merged. Gate accepted: P9 (2026-10-16T23:56:12Z).
+PR #8 closed when its base branch was deleted after the PR #7 squash merge. The same commits now sit on `feat/0000035-powershell-setup-parity-v2`, copied onto `main` without a force push. New PR: https://github.com/planifest/planifest-zero/pull/9. Tag `v0.4.2` still points to the old branch head, which has the same tree.
