@@ -47,3 +47,16 @@ P0 exchange (design): Q: confirm design and the four drafts? / A: "Yes accept al
 Scope Lock complete. All four scenario paths captured.
 Backlog pickup: 0000090, 0000094, 0000104, and 0000105 pulled in and deleted. All other entries left.
 Gate accepted: P0
+
+### P1: Spec
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T23:32:24Z` |
+| Model tier | primary |
+| Skills loaded | planifest-spec-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Continuous run. Five short requirements written inline from one design, too small to justify dispatch. No OpenAPI, operational model, SLO, or cost model triggers. |
