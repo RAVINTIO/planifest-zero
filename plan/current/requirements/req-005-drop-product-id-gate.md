@@ -17,12 +17,11 @@ As a maintainer, I want the product-id gate to give a reason that is still true,
 
 ## Functional Requirements
 - Keep the top-level `id` field in `product.yml` and in `planifest-zero/templates/product.template.yml`.
-- Keep step 9's product-id hard stop in `planifest-zero/skills/planifest-orchestrator/SKILL.md`. Its prompt gives versioning and attribution of archived runs as the reason, matching framework 0000030 ADR-007.
+- Keep step 9's product-id hard stop in `planifest-zero/skills/planifest-orchestrator/SKILL.md`. Its prompt gives versioning and attribution of archived runs as the reason, matching framework 0000030 ADR 007.
 - Keep `components[].id` in `product.yml` unchanged, because `planifest-zero/scripts/product-version.mjs` reads it.
 
 ## Acceptance Criteria
-- [ ] `product.yml` has a top-level `id: "planifest-zero"` key, checked by a test.
-- [ ] `planifest-zero/templates/product.template.yml` has a top-level `id:` key.
+- [ ] `product.yml` has a top-level `id: "planifest-zero"` key, and `planifest-zero/templates/product.template.yml` has a top-level `id:` key, both checked by a test.
 - [ ] The orchestrator skill's step 9 hard-stops when `id` is missing, and its prompt names versioning and does not name telemetry.
 - [ ] `grep "id:" product.yml` still finds the `id:` field nested under `components[]`.
 

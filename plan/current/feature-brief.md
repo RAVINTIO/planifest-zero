@@ -81,7 +81,7 @@ suites. No new stack.
 - Remove the telemetry hook paths from `setup/claude-code.sh` and `setup/claude-code.ps1`.
 - Keep the top-level `id` field in `product.yml` and its template, and keep the orchestrator's
   product-id hard stop. Reword its prompt to give versioning as the reason, not telemetry. This
-  matches framework 0000030 ADR-007 (reversed at P5 on 2026-10-16, ADR-003 v0.2.0).
+  matches framework 0000030 ADR 007 (reversed at P5 on 2026-10-16, ADR-003 v0.2.0).
 - Remove the `## Telemetry` section and the `telemetry-standards.md` bundle reference from the six
   skills that carry them, and the `hooks: phase:` frontmatter key from all twelve.
 - Remove the `Telemetry` row from `templates/build-log.template.md` and the telemetry clause from

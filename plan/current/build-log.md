@@ -117,9 +117,11 @@ P4 override: human accepted the pre-existing test-0000031-req-001-rename.sh fail
 Gate accepted: P4 (2026-10-15)
 
 
-Telemetry (P5 start): marker context-pressure::Error::product-yml-has-no-top-level-id-field (236 occurrences, 2026-09-10 to 2026-09-14) surfaced. Human chose neither block nor proceed. They asked to keep the product.yml id, citing framework 0000030 ADR-007. Marker deleted once acknowledged.
+Telemetry (P5 start): marker context-pressure::Error::product-yml-has-no-top-level-id-field (236 occurrences, 2026-09-10 to 2026-09-14) surfaced. Human chose neither block nor proceed. They asked to keep the product.yml id, citing framework 0000030 ADR 007. Marker deleted once acknowledged.
 
-Requirement Change (P5 active, contradictory, scoped reversal): ADR-003 decisions 4 and 5 reversed on 2026-10-16. product.yml top-level id and the P0 product-id hard stop stay, with versioning and archive attribution as the reason, matching framework 0000030 ADR-007. Human confirmed the change list. Affected: ADR-003 (v0.2.0), req-005 (v0.2.0), design.md, scope.md, feature-brief.md, execution-plan.md, product.yml, templates/product.template.yml, orchestrator skill step 9, test-0000031-req-001-rename.sh case (c). Re-run: P4 checks over the changed files, then P5.
+Requirement Change (P5 active, contradictory, scoped reversal): ADR-003 decisions 4 and 5 reversed on 2026-10-16. product.yml top-level id and the P0 product-id hard stop stay, with versioning and archive attribution as the reason, matching framework 0000030 ADR 007. Human confirmed the change list. Affected: ADR-003 (v0.2.0), req-005 (v0.2.0), design.md, scope.md, feature-brief.md, execution-plan.md, product.yml, templates/product.template.yml, orchestrator skill step 9, test-0000031-req-001-rename.sh case (c). Re-run: P4 checks over the changed files, then P5.
+
+P4 re-run after reversal (2026-10-16): rename suite case (c) 6/6 pass. Full runner 44 feature suites passed, 1 failed (the overridden test-0000031-req-001-rename.sh, cases a and b only). Regression 12 passed, 0 failed. self-description-check pass. product-version 0.4.0. consistency-check found 3 issues in the reversal edits (req-005 had 4 criteria, and two cross-repo ADR-007 references read as local), fixed and now clean.
 
 ---
 

@@ -39,7 +39,7 @@ reads it is the telemetry hooks. The version script reads `components[].id`, whi
    the pipeline documentation, which is where a reader looks for them.
 4. Keep the top-level `id` field in `product.yml` and in `templates/product.template.yml`.
 5. Keep the orchestrator's product-id hard stop. Rewrite its prompt so the reason is versioning and
-   attribution of archived runs, wherever the repo is cloned. This matches framework 0000030 ADR-007.
+   attribution of archived runs, wherever the repo is cloned. This matches framework 0000030 ADR 007.
 6. `components[].id` stays. `scripts/product-version.mjs` reads it to resolve each component's
    manifest, and versioning is unaffected.
 
@@ -49,8 +49,8 @@ reads it is the telemetry hooks. The version script reads `components[].id`, whi
 |-------------|------|------|-------------|
 | Keep `phase-enum.mjs` as a machine-readable vocabulary with no importers | Something later might want it | A module nothing imports invites the next reader to wire something to it, and its whole header comment argues a telemetry concern that no longer exists | Dead code with a misleading rationale |
 | Move the enum somewhere non-telemetry and keep it | Preserves a single machine-readable source | Nothing in Zero reads phase names programmatically once telemetry goes. The pipeline is executed by agents reading skills | Solves a problem no surviving code has |
-| Remove the `id` field and the hard stop | One fewer discovery stop, no field without a code reader | Diverges from `planifest-framework`, which kept both in 0000030 ADR-007, and drops a stable product name the human expects to use later | The human reversed this choice at P5 (see Revision below) |
-| Keep `id` as an optional documented field, drop only the hard stop | Costs nothing, names the product for humans | Still diverges from `planifest-framework`, and a field nothing requires drifts or goes missing | The human chose to match framework 0000030 ADR-007 |
+| Remove the `id` field and the hard stop | One fewer discovery stop, no field without a code reader | Diverges from `planifest-framework`, which kept both in 0000030 ADR 007, and drops a stable product name the human expects to use later | The human reversed this choice at P5 (see Revision below) |
+| Keep `id` as an optional documented field, drop only the hard stop | Costs nothing, names the product for humans | Still diverges from `planifest-framework`, and a field nothing requires drifts or goes missing | The human chose to match framework 0000030 ADR 007 |
 
 ## Affected Components
 
@@ -97,6 +97,6 @@ top-level `id` field and the product-id hard stop. The human reversed decisions 
 reasons:
 
 - The id may be useful later.
-- `planifest-framework` removed telemetry in its feature 0000030 and kept both, per its ADR-007.
+- `planifest-framework` removed telemetry in its feature 0000030 and kept both, per its ADR 007.
 
 Decisions 1 to 3 and 6 are unchanged.
