@@ -1,6 +1,6 @@
 {
   "$schema": "./regression-manifest.schema.json",
-  "description": "Long-term regression pack manifest. Tracks tests promoted from feature pipelines. Managed by promote-to-regression.sh \u2014 do not edit manually.",
+  "description": "Long-term regression pack manifest. Tracks tests promoted from feature pipelines. Managed by promote-to-regression.sh — do not edit manually.",
   "fields": {
     "name": "Unique filename of the test (basename)",
     "sourceFeature": "Feature ID from which the test was promoted (e.g. 0000004-tdd-regression-test-quality)",
@@ -92,6 +92,20 @@
       "promotionDate": "2026-08-01",
       "promotedBy": "agent",
       "filePath": "tests/regression/test-regression-pack.sh"
+    },
+    {
+      "name": "test-0000034-req-001-retired-flags.sh",
+      "sourceFeature": "0000034-setup-hardening",
+      "promotionDate": "2026-10-16",
+      "promotedBy": "agent",
+      "filePath": "tests/regression/test-0000034-req-001-retired-flags.sh"
+    },
+    {
+      "name": "test-0000034-req-003-atomic-settings-writes.sh",
+      "sourceFeature": "0000034-setup-hardening",
+      "promotionDate": "2026-10-16",
+      "promotedBy": "agent",
+      "filePath": "tests/regression/test-0000034-req-003-atomic-settings-writes.sh"
     }
   ]
 }
