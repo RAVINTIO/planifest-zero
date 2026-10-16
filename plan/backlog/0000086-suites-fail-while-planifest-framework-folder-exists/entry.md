@@ -1,7 +1,7 @@
 ---
 title: "Backlog Entry: 0000086 - two suites fail while the planifest-framework folder exists"
 summary: "A discovered-but-out-of-scope item deferred for pickup at a future P0."
-status: "open"
+status: "superseded"
 ---
 # Backlog Entry: 0000086 - two suites fail while the planifest-framework folder exists
 
@@ -49,3 +49,7 @@ Partly resolved. Feature 0000033 deleted `test-0000031-req-005-telemetry-only-mc
 `test-skill-telemetry.sh`. One suite still fails: `test-0000031-req-001-rename.sh`, cases (a) and
 (b). Switching this repo to run its own pipeline on `planifest-zero/` would remove
 `planifest-framework/`, and the suite would pass unchanged.
+
+## Superseded (2026-10-16)
+
+Merged into 0000097, which switches this repo to run its own pipeline on `planifest-zero/`. Track the work there.

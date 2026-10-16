@@ -1,7 +1,7 @@
 ---
 title: "Backlog Entry: 0000089 - this repo's own setup-config record stays at the old path"
 summary: "A discovered-but-out-of-scope item deferred for pickup at a future P0."
-status: "open"
+status: "superseded"
 ---
 # Backlog Entry: 0000089 - this repo's own setup-config record stays at the old path
 
@@ -39,3 +39,7 @@ a documented Negative Consequence in ADR-001
 Both artifacts scope this feature to `planifest-zero/` only, per the
 design's Engineering Layer and Component Paths sections, so refreshing
 `planifest-framework/` is left to a separate run.
+
+## Superseded (2026-10-16)
+
+Merged into 0000097, which switches this repo to run its own pipeline on `planifest-zero/`. Track the work there.

@@ -1,7 +1,7 @@
 ---
 title: "Backlog Entry: 0000093 - the CI telemetry schema job loses its subject after the framework refresh"
 summary: "A discovered-but-out-of-scope item deferred for pickup at a future P0."
-status: "open"
+status: "superseded"
 ---
 # Backlog Entry: 0000093 - the CI telemetry schema job loses its subject after the framework refresh
 
@@ -24,3 +24,7 @@ Remove the `validate-telemetry-schema` job in the same change that refreshes `pl
 ## Why Deferred
 
 See the Deferred Items row in this feature's `recommendations.md`. `planifest-framework/` is out of scope for 0000033, per ADR-001.
+
+## Superseded (2026-10-16)
+
+Merged into 0000097, which switches this repo to run its own pipeline on `planifest-zero/`. Track the work there.
