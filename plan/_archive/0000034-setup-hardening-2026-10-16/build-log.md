@@ -152,3 +152,18 @@ Gate accepted: P6 (2026-10-16T21:33:54Z), continuous run. No drift found.
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Regression candidates test-0000034-req-001 and req-003 promoted under the continuous run. The human can revert. |
+
+P7 note: backlog entries 0000088, 0000091, 0000092, 0000096, and 0000102 removed at P7, not at P0 pickup as step 3c says.
+
+### P8: Build Assessment
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T21:38:12Z` |
+| Model tier | cheaper |
+| Skills loaded | planifest-build-assessment-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | none |
