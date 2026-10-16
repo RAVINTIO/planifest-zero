@@ -21,17 +21,35 @@ STRICT_ORCHESTRATOR=false
 
 # Prepended to every node script that writes settings.json (0000034 ADR-002).
 # Writes a temporary file in the same folder, then renames it over the target,
-# so settings.json is always the old file or the new one. A failed write
-# removes the temporary file and rethrows, leaving the original untouched.
+# so settings.json is always the old file or the new one. The temporary file
+# keeps the original's mode. A failed write removes the temporary file and
+# rethrows, leaving the original untouched.
 PLANIFEST_WRITE_SETTINGS_JS='
 function writeSettings(sf, text) {
   const fs = require("fs");
-  const tmp = sf + ".planifest-tmp";
+  // Write through a symlinked settings.json to its real file, as before.
+  let target = sf;
+  try { target = fs.realpathSync(sf); } catch (_) {}
+  let mode;
   try {
-    fs.writeFileSync(tmp, text);
-    fs.renameSync(tmp, sf);
+    mode = fs.statSync(target).mode & 0o7777;
+    // A read-only settings.json stays unchanged, as it did before the rename.
+    fs.accessSync(target, fs.constants.W_OK);
   } catch (err) {
-    try { fs.unlinkSync(tmp); } catch (_) {}
+    if (err.code !== "ENOENT") throw err;
+  }
+  const tmp = target + ".planifest-tmp";
+  // Remove any leftover first, then create the file exclusively, so a
+  // planted symlink at the temporary path is never followed.
+  try { fs.rmSync(tmp, { force: true }); } catch (_) {}
+  let created = false;
+  try {
+    fs.writeFileSync(tmp, text, { flag: "wx", mode: mode === undefined ? 0o666 : mode });
+    created = true;
+    if (mode !== undefined) fs.chmodSync(tmp, mode);
+    fs.renameSync(tmp, target);
+  } catch (err) {
+    if (created) { try { fs.unlinkSync(tmp); } catch (_) {} }
     throw err;
   }
 }
@@ -997,7 +1015,8 @@ MARKER_EOF
 # Flags that earlier releases removed (0000034 ADR-001). An older install's
 # flags marker can still list them, so setup warns and skips each one instead
 # of failing the refresh. --backend-url also took a value: skip the next
-# argument unless it is another flag, and never print or store it.
+# argument unless it is another flag or a tool name, and never print or
+# store it.
 retired_flag_warning() {
   echo "  ! Warning: ignoring retired flag $1 (removed in an earlier release)" >&2
 }
@@ -1010,8 +1029,11 @@ while [[ $# -gt 0 ]]; do
       retired_flag_warning "$1"; shift ;;
     --backend-url)
       retired_flag_warning "$1"; shift
-      if [[ $# -gt 0 && "$1" != --* ]]; then shift; fi ;;
-    -*) echo "Unknown flag: $1"; exit 1 ;;
+      if [[ $# -gt 0 && "$1" != --* && " $VALID_TOOLS " != *" $1 "* ]]; then shift; fi ;;
+    --backend-url=*)
+      retired_flag_warning "--backend-url"; shift ;;
+    # Print only the part before "=", so a value never reaches the log.
+    -*) echo "Unknown flag: ${1%%=*}"; exit 1 ;;
     *) TOOL="$1"; shift ;;
   esac
 done

@@ -17,21 +17,30 @@ $StrictOrchestrator = $false
 # Flags that earlier releases removed (0000034 ADR-001). An older install's
 # flags marker can still list them, so setup warns and skips each one instead
 # of failing the refresh. --backend-url also took a value: skip the next
-# argument unless it is another flag, and never print or store it.
+# argument unless it is another flag or a tool name, and never print or
+# store it.
+# Matching is case-sensitive, the same as setup.sh.
 $RetiredFlags = @('--structured-telemetry-mcp', '--backend-url', '--context-mode-mcp', '--include-full-skill-library')
+# Keep in step with $ValidTools below, which is set after argument parsing.
+$RetiredFlagTools = @('claude-code')
 $i = 0
 while ($i -lt $args.Count) {
-    if ($RetiredFlags -contains $args[$i]) {
-        Write-Host "  ! Warning: ignoring retired flag $($args[$i]) (removed in an earlier release)"
-        $isBackendUrl = $args[$i] -eq '--backend-url'
+    if ("$($args[$i])".StartsWith('--backend-url=')) {
+        Write-Host "  ! Warning: ignoring retired flag --backend-url (removed in an earlier release)"
         $i++
-        if ($isBackendUrl -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--')) { $i++ }
+        continue
+    }
+    if ($RetiredFlags -ccontains $args[$i]) {
+        Write-Host "  ! Warning: ignoring retired flag $($args[$i]) (removed in an earlier release)"
+        $isBackendUrl = $args[$i] -ceq '--backend-url'
+        $i++
+        if ($isBackendUrl -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
         continue
     }
     switch ($args[$i]) {
         '--strict-orchestrator' { $StrictOrchestrator = $true; $i++ }
         default {
-            if ($args[$i] -like '-*') { Write-Host "Unknown flag: $($args[$i])"; exit 1 }
+            if ($args[$i] -like '-*') { Write-Host "Unknown flag: $(("$($args[$i])" -split '=', 2)[0])"; exit 1 }
             else { $Tool = $args[$i]; $i++ }
         }
     }
@@ -199,20 +208,35 @@ function Copy-PlanifestWorkflow {
     Write-Host "  + workflows/$name.md"
 }
 
-# Writes settings.json through a temporary file in the same folder, then moves
-# it over the target, so settings.json is always the old file or the new one
-# (0000034 ADR-002). Move-Item -Force works on Windows PowerShell 5.1 whether
-# or not the target exists. A failed write removes the temporary file and
-# rethrows, leaving the original untouched.
+# Writes settings.json through a temporary file in the same folder, then
+# swaps it in, so settings.json is always the old file or the new one
+# (0000034 ADR-002). An existing file is swapped with File.Replace, which is
+# atomic and keeps the original's ACL and attributes. A new file is moved into
+# place. A read-only settings.json stays unchanged. Any leftover temporary
+# file is removed first, so a planted link at that path is never followed.
 function Write-SettingsAtomic {
     param([string]$Path, [string]$Json)
-    $tmp = "$Path.planifest-tmp"
+    $full = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+    $tmp = "$full.planifest-tmp"
+    $existing = Get-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue
+    if ($existing -and $existing.IsReadOnly) {
+        throw "settings.json is read-only: $Path"
+    }
+    Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
     try {
-        Set-Content -Path $tmp -Value $Json -Encoding UTF8 -ErrorAction Stop
-        Move-Item -Path $tmp -Destination $Path -Force -ErrorAction Stop
+        Set-Content -LiteralPath $tmp -Value $Json -Encoding UTF8 -ErrorAction Stop
+        if ($existing) {
+            [System.IO.File]::Replace($tmp, $full, [NullString]::Value)
+        }
+        else {
+            Move-Item -LiteralPath $tmp -Destination $full -ErrorAction Stop
+        }
     }
     catch {
-        Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue
+        # Remove the temporary file only while the original is still there.
+        if (Test-Path -LiteralPath $full) {
+            Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+        }
         throw
     }
 }

@@ -81,6 +81,27 @@ assert_equals "1" "$(count_lines "$OUT" "retired flag --backend-url")" \
   "req-001 (b): --backend-url with no value still warns once"
 cd /; rm -rf "$WS"
 
+WS=$(make_workspace)
+cd "$WS"
+OUT="$(bash planifest-zero/setup.sh --backend-url claude-code 2>&1)"
+EXIT=$?
+assert_exit_zero "$EXIT" "req-001 (b): --backend-url before the tool name exits 0"
+assert_equals "yes" "$([ -f .claude/settings.json ] && echo yes || echo no)" \
+  "req-001 (b): --backend-url never swallows the tool name"
+cd /; rm -rf "$WS"
+
+WS=$(make_workspace)
+cd "$WS"
+OUT="$(bash planifest-zero/setup.sh claude-code "--backend-url=$SECRET_URL" 2>&1)"
+EXIT=$?
+assert_exit_zero "$EXIT" "req-001 (b): the --backend-url=value form exits 0"
+assert_equals "0" "$(count_lines "$OUT" "retired-backend.invalid")" \
+  "req-001 (b): the --backend-url=value form never prints the value"
+OUT="$(bash planifest-zero/setup.sh claude-code "--bogus=$SECRET_URL" 2>&1)"
+assert_equals "0" "$(count_lines "$OUT" "retired-backend.invalid")" \
+  "req-001 (b): an unknown --flag=value prints the flag name only"
+cd /; rm -rf "$WS"
+
 # ── (c): other unknown flags still fail, usage hides retired flags ────────
 
 echo ""
@@ -113,6 +134,10 @@ assert_equals "yes" "$(grep -q 'retired flag' "$PS1" && echo yes || echo no)" \
   "req-001 (d): setup.ps1 prints a retired flag warning"
 assert_equals "yes" "$(grep -q "StartsWith('--')" "$PS1" && echo yes || echo no)" \
   "req-001 (d): setup.ps1 skips the --backend-url value only when it doesn't start with --"
+assert_equals "yes" "$(grep -q 'RetiredFlags -ccontains' "$PS1" && echo yes || echo no)" \
+  "req-001 (d): setup.ps1 matches retired flags case-sensitively, like setup.sh"
+assert_equals "yes" "$(grep -q "StartsWith('--backend-url=')" "$PS1" && grep -q "split '=', 2" "$PS1" && echo yes || echo no)" \
+  "req-001 (d): setup.ps1 never prints a --flag=value value"
 assert_equals "yes" "$(grep -q 'Unknown flag' "$PS1" && echo yes || echo no)" \
   "req-001 (d): setup.ps1 still rejects other unknown flags"
 

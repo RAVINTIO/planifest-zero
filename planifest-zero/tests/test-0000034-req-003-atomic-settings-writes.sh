@@ -35,14 +35,14 @@ cat > .claude/settings.json << 'JSON'
 {"allowedTools":["Agent","Bash(ls:*)"],"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"./mine.sh"}]}]}}
 JSON
 ORIGINAL="$(shasum .claude/settings.json | cut -d' ' -f1)"
-# A read-only leftover temporary file makes the temporary write fail.
-echo "partial" > .claude/settings.json.planifest-tmp
-chmod 444 .claude/settings.json.planifest-tmp
+# A folder at the temporary path makes the exclusive temporary write fail.
+# Setup must not delete a folder it didn't create.
+mkdir .claude/settings.json.planifest-tmp
 bash planifest-zero/setup.sh claude-code >/dev/null 2>&1
 assert_equals "$ORIGINAL" "$(shasum .claude/settings.json | cut -d' ' -f1)" \
   "req-003 (a): settings.json is byte-identical after the failed write"
-assert_equals "no" "$([ -e .claude/settings.json.planifest-tmp ] && echo yes || echo no)" \
-  "req-003 (a): the failed write leaves no settings.json.planifest-tmp"
+assert_equals "dir" "$([ -d .claude/settings.json.planifest-tmp ] && echo dir || echo other)" \
+  "req-003 (a): the failed write leaves no temporary file and keeps the folder it found"
 cd /; chmod -R u+w "$WS" 2>/dev/null; rm -rf "$WS"
 
 # ── (b): a normal run writes the same bytes and clears a leftover ─────────
@@ -79,6 +79,51 @@ else
     "req-003 (b): settings.json keeps the two-space JSON format (no v0.4.0 tag)"
 fi
 
+# ── (d): P5 hardening of the temporary write ───────────────────────────────
+
+echo ""
+echo "=== req-003 (d): symlinks, mode, and read-only targets ==="
+
+WS=$(make_workspace "$FRAMEWORK")
+cd "$WS"
+mkdir -p .claude
+echo '{"allowedTools":["Agent"]}' > .claude/settings.json
+echo "victim" > ../victim-$$.txt
+ln -s "../../victim-$$.txt" .claude/settings.json.planifest-tmp
+chmod 600 .claude/settings.json
+bash planifest-zero/setup.sh claude-code >/dev/null 2>&1
+assert_equals "victim" "$(cat ../victim-$$.txt)" \
+  "req-003 (d): a symlink at the temporary path is never followed"
+assert_equals "no" "$([ -L .claude/settings.json ] && echo yes || echo no)" \
+  "req-003 (d): settings.json is a regular file, not the planted link"
+MODE="$(stat -f '%Lp' .claude/settings.json 2>/dev/null || stat -c '%a' .claude/settings.json)"
+assert_equals "600" "$MODE" "req-003 (d): settings.json keeps its 600 mode"
+rm -f ../victim-$$.txt
+cd /; rm -rf "$WS"
+
+WS=$(make_workspace "$FRAMEWORK")
+cd "$WS"
+mkdir -p .claude dotfiles
+echo '{}' > dotfiles/settings.json
+ln -s ../dotfiles/settings.json .claude/settings.json
+bash planifest-zero/setup.sh claude-code >/dev/null 2>&1
+assert_equals "yes" "$([ -L .claude/settings.json ] && echo yes || echo no)" \
+  "req-003 (d): a symlinked settings.json stays a symlink"
+assert_contains "gate-write" "$(cat dotfiles/settings.json)" \
+  "req-003 (d): setup writes through the symlink to its real file"
+cd /; rm -rf "$WS"
+
+WS=$(make_workspace "$FRAMEWORK")
+cd "$WS"
+mkdir -p .claude
+echo '{"allowedTools":["Agent"]}' > .claude/settings.json
+chmod 444 .claude/settings.json
+ORIGINAL="$(shasum .claude/settings.json | cut -d' ' -f1)"
+bash planifest-zero/setup.sh claude-code >/dev/null 2>&1
+assert_equals "$ORIGINAL" "$(shasum .claude/settings.json | cut -d' ' -f1)" \
+  "req-003 (d): a read-only settings.json stays unchanged"
+cd /; chmod -R u+w "$WS" 2>/dev/null; rm -rf "$WS"
+
 # ── (c): no settings.json write goes straight to the target ───────────────
 
 echo ""
@@ -94,5 +139,11 @@ assert_equals "0" "$(grep -E 'ConvertTo-Json.*Set-Content -Path \$(SettingsPath|
   "req-003 (c): setup.ps1 has no direct Set-Content to settings.json"
 assert_equals "yes" "$(grep -q 'planifest-tmp' "$PS1" && grep -q 'Move-Item' "$PS1" && echo yes || echo no)" \
   "req-003 (c): setup.ps1 moves a planifest-tmp file over settings.json"
+assert_equals "yes" "$(grep -q '\[System.IO.File\]::Replace(\$tmp, \$full' "$PS1" && echo yes || echo no)" \
+  "req-003 (c): setup.ps1 swaps an existing settings.json with File.Replace"
+assert_equals "0" "$(grep -c 'Move-Item .*-Force' "$PS1" || true)" \
+  "req-003 (c): setup.ps1 never uses Move-Item -Force, which deletes the target first"
+assert_equals "yes" "$(grep -q 'IsReadOnly' "$PS1" && grep -q 'Remove-Item -LiteralPath \$tmp' "$PS1" && echo yes || echo no)" \
+  "req-003 (c): setup.ps1 refuses a read-only target and clears a leftover first"
 
 print_summary
