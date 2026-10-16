@@ -73,7 +73,7 @@ Make `planifest-zero/setup.sh` and `setup.ps1` safe to re-run on an upgraded pro
 ## Scope Boundaries
 
 ### In Scope
-- Both setup scripts accept retired flags with one warning per flag and continue. Candidate set: `--structured-telemetry-mcp`, `--backend-url <url>`, `--context-mode-mcp`, `--include-full-skill-library`.
+- Both setup scripts accept retired flags with one warning per flag and continue. Retired set: `--structured-telemetry-mcp`, `--backend-url <url>`, `--context-mode-mcp`, `--include-full-skill-library`.
 - `setup.sh` validates the tool name by exact match.
 - Every `settings.json` write in both scripts goes to a temporary file in the same folder, then renames over the original.
 - `setup.sh` prints one warning when `node` is missing and it skips the settings cleanup.

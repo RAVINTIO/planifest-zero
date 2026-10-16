@@ -40,3 +40,4 @@ Adoption mode: standard-iterative, confirmed by human on 2026-10-16
 P0 exchange (version): Q: confirm 0.4.1 patch / A: 0.4.1.
 Version confirmed: 0.4.1
 P0: Drafted feature-brief.md from the five backlog entries. Found that 0000030 ADR-001 rejected retired flags as silent no-ops, and that old markers also list --context-mode-mcp and --include-full-skill-library.
+P0 exchange (retired flag set): Q: treat all four old flags as retired / A: yes, all four: --structured-telemetry-mcp, --backend-url <url>, --context-mode-mcp, --include-full-skill-library.
