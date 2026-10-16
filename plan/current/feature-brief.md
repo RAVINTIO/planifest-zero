@@ -111,19 +111,19 @@ Make `planifest-zero/setup.sh` and `setup.ps1` safe to re-run on an upgraded pro
 
 **Happy path:**
 
-> To be drafted at the Scope Lock Challenge.
+> A refresh of an install made before 0000033 warns once per retired flag, skips it and the `--backend-url` value, and exits 0. `settings.json` matches a 0.4.0 run with current flags.
 
 **First-run path:**
 
-> To be drafted at the Scope Lock Challenge.
+> With no `settings.json` or marker, setup creates the folder and writes `settings.json` through a temporary file and a rename. No retired-flag warning appears unless you pass one.
 
 **Error / sad path:**
 
-> To be drafted at the Scope Lock Challenge.
+> A replayed retired flag warns and exits 0. An unknown flag still exits 1. A failed `settings.json` write leaves the original intact and removes the temporary file.
 
 **Cross-session continuity:**
 
-> To be drafted at the Scope Lock Challenge.
+> `settings.json` is always the old file or the new one. A rerun finishes the job and replaces any leftover temporary file. A `pending` marker makes the next refresh offer the same command.
 
 ## Acceptance Criteria
 
