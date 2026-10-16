@@ -1,6 +1,6 @@
 ---
-version: "0.4.0"
-feature: "0000033-remove-telemetry-mcp"
+version: "0.4.1"
+feature: "0000034-setup-hardening"
 updated: "16 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "16 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.4.0` |
-| Last feature | `0000033-remove-telemetry-mcp` |
+| Version | `0.4.1` |
+| Last feature | `0000034-setup-hardening` |
 | Updated | `16 Oct 2026` |
 
 ## What this is

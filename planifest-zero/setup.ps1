@@ -14,12 +14,33 @@
 # Manual arg parsing — supports --flag style for cross-platform consistency
 $Tool = $null
 $StrictOrchestrator = $false
+# Flags that earlier releases removed (0000034 ADR-001). An older install's
+# flags marker can still list them, so setup warns and skips each one instead
+# of failing the refresh. --backend-url also took a value: skip the next
+# argument unless it is another flag or a tool name, and never print or
+# store it.
+# Matching is case-sensitive, the same as setup.sh.
+$RetiredFlags = @('--structured-telemetry-mcp', '--backend-url', '--context-mode-mcp', '--include-full-skill-library')
+# Keep in step with $ValidTools below, which is set after argument parsing.
+$RetiredFlagTools = @('claude-code')
 $i = 0
 while ($i -lt $args.Count) {
+    if ("$($args[$i])".StartsWith('--backend-url=')) {
+        Write-Host "  ! Warning: ignoring retired flag --backend-url (removed in an earlier release)"
+        $i++
+        continue
+    }
+    if ($RetiredFlags -ccontains $args[$i]) {
+        Write-Host "  ! Warning: ignoring retired flag $($args[$i]) (removed in an earlier release)"
+        $isBackendUrl = $args[$i] -ceq '--backend-url'
+        $i++
+        if ($isBackendUrl -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
+        continue
+    }
     switch ($args[$i]) {
         '--strict-orchestrator' { $StrictOrchestrator = $true; $i++ }
         default {
-            if ($args[$i] -like '-*') { Write-Host "Unknown flag: $($args[$i])"; exit 1 }
+            if ($args[$i] -like '-*') { Write-Host "Unknown flag: $(("$($args[$i])" -split '=', 2)[0])"; exit 1 }
             else { $Tool = $args[$i]; $i++ }
         }
     }
@@ -187,6 +208,39 @@ function Copy-PlanifestWorkflow {
     Write-Host "  + workflows/$name.md"
 }
 
+# Writes settings.json through a temporary file in the same folder, then
+# swaps it in, so settings.json is always the old file or the new one
+# (0000034 ADR-002). An existing file is swapped with File.Replace, which is
+# atomic and keeps the original's ACL and attributes. A new file is moved into
+# place. A read-only settings.json stays unchanged. Any leftover temporary
+# file is removed first, so a planted link at that path is never followed.
+function Write-SettingsAtomic {
+    param([string]$Path, [string]$Json)
+    $full = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+    $tmp = "$full.planifest-tmp"
+    $existing = Get-Item -LiteralPath $full -Force -ErrorAction SilentlyContinue
+    if ($existing -and $existing.IsReadOnly) {
+        throw "settings.json is read-only: $Path"
+    }
+    Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+    try {
+        Set-Content -LiteralPath $tmp -Value $Json -Encoding UTF8 -ErrorAction Stop
+        if ($existing) {
+            [System.IO.File]::Replace($tmp, $full, [NullString]::Value)
+        }
+        else {
+            Move-Item -LiteralPath $tmp -Destination $full -ErrorAction Stop
+        }
+    }
+    catch {
+        # Remove the temporary file only while the original is still there.
+        if (Test-Path -LiteralPath $full) {
+            Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+        }
+        throw
+    }
+}
+
 function Merge-EnforcementHookSettings {
     # Merge gate-write (PreToolUse), auto-trigger-orchestrator,
     # check-orchestrator-presence, and check-design (UserPromptSubmit) into
@@ -242,7 +296,7 @@ function Merge-EnforcementHookSettings {
         })
         $existing.hooks.UserPromptSubmit = $filtered + $autoTriggerEntry + $presenceEntry + $userPromptEntry
 
-        $existing | ConvertTo-Json -Depth 10 | Set-Content -Path $SettingsPath -Encoding UTF8
+        Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 10)
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
     }
     else {
@@ -255,7 +309,7 @@ function Merge-EnforcementHookSettings {
                 UserPromptSubmit = @($autoTriggerEntry, $presenceEntry, $userPromptEntry)
             }
         }
-        $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $SettingsPath -Encoding UTF8
+        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
         Write-Host "  + .claude/settings.json (created with enforcement hook entries)"
     }
 }
@@ -280,7 +334,7 @@ function Merge-AllowedTools {
         $settings['allowedTools'] = $existing + @('Agent')
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $SettingsPath -Encoding UTF8
+        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
         Write-Host "  ~ .claude/settings.json (Agent added to allowedTools)"
     } else {
         Write-Host "  - .claude/settings.json (Agent already in allowedTools)"
@@ -347,7 +401,7 @@ function Remove-LegacyTelemetryWiring {
             }
 
             if ($removed -gt 0) {
-                $existing | ConvertTo-Json -Depth 10 | Set-Content -Path $settings -Encoding UTF8 -ErrorAction Stop
+                Write-SettingsAtomic -Path $settings -Json ($existing | ConvertTo-Json -Depth 10)
                 Write-Host "  - removed telemetry hook entries from $SettingsRel"
             }
         } catch {

@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000033-remove-telemetry-mcp
+Last updated: 0000034-setup-hardening
 
 ## Component dependency diagram
 

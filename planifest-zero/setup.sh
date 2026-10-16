@@ -19,6 +19,42 @@ SETUP_DIR="$SCRIPT_DIR/setup"
 VALID_TOOLS="claude-code"
 STRICT_ORCHESTRATOR=false
 
+# Prepended to every node script that writes settings.json (0000034 ADR-002).
+# Writes a temporary file in the same folder, then renames it over the target,
+# so settings.json is always the old file or the new one. The temporary file
+# keeps the original's mode. A failed write removes the temporary file and
+# rethrows, leaving the original untouched.
+PLANIFEST_WRITE_SETTINGS_JS='
+function writeSettings(sf, text) {
+  const fs = require("fs");
+  // Write through a symlinked settings.json to its real file, as before.
+  let target = sf;
+  try { target = fs.realpathSync(sf); } catch (_) {}
+  let mode;
+  try {
+    mode = fs.statSync(target).mode & 0o7777;
+    // A read-only settings.json stays unchanged, as it did before the rename.
+    fs.accessSync(target, fs.constants.W_OK);
+  } catch (err) {
+    if (err.code !== "ENOENT") throw err;
+  }
+  const tmp = target + ".planifest-tmp";
+  // Remove any leftover first, then create the file exclusively, so a
+  // planted symlink at the temporary path is never followed.
+  try { fs.rmSync(tmp, { force: true }); } catch (_) {}
+  let created = false;
+  try {
+    fs.writeFileSync(tmp, text, { flag: "wx", mode: mode === undefined ? 0o666 : mode });
+    created = true;
+    if (mode !== undefined) fs.chmodSync(tmp, mode);
+    fs.renameSync(tmp, target);
+  } catch (err) {
+    if (created) { try { fs.unlinkSync(tmp); } catch (_) {} }
+    throw err;
+  }
+}
+'
+
 # --- Shared functions ---
 
 copy_skills() {
@@ -275,7 +311,7 @@ remove_legacy_telemetry_wiring() {
     local result
     result="$(PLANIFEST_SETTINGS="$settings" \
       PLANIFEST_TELEMETRY_MODULES="$TELEMETRY_HOOK_MODULES" \
-      PLANIFEST_TELEMETRY_MATCHER="$TELEMETRY_MCP_MATCHER" node -e '
+      PLANIFEST_TELEMETRY_MATCHER="$TELEMETRY_MCP_MATCHER" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
       const fs = require("fs");
       const sf      = process.env.PLANIFEST_SETTINGS;
       const modules = process.env.PLANIFEST_TELEMETRY_MODULES.split(" ").filter(Boolean);
@@ -305,7 +341,7 @@ remove_legacy_telemetry_wiring() {
         s.hooks[event] = kept;
       }
       if (removed > 0) {
-        fs.writeFileSync(sf, JSON.stringify(s, null, 2) + "\n");
+        writeSettings(sf, JSON.stringify(s, null, 2) + "\n");
         console.log("removed");
       } else {
         console.log("none");
@@ -317,6 +353,9 @@ remove_legacy_telemetry_wiring() {
       none)    ;;
       *)       echo "  ! Warning: could not remove telemetry hook entries from $settings_rel" >&2 ;;
     esac
+  elif [ -f "$settings" ]; then
+    # Say why stale entries stay, instead of skipping in silence (0000034 req-004).
+    echo "  ! Warning: node not found, skipping the telemetry cleanup of $settings_rel" >&2
   fi
 
   # 2. The telemetry opt-in sentinel (decision 2).
@@ -402,7 +441,7 @@ install_enforcement_hooks() {
   local design_cmd="node \"$hooks_dir_rel/check-design.mjs\""
 
   if command -v node >/dev/null 2>&1; then
-    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" node -e '
+    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
       const fs = require("fs"), path = require("path");
       const gate     = process.env.PLANIFEST_GATE;
       const ratchet  = process.env.PLANIFEST_RATCHET;
@@ -442,7 +481,7 @@ install_enforcement_hooks() {
         {matcher:".*", hooks:[{type:"command",command:design}]}
       );
       fs.mkdirSync(path.dirname(sf),{recursive:true});
-      fs.writeFileSync(sf, JSON.stringify(s,null,2)+"\n");
+      writeSettings(sf, JSON.stringify(s,null,2)+"\n");
     '
     echo "  ~ $settings_rel (enforcement hooks wired)"
   else
@@ -458,7 +497,7 @@ merge_allowed_tools() {
   local settings_file="$1"
 
   if command -v node >/dev/null 2>&1; then
-    PLANIFEST_SETTINGS="$settings_file" node -e '
+    PLANIFEST_SETTINGS="$settings_file" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
       const fs = require("fs"), path = require("path");
       const sf = process.env.PLANIFEST_SETTINGS;
       let s = {};
@@ -467,7 +506,7 @@ merge_allowed_tools() {
       if (!existing.includes("Agent")) {
         s.allowedTools = existing.concat(["Agent"]);
         fs.mkdirSync(path.dirname(sf),{recursive:true});
-        fs.writeFileSync(sf, JSON.stringify(s,null,2)+"\n");
+        writeSettings(sf, JSON.stringify(s,null,2)+"\n");
         console.log("  ~ .claude/settings.json (Agent added to allowedTools)");
       } else {
         console.log("  - .claude/settings.json (Agent already in allowedTools)");
@@ -973,11 +1012,28 @@ MARKER_EOF
 
 # --- Main ---
 
+# Flags that earlier releases removed (0000034 ADR-001). An older install's
+# flags marker can still list them, so setup warns and skips each one instead
+# of failing the refresh. --backend-url also took a value: skip the next
+# argument unless it is another flag or a tool name, and never print or
+# store it.
+retired_flag_warning() {
+  echo "  ! Warning: ignoring retired flag $1 (removed in an earlier release)" >&2
+}
+
 TOOL=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --strict-orchestrator) STRICT_ORCHESTRATOR=true; shift ;;
-    -*) echo "Unknown flag: $1"; exit 1 ;;
+    --structured-telemetry-mcp|--context-mode-mcp|--include-full-skill-library)
+      retired_flag_warning "$1"; shift ;;
+    --backend-url)
+      retired_flag_warning "$1"; shift
+      if [[ $# -gt 0 && "$1" != --* && " $VALID_TOOLS " != *" $1 "* ]]; then shift; fi ;;
+    --backend-url=*)
+      retired_flag_warning "--backend-url"; shift ;;
+    # Print only the part before "=", so a value never reaches the log.
+    -*) echo "Unknown flag: ${1%%=*}"; exit 1 ;;
     *) TOOL="$1"; shift ;;
   esac
 done
@@ -1027,7 +1083,13 @@ run_tool_setup() {
   write_setup_flags_marker "$t" "$(dirname "$TOOL_SKILLS_DIR")"
 }
 
-if echo "$VALID_TOOLS" | grep -qw "$TOOL"; then
+# Exact match only, the same as setup.ps1's -contains check (0000034 req-002).
+tool_is_valid=false
+for t in $VALID_TOOLS; do
+  if [ "$t" = "$TOOL" ]; then tool_is_valid=true; fi
+done
+
+if [ "$tool_is_valid" = true ]; then
   run_tool_setup "$TOOL"
 else
   echo "Unknown tool: $TOOL"

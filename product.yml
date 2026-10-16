@@ -10,8 +10,8 @@
 
 id: "planifest-zero"
 name: "Planifest Framework"
-version: "0.4.0"
-feature: "0000033-remove-telemetry-mcp"
+version: "0.4.1"
+feature: "0000034-setup-hardening"
 
 versionPolicy: "max-component-version"
 

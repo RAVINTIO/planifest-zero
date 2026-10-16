@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000033-remove-telemetry-mcp
+Last updated: 0000034-setup-hardening
 
 ## What this repo is
 
@@ -79,6 +79,25 @@ Every setup run retracts telemetry wiring that an earlier install left in the ta
 - the `plan/.telemetry-failures/` and `plan/.telemetry-receipts/` directories
 
 The module match is case-sensitive. Setup prints one line per removal and stays silent when nothing is present. A failed removal prints a warning and setup carries on.
+
+If `node` isn't on the `PATH` and `settings.json` exists, `setup.sh` prints one warning that it skipped this cleanup.
+
+---
+
+## Re-run safety
+
+Setup is safe to re-run on a project that an older release installed.
+
+**Retired flags.** Setup accepts four flags that earlier releases removed:
+
+- `--structured-telemetry-mcp`
+- `--backend-url`
+- `--context-mode-mcp`
+- `--include-full-skill-library`
+
+Each prints one warning and setup skips it. After `--backend-url`, setup also skips the next argument, unless that argument is a flag or a tool name. Setup never prints or stores that value, in either the spaced or the `=` form. Any other unknown flag still exits 1, and its error shows the flag name only. Matching is exact and case-sensitive in both scripts. The tool name also matches exactly.
+
+**Atomic settings writes.** Every `settings.json` write goes to `settings.json.planifest-tmp` in the same folder first, then replaces the target. So `settings.json` is always the old file or the new one. Setup removes a leftover temporary file before it writes, and creates the new one exclusively, so it never follows a planted link. The new file keeps the original's mode, or its ACL on Windows. Setup leaves a read-only `settings.json` unchanged. `setup.sh` writes a symlinked `settings.json` through to its real file. Other files setup writes, such as the boot file, are rewritten whole on each run.
 
 ---
 
