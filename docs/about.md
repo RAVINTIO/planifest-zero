@@ -1,7 +1,7 @@
 ---
-version: "0.3.0"
-feature: "0000032-relocate-setup-config-to-plan-state"
-updated: "05 Sep 2026"
+version: "0.4.0"
+feature: "0000033-remove-telemetry-mcp"
+updated: "16 Oct 2026"
 ---
 # About
 
@@ -10,9 +10,9 @@ updated: "05 Sep 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.3.0` |
-| Last feature | `0000032-relocate-setup-config-to-plan-state` |
-| Updated | `05 Sep 2026` |
+| Version | `0.4.0` |
+| Last feature | `0000033-remove-telemetry-mcp` |
+| Updated | `16 Oct 2026` |
 
 ## What this is
 
@@ -23,3 +23,6 @@ standards, skills, hooks, templates, schemas, and setup scripts.
 The pipeline runs five phases: discovery, plan, implement, validate and
 accept, and ship. Twelve skills drive it. Every change is a feature change
 and runs the same pipeline. A small change is a small run.
+
+The framework ships no telemetry and makes no outbound network calls.
+Observability belongs to the tool that runs the session.

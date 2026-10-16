@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000032-relocate-setup-config-to-plan-state
+Last updated: 0000033-remove-telemetry-mcp
 
 ## Registry
 
