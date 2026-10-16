@@ -215,6 +215,19 @@ function Copy-PlanifestWorkflow {
 # atomic and keeps the original's ACL and attributes. A new file is moved into
 # place. A read-only settings.json stays unchanged. Any leftover temporary
 # file is removed first, so a planted link at that path is never followed.
+function Remove-SettingsTmpEntry {
+    # Remove a file or link at the temporary path without following a link
+    # (0000035 S-002, S-003). FileInfo reads the entry itself, so a dangling
+    # link is found too. A plain folder stays, and the write that follows fails.
+    param([string]$Tmp)
+    $info = New-Object System.IO.FileInfo $Tmp
+    if ([int]$info.Attributes -eq -1) { return }
+    $isLink = $info.Attributes -band [System.IO.FileAttributes]::ReparsePoint
+    $isFolder = $info.Attributes -band [System.IO.FileAttributes]::Directory
+    if ($isLink -and $isFolder) { [System.IO.Directory]::Delete($Tmp) }
+    elseif (-not $isFolder) { [System.IO.File]::Delete($Tmp) }
+}
+
 function Write-SettingsAtomic {
     param([string]$Path, [string]$Json)
     $full = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
@@ -223,9 +236,11 @@ function Write-SettingsAtomic {
     if ($existing -and $existing.IsReadOnly) {
         throw "settings.json is read-only: $Path"
     }
-    Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+    try { Remove-SettingsTmpEntry -Tmp $tmp } catch { }
     try {
-        Set-Content -LiteralPath $tmp -Value $Json -Encoding UTF8 -ErrorAction Stop
+        # UTF-8 with no BOM on both PowerShell versions, as setup.sh writes
+        # (0000035 S-001).
+        [System.IO.File]::WriteAllText($tmp, $Json + "`n", (New-Object System.Text.UTF8Encoding $false))
         if ($existing) {
             [System.IO.File]::Replace($tmp, $full, [NullString]::Value)
         }
@@ -236,7 +251,7 @@ function Write-SettingsAtomic {
     catch {
         # Remove the temporary file only while the original is still there.
         if (Test-Path -LiteralPath $full) {
-            Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+            try { Remove-SettingsTmpEntry -Tmp $tmp } catch { }
         }
         throw
     }
@@ -247,7 +262,7 @@ function New-HookEntry {
     param([string]$Matcher, [string]$Module, [string]$HooksDir)
     [ordered]@{
         matcher = $Matcher
-        hooks   = @([ordered]@{ type = 'command'; command = "node $HooksDir/$Module.mjs" })
+        hooks   = @([ordered]@{ type = 'command'; command = "node `"$HooksDir/$Module.mjs`"" })
     }
 }
 
@@ -277,7 +292,7 @@ function Merge-EnforcementHookSettings {
     )
 
     if (Test-Path $SettingsPath) {
-        $existing = Get-Content -Raw -Path $SettingsPath | ConvertFrom-Json
+        $existing = Get-Content -Raw -Path $SettingsPath -Encoding UTF8 | ConvertFrom-Json
 
         if (-not $existing.hooks) {
             $existing | Add-Member -NotePropertyName 'hooks' -NotePropertyValue ([PSCustomObject]@{}) -Force
@@ -288,11 +303,10 @@ function Merge-EnforcementHookSettings {
         if (-not $existing.hooks.PreToolUse) {
             $existing.hooks | Add-Member -NotePropertyName 'PreToolUse' -NotePropertyValue @() -Force
         }
+        # Case-sensitive, and only <module>.mjs at a path boundary (0000035 S-004).
         $filtered = @($existing.hooks.PreToolUse | Where-Object {
             -not ($_.hooks | Where-Object {
-                $_.command -match 'gate-write' -or
-                $_.command -match 'ratchet-check' -or
-                $_.command -match 'em-dash-guard'
+                "$($_.command)" -cmatch '(^|[\s"''/\\])(gate-write|ratchet-check|em-dash-guard)\.mjs\b'
             })
         })
         $existing.hooks.PreToolUse = $filtered + $preToolEntries
@@ -303,9 +317,7 @@ function Merge-EnforcementHookSettings {
         }
         $filtered = @($existing.hooks.UserPromptSubmit | Where-Object {
             -not ($_.hooks | Where-Object {
-                $_.command -match 'auto-trigger-orchestrator' -or
-                $_.command -match 'check-orchestrator-presence' -or
-                $_.command -match 'check-design'
+                "$($_.command)" -cmatch '(^|[\s"''/\\])(auto-trigger-orchestrator|check-orchestrator-presence|check-design)\.mjs\b'
             })
         })
         $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
@@ -339,14 +351,20 @@ function Merge-AllowedTools {
     if (Test-Path $SettingsPath) {
         $raw = Get-Content -Raw -Path $SettingsPath -Encoding UTF8
         try { $parsed = $raw | ConvertFrom-Json -ErrorAction Stop } catch { $parsed = $null }
-        if ($parsed -is [System.Management.Automation.PSCustomObject]) { $settings = $parsed }
+        if ($parsed -isnot [System.Management.Automation.PSCustomObject]) {
+            # Never overwrite a file that isn't a JSON object (0000035 S-006).
+            Write-Warning "Could not read .claude/settings.json as a JSON object, so Agent was not added to allowedTools"
+            return
+        }
+        $settings = $parsed
     }
 
-    $existing = if ($settings.PSObject.Properties['allowedTools'] -and $settings.allowedTools) {
+    # A non-array allowedTools counts as empty, as in setup.sh.
+    $existing = if ($settings.PSObject.Properties['allowedTools'] -and $settings.allowedTools -is [System.Array]) {
         @($settings.allowedTools)
     } else { @() }
 
-    if ($existing -notcontains 'Agent') {
+    if ($existing -cnotcontains 'Agent') {
         $settings | Add-Member -NotePropertyName 'allowedTools' -NotePropertyValue ($existing + @('Agent')) -Force
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
@@ -363,19 +381,8 @@ function Remove-LeftoverSettingsTmp {
     # settings.json writer. A folder stays. A link goes without its target.
     param([string]$SettingsRel)
     $tmp = Join-Path $ProjectRoot "$SettingsRel.planifest-tmp"
-    $item = Get-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
-    if (-not $item) { return }
-    try {
-        if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
-            if ($item.PSIsContainer) { [System.IO.Directory]::Delete($tmp) }
-            else { [System.IO.File]::Delete($tmp) }
-        }
-        elseif (-not $item.PSIsContainer) {
-            Remove-Item -LiteralPath $tmp -Force -ErrorAction Stop
-        }
-    } catch {
-        # Silent, as in setup.sh. The next atomic write replaces it anyway.
-    }
+    # Silent, as in setup.sh. The next atomic write replaces it anyway.
+    try { Remove-SettingsTmpEntry -Tmp $tmp } catch { }
 }
 
 # Telemetry hook module names a pre-0000033 project may still reference from
@@ -409,7 +416,7 @@ function Remove-LegacyTelemetryWiring {
     if (Test-Path $settings) {
         try {
             # The raw contents are never logged (req-004 logging policy).
-            $existing = Get-Content -Raw -Path $settings -ErrorAction Stop | ConvertFrom-Json
+            $existing = Get-Content -Raw -Path $settings -Encoding UTF8 -ErrorAction Stop | ConvertFrom-Json
             $removed = 0
             # Case-sensitive, and only `<module>.mjs` at a path boundary, to
             # match setup.sh. A bare substring would also catch a user hook
@@ -554,7 +561,7 @@ function Invoke-PlanifestGuardrails {
         }
     }
 
-    Write-Host "  `u{2705} Git guardrails activated."
+    Write-Host "  $([char]0x2705) Git guardrails activated."
 }
 
 function Initialize-PlanifestRepo {
@@ -1103,10 +1110,9 @@ if ($StrictOrchestrator) {
     Write-Host "  + plan/.orchestrator-strict (strict orchestrator mode enabled)"
 }
 
-$ToolLower = $Tool.ToLower()
-
-if ($ValidTools -contains $ToolLower) {
-    Invoke-PlanifestSetup -ToolName $ToolLower
+# Exact, case-sensitive match, the same as setup.sh (0000035 S-008).
+if ($ValidTools -ccontains $Tool) {
+    Invoke-PlanifestSetup -ToolName $Tool
 }
 else {
     Write-Host "Unknown tool: $Tool"
