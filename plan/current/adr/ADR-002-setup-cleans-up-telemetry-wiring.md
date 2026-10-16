@@ -2,7 +2,7 @@
 title: "ADR 002: Setup cleans up telemetry wiring on every run"
 summary: "Every setup run removes telemetry hook entries from the project's .claude/settings.json, deletes the opt-in sentinel, and deletes the failure and receipt marker directories. One line per removal, a warning without failing, and silence when nothing is present."
 status: "accepted"
-version: "0.1.0"
+version: "0.1.1"
 ---
 # ADR-002 - Setup cleans up telemetry wiring on every run
 
@@ -35,7 +35,9 @@ path after a successful write, print one line, warn without failing.
 
 1. On every setup run, remove telemetry hook entries from the project's `.claude/settings.json`,
    identified by their command string referencing the telemetry hook modules or by the
-   `mcp__structured-telemetry-mcp__emit_event` matcher.
+   `mcp__structured-telemetry-mcp__emit_event` matcher. A command references a module only when
+   it runs `<module>.mjs` at a path boundary, matched case-sensitively in both setup scripts.
+   A bare substring is not enough, so a user hook such as `./my-tools/emit-event-logger.sh` stays.
 2. Delete `.claude/telemetry-enabled` if present.
 3. Delete `plan/.telemetry-failures/` and `plan/.telemetry-receipts/` if present.
 4. Print one line per removal. On failure, print one warning, leave the item alone, and continue.
@@ -88,3 +90,10 @@ path after a successful write, print one line, warn without failing.
 ## Superseded By
 
 - None
+
+## Revision
+
+**2026-10-16, v0.1.1 (P5 security fix, classification: additive).** The P5 review found that both
+scripts matched module names as bare substrings, which removed user hooks that only shared a name.
+Decision 1 now states the `<module>.mjs` path-boundary rule. The PowerShell script also deletes a
+symlinked marker directory as a link only.

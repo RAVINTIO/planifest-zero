@@ -136,7 +136,7 @@ Gate accepted: P4 re-run after reversal (2026-10-16). Human confirmed continuous
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Telemetry | failed-with-recorded-choice (marker acknowledged at P5 start, see Requirement Change above) |
-| Notes | Fresh-context security review over git diff main...HEAD, focused on the legacy telemetry cleanup in setup.sh and setup.ps1. |
+| Notes | Fresh-context security review over git diff main...HEAD, focused on the legacy telemetry cleanup in setup.sh and setup.ps1. Pre-fix rating Medium: the cleanup matched module names as bare substrings and removed look-alike user hooks, PowerShell matched case-insensitively, and PowerShell 5.1 Remove-Item -Recurse follows a symlinked marker dir. Fixed in P5 via TDD: 6 new assertions RED, then GREEN. Both scripts now match `<module>.mjs` at a path boundary, case-sensitively. PowerShell deletes a reparse-point marker as a link only. req-004 suite 57/57, req-002 40/40, req-003 25/25. pwsh not installed, so the PowerShell changes are covered by static assertions only. ADR-002 revised to v0.1.1 (additive). Filed backlog 0000091 (non-atomic settings writes, silent skip without node) and 0000092 (refresh-setup replays retired flags). Post-fix rating Low. No critical or high findings. Gate passed under continuous run. |
 
 ---
 

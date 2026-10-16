@@ -284,8 +284,12 @@ remove_legacy_telemetry_wiring() {
       // "removed" or "none" on stdout.
       const raw = fs.readFileSync(sf, "utf8").replace(/^﻿/, "");
       const s = JSON.parse(raw);
+      // A command is telemetry only when it runs `<module>.mjs` at a path
+      // boundary, which is every shape an old setup wrote. A bare substring
+      // would also catch a user hook such as ./my-tools/emit-event-logger.sh.
+      const moduleRe = new RegExp("(^|[\\s\"\x27/\\\\])(" + modules.join("|") + ")\\.mjs\\b");
       const isTelemetryCommand = (c) =>
-        modules.some(m => (c || "").includes(m)) || (c || "").includes(matcher);
+        moduleRe.test(c || "") || (c || "").includes(matcher);
       let removed = 0;
       for (const [event, entries] of Object.entries(s.hooks || {})) {
         if (!Array.isArray(entries)) continue;

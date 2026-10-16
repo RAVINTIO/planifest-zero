@@ -119,7 +119,9 @@ seed_legacy_wiring() {
       {"matcher": "Edit", "hooks": [{"type": "command", "command": "node \".claude/hooks/enforcement/gate-write.mjs\""}]},
       {"matcher": "Write", "hooks": [{"type": "command", "command": "node \".claude/hooks/enforcement/ratchet-check.mjs\""}]},
       {"matcher": "Edit", "hooks": [{"type": "command", "command": "node \".claude/hooks/enforcement/em-dash-guard.mjs\""}]},
-      {"matcher": "Bash", "hooks": [{"type": "command", "command": "node .claude/hooks/mine/audit-shell.mjs"}]}
+      {"matcher": "Bash", "hooks": [{"type": "command", "command": "node .claude/hooks/mine/audit-shell.mjs"}]},
+      {"matcher": "Bash", "hooks": [{"type": "command", "command": "./my-tools/emit-event-logger.sh"}]},
+      {"matcher": "Write", "hooks": [{"type": "command", "command": "node ctx/context-pressure-monitor.js"}, {"type": "command", "command": "./lint.sh"}]}
     ],
     "UserPromptSubmit": [
       {"matcher": ".*", "hooks": [{"type": "command", "command": "node \".claude/hooks/enforcement/auto-trigger-orchestrator.mjs\""}]},
@@ -168,8 +170,8 @@ assert_exit_zero "$RUN_EXIT" \
 SETTINGS=".claude/settings.json"
 
 for module in "${TELEMETRY_MODULES[@]}"; do
-  assert_equals "no" "$(settings_has_command "$SETTINGS" "$module")" \
-    "req-004 (a): $module is gone from settings.json"
+  assert_equals "no" "$(settings_has_command "$SETTINGS" "$module.mjs")" \
+    "req-004 (a): $module.mjs is gone from settings.json"
 done
 
 assert_equals "no" "$(settings_has_command "$SETTINGS" "mcp__structured-telemetry-mcp__emit_event")" \
@@ -221,6 +223,17 @@ assert_equals "1" "$(count_command "$SETTINGS" "audit-shell")" \
 
 assert_equals "Bash" "$(matcher_of_command "$SETTINGS" "audit-shell")" \
   "req-004 (b): the user-added hook keeps its own matcher"
+
+# A user's own hook can share a telemetry module name without being one. Only
+# `<module>.mjs` at a path boundary is telemetry (P5 security finding).
+assert_equals "1" "$(count_command "$SETTINGS" "emit-event-logger.sh")" \
+  "req-004 (b): a user hook named like a telemetry module survives"
+
+assert_equals "1" "$(count_command "$SETTINGS" "context-pressure-monitor.js")" \
+  "req-004 (b): a user hook containing a module name as a substring survives"
+
+assert_equals "Write" "$(matcher_of_command "$SETTINGS" "context-pressure-monitor.js")" \
+  "req-004 (b): the look-alike hook keeps its own matcher"
 
 # ── (c): a second run is silent ─────────────────────────────────────────────
 
@@ -336,5 +349,15 @@ else
 fi
 assert_equals "before" "$SH_ORDER" \
   "req-004 (f): setup.sh calls the cleanup before the enforcement hook install"
+
+# The PowerShell mirror must match the same way as bash: case-sensitive, and
+# only `<module>.mjs` at a path boundary (P5 security finding).
+PS1_BODY="$(sed -n '/^function Remove-LegacyTelemetryWiring/,/^}/p' "$PS1")"
+assert_equals "0" "$(printf '%s\n' "$PS1_BODY" | grep -c -- '-like' || true)" \
+  "req-004 (f): setup.ps1 cleanup uses no case-insensitive -like match"
+assert_contains '\.mjs' "$PS1_BODY" \
+  "req-004 (f): setup.ps1 cleanup anchors module names to .mjs"
+assert_contains 'ReparsePoint' "$PS1_BODY" \
+  "req-004 (f): setup.ps1 deletes a symlinked marker directory as a link only"
 
 print_summary

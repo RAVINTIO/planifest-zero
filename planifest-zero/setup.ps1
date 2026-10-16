@@ -320,6 +320,10 @@ function Remove-LegacyTelemetryWiring {
             # The raw contents are never logged (req-004 logging policy).
             $existing = Get-Content -Raw -Path $settings -ErrorAction Stop | ConvertFrom-Json
             $removed = 0
+            # Case-sensitive, and only `<module>.mjs` at a path boundary, to
+            # match setup.sh. A bare substring would also catch a user hook
+            # such as ./my-tools/emit-event-logger.sh.
+            $moduleRegex = "(^|[\s""'/\\])(" + ($TelemetryHookModules -join '|') + ")\.mjs\b"
 
             if ($existing.hooks) {
                 foreach ($event in @($existing.hooks.PSObject.Properties.Name)) {
@@ -327,14 +331,11 @@ function Remove-LegacyTelemetryWiring {
                     $kept = @()
                     foreach ($entry in $entries) {
                         if ($null -eq $entry) { continue }
-                        if ("$($entry.matcher)" -like "*$TelemetryMcpMatcher*") { $removed++; continue }
+                        if ("$($entry.matcher)".Contains($TelemetryMcpMatcher)) { $removed++; continue }
                         $hooks = @($entry.hooks)
                         $keptHooks = @($hooks | Where-Object {
                             $command = "$($_.command)"
-                            $isTelemetry = $command -like "*$TelemetryMcpMatcher*"
-                            foreach ($module in $TelemetryHookModules) {
-                                if ($command -like "*$module*") { $isTelemetry = $true }
-                            }
+                            $isTelemetry = $command.Contains($TelemetryMcpMatcher) -or ($command -cmatch $moduleRegex)
                             -not $isTelemetry
                         })
                         if ($keptHooks.Count -eq 0 -and $hooks.Count -gt 0) { $removed++; continue }
@@ -371,7 +372,14 @@ function Remove-LegacyTelemetryWiring {
         $marker = Join-Path $ProjectRoot ($markerRel -replace '/', '\')
         if (Test-Path $marker) {
             try {
-                Remove-Item -Path $marker -Recurse -Force -ErrorAction Stop
+                $item = Get-Item -Path $marker -Force -ErrorAction Stop
+                if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+                    # A symlink or junction: delete the link only. Windows
+                    # PowerShell 5.1 Remove-Item -Recurse follows it into the target.
+                    [System.IO.Directory]::Delete($marker)
+                } else {
+                    Remove-Item -Path $marker -Recurse -Force -ErrorAction Stop
+                }
                 Write-Host "  - removed $markerRel/"
             } catch {
                 Write-Warning "Could not remove $markerRel/"
