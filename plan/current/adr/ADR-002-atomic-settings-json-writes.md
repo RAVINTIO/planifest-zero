@@ -2,7 +2,7 @@
 title: "ADR 002: settings.json writes go through a temporary file and a rename"
 summary: "Every settings.json write in both setup scripts writes settings.json.planifest-tmp in the same folder, then renames it over the target. Other files stay as they are."
 status: "accepted"
-version: "0.1.0"
+version: "0.1.1"
 ---
 # ADR-002 - settings.json writes go through a temporary file and a rename
 
@@ -24,7 +24,9 @@ version: "0.1.0"
 3. `setup.ps1` moves it over the target with `Move-Item -Force`, which works on Windows PowerShell 5.1 whether or not the target exists.
 4. If the write fails, setup removes the temporary file and leaves the original unchanged. Each site keeps its current failure behaviour, whether a warning or a stop.
 5. Each run overwrites any leftover temporary file.
-6. The boot file, flags marker, and setup record keep their current writes.
+6. Setup removes any leftover temporary file before writing, then creates it exclusively, so a planted link at that path is never followed.
+7. The temporary file takes the original's mode. A read-only `settings.json` stays unchanged. In `setup.sh`, a symlinked `settings.json` is written through to its real file.
+8. The boot file, flags marker, and setup record keep their current writes.
 
 ## Alternatives Considered
 
@@ -67,3 +69,7 @@ version: "0.1.0"
 ## Superseded By
 
 - None
+
+## Revision
+
+**2026-10-16, v0.1.1 (P5 security fix, classification: additive).** The P5 review found three Medium issues in the first version. A planted symlink at the temporary path was followed. The rename reset the file mode. `Move-Item -Force` deletes the target first, so a failed move lost both copies. Decisions 3, 6, and 7 now close them.

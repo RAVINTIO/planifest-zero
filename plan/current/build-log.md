@@ -122,3 +122,18 @@ Gate accepted: P4 (2026-10-16T21:25:54Z), continuous run.
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Fresh-context reviewer over the feature diff. |
+P5 result: reviewer rated Medium (S-001 symlink at temp path, S-002 mode reset, S-003 Move-Item -Force loses both copies) plus Lows S-004 to S-012. Fix commit b6e13ef closed S-001 to S-008. Rated Low after the fix. ADR-002 revised to v0.1.1 (additive). R-007 added.
+Gate accepted: P5 (2026-10-16T21:33:00Z), continuous run. Medium findings fixed in-phase.
+
+### P6: Docs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T21:33:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-docs-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Gate A: docs/ exists. Gate B (continuous run, auto-accepted): updating architecture-overview, component-registry, decisions-index, dependency-graph. No API, so no api-index. Edits are small, done inline. |
