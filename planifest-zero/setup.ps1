@@ -199,6 +199,24 @@ function Copy-PlanifestWorkflow {
     Write-Host "  + workflows/$name.md"
 }
 
+# Writes settings.json through a temporary file in the same folder, then moves
+# it over the target, so settings.json is always the old file or the new one
+# (0000034 ADR-002). Move-Item -Force works on Windows PowerShell 5.1 whether
+# or not the target exists. A failed write removes the temporary file and
+# rethrows, leaving the original untouched.
+function Write-SettingsAtomic {
+    param([string]$Path, [string]$Json)
+    $tmp = "$Path.planifest-tmp"
+    try {
+        Set-Content -Path $tmp -Value $Json -Encoding UTF8 -ErrorAction Stop
+        Move-Item -Path $tmp -Destination $Path -Force -ErrorAction Stop
+    }
+    catch {
+        Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue
+        throw
+    }
+}
+
 function Merge-EnforcementHookSettings {
     # Merge gate-write (PreToolUse), auto-trigger-orchestrator,
     # check-orchestrator-presence, and check-design (UserPromptSubmit) into
@@ -254,7 +272,7 @@ function Merge-EnforcementHookSettings {
         })
         $existing.hooks.UserPromptSubmit = $filtered + $autoTriggerEntry + $presenceEntry + $userPromptEntry
 
-        $existing | ConvertTo-Json -Depth 10 | Set-Content -Path $SettingsPath -Encoding UTF8
+        Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 10)
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
     }
     else {
@@ -267,7 +285,7 @@ function Merge-EnforcementHookSettings {
                 UserPromptSubmit = @($autoTriggerEntry, $presenceEntry, $userPromptEntry)
             }
         }
-        $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $SettingsPath -Encoding UTF8
+        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
         Write-Host "  + .claude/settings.json (created with enforcement hook entries)"
     }
 }
@@ -292,7 +310,7 @@ function Merge-AllowedTools {
         $settings['allowedTools'] = $existing + @('Agent')
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $SettingsPath -Encoding UTF8
+        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
         Write-Host "  ~ .claude/settings.json (Agent added to allowedTools)"
     } else {
         Write-Host "  - .claude/settings.json (Agent already in allowedTools)"
@@ -359,7 +377,7 @@ function Remove-LegacyTelemetryWiring {
             }
 
             if ($removed -gt 0) {
-                $existing | ConvertTo-Json -Depth 10 | Set-Content -Path $settings -Encoding UTF8 -ErrorAction Stop
+                Write-SettingsAtomic -Path $settings -Json ($existing | ConvertTo-Json -Depth 10)
                 Write-Host "  - removed telemetry hook entries from $SettingsRel"
             }
         } catch {

@@ -19,6 +19,24 @@ SETUP_DIR="$SCRIPT_DIR/setup"
 VALID_TOOLS="claude-code"
 STRICT_ORCHESTRATOR=false
 
+# Prepended to every node script that writes settings.json (0000034 ADR-002).
+# Writes a temporary file in the same folder, then renames it over the target,
+# so settings.json is always the old file or the new one. A failed write
+# removes the temporary file and rethrows, leaving the original untouched.
+PLANIFEST_WRITE_SETTINGS_JS='
+function writeSettings(sf, text) {
+  const fs = require("fs");
+  const tmp = sf + ".planifest-tmp";
+  try {
+    fs.writeFileSync(tmp, text);
+    fs.renameSync(tmp, sf);
+  } catch (err) {
+    try { fs.unlinkSync(tmp); } catch (_) {}
+    throw err;
+  }
+}
+'
+
 # --- Shared functions ---
 
 copy_skills() {
@@ -275,7 +293,7 @@ remove_legacy_telemetry_wiring() {
     local result
     result="$(PLANIFEST_SETTINGS="$settings" \
       PLANIFEST_TELEMETRY_MODULES="$TELEMETRY_HOOK_MODULES" \
-      PLANIFEST_TELEMETRY_MATCHER="$TELEMETRY_MCP_MATCHER" node -e '
+      PLANIFEST_TELEMETRY_MATCHER="$TELEMETRY_MCP_MATCHER" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
       const fs = require("fs");
       const sf      = process.env.PLANIFEST_SETTINGS;
       const modules = process.env.PLANIFEST_TELEMETRY_MODULES.split(" ").filter(Boolean);
@@ -305,7 +323,7 @@ remove_legacy_telemetry_wiring() {
         s.hooks[event] = kept;
       }
       if (removed > 0) {
-        fs.writeFileSync(sf, JSON.stringify(s, null, 2) + "\n");
+        writeSettings(sf, JSON.stringify(s, null, 2) + "\n");
         console.log("removed");
       } else {
         console.log("none");
@@ -317,6 +335,9 @@ remove_legacy_telemetry_wiring() {
       none)    ;;
       *)       echo "  ! Warning: could not remove telemetry hook entries from $settings_rel" >&2 ;;
     esac
+  elif [ -f "$settings" ]; then
+    # Say why stale entries stay, instead of skipping in silence (0000034 req-004).
+    echo "  ! Warning: node not found, skipping the telemetry cleanup of $settings_rel" >&2
   fi
 
   # 2. The telemetry opt-in sentinel (decision 2).
@@ -402,7 +423,7 @@ install_enforcement_hooks() {
   local design_cmd="node \"$hooks_dir_rel/check-design.mjs\""
 
   if command -v node >/dev/null 2>&1; then
-    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" node -e '
+    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
       const fs = require("fs"), path = require("path");
       const gate     = process.env.PLANIFEST_GATE;
       const ratchet  = process.env.PLANIFEST_RATCHET;
@@ -442,7 +463,7 @@ install_enforcement_hooks() {
         {matcher:".*", hooks:[{type:"command",command:design}]}
       );
       fs.mkdirSync(path.dirname(sf),{recursive:true});
-      fs.writeFileSync(sf, JSON.stringify(s,null,2)+"\n");
+      writeSettings(sf, JSON.stringify(s,null,2)+"\n");
     '
     echo "  ~ $settings_rel (enforcement hooks wired)"
   else
@@ -458,7 +479,7 @@ merge_allowed_tools() {
   local settings_file="$1"
 
   if command -v node >/dev/null 2>&1; then
-    PLANIFEST_SETTINGS="$settings_file" node -e '
+    PLANIFEST_SETTINGS="$settings_file" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
       const fs = require("fs"), path = require("path");
       const sf = process.env.PLANIFEST_SETTINGS;
       let s = {};
@@ -467,7 +488,7 @@ merge_allowed_tools() {
       if (!existing.includes("Agent")) {
         s.allowedTools = existing.concat(["Agent"]);
         fs.mkdirSync(path.dirname(sf),{recursive:true});
-        fs.writeFileSync(sf, JSON.stringify(s,null,2)+"\n");
+        writeSettings(sf, JSON.stringify(s,null,2)+"\n");
         console.log("  ~ .claude/settings.json (Agent added to allowedTools)");
       } else {
         console.log("  - .claude/settings.json (Agent already in allowedTools)");
