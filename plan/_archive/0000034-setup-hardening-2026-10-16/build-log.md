@@ -183,3 +183,16 @@ P7 note: backlog entries 0000088, 0000091, 0000092, 0000096, and 0000102 removed
 | Self-corrections | 3 |
 | Phases skipped | none |
 | Phases with a recorded telemetry gap | 0 |
+
+### P9: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T21:39:50Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Override custom-004: push and raise the PR without asking, never merge. |
