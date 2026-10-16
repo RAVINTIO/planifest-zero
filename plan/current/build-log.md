@@ -37,3 +37,6 @@ P0 exchange (backlog pickup): Q: which backlog items join the next release / A: 
 P0 exchange (0000092 approach): Q: setup warns and skips retired flags, or refresh skill drops them / A: setup warns and skips.
 P0 exchange (adoption mode): Q: confirm standard-iterative / A: standard-iterative, confirmed by human on 2026-10-16. Human asked for a backlog item to assume this mode without asking.
 Adoption mode: standard-iterative, confirmed by human on 2026-10-16
+P0 exchange (version): Q: confirm 0.4.1 patch / A: 0.4.1.
+Version confirmed: 0.4.1
+P0: Drafted feature-brief.md from the five backlog entries. Found that 0000030 ADR-001 rejected retired flags as silent no-ops, and that old markers also list --context-mode-mcp and --include-full-skill-library.
