@@ -85,8 +85,12 @@ REMOVE_LINE="$(printf '%s\n' "$SETUP_BODY" | grep -n 'Remove-LeftoverSettingsTmp
 CLEANUP_LINE="$(printf '%s\n' "$SETUP_BODY" | grep -n 'Remove-LegacyTelemetryWiring -SettingsRel' | head -1 | cut -d: -f1)"
 assert_equals "yes" "$([ -n "$REMOVE_LINE" ] && [ -n "$CLEANUP_LINE" ] && [ "$REMOVE_LINE" -lt "$CLEANUP_LINE" ] && echo yes || echo no)" \
   "req-005 (d): Remove-LeftoverSettingsTmp runs before the first settings writer"
+# The removal itself lives in Remove-SettingsTmpEntry, shared with
+# Write-SettingsAtomic (P5 S-002, S-003).
 REMOVER="$(awk '/^function Remove-LeftoverSettingsTmp/{f=1} f && /^}/{print; exit} f{print}' "$FRAMEWORK/setup.ps1")"
-assert_contains "PSIsContainer" "$REMOVER" "req-005 (d): setup.ps1 leaves a folder alone"
-assert_contains "ReparsePoint" "$REMOVER" "req-005 (d): setup.ps1 removes a link without following it"
+HELPER="$(awk '/^function Remove-SettingsTmpEntry/{f=1} f && /^}/{print; exit} f{print}' "$FRAMEWORK/setup.ps1")"
+assert_contains "Remove-SettingsTmpEntry" "$REMOVER" "req-005 (d): setup.ps1 removes the leftover through the shared helper"
+assert_contains "elseif (-not \$isFolder)" "$HELPER" "req-005 (d): setup.ps1 leaves a folder alone"
+assert_contains "ReparsePoint" "$HELPER" "req-005 (d): setup.ps1 removes a link without following it"
 
 print_summary

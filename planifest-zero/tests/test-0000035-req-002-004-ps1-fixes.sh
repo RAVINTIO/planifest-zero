@@ -44,7 +44,7 @@ assert_equals "0" "$(cat "$SETUP_PS1" "$FRAMEWORK"/setup/*.ps1 | grep -c -- '-As
 ALLOWED="$(extract_function_body 'Merge-AllowedTools')"
 assert_contains "Write-SettingsAtomic" "$ALLOWED" \
   "req-003: Merge-AllowedTools still writes through Write-SettingsAtomic"
-assert_contains "-notcontains 'Agent'" "$ALLOWED" \
+assert_contains "notcontains 'Agent'" "$ALLOWED" \
   "req-003: Merge-AllowedTools still adds Agent only once"
 
 echo ""
