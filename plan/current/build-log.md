@@ -49,3 +49,16 @@ P0 exchange (scope lock gaps): Q: resolve gaps a to g / A: accept all recommenda
 Scope Lock complete. All four scenario paths captured.
 P0 exchange (run mode and design): Q: run mode, then confirm design / A: "Get on with it", read as continuous run and design confirmed.
 Gate accepted: P0 (2026-10-16T21:16:15Z)
+
+### P1: Spec
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T21:16:38Z` |
+| Model tier | primary |
+| Skills loaded | planifest-spec-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Continuous run. Requirements written inline: six short, independent files sharing one design, too small to justify dispatch. No OpenAPI, operational model, SLO, or cost model triggers. |
