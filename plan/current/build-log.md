@@ -76,3 +76,17 @@ Gate accepted: P1 (2026-10-16T21:17:49Z), continuous run. 6 requirements, scope,
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Two ADRs, written inline because each is short and the second reads the first. design_critic toggle absent, so off. |
+Gate accepted: P2 (2026-10-16T21:18:39Z), continuous run. ADR-001 retired flags warn and continue (supersedes the 0000030 ADR 001 no-op rejection), ADR-002 atomic settings.json writes, ADR-003 stack unchanged. consistency-check clean.
+
+### P3: Codegen
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T21:18:39Z` |
+| Model tier | primary |
+| Skills loaded | planifest-codegen-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Not decomposed: req-001 to req-004 all edit setup.sh and setup.ps1, so parallel agents would conflict on shared files. req-005 and req-006 are one-line edits, too small to dispatch. |
