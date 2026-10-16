@@ -357,6 +357,27 @@ function Merge-AllowedTools {
     }
 }
 
+function Remove-LeftoverSettingsTmp {
+    # Remove the temporary file a hard stop left between the write and the
+    # rename (0000035 ADR-003, backlog 0000104). Runs before the first
+    # settings.json writer. A folder stays. A link goes without its target.
+    param([string]$SettingsRel)
+    $tmp = Join-Path $ProjectRoot "$SettingsRel.planifest-tmp"
+    $item = Get-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+    if (-not $item) { return }
+    try {
+        if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+            if ($item.PSIsContainer) { [System.IO.Directory]::Delete($tmp) }
+            else { [System.IO.File]::Delete($tmp) }
+        }
+        elseif (-not $item.PSIsContainer) {
+            Remove-Item -LiteralPath $tmp -Force -ErrorAction Stop
+        }
+    } catch {
+        # Silent, as in setup.sh. The next atomic write replaces it anyway.
+    }
+}
+
 # Telemetry hook module names a pre-0000033 project may still reference from
 # .claude/settings.json (0000033 req-004, ADR-002 decision 1). The modules
 # themselves are gone, so every entry naming one is a broken reference.
@@ -902,6 +923,7 @@ function Invoke-PlanifestSetup {
     # Ordered BEFORE the enforcement hook install so that install is the last
     # writer of settings.json this run.
     if ($toolConfig.SettingsFile) {
+        Remove-LeftoverSettingsTmp -SettingsRel $toolConfig.SettingsFile
         Remove-LegacyTelemetryWiring -SettingsRel $toolConfig.SettingsFile
     }
 
