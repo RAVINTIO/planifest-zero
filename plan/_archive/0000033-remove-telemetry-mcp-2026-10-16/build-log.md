@@ -175,7 +175,7 @@ Gate accepted: P4 re-run after reversal (2026-10-16). Human confirmed continuous
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
-| Notes | Build assessment dispatched over the archived build log. |
+| Notes | Build assessment dispatched over the archived build log. It found the P7 summary table wrong on agent tiers, parallel phases, and self-corrections. Summary corrected from the phase blocks. |
 
 ---
 
@@ -184,11 +184,11 @@ Gate accepted: P4 re-run after reversal (2026-10-16). Human confirmed continuous
 | Metric | Value |
 |--------|-------|
 | Total phases completed | `10` (P0 to P9, P8 and P9 recorded in the archived log) |
-| Total agents spawned | `17` (P0 5, P1 2, P3 7, P5 1, P6 2) |
+| Total agents spawned | `18` (P0 5, P1 2, P3 7, P5 1, P6 2, P8 1) |
 | Total MCP calls | `0` |
-| Phases using parallelism | `6` (P0, P1, P3, P4, P5, P6) |
-| Primary tier agent calls | `17` |
-| Cheaper tier agent calls | `0` |
-| Self-corrections | `0` |
+| Phases using parallelism | `4` (P0, P1, P3, P6) |
+| Primary tier agent calls | `11` |
+| Cheaper tier agent calls | `7` (P0 4 Scope Lock, P1 2, P8 1) |
+| Self-corrections | `2` (P5 consistency-check fixes to the reversal edits, P6 restored the R-001 mitigation cell) |
 | Phases skipped | none |
 | Phases with a recorded telemetry gap | `1` (P5, marker acknowledged) |
