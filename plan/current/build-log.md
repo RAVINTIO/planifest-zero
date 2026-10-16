@@ -133,3 +133,16 @@ Gate accepted: P5 (2026-10-16T23:51:10Z), continuous run. Rating after fixes: Lo
 | Telemetry | confirmed-disabled |
 | Notes | P6 Gate B (continuous run, auto-accepted): this run brings `setup.ps1` level with `setup.sh`. Updating `architecture-overview.md` and `decisions-index.md`, plus the Last updated line on all four living docs. No `api-index.md`, because no component exposes an API. Inline, because the edits are a few lines each. |
 Gate accepted: P6 (2026-10-16T23:52:13Z), continuous run. Zero drift. Recommendations, iteration log, and backlog 0000106 and 0000107 written. Cross-model review gate: not configured, so skipped.
+
+### P7: Archive
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T23:52:24Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Regression candidate `test-0000035-req-001-hook-parity.sh` promoted under the continuous run, before the tag. |
