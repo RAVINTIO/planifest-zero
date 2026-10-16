@@ -2,7 +2,7 @@
 title: "Requirement: req-005 - drop-product-id-gate"
 summary: "Detailed requirements for this specific functional feature."
 status: "draft"
-version: "0.1.0"
+version: "0.2.0"
 ---
 # Requirement: req-005 - drop-product-id-gate
 
@@ -13,17 +13,22 @@ version: "0.1.0"
 
 ## User Story
 
-As a maintainer, I want the product-id gate removed, so that P0 no longer hard-stops asking for an id that only telemetry ever consumed.
+As a maintainer, I want the product-id gate to give a reason that is still true, so that P0 asks for the id without citing telemetry.
 
 ## Functional Requirements
-- Remove the top-level `id` field from `product.yml` and from `planifest-zero/templates/product.template.yml`.
-- Remove step 9's product-id hard stop from `planifest-zero/skills/planifest-orchestrator/SKILL.md`.
+- Keep the top-level `id` field in `product.yml` and in `planifest-zero/templates/product.template.yml`.
+- Keep step 9's product-id hard stop in `planifest-zero/skills/planifest-orchestrator/SKILL.md`. Its prompt gives versioning and attribution of archived runs as the reason, matching framework 0000030 ADR-007.
 - Keep `components[].id` in `product.yml` unchanged, because `planifest-zero/scripts/product-version.mjs` reads it.
 
 ## Acceptance Criteria
-- [ ] `product.yml` has no top-level `id:` key, checked by a test that parses the file and asserts the top-level key is absent.
-- [ ] `planifest-zero/templates/product.template.yml` has no top-level `id:` key, checked the same way.
-- [ ] `grep -i "product.*id" planifest-zero/skills/planifest-orchestrator/SKILL.md` finds no hard-stop wording, while `grep "id:" product.yml` still finds the `id:` field nested under `components[]`.
+- [ ] `product.yml` has a top-level `id: "planifest-zero"` key, checked by a test.
+- [ ] `planifest-zero/templates/product.template.yml` has a top-level `id:` key.
+- [ ] The orchestrator skill's step 9 hard-stops when `id` is missing, and its prompt names versioning and does not name telemetry.
+- [ ] `grep "id:" product.yml` still finds the `id:` field nested under `components[]`.
 
 ## Dependencies
 - None.
+
+## Revision
+
+2026-10-16, v0.2.0: rewritten from "drop the gate" to "reword the gate" by the ADR-003 v0.2.0 reversal. The filename keeps its original slug so links stay valid.

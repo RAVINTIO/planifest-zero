@@ -46,7 +46,7 @@
   - Remove every telemetry block from `planifest-zero/setup.sh` and `planifest-zero/setup.ps1`: flag defaults, argument parsing for `--structured-telemetry-mcp` and `--backend-url`, usage text, three whole telemetry functions each, the sentinel write, and the telemetry entries interleaved in the enforcement hook installer.
   - Remove the telemetry hook path variables from `planifest-zero/setup/claude-code.sh` and `claude-code.ps1`.
   - Add upgrade cleanup to both setup scripts: on every run, remove telemetry hook entries from the project's `.claude/settings.json`, delete `.claude/telemetry-enabled`, and delete `plan/.telemetry-failures/` and `plan/.telemetry-receipts/` when present. One printed line per removal. A warning without failing on error. Silent when nothing is present.
-  - Remove the top-level `id` field from `product.yml` and `planifest-zero/templates/product.template.yml`, and drop the orchestrator's product-id hard stop. `components[].id` stays.
+  - Keep the top-level `id` field in `product.yml` and `planifest-zero/templates/product.template.yml`, and keep the orchestrator's product-id hard stop with a versioning reason (ADR-003 v0.2.0, reversed at P5 on 2026-10-16). `components[].id` stays.
   - Remove the `## Telemetry` section and the `telemetry-standards.md` bundle reference from the six skills carrying them, and the `hooks: phase:` frontmatter key from all twelve.
   - Remove the `Telemetry` row from `planifest-zero/templates/build-log.template.md` and the summary's telemetry-gap count, plus the telemetry clause in the orchestrator's build-log Hard Limit. The phase block stays mandatory.
   - Update `planifest-zero/pipeline-reference.md` (stating the five phase names directly), `project-operations.md`, `getting-started.md`, `tests/README.md`, `templates/standard-boot.md`, and `component.yml`.
@@ -85,7 +85,7 @@ None
 | REQ-002 - setup-sh-telemetry-removal | planifest-codegen-agent | Interleaved shell edits with a red-green cycle |
 | REQ-003 - setup-ps1-telemetry-removal | planifest-codegen-agent | Mirror of REQ-002, verified statically |
 | REQ-004 - upgrade-cleanup-of-telemetry-wiring | planifest-codegen-agent | New behaviour in both scripts with tests |
-| REQ-005 - drop-product-id-gate | planifest-codegen-agent | Skill, manifest, and template edits |
+| REQ-005 - drop-product-id-gate (reworded, ADR-003 v0.2.0) | planifest-codegen-agent | Skill, manifest, and template edits |
 | REQ-006 - skills-and-templates-detelemetried | planifest-codegen-agent | Twelve skills and two templates, assertion-tested |
 | REQ-007 - docs-describe-no-telemetry | planifest-docs-agent | Documentation with no novel decisions |
 | REQ-008 - test-suite-cleanup | planifest-codegen-agent | Deleting 20 suites and editing 19 without masking regressions |

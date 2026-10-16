@@ -26,7 +26,7 @@ Each file follows the naming convention `req-{NNN}-{kebab-slug}.md` and the [Req
 | [req-002-setup-sh-telemetry-removal.md](requirements/req-002-setup-sh-telemetry-removal.md) | Remove every telemetry block from planifest-zero/setup.sh. |
 | [req-003-setup-ps1-telemetry-removal.md](requirements/req-003-setup-ps1-telemetry-removal.md) | Remove every telemetry block from planifest-zero/setup.ps1, mirroring req-002. |
 | [req-004-upgrade-cleanup-of-telemetry-wiring.md](requirements/req-004-upgrade-cleanup-of-telemetry-wiring.md) | Add upgrade cleanup that strips prior telemetry wiring from an existing project. |
-| [req-005-drop-product-id-gate.md](requirements/req-005-drop-product-id-gate.md) | Remove the product.yml top-level id field and the orchestrator's product-id hard stop. |
+| [req-005-drop-product-id-gate.md](requirements/req-005-drop-product-id-gate.md) | Keep the product.yml top-level id field and the product-id hard stop, reworded to give versioning as the reason (ADR-003 v0.2.0). |
 | [req-006-skills-and-templates-detelemetried.md](requirements/req-006-skills-and-templates-detelemetried.md) | Strip telemetry sections, frontmatter, and bundle references from skills and templates. |
 | [req-007-docs-describe-no-telemetry.md](requirements/req-007-docs-describe-no-telemetry.md) | Update the living docs so none describe a telemetry system that no longer exists. |
 | [req-008-test-suite-cleanup.md](requirements/req-008-test-suite-cleanup.md) | Delete telemetry-only test suites and edit mixed suites without masking a real regression. |

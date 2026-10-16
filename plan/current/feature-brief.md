@@ -79,9 +79,9 @@ suites. No new stack.
   for `--structured-telemetry-mcp` and `--backend-url`, usage text, the three whole telemetry
   functions, the sentinel write, and the telemetry entries inside the enforcement hook installer.
 - Remove the telemetry hook paths from `setup/claude-code.sh` and `setup/claude-code.ps1`.
-- Remove the top-level `id` field from `product.yml` and its template, and drop the orchestrator's
-  product-id hard stop. Telemetry was its only consumer. `components[].id` is a different field and
-  stays, because the version script reads it.
+- Keep the top-level `id` field in `product.yml` and its template, and keep the orchestrator's
+  product-id hard stop. Reword its prompt to give versioning as the reason, not telemetry. This
+  matches framework 0000030 ADR-007 (reversed at P5 on 2026-10-16, ADR-003 v0.2.0).
 - Remove the `## Telemetry` section and the `telemetry-standards.md` bundle reference from the six
   skills that carry them, and the `hooks: phase:` frontmatter key from all twelve.
 - Remove the `Telemetry` row from `templates/build-log.template.md` and the telemetry clause from
@@ -151,8 +151,7 @@ rejected as an unknown argument, so the person sees the problem at once.
 
 **Cross-session continuity:** No telemetry state is at risk, because none exists. A pipeline run
 resumes cleanly whether its build log was started before or after the `Telemetry` row was removed,
-because a blank or absent field no longer stops a run. Setup no longer pauses for a product id, so
-a run that stopped at that gate does not stop there again. A setup run interrupted partway through
+because a blank or absent field no longer stops a run. A setup run interrupted partway through
 the settings rewrite is finished by the next run, which is idempotent.
 
 ## Acceptance Criteria
@@ -160,7 +159,7 @@ the settings rewrite is finished by the next run, which is idempotent.
 - [ ] No file under `planifest-zero/` posts to a telemetry backend, and `hooks/telemetry/` no longer exists.
 - [ ] `setup.sh` and `setup.ps1` reject `--structured-telemetry-mcp` and `--backend-url` as unknown arguments, and their usage text does not mention them.
 - [ ] Setup installs the six enforcement hooks and the `commit-msg` hook exactly as before, with no telemetry entries in the generated `.claude/settings.json`.
-- [ ] `product.yml` has no top-level `id` field, and P0 no longer hard-stops asking for one.
+- [ ] `product.yml` keeps its top-level `id` field, and the P0 hard stop gives versioning as its reason.
 - [ ] The test runner passes with no telemetry suite present, and `regression-manifest.json` carries no telemetry entry.
 - [ ] `docs/` and the `planifest-zero/` docs describe a framework with no telemetry.
 - [ ] Running the new setup on a project that previously enabled telemetry removes the telemetry entries from its `.claude/settings.json`, the `.claude/telemetry-enabled` sentinel, and the `plan/.telemetry-failures/` and `plan/.telemetry-receipts/` directories, printing one line per removal. A second run prints none.
