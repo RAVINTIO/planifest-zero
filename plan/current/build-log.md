@@ -75,3 +75,16 @@ Gate accepted: P1 (2026-10-16T23:32:51Z), continuous run. 5 requirements, scope,
 | Telemetry | confirmed-disabled |
 | Notes | Three short ADRs written inline. design_critic toggle absent, so off. |
 Gate accepted: P2 (2026-10-16T23:33:31Z), continuous run. ADR-001 hook entries match setup.sh, ADR-002 PowerShell 5.1 support, ADR-003 case-sensitive flags and leftover removal. consistency-check clean after merging two acceptance criteria in req-001 and req-005.
+
+### P3: Codegen
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T23:34:56Z` |
+| Model tier | primary |
+| Skills loaded | planifest-codegen-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Inline, not decomposed: req-001 to req-004 edit neighbouring functions in `setup.ps1`, and req-005 edits both scripts' shared run sequence. Red: 27 of 36 new assertions fail before code. req-005 (a) passes already, because `writeSettings` removes a leftover before each write. |
