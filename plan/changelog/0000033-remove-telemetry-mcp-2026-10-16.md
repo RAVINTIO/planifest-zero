@@ -2,7 +2,7 @@
 
 **Feature:** Remove telemetry from planifest-zero
 **Pipeline run:** P0 to P9 completed. No phases skipped.
-**PR:** pending
+**PR:** https://github.com/planifest/planifest-zero/pull/6
 
 ## What Was Built
 
