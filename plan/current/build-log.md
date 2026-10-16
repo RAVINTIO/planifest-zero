@@ -123,6 +123,21 @@ Requirement Change (P5 active, contradictory, scoped reversal): ADR-003 decision
 
 P4 re-run after reversal (2026-10-16): rename suite case (c) 6/6 pass. Full runner 44 feature suites passed, 1 failed (the overridden test-0000031-req-001-rename.sh, cases a and b only). Regression 12 passed, 0 failed. self-description-check pass. product-version 0.4.0. consistency-check found 3 issues in the reversal edits (req-005 had 4 criteria, and two cross-repo ADR-007 references read as local), fixed and now clean.
 
+Gate accepted: P4 re-run after reversal (2026-10-16). Human confirmed continuous run for P5 onward. P7 to P9 still stop once at the final ship gate.
+
+### P5: Security
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16` |
+| Model tier | primary |
+| Skills loaded | planifest-orchestrator, planifest-security-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Telemetry | failed-with-recorded-choice (marker acknowledged at P5 start, see Requirement Change above) |
+| Notes | Fresh-context security review over git diff main...HEAD, focused on the legacy telemetry cleanup in setup.sh and setup.ps1. |
+
 ---
 
 ## Summary (filled at P7)
