@@ -116,3 +116,6 @@ Gate accepted: P4 (2026-10-16T23:38:59Z), continuous run. Zero self-corrections 
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | One fresh-context reviewer over the `setup.sh` and `setup.ps1` diff since `40e00ac`, so the author doesn't review their own code. |
+P5 findings: Medium overall. S-001 Medium (5.1 reads settings.json as ANSI), S-002 to S-008 Low.
+P5 fixes: all eight fixed in `setup.ps1`, with a new 19-assertion suite. Three static checks updated to follow the new code: 0000034 req-003 (c) in both its feature and regression copies, now naming `Remove-SettingsTmpEntry`, plus 0000035 req-003 and req-005 (d).
+Gate accepted: P5 (2026-10-16T23:51:10Z), continuous run. Rating after fixes: Low. Suites: 53 of 54 feature, 14 of 14 regression. The one failure is the known rename suite.

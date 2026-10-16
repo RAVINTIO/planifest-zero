@@ -190,3 +190,20 @@ Top actions before production:
 1. Fix S-001. Read `settings.json` as UTF-8 at lines 280 and 412, and write it without a BOM.
 2. Fix S-002 and S-003 together. Detect the temporary path without following links, and refuse a plain folder.
 3. Tighten the `PreToolUse` filter for S-004, then run the manual Windows PowerShell 5.1 check that R-001 calls for.
+
+## Resolution (after P5 fixes)
+
+The orchestrator fixed all eight findings in `setup.ps1`, and `test-0000035-p5-security-fixes.sh` checks each one.
+
+| ID | Fix |
+|----|-----|
+| S-001 | Both `Get-Content` reads of `settings.json` name `-Encoding UTF8`. `Write-SettingsAtomic` writes UTF-8 with no BOM through `WriteAllText`. |
+| S-002 | A new `Remove-SettingsTmpEntry` reads the entry with `FileInfo`, so it finds a dangling link. |
+| S-003 | The helper removes only a file or a link, with `File.Delete` or a non-recursive `Directory.Delete`. A plain folder stays, and the write fails. |
+| S-004 | Both hook filters use `-cmatch` on `<module>.mjs` at a path boundary. |
+| S-005 | `New-HookEntry` quotes the module path, as `setup.sh` does. |
+| S-006 | `Merge-AllowedTools` uses `-cnotcontains`, counts a non-array `allowedTools` as empty, and leaves a non-object file unwritten with a warning. |
+| S-007 | The success line uses `$([char]0x2705)`. |
+| S-008 | The tool name must match `$ValidTools` exactly, with `-ccontains`. |
+
+Overall risk rating after the fixes: **Low**. R-001 stays open, because no `pwsh` runner exists. The PR test plan includes a manual Windows PowerShell 5.1 run with a `settings.json` that holds non-ASCII text.
