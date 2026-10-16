@@ -19,10 +19,14 @@ status: "open"
 > automatically from a `recommendations.md` Deferred Items or Tech Debt row use
 > `deliberate scope decision` or `tech debt` respectively; entries filed live
 > during a run use `discovered mid-flight`.
+>
+> Use `human request` when the human asks for the entry directly, rather than
+> a run finding it. If no run is active, write `none (human request)` for the
+> source feature and source phase.
 
-**Source feature:** {{feature-id that discovered this}}
-**Source phase:** {{P1–P5 phase active when discovered}}
-**Deferral source:** {{discovered mid-flight | deliberate scope decision | tech debt}}
+**Source feature:** {{feature-id that discovered this | none (human request)}}
+**Source phase:** {{P1–P5 phase active when discovered | none (human request)}}
+**Deferral source:** {{discovered mid-flight | deliberate scope decision | tech debt | human request}}
 **Date filed:** {{ISO-8601 date}}
 
 ---

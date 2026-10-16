@@ -31,7 +31,7 @@ assert_contains '| human request' "$(grep -n 'Deferral source:\*\*' "$TEMPLATE")
   "req-006: the deferral source field lists human request"
 assert_contains 'none (human request)' "$(cat "$TEMPLATE")" \
   "req-006: the template allows none (human request) for source feature and phase"
-assert_contains '`human request`' "$(grep -n 'Deferral source' "$TEMPLATE" | head -3)" \
+assert_contains 'Use `human request` when' "$(cat "$TEMPLATE")" \
   "req-006: the guidance says when to use human request"
 
 print_summary
