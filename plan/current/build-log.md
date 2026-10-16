@@ -137,3 +137,5 @@ Gate accepted: P5 (2026-10-16T21:33:00Z), continuous run. Medium findings fixed 
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Gate A: docs/ exists. Gate B (continuous run, auto-accepted): updating architecture-overview, component-registry, decisions-index, dependency-graph. No API, so no api-index. Edits are small, done inline. |
+P6: Gate B auto-accepted: updated architecture-overview (Re-run safety section), component-registry, dependency-graph, decisions-index. recommendations.md and iteration-log.md written. Backlog 0000104 and 0000105 filed from Tech Debt rows.
+Gate accepted: P6 (2026-10-16T21:33:54Z), continuous run. No drift found.
