@@ -1,10 +1,14 @@
 # product.yml: product-level version manifest.
 #
+# The top-level `id` gives the product a stable name for versioning and for
+# attributing archived runs, wherever the repo is cloned (0000033 ADR-003).
+#
 # components[] holds {id, path} pointers to each component's own
 # component.yml, not a cached version. Versions are read live at derivation
 # time by `node planifest-zero/scripts/product-version.mjs`, so this list
 # only needs editing when a component is added or removed.
 
+id: "planifest-zero"
 name: "Planifest Framework"
 version: "0.3.0"
 feature: "0000032-relocate-setup-config-to-plan-state"
