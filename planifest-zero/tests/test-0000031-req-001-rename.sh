@@ -24,8 +24,21 @@ HITS=$(grep -rl "$OLD_NAME" "$REPO" \
   | grep -v "$REPO/plan/\|$REPO/CLAUDE.md\|decisions-index.md" | wc -l | tr -d ' ')
 assert_equals "0" "$HITS" "live files referencing the old name"
 
-echo "=== (c) product.yml id is planifest-zero ==="
-assert_equals "planifest-zero" "$(grep -E '^id:' "$REPO/product.yml" | sed 's/id: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d ' ')" "product id"
+echo "=== (c) product.yml declares the product id and names the component ==="
+# 0000033 ADR-003 v0.2.0 keeps product.yml's top-level `id` for versioning and
+# archive attribution. The components[] entries keep their own `id`, because
+# scripts/product-version.mjs reads them to resolve each manifest.
+assert_equals "planifest-zero" "$(grep -E '^id:' "$REPO/product.yml" | sed 's/id: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d ' ')" \
+  "top-level product id"
+assert_equals "planifest-zero" "$(grep -E '^\s+- id:' "$REPO/product.yml" | head -1 | sed 's/.*id: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d ' ')" \
+  "components[] still names the planifest-zero component"
+ORCH_SKILL="$REPO/planifest-zero/skills/planifest-orchestrator/SKILL.md"
+STEP9=$(grep -E '^9\. \*\*Product id check\*\*' "$ORCH_SKILL" || true)
+assert_contains "hard-stop" "$STEP9" "discovery step 9 hard-stops on a missing product id"
+assert_contains "versioning" "$STEP9" "the product id prompt gives versioning as its reason"
+assert_equals "0" "$(printf '%s' "$STEP9" | grep -ci telemetry || true)" "the product id prompt does not cite telemetry"
+assert_equals "1" "$(grep -cE '^id:' "$REPO/planifest-zero/templates/product.template.yml" || true)" \
+  "product.template.yml declares a top-level id"
 
 echo "=== (d) refresh script renamed and portable ==="
 assert_equals "no" "$([ -f "$REPO/refresh-$OLD_NAME-dir.ps1" ] && echo yes || echo no)" "old refresh script absent"

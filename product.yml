@@ -1,8 +1,7 @@
 # product.yml: product-level version manifest.
 #
-# This project has one component. It keeps a product.yml anyway because
-# telemetry hooks source product_id from the `id` field below, so events stay
-# attributable to the same product regardless of clone location or machine.
+# The top-level `id` gives the product a stable name for versioning and for
+# attributing archived runs, wherever the repo is cloned (0000033 ADR-003).
 #
 # components[] holds {id, path} pointers to each component's own
 # component.yml, not a cached version. Versions are read live at derivation
@@ -11,8 +10,8 @@
 
 id: "planifest-zero"
 name: "Planifest Framework"
-version: "0.3.0"
-feature: "0000032-relocate-setup-config-to-plan-state"
+version: "0.4.0"
+feature: "0000033-remove-telemetry-mcp"
 
 versionPolicy: "max-component-version"
 

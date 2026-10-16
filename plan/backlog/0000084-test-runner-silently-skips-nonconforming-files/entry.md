@@ -60,3 +60,16 @@ test harness. Fixing this needs a decision about what the runner should treat as
 a suite and what it should treat as an error, so it is a design change rather
 than a mechanical edit. Filed ahead of a release that may change or remove much
 of this surface, so re-verify the finding before pickup.
+
+## Status Review (2026-10-16)
+
+Partly resolved. These items are done:
+
+- `test_setup.sh` and `test_setup.ps1` no longer exist.
+- Feature 0000033 req-008 added a check that every `regression-manifest.json` entry names a file on disk.
+
+These items remain open:
+
+- `run-tests.sh` still has no pre-flight check for files that miss the naming convention.
+- No PowerShell suite runs through the runner.
+- Nothing checks the reverse direction, a regression suite on disk with no manifest entry.

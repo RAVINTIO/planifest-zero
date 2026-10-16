@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000032-relocate-setup-config-to-plan-state
+Last updated: 0000033-remove-telemetry-mcp
 
 ## Component dependency diagram
 
@@ -11,10 +11,14 @@ graph TD
         STANDARDS["standards/, templates/, schemas/"]
         SETUP["setup.sh / setup.ps1"]
         GITHOOKS["git hooks\n(commit-msg, pre-commit, pre-push)"]
-        ENFORCE["hooks/enforcement/\n(gate-write, check-design, ratchet-check,\nem-dash-guard, auto-trigger-orchestrator,\ncheck-orchestrator-presence,\ncheck-telemetry-failures,\ncheck-telemetry-receipts)"]
-        ENFSHARED["hooks/enforcement/ shared modules\n(read-stdin.mjs, phase-enum.mjs)\nalways installed"]
-        TELEM["hooks/telemetry/\n(context-pressure, emit-phase-start,\nemit-phase-end, emit-event-receipt,\nresolve-phase)"]
-        TELSHARED["hooks/telemetry/ shared modules\n(emit-event, record-telemetry-failure,\nread-product-id, get-flag-path)\ninstalled only with --structured-telemetry-mcp"]
+        ENFORCE["hooks/enforcement/\n(gate-write, check-design, ratchet-check,\nem-dash-guard, auto-trigger-orchestrator,\ncheck-orchestrator-presence)"]
+        ENFSHARED["hooks/enforcement/read-stdin.mjs\nshared module, always installed"]
+        VERSION["scripts/product-version.mjs"]
+    end
+
+    subgraph "Project root"
+        PRODUCT["product.yml"]
+        MANIFEST["planifest-zero/component.yml"]
     end
 
     subgraph "Claude Code runtime"
@@ -23,38 +27,35 @@ graph TD
     end
 
     subgraph "External"
-        BACKEND["Structured telemetry backend\n(PLANIFEST_TELEMETRY_URL)"]
         NODE["node (required, sole runtime)"]
     end
 
     SETUP -->|"installs"| SKILLS
     SETUP -->|"copies + wires"| ENFORCE
     SETUP -->|"wires via core.hooksPath"| GITHOOKS
-    SETUP -->|"copies + wires under a flag"| TELEM
     SKILLS -->|"bundles at install time"| STANDARDS
 
     CC -->|"plans a tool call"| HookRunner
     HookRunner -->|"stdin JSON"| ENFORCE
-    HookRunner -->|"stdin JSON"| TELEM
     ENFORCE -->|"stdout block or additionalContext"| HookRunner
-    TELEM -->|"POST /emit"| BACKEND
 
     ENFORCE --> ENFSHARED
-    TELEM --> TELSHARED
-    TELSHARED -.->|"cross-directory import"| ENFSHARED
-
     ENFORCE --> NODE
-    TELEM --> NODE
+
+    VERSION -->|"reads components[]"| PRODUCT
+    VERSION -->|"reads version"| MANIFEST
 ```
 
 ---
 
 ## Edges that matter
 
-**`hooks/telemetry/` imports from `hooks/enforcement/`, never the reverse.** The enforcement tree installs unconditionally. The telemetry tree installs only under `--structured-telemetry-mcp`. Any helper with an enforcement caller must therefore live in the always-present tree.
+**Every enforcement hook imports `read-stdin.mjs`.** All six hooks share the one module. Setup copies `hooks/enforcement/` as a unit, so the import always resolves.
 
-**`phase-enum.mjs` is the canonical phase enum.** It holds the five phase values (discovery, plan, implement, validate-and-accept, ship) and lives in the always-installed enforcement tree. `standards/telemetry-standards.md` mirrors the same enum.
+**Setup wires six hooks into `.claude/settings.json`.** `gate-write`, `ratchet-check`, and `em-dash-guard` run on `PreToolUse` for Write and Edit. `auto-trigger-orchestrator`, `check-orchestrator-presence`, and `check-design` run on `UserPromptSubmit`, in that order.
 
-**`resolve-phase.mjs` interposes on the Skill tool.** A `PreToolUse(Skill)` hook reads `tool_input.skill`, resolves the active pipeline phase, then re-execs `emit-phase-start.mjs`. A `Stop` hook re-execs `emit-phase-end.mjs` from a session marker file, cleared after use.
+**Nothing leaves the machine.** No hook or script makes an outbound network call. The framework has no external integration besides `node`.
+
+**`product-version.mjs` reads `components[].id` and each component's `version`.** It derives the product version under `versionPolicy: max-component-version`. No code reads the top-level `id` in `product.yml`. The orchestrator's discovery hard stop requires it.
 
 **Node is the sole runtime.** Every hook is a `.mjs` file invoked as `node <script>`. There is no `jq` dependency and no bash entry point, so the hooks run identically on macOS, Linux, and Windows.

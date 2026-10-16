@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000032-relocate-setup-config-to-plan-state
+Last updated: 0000033-remove-telemetry-mcp
 
 ## What this repo is
 
@@ -9,7 +9,7 @@ This repo is the Planifest framework itself. It holds one component, `planifest-
 The framework is not a service. It has no runtime of its own. It ships four things:
 
 1. **Skills.** Markdown instructions that Claude Code auto-discovers from `.claude/skills/`. Twelve skills drive the five-phase pipeline.
-2. **Hooks.** Node `.mjs` scripts that Claude Code invokes synchronously at tool-call boundaries. Enforcement hooks block or annotate. Telemetry hooks emit events. Git hooks guard commits and pushes.
+2. **Hooks.** Node `.mjs` scripts that Claude Code invokes synchronously at tool-call boundaries. Enforcement hooks block or annotate. Git hooks guard commits and pushes. No hook makes an outbound network call.
 3. **Standards, templates, and schemas.** The reference material that skills bundle at install time.
 4. **Setup scripts.** `setup.sh` and `setup.ps1` copy the above into a target project and wire `.claude/settings.json`.
 
@@ -42,7 +42,6 @@ planifest-zero/          setup.sh claude-code          target project
 ├── standards/       ── bundled per skill frontmatter ──▶   .claude/skills/*/references/
 ├── workflows/       ──────────────────────────────────▶   .claude/commands/
 ├── hooks/enforcement/ ────────── always ──────────────▶   .claude/hooks/enforcement/
-├── hooks/telemetry/   ── under --structured-telemetry-mcp ▶ .claude/hooks/telemetry/
 └── templates/standard-boot.md ───────────────────────▶   CLAUDE.md
 ```
 
@@ -54,7 +53,7 @@ Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from 
 
 ## Setup-config record
 
-`setup.sh` and `setup.ps1` write the tracked record of active setup flags and the backend URL to `plan/state/{tool}.md`, creating the folder when it is absent. The `planifest-refresh-setup` skill reads and validates that record before falling back to the gitignored marker and hook inference.
+`setup.sh` and `setup.ps1` write the tracked record of active setup flags to `plan/state/{tool}.md`, creating the folder when it is absent. The record and the gitignored flags marker hold `tool`, `flags`, and `writtenAt`. The `planifest-refresh-setup` skill reads and validates that record before falling back to the gitignored marker and hook inference.
 
 ---
 
@@ -70,15 +69,16 @@ Every hook fails open on an unexpected error. Exit 0 with no output means the to
 
 ---
 
-## Telemetry
+## Upgrade cleanup
 
-Telemetry is gated on one signal: `--structured-telemetry-mcp` passed at setup. When active, emission is mandatory rather than best-effort.
+Every setup run retracts telemetry wiring that an earlier install left in the target project. It runs before the enforcement hook install, so that install writes `.claude/settings.json` last. Setup removes these items when present:
 
-`resolve-phase.mjs` interposes on the Skill tool to work out which pipeline phase is active, then re-execs `emit-phase-start.mjs`. A `Stop` hook handles `emit-phase-end.mjs`. Events carry a `product_id` sourced from `product.yml`, so they stay attributable across clones and machines.
+- hook entries in `.claude/settings.json` whose command runs a retired telemetry module as `<module>.mjs` at a path boundary
+- hook entries whose matcher or command names `mcp__structured-telemetry-mcp__emit_event`
+- the `.claude/telemetry-enabled` sentinel
+- the `plan/.telemetry-failures/` and `plan/.telemetry-receipts/` directories
 
-The `phase` field takes one of five values: discovery, plan, implement, validate-and-accept, ship. `hooks/enforcement/phase-enum.mjs` holds the canonical enum, mirrored in `standards/telemetry-standards.md`.
-
-When emission fails, the hook writes a durable marker under `plan/.telemetry-failures/`. The orchestrator surfaces that marker at the next phase start and asks the human whether to block or proceed.
+The module match is case-sensitive. Setup prints one line per removal and stays silent when nothing is present. A failed removal prints a warning and setup carries on.
 
 ---
 
@@ -86,4 +86,6 @@ When emission fails, the hook writes a durable marker under `plan/.telemetry-fai
 
 `product.yml` holds the product-level version manifest. Under `versionPolicy: max-component-version`, `scripts/product-version.mjs` reads each listed `component.yml` live and takes the highest. Nothing caches a version, so the list only changes when a component is added or removed.
 
-This project has one component and keeps `product.yml` anyway, because the telemetry hooks source `product_id` from its `id` field.
+This project has one component and keeps `product.yml` anyway. Its top-level `id` gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. The orchestrator hard-stops at discovery when that `id` is missing.
+
+The five phase names live in prose in `planifest-zero/pipeline-reference.md`. No module encodes them.
