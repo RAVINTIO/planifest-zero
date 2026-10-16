@@ -27,9 +27,9 @@ summary: "Working telemetry file maintained by the orchestrator throughout the p
 | Start | `2026-10-16T23:24:48Z` |
 | Model tier | primary |
 | Skills loaded | planifest-orchestrator |
-| Agents spawned | `0` |
+| Agents spawned | `4` |
 | MCP calls | `0` |
-| Parallel task batches | `0` |
+| Parallel task batches | `1` |
 | Telemetry | confirmed-disabled |
 | Notes | Started in the 0000034 session after the human said "No just keep going". Branch stacks on `feat/0000034-setup-hardening` because PR #7 is open and both features edit `setup.ps1`. |
 
@@ -160,3 +160,4 @@ Archived to `plan/_archive/0000035-powershell-setup-parity-2026-10-17/`. Changel
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | none |
+P8 correction: the P0 row first recorded 0 agents. It now records the 4 Scope Lock drafts, sent in one parallel batch. Gate accepted: P8.
