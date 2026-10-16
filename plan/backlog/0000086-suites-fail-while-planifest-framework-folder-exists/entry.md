@@ -42,3 +42,10 @@ so it either runs or stops being discovered.
 
 Out of scope for 0000032, which relocates the setup-config record. The fix
 needs a decision about what the repo promises regarding `planifest-framework/`.
+
+## Status Review (2026-10-16)
+
+Partly resolved. Feature 0000033 deleted `test-0000031-req-005-telemetry-only-mcp.sh` and
+`test-skill-telemetry.sh`. One suite still fails: `test-0000031-req-001-rename.sh`, cases (a) and
+(b). Switching this repo to run its own pipeline on `planifest-zero/` would remove
+`planifest-framework/`, and the suite would pass unchanged.
