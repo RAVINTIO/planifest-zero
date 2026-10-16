@@ -132,3 +132,4 @@ Gate accepted: P5 (2026-10-16T23:51:10Z), continuous run. Rating after fixes: Lo
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | P6 Gate B (continuous run, auto-accepted): this run brings `setup.ps1` level with `setup.sh`. Updating `architecture-overview.md` and `decisions-index.md`, plus the Last updated line on all four living docs. No `api-index.md`, because no component exposes an API. Inline, because the edits are a few lines each. |
+Gate accepted: P6 (2026-10-16T23:52:13Z), continuous run. Zero drift. Recommendations, iteration log, and backlog 0000106 and 0000107 written. Cross-model review gate: not configured, so skipped.
