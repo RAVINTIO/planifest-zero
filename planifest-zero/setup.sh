@@ -285,6 +285,17 @@ copy_workflow() {
   echo "  + workflows/${name}.md"
 }
 
+remove_leftover_settings_tmp() {
+  # Remove the temporary file a hard stop left between the write and the
+  # rename (0000035 ADR-003, backlog 0000104). Runs before the first
+  # settings.json writer, and needs no node. rm -f removes a link, not its
+  # target, and the file test skips a folder.
+  local tmp="$PROJECT_ROOT/$1.planifest-tmp"
+  if [ -L "$tmp" ] || [ -f "$tmp" ]; then
+    rm -f "$tmp" 2>/dev/null || true
+  fi
+}
+
 # Telemetry hook module names a pre-0000033 project may still reference from
 # .claude/settings.json (0000033 req-004, ADR-002 decision 1). The modules
 # themselves are gone, so every entry naming one is a broken reference.
@@ -857,6 +868,7 @@ setup_tool() {
   # Ordered BEFORE the enforcement hook install so that install is the last
   # writer of settings.json this run.
   if [ -n "${TOOL_SETTINGS_FILE:-}" ]; then
+    remove_leftover_settings_tmp "$TOOL_SETTINGS_FILE"
     remove_legacy_telemetry_wiring "$TOOL_SETTINGS_FILE"
   fi
 
