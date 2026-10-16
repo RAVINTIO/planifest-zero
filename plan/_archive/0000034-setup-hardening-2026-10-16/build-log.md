@@ -139,3 +139,16 @@ Gate accepted: P5 (2026-10-16T21:33:00Z), continuous run. Medium findings fixed 
 | Notes | Gate A: docs/ exists. Gate B (continuous run, auto-accepted): updating architecture-overview, component-registry, decisions-index, dependency-graph. No API, so no api-index. Edits are small, done inline. |
 P6: Gate B auto-accepted: updated architecture-overview (Re-run safety section), component-registry, dependency-graph, decisions-index. recommendations.md and iteration-log.md written. Backlog 0000104 and 0000105 filed from Tech Debt rows.
 Gate accepted: P6 (2026-10-16T21:33:54Z), continuous run. No drift found.
+
+### P7: Archive
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T21:36:19Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Regression candidates test-0000034-req-001 and req-003 promoted under the continuous run. The human can revert. |
