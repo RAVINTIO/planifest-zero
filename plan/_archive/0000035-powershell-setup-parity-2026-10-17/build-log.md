@@ -161,3 +161,16 @@ Archived to `plan/_archive/0000035-powershell-setup-parity-2026-10-17/`. Changel
 | Telemetry | confirmed-disabled |
 | Notes | none |
 P8 correction: the P0 row first recorded 0 agents. It now records the 4 Scope Lock drafts, sent in one parallel batch. Gate accepted: P8.
+
+### P9: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-16T23:54:30Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Version 0.4.2 from `product-version.mjs`. Tag `v0.4.2`. Push and PR per custom-004. The PR targets `feat/0000034-setup-hardening`, because this branch stacks on PR #7. |
