@@ -19,7 +19,7 @@ Items judged out of scope for this feature on purpose, with the reasoning alread
 | The PowerShell changes have static test coverage only. That covers `Remove-LegacyTelemetryWiring` and the P5 fixes (`-cmatch` matching and link-only deletion of a reparse-point marker). `pwsh` is not installed on the build machine, and no PowerShell suite runs through `planifest-zero/tests/run-tests.sh`. | Build log P5 entry. Already tracked as backlog 0000084. | Referenced, not refiled. |
 | `test-0000031-req-001-rename.sh` still fails its two assertions about `planifest-framework/` existing, identical to `main`. The human overrode the P4 gate past it on 2026-10-15. | Build log P4 entry, Risk R-005 in `plan/current/risk-register.md`. Already tracked as backlog 0000086. | Referenced, not refiled. |
 | `planifest-refresh-setup` replays `--structured-telemetry-mcp` from an old flags marker, and `setup.sh` now exits 1 on it. Fixing it means choosing how setup treats retired flags, which is a design decision outside this feature's scope. | Security report, out-of-scope finding. | Filed as backlog 0000092. |
-| `planifest-framework/` keeps its telemetry, and so does this repo's CI job `validate-telemetry-schema` in `.github/workflows/planifest.yml`. The next refresh of the framework copy from `planifest-zero/` removes the telemetry that job guards. The job then has nothing to validate. | ADR-001 decisions 4 and 5. The `design.md` Dependencies section names the refresh as downstream. Backlog 0000089 covers the refresh but not the CI job. | Proposed for the backlog, not yet filed. |
+| `planifest-framework/` keeps its telemetry, and so does this repo's CI job `validate-telemetry-schema` in `.github/workflows/planifest.yml`. The next refresh of the framework copy from `planifest-zero/` removes the telemetry that job guards. The job then has nothing to validate. | ADR-001 decisions 4 and 5. The `design.md` Dependencies section names the refresh as downstream. Backlog 0000089 covers the refresh but not the CI job. | Backlog 0000093. |
 
 ## Tech Debt
 
@@ -29,8 +29,8 @@ Acknowledged debt found or left in place during this feature, filed alongside th
 |------|-----------|--------|
 | `setup.ps1` wires four enforcement hooks, not six. `ratchet-check` and `em-dash-guard` appear nowhere in the script. The gap predates this feature and holds on `main`. | Build log P3 entry. | Filed as backlog 0000090. |
 | Both setup scripts rewrite `.claude/settings.json` in place, so a write that stops partway can truncate it. `setup.sh` also skips the settings cleanup without a warning when `node` is missing. | Security report Threat Model and Bash and PowerShell Parity sections. | Filed as backlog 0000091. |
-| `setup.ps1` wraps a non-array hook event value in an array when it rewrites `settings.json`. `setup.sh` leaves it alone. This is the one remaining parity gap the backlog does not cover. | Security report, Bash and PowerShell Parity section. | Proposed for the backlog, not yet filed. |
-| The legacy telemetry cleanup runs on every setup invocation with no end date. Once no project carries telemetry wiring, it is dead code that still runs each time. | ADR-002 Negative Consequences. | Proposed for the backlog, not yet filed. |
+| `setup.ps1` wraps a non-array hook event value in an array when it rewrites `settings.json`. `setup.sh` leaves it alone. This is the one remaining parity gap the backlog does not cover. | Security report, Bash and PowerShell Parity section. | Backlog 0000094. |
+| The legacy telemetry cleanup runs on every setup invocation with no end date. Once no project carries telemetry wiring, it is dead code that still runs each time. | ADR-002 Negative Consequences. | Backlog 0000095. |
 
 ## Recommendations
 

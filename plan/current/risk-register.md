@@ -17,7 +17,7 @@ version: "0.4.0"
 
 | ID | Category | Description | Likelihood | Impact | Mitigation | Status |
 |----|----------|------------|------------|--------|-----------|--------|
-| R-001 | technical | `install_enforcement_hooks` in `setup.sh` and `Merge-EnforcementHookSettings` in `setup.ps1` interleave two telemetry entries with six surviving hooks in one array build and one de-duplication filter. A careless block delete drops a surviving hook. | medium | high | Edit the interleaved block line by line against the six-hook list, then run the full enforcement suite after each edit, not only at the end. |
+| R-001 | technical | `install_enforcement_hooks` in `setup.sh` and `Merge-EnforcementHookSettings` in `setup.ps1` interleave two telemetry entries with six surviving hooks in one array build and one de-duplication filter. A careless block delete drops a surviving hook. | medium | high | Edit the interleaved block line by line against the six-hook list, then run the full enforcement suite after each edit, not only at the end. | mitigated (P5 security review) |
 | R-002 | operational | Nineteen mixed test suites assert on telemetry among other things. Editing them wrongly can mask a real regression instead of surfacing it. | medium | medium | Remove only the telemetry-specific assertions, run each edited suite before and after the edit, and diff the assertion count to confirm no non-telemetry assertion was dropped. |
 | R-003 | operational | `tests/regression/regression-manifest.json` carries a "do not edit manually" notice, and this feature must remove five entries from it by hand. | high | low | Treat the five-entry removal as a deliberate, documented exception to the notice. Validate the file against `regression-manifest.schema.json` after editing. |
 | R-004 | technical | The orchestrator's build-log Hard Limit governs both the phase block and the telemetry field in one rule. Removing the wrong half weakens a rule that must survive. | low | high | Edit only the telemetry clause, then re-read the Hard Limit afterward to confirm the phase-block requirement still reads as mandatory. |
@@ -32,5 +32,5 @@ Documented assumptions from the specification are logged here with likelihood: m
 |----|-----------|----------------|--------|
 | A-001 | No consumer depends on Zero's telemetry. | That consumer loses event emission with no migration path and must wire their own tool-level hooks. | open |
 | A-002 | Removing a documented setup flag is a minor version bump, not a major one, because the product is pre-1.0. | The version understates the change for anyone reading tags alone. | open |
-| A-003 | Every telemetry entry a prior setup run wrote into `.claude/settings.json` is identifiable by its command string. | Cleanup misses an entry and the broken reference survives. | open |
+| A-003 | Every telemetry entry a prior setup run wrote into `.claude/settings.json` is identifiable by its command string. | Cleanup misses an entry and the broken reference survives. | holds (P5 security review) |
 </content>

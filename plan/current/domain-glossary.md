@@ -16,7 +16,7 @@ version: "0.4.0"
 
 | Term | Definition | Aliases | Used In |
 |------|-----------|---------|---------|
-| Telemetry hook | A Node module in `hooks/telemetry/` that emits a pipeline event to the telemetry backend. Nine modules, all deleted by this feature. | none | planifest-zero/hooks/telemetry/ |
+| Telemetry hook | A Node module in `hooks/telemetry/` that emits a pipeline event to the telemetry backend. Nine modules, all deleted by this feature. The cleanup list in the setup scripts differs, because it names the modules setup once wired into settings, including the two `check-telemetry-*` hooks. | none | planifest-zero/hooks/telemetry/ |
 | Enforcement hook | A Node module in `hooks/enforcement/` installed on every setup run, regardless of flags. Six survive this feature. | none | planifest-zero/hooks/enforcement/ |
 | The telemetry backend | The HTTP service at `PLANIFEST_TELEMETRY_URL` that received posted events. This feature removes the only outbound call to it. | backend, backend-url | planifest-zero/hooks/telemetry/emit-event.mjs, planifest-zero/setup.sh |
 | The emission gate | The `check-telemetry-receipts.mjs` enforcement hook, which cross-referenced a build-log phase's "emitted" claim against a matching receipt file before allowing the claim to stand. | receipts backstop | planifest-zero/hooks/enforcement/check-telemetry-receipts.mjs |
@@ -24,6 +24,6 @@ version: "0.4.0"
 | Failure marker | A JSON file under `plan/.telemetry-failures/<slug>.json`, written when a telemetry emission failed, read by `check-telemetry-failures.mjs`. | telemetry-failure marker | planifest-zero/hooks/telemetry/record-telemetry-failure.mjs, plan/.telemetry-failures/ |
 | Receipt | A JSON file under `plan/.telemetry-receipts/`, written by `emit-event-receipt.mjs` on a successful emission, read by the emission gate. | none | planifest-zero/hooks/telemetry/emit-event-receipt.mjs, plan/.telemetry-receipts/ |
 | Phase enum | The ordered five-value list of pipeline phase names (`discovery`, `plan`, `implement`, `validate-and-accept`, `ship`), previously exported by `phase-enum.mjs`. This feature deletes the module and states the five names directly in `pipeline-reference.md`. | PHASE_ENUM | planifest-zero/hooks/enforcement/phase-enum.mjs, planifest-zero/pipeline-reference.md |
-| Upgrade cleanup | The new setup-script behaviour, added by req-004, that strips a prior installation's telemetry wiring from an existing project on every setup run. | none | planifest-zero/setup.sh, planifest-zero/setup.ps1 |
+| Upgrade cleanup | The new setup-script behaviour, added by req-004, that strips a prior installation's telemetry wiring from an existing project on every setup run. A settings entry counts as telemetry only when its command runs a telemetry `<module>.mjs` at a path boundary, or its matcher is the telemetry MCP tool. | none | planifest-zero/setup.sh, planifest-zero/setup.ps1 |
 | Shared hook module | A Node module imported by more than one hook. `read-stdin.mjs` is the shared hook module that must survive, because six surviving enforcement hooks import it. | none | planifest-zero/hooks/enforcement/read-stdin.mjs |
 </content>

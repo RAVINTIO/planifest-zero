@@ -149,7 +149,7 @@ Gate accepted: P4 re-run after reversal (2026-10-16). Human confirmed continuous
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Telemetry | confirmed-disabled |
-| Notes | Gate A: docs/ exists. Gate B (continuous run, auto-accepted): this run removes telemetry from planifest-zero, keeps the product id, and tightens the setup cleanup, so about.md, architecture-overview.md, dependency-graph.md, component-registry.md, and decisions-index.md all need updating. No API, so no api-index.md. Dispatched two parallel agents: living docs, and recommendations plus iteration log plus drift check. |
+| Notes | Gate A: docs/ exists. Gate B (continuous run, auto-accepted): this run removes telemetry from planifest-zero, keeps the product id, and tightens the setup cleanup, so about.md, architecture-overview.md, dependency-graph.md, component-registry.md, and decisions-index.md all need updating. No API, so no api-index.md. Dispatched two parallel agents: living docs, and recommendations plus iteration log plus drift check. Living docs: all five updated to 0.4.0, consistency-check and self-description-check pass. Drift found: glossary "Upgrade cleanup" lacked the P5 match rule, and "Telemetry hook" did not explain the cleanup list differs, both fixed as deviation records. Risk R-001 marked mitigated and A-003 holds, per the security report. product.yml still reads 0.3.0, set at ship. planifest-framework/ carries its own component.yml, pre-existing on main. Filed backlog 0000093 (CI telemetry job), 0000094 (ps1 scalar wrap), and 0000095 (retire the cleanup) from the recommendations tables. Gate passed under continuous run. |
 
 ---
 
