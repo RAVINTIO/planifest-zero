@@ -40,6 +40,30 @@ jobs:
       - name: Verify README matches repository structure
         run: node planifest-zero/scripts/self-description-check.mjs .
 
+  # The PowerShell suites, run under both Windows hosts (0000036 ADR-003).
+  # run-tests.ps1 starts each suite with the host that runs it. The bash
+  # suites stay out of CI until backlog 0000097, because the rename suite
+  # fails while planifest-framework/ exists.
+  windows-powershell:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PowerShell suites on Windows PowerShell 5.1
+        shell: powershell
+        run: |
+          & ./planifest-zero/tests/run-tests.ps1
+          exit $LASTEXITCODE
+
+      - name: PowerShell suites on PowerShell 7
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: |
+          & ./planifest-zero/tests/run-tests.ps1
+          exit $LASTEXITCODE
+
   validate-telemetry-schema:
     runs-on: ubuntu-latest
     steps:
