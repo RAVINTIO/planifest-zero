@@ -22,13 +22,13 @@ PROJECT_OPERATIONS="$FRAMEWORK/project-operations.md"
 echo ""
 echo "=== req-005: plan/README.md folder table ==="
 
-assert_contains "state/" "$(grep '^| \`state/\`' "$PLAN_README")" \
+assert_contains "state/" "$(grep '^| [`]state/[`]' "$PLAN_README")" \
   "req-005: plan/README.md folder table has a state/ row"
 
 echo ""
 echo "=== req-005: plan/feature-structure.md layout diagram ==="
 
-LAYOUT_BLOCK="$(sed -n '/^plan\//,/^\`\`\`/p' "$FEATURE_STRUCTURE")"
+LAYOUT_BLOCK="$(sed -n '/^plan\//,/^[`][`][`]/p' "$FEATURE_STRUCTURE")"
 
 assert_contains "state/" "$(echo "$LAYOUT_BLOCK" | grep -- '-- state/')" \
   "req-005: plan/feature-structure.md layout block lists plan/state/"

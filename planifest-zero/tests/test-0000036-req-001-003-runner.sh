@@ -81,7 +81,7 @@ echo "=== req-003 (a): with no pwsh, PowerShell suites are skipped out loud ==="
 D="$(make_tests_dir)"
 echo 'exit 0' > "$D/tests/test-one.ps1"
 echo 'exit 0' > "$D/tests/regression/test-two.ps1"
-OUT="$(PLANIFEST_PWSH=/nonexistent/pwsh bash "$D/tests/run-tests.sh" 2>&1)"
+OUT="$(PLANIFEST_REQUIRE_PWSH=0 PLANIFEST_PWSH=/nonexistent/pwsh bash "$D/tests/run-tests.sh" 2>&1)"
 CODE=$?
 assert_contains "Skipped 2 PowerShell suites: pwsh not found" "$OUT" "req-003 (a): the skip line gives the count"
 assert_equals "0" "$CODE" "req-003 (a): a skip alone keeps exit 0"
