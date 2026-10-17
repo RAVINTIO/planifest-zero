@@ -275,6 +275,31 @@ function New-HookEntry {
     }
 }
 
+function Remove-PlanifestHookCommands {
+    # Filter one event's entries one command at a time (0000038 ADR-002).
+    # Each command that matches the pattern goes. An entry that had commands
+    # and has none left goes too. Any other entry keeps its remaining
+    # commands in their order. An entry with no commands, or whose hooks
+    # value is not an array, stays as it was. The kept commands go back into
+    # the entry as an array built with @(), never through the pipeline, so
+    # Windows PowerShell 5.1 can't unwrap a one-item array (0000035 ADR-002,
+    # 0000038 R-001). Callers wrap the output in @().
+    param($Entries, [string]$Pattern)
+    foreach ($entry in @($Entries)) {
+        $hooks = $null
+        if ($null -ne $entry) { $hooks = $entry.hooks }
+        if (-not ($hooks -is [array]) -or $hooks.Count -eq 0) { $entry; continue }
+        $keptHooks = @()
+        foreach ($hook in $hooks) {
+            if ("$($hook.command)" -cmatch $Pattern) { continue }
+            $keptHooks += $hook
+        }
+        if ($keptHooks.Count -eq 0) { continue }
+        if ($keptHooks.Count -ne $hooks.Count) { $entry.hooks = $keptHooks }
+        $entry
+    }
+}
+
 function Merge-EnforcementHookSettings {
     # Merge the six enforcement hooks into settings.json: gate-write,
     # ratchet-check, and em-dash-guard (PreToolUse), then
@@ -323,28 +348,24 @@ function Merge-EnforcementHookSettings {
             $existing.hooks.$eventName = @()
         }
 
-        # Merge PreToolUse. Remove every earlier entry for the three modules,
-        # on any matcher, so an old single Write|Edit entry goes too.
+        # Merge PreToolUse. Remove every earlier command for the three
+        # modules, on any matcher, so an old single Write|Edit entry goes too.
+        # A user command in the same entry stays (0000038 ADR-002).
         if (-not $existing.hooks.PreToolUse) {
             $existing.hooks | Add-Member -NotePropertyName 'PreToolUse' -NotePropertyValue @() -Force
         }
         # Case-sensitive, and only <module>.mjs at a path boundary (0000035 S-004).
-        $filtered = @($existing.hooks.PreToolUse | Where-Object {
-            -not ($_.hooks | Where-Object {
-                "$($_.command)" -cmatch '(^|[\s"''/\\])(gate-write|ratchet-check|em-dash-guard)\.mjs\b'
-            })
-        })
+        $filtered = @(Remove-PlanifestHookCommands -Entries $existing.hooks.PreToolUse `
+            -Pattern '(^|[\s"''/\\])(gate-write|ratchet-check|em-dash-guard)\.mjs\b')
         $existing.hooks.PreToolUse = $filtered + $preToolEntries
 
-        # Merge UserPromptSubmit. Remove stale entries, append fresh ones in order.
+        # Merge UserPromptSubmit. Remove stale commands one at a time, then
+        # append fresh entries in order (0000038 ADR-002).
         if (-not $existing.hooks.UserPromptSubmit) {
             $existing.hooks | Add-Member -NotePropertyName 'UserPromptSubmit' -NotePropertyValue @() -Force
         }
-        $filtered = @($existing.hooks.UserPromptSubmit | Where-Object {
-            -not ($_.hooks | Where-Object {
-                "$($_.command)" -cmatch '(^|[\s"''/\\])(auto-trigger-orchestrator|check-orchestrator-presence|check-design)\.mjs\b'
-            })
-        })
+        $filtered = @(Remove-PlanifestHookCommands -Entries $existing.hooks.UserPromptSubmit `
+            -Pattern '(^|[\s"''/\\])(auto-trigger-orchestrator|check-orchestrator-presence|check-design)\.mjs\b')
         $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
 
         Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 10)
