@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000035-powershell-setup-parity
+Last updated: 0000036-test-runner-coverage
 
 ## Registry
 

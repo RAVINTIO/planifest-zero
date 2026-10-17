@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000035-powershell-setup-parity
+Last updated: 0000036-test-runner-coverage
 
 ## What this repo is
 
@@ -97,11 +97,21 @@ Setup is safe to re-run on a project that an older release installed.
 
 Each prints one warning and setup skips it. After `--backend-url`, setup also skips the next argument, unless that argument is a flag or a tool name. Setup never prints or stores that value, in either the spaced or the `=` form. Any other unknown flag still exits 1, and its error shows the flag name only. Matching is exact and case-sensitive in both scripts. The tool name also matches exactly.
 
+PowerShell 7 splits an argument such as `--backend-url=https://x` at its first colon. `setup.ps1` skips the rest of the value too, and never prints a tool name that isn't a plain name.
+
 **Atomic settings writes.** Every `settings.json` write goes to `settings.json.planifest-tmp` in the same folder first, then replaces the target. So `settings.json` is always the old file or the new one. Setup removes a leftover temporary file before it writes, and creates the new one exclusively, so it never follows a planted link. The new file keeps the original's mode, or its ACL on Windows. Setup leaves a read-only `settings.json` unchanged. `setup.sh` writes a symlinked `settings.json` through to its real file. Other files setup writes, such as the boot file, are rewritten whole on each run.
 
 **Leftover temporary file.** Each run removes a leftover `settings.json.planifest-tmp` before its first settings write, even when `node` is missing. It removes a file or a link, never a folder, and never follows a link.
 
 **Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same six hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
+
+---
+
+## Tests
+
+`planifest-zero/tests/run-tests.sh` runs every Bash and PowerShell suite. Before any suite runs, it checks every file under `tests/`. A file that is neither a suite nor on its known list fails the run, and the runner names it. Without `pwsh`, it prints how many PowerShell suites it skipped.
+
+The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them under Windows PowerShell 5.1 and PowerShell 7. The Bash suites run only locally until backlog 0000097 lands.
 
 ---
 
