@@ -1,0 +1,204 @@
+---
+title: "Build Log - 0000037-self-host-on-planifest-zero"
+summary: "Working telemetry file maintained by the orchestrator throughout the pipeline run."
+---
+# Build Log - 0000037-self-host-on-planifest-zero
+
+> Created at P0. Appended by the orchestrator at each phase boundary. Survives session changes.
+
+## Header
+
+| Field | Value |
+|-------|-------|
+| Feature ID | `0000037-self-host-on-planifest-zero` |
+| Pipeline start | `2026-10-17T01:53:08Z` |
+| Tool | `claude-code` |
+| Primary model | `claude-opus-5-5` |
+| Cheaper model | `claude-haiku-4-5` |
+
+---
+
+## Phase Log
+
+### P0: Assess & Coach
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T01:53:08Z` |
+| Model tier | primary |
+| Skills loaded | planifest-orchestrator |
+| Agents spawned | `4` (Scope Lock drafts) |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Telemetry | confirmed-disabled (0000033 removed telemetry) |
+| Notes | Branch `feat/0000037-self-host-on-planifest-zero` stacks on `feat/0000036-test-runner-coverage`, because PR #9 and PR #10 are open. |
+
+Adoption mode: standard-iterative, detected from `plan/_archive/` and `docs/about.md`.
+Backlog pickup proposal: pull in 0000097. Discard 0000086, 0000089, and 0000093, which are superseded by 0000097. Leave 0000108 and every other entry.
+
+Scope Lock drafts: 4 of 4 dispatches completed. Two gaps folded into the draft design before presentation. `core.hooksPath` points at `planifest-framework/hooks` (R-005, req-004). The custom-004 override names P9 (req-005).
+
+P0 exchange (backlog): Q: pull in 0000097, discard 0000086, 0000089, and 0000093, leave 0000108? / A: agreed. 0000097 folded into the brief. The three superseded entries are discarded.
+P0 exchange (version): Q: 0.4.4? / A: agreed.
+P0 exchange (run mode): Q: continuous? / A: agreed.
+P0 exchange (branch): Q: stack on PR #10? / A: agreed.
+P0 exchange (deferred reinstall): Q: human runs planifest-zero/setup.sh claude-code after merging? / A: agreed.
+Scope Lock (happy path): no old folder, a flag-free record, 0 failing local suites, green CI with no telemetry job, then the human reinstall. [source: agent-draft-accepted]
+Scope Lock (first-run path): a fresh clone installs the five-phase skills on setup. The writtenAt diff is expected and committed with the reinstall. [source: agent-draft-accepted]
+Scope Lock (error path): silent guard loss is the likeliest failure. req-004 fixes core.hooksPath first. A missing planifest-zero file stops the phase for direction. [source: agent-draft-accepted]
+Scope Lock (cross-session continuity): commits and sentinels allow resume. Load the orchestrator by name after req-004. A squash merge of #9 or #10 means a cherry-pick rebuild onto main. [source: agent-draft-accepted]
+Scope Lock complete. All four scenario paths captured.
+Design confirmed: 2026-10-17T01:58:09Z
+Version confirmed: 0.4.4
+Gate accepted: P0 (2026-10-17T01:58:09Z)
+
+Rebuild: PR #9 squash-merged at 2026-10-17T01:59:47Z, so PR #10 conflicted. I cherry-picked 0000036 onto `feat/0000036-test-runner-coverage-v2` from `main`, then this run onto `feat/0000037-self-host-on-planifest-zero-v2`. No force push.
+
+Rebuild: PR #11 squash-merged at 2026-10-17T09:36:56Z. I cherry-picked this run onto `feat/0000037-self-host-on-planifest-zero-v3` from `main`. PR #10 is closed. No force push.
+
+P0 exchange (scope extension): Q: add 0000108, 0000106, 0000107, and 0000103 as req-006 to req-009, at version 0.5.0? Hold 0000095 and 0000098 to 0000101. / A: yes, all as recommended. Human asked for a larger run.
+P0 exchange (backlog filing): human asked for a release-sizing backlog item. Filed 0000109.
+Version confirmed: 0.5.0 (supersedes 0.4.4)
+Design re-confirmed: 2026-10-17T09:43:01Z
+
+### P1: Spec
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T10:05:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-orchestrator, planifest-spec-agent |
+| Agents spawned | `3` (requirements 001 to 005, requirements 006 to 009, plan artifacts) |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Telemetry | confirmed-disabled |
+| Notes | Resumed from `pause.md`. The human asked mid-run to build as fast as possible with multiple subagents, and to file a backlog item for subagent acceleration. Filed 0000110. |
+
+### P2: ADRs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T10:12:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-adr-agent |
+| Agents spawned | `2` (ADR-001 and ADR-002, ADR-003 and ADR-004) |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Telemetry | confirmed-disabled |
+| Notes | P2 overlaps P1, because each ADR derives from the confirmed design alone. The human asked for maximum parallelism. |
+
+P1 complete: 9 requirement files, execution plan, scope, risk register, and glossary. Gaps resolved by the orchestrator within the confirmed design: CI skips the `core.hooksPath` check, req-006 owns the tests README CI section, the override says "the ship phase", falsy hook values warn, and R-010 covers `.ps1` suites on Linux. Filed backlog 0000111 for `UserPromptSubmit` filter parity.
+Gate: P1 (continuous run, no stop)
+
+### P3: Codegen
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T10:25:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-codegen-agent |
+| Agents spawned | `6` in batch 1 (req-001, req-002, req-003, req-005, req-009, and req-007 with req-008) |
+| MCP calls | `0` |
+| Parallel task batches | `3` planned (batch 1, then req-004, then req-006) |
+| Telemetry | confirmed-disabled |
+| Notes | P3 batch 1 overlaps the end of P2. ADR-001 and ADR-002 are committed. ADR-003 and ADR-004 are in progress, and their requirement files already state the decisions. Each subagent runs its own TDD cycle inline, to cut dispatch overhead. |
+
+P2 complete: ADR-001 to ADR-004. The orchestrator aligned the ADR-004 conflict definition with req-009. ADR-003 adds that the req-008 warning prints the replaced value as compact JSON.
+Gate: P2 (continuous run, no stop)
+
+P3 batch 1 results: req-001, req-002, req-003, req-005, and req-009 GREEN and committed.
+Deviation: req-001 removed the telemetry job, which held the five phase names that case (e) of `test-0000031-req-003-five-phases.sh` checked. The orchestrator removed case (e).
+
+P3 batch 2: req-004 GREEN. `core.hooksPath` set to `planifest-zero/hooks`, then `git rm -r` of the old folder (1096 files). The rename suite passes all 13 checks.
+P3 batch 3: req-006 GREEN. The `bash-suites` job is added, and the tests README describes it.
+Full local run: 65 feature suites and 16 regression suites pass, 0 fail. 3 PowerShell suites skip because `pwsh` isn't installed locally.
+Deviation: AC 14 (`setup.ps1` on both hosts) is unverified locally. The `windows-powershell` and `bash-suites` CI jobs prove it on the PR.
+Gate: P3 (continuous run, no stop)
+
+### P4: Validate
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:20:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-validate-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | The branch is pushed and a draft PR is open early, so CI runs while P5 and P6 proceed. |
+P6 Gate B (continuous run, auto-accepted): the run removes the old framework copy, adds the bash-suites CI job, and fixes setup hook merging. Updated: architecture-overview, component-registry, dependency-graph, decisions-index, about.md, README.md, product.yml, component.yml.
+
+P4 CI run 1 on PR #12: `windows-powershell` passed, which proves AC 14 on both hosts. `bash-suites` failed 3 suites on Linux (R-007). Causes: the 0000036 runner suite inherited `PLANIFEST_REQUIRE_PWSH=1`, GNU `stat -f` reads file system details, and GNU `grep` and `sed` read a backslash-backtick as a buffer anchor. Self-correction 1 fixed all three, plus the two regression copies.
+
+### P5: Security
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:22:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-security-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` (with P4 CI and P6) |
+| Telemetry | confirmed-disabled |
+| Notes | Risk Low. Findings S-001 to S-004 Low, S-005 and S-006 Info. No critical, high, or medium finding, so P5 proceeds without a stop. S-001 filed as backlog 0000112. S-004 goes in the PR description. |
+
+### P6: Docs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:22:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-docs-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` (with P4 CI and P5) |
+| Telemetry | confirmed-disabled |
+| Notes | Version records at 0.5.0. Living docs updated. Drift fixed: a retired flag in `README.md` and a stale table in `docs/about.md`. The shipped workflow lacks a `permissions` block, recorded in `recommendations.md`. |
+
+P4 CI run 2 on PR #12 at `87d67ec`: `bash-suites`, `windows-powershell`, `validate-branch`, and `self-description-check` all pass. Self-corrections: 1.
+Gate: P4 (continuous run, no stop)
+Gate: P5 (risk Low, no stop)
+Gate: P6 (continuous run, no stop)
+
+### P7: Archive
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:45:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Regression candidates: req-007 and req-008 suites. Human chose to promote both. |
+P7: changelog, test report, and `.feature-id` written. 2 suites promoted. Archived to `plan/_archive/0000037-self-host-on-planifest-zero-2026-10-17/`.
+
+### P8: Build Assessment
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:55:00Z` |
+| Model tier | cheaper |
+| Skills loaded | planifest-build-assessment-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+
+P8: Complete. `build-report.md` written. The orchestrator corrected the iteration log, which said P4 had no self-corrections.
+
+### P9: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T12:00:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Version 0.5.0 from `product-version.mjs`. The custom-004 override selects option [1]. PR #12 already exists as a draft, so P9 updates its description and marks it ready. |

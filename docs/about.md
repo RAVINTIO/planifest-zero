@@ -1,6 +1,6 @@
 ---
-version: "0.4.3"
-feature: "0000036-test-runner-coverage"
+version: "0.5.0"
+feature: "0000037-self-host-on-planifest-zero"
 updated: "17 Oct 2026"
 ---
 # About
@@ -10,9 +10,9 @@ updated: "17 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.4.1` |
-| Last feature | `0000034-setup-hardening` |
-| Updated | `16 Oct 2026` |
+| Version | `0.5.0` |
+| Last feature | `0000037-self-host-on-planifest-zero` |
+| Updated | `17 Oct 2026` |
 
 ## What this is
 

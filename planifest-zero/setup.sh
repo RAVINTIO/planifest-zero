@@ -452,7 +452,7 @@ install_enforcement_hooks() {
   local design_cmd="node \"$hooks_dir_rel/check-design.mjs\""
 
   if command -v node >/dev/null 2>&1; then
-    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
+    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" PLANIFEST_SETTINGS_REL="$settings_rel" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
       const fs = require("fs"), path = require("path");
       const gate     = process.env.PLANIFEST_GATE;
       const ratchet  = process.env.PLANIFEST_RATCHET;
@@ -464,13 +464,26 @@ install_enforcement_hooks() {
       let s = {};
       if (fs.existsSync(sf)) s = JSON.parse(fs.readFileSync(sf,"utf8").replace(/^\uFEFF/,""));
       s.hooks = s.hooks || {};
+      // A present value that is not an array is non-array (0000037 ADR-003).
+      // Warn, print the old value, and replace it with the Planifest entries.
+      // An absent or null value gets the entries with no warning. setup.ps1
+      // prints the same text.
+      for (const ev of ["PreToolUse", "UserPromptSubmit"]) {
+        const v = s.hooks[ev];
+        if (v === undefined || v === null || Array.isArray(v)) continue;
+        process.stderr.write("  ! Warning: hooks." + ev + " in " + process.env.PLANIFEST_SETTINGS_REL +
+          " is not an array. Setup replaced it with the Planifest entries. Old value: " +
+          JSON.stringify(v) + "\n");
+        s.hooks[ev] = [];
+      }
       // PreToolUse: gate-write + ratchet-check + em-dash-guard for Write and Edit
-      // (idempotent: remove then re-add)
+      // (idempotent: remove then re-add). Remove every earlier entry for the
+      // three modules on any matcher, so an old Write|Edit entry goes too
+      // (0000037 ADR-003). The rule matches setup.ps1. It is case-sensitive,
+      // and only <module>.mjs at a path boundary counts (0000035 S-004).
+      const preToolModule = /(^|[\s"\x27\/\\])(gate-write|ratchet-check|em-dash-guard)\.mjs\b/;
       s.hooks.PreToolUse = (s.hooks.PreToolUse || [])
-        .filter(h => !["Write","Edit"].includes(h.matcher) ||
-                     !(h.hooks||[]).some(e => (e.command||"").includes("gate-write") ||
-                                              (e.command||"").includes("ratchet-check") ||
-                                              (e.command||"").includes("em-dash-guard")));
+        .filter(h => !(h.hooks||[]).some(e => preToolModule.test(String(e.command||""))));
       s.hooks.PreToolUse.push(
         {matcher:"Write", hooks:[{type:"command",command:gate}]},
         {matcher:"Edit",  hooks:[{type:"command",command:gate}]},

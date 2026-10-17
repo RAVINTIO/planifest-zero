@@ -120,6 +120,20 @@
       "promotionDate": "2026-10-17",
       "promotedBy": "human",
       "filePath": "tests/regression/test-0000036-req-001-003-runner.sh"
+    },
+    {
+      "name": "test-0000037-req-007-sh-filter-any-matcher.sh",
+      "sourceFeature": "0000037-self-host-on-planifest-zero",
+      "promotionDate": "2026-10-17",
+      "promotedBy": "human",
+      "filePath": "tests/regression/test-0000037-req-007-sh-filter-any-matcher.sh"
+    },
+    {
+      "name": "test-0000037-req-008-non-array-hook-events.sh",
+      "sourceFeature": "0000037-self-host-on-planifest-zero",
+      "promotionDate": "2026-10-17",
+      "promotedBy": "human",
+      "filePath": "tests/regression/test-0000037-req-008-non-array-hook-events.sh"
     }
   ]
 }

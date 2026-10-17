@@ -283,7 +283,8 @@ function Merge-EnforcementHookSettings {
     # matcher, and order (0000035 ADR-001), and a parity suite checks it.
     param(
         [string]$SettingsPath,
-        [string]$HooksDir
+        [string]$HooksDir,
+        [string]$SettingsRel = '.claude/settings.json'
     )
 
     $preToolEntries = @(
@@ -305,6 +306,21 @@ function Merge-EnforcementHookSettings {
 
         if (-not $existing.hooks) {
             $existing | Add-Member -NotePropertyName 'hooks' -NotePropertyValue ([PSCustomObject]@{}) -Force
+        }
+
+        # A present value that is not an array is non-array (0000037 ADR-003).
+        # Warn, print the old value, and replace it with the Planifest
+        # entries. An absent or null value gets the entries with no warning.
+        # Test the property directly, never through the pipeline, so Windows
+        # PowerShell 5.1 can't unwrap or wrap it (0000035 ADR-002). setup.sh
+        # prints the same text.
+        foreach ($eventName in @('PreToolUse', 'UserPromptSubmit')) {
+            $prop = $existing.hooks.PSObject.Properties[$eventName]
+            if ($null -eq $prop -or $null -eq $prop.Value) { continue }
+            if ($prop.Value -is [array]) { continue }
+            $oldValue = ConvertTo-Json -InputObject $prop.Value -Compress -Depth 10
+            [Console]::Error.WriteLine("  ! Warning: hooks.$eventName in $SettingsRel is not an array. Setup replaced it with the Planifest entries. Old value: $oldValue")
+            $existing.hooks.$eventName = @()
         }
 
         # Merge PreToolUse. Remove every earlier entry for the three modules,
@@ -526,7 +542,7 @@ function Install-EnforcementHooks {
         Write-Host "  + $HooksDirRel/$($_.Name)"
     }
 
-    Merge-EnforcementHookSettings -SettingsPath $settings -HooksDir $HooksDirRel
+    Merge-EnforcementHookSettings -SettingsPath $settings -HooksDir $HooksDirRel -SettingsRel $SettingsRel
 }
 
 function Invoke-PlanifestGuardrails {

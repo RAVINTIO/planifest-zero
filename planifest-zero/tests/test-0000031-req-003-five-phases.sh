@@ -23,11 +23,8 @@ for old in spec adr codegen security docs; do
   assert_equals "0" "$(grep -c "\`$old\`" "$REF" || true)" "old phase name $old gone from pipeline-reference"
 done
 
-echo "=== (e) CI posts all five phase names ==="
-CI="$REPO/.github/workflows/planifest.yml"
-for p in discovery plan implement validate-and-accept ship; do
-  assert_contains "$p" "$(cat "$CI")" "CI references phase $p"
-done
+# Case (e) checked the phase names in the validate-telemetry-schema job.
+# 0000037 req-001 removed that job, so the case is gone.
 
 echo "=== (f) NFR: skills text at or below 1447 lines ==="
 TOTAL=$(find "$FRAMEWORK/skills" -name "SKILL.md" -exec cat {} + | wc -l | tr -d ' ')

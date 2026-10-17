@@ -96,7 +96,8 @@ assert_equals "victim" "$(cat ../victim-$$.txt)" \
   "req-003 (d): a symlink at the temporary path is never followed"
 assert_equals "no" "$([ -L .claude/settings.json ] && echo yes || echo no)" \
   "req-003 (d): settings.json is a regular file, not the planted link"
-MODE="$(stat -f '%Lp' .claude/settings.json 2>/dev/null || stat -c '%a' .claude/settings.json)"
+# GNU stat takes -c. BSD stat takes -f, which GNU reads as a file system query.
+MODE="$(stat -c '%a' .claude/settings.json 2>/dev/null || stat -f '%Lp' .claude/settings.json)"
 assert_equals "600" "$MODE" "req-003 (d): settings.json keeps its 600 mode"
 rm -f ../victim-$$.txt
 cd /; rm -rf "$WS"
