@@ -37,7 +37,8 @@ while ($i -lt $args.Count) {
         if ($isBackendUrl -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
         continue
     }
-    switch ($args[$i]) {
+    # Case-sensitive, the same as setup.sh (0000035 ADR-003).
+    switch -CaseSensitive ($args[$i]) {
         '--strict-orchestrator' { $StrictOrchestrator = $true; $i++ }
         default {
             if ($args[$i] -like '-*') { Write-Host "Unknown flag: $(("$($args[$i])" -split '=', 2)[0])"; exit 1 }
@@ -214,6 +215,19 @@ function Copy-PlanifestWorkflow {
 # atomic and keeps the original's ACL and attributes. A new file is moved into
 # place. A read-only settings.json stays unchanged. Any leftover temporary
 # file is removed first, so a planted link at that path is never followed.
+function Remove-SettingsTmpEntry {
+    # Remove a file or link at the temporary path without following a link
+    # (0000035 S-002, S-003). FileInfo reads the entry itself, so a dangling
+    # link is found too. A plain folder stays, and the write that follows fails.
+    param([string]$Tmp)
+    $info = New-Object System.IO.FileInfo $Tmp
+    if ([int]$info.Attributes -eq -1) { return }
+    $isLink = $info.Attributes -band [System.IO.FileAttributes]::ReparsePoint
+    $isFolder = $info.Attributes -band [System.IO.FileAttributes]::Directory
+    if ($isLink -and $isFolder) { [System.IO.Directory]::Delete($Tmp) }
+    elseif (-not $isFolder) { [System.IO.File]::Delete($Tmp) }
+}
+
 function Write-SettingsAtomic {
     param([string]$Path, [string]$Json)
     $full = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
@@ -222,9 +236,11 @@ function Write-SettingsAtomic {
     if ($existing -and $existing.IsReadOnly) {
         throw "settings.json is read-only: $Path"
     }
-    Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+    try { Remove-SettingsTmpEntry -Tmp $tmp } catch { }
     try {
-        Set-Content -LiteralPath $tmp -Value $Json -Encoding UTF8 -ErrorAction Stop
+        # UTF-8 with no BOM on both PowerShell versions, as setup.sh writes
+        # (0000035 S-001).
+        [System.IO.File]::WriteAllText($tmp, $Json + "`n", (New-Object System.Text.UTF8Encoding $false))
         if ($existing) {
             [System.IO.File]::Replace($tmp, $full, [NullString]::Value)
         }
@@ -235,66 +251,76 @@ function Write-SettingsAtomic {
     catch {
         # Remove the temporary file only while the original is still there.
         if (Test-Path -LiteralPath $full) {
-            Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
+            try { Remove-SettingsTmpEntry -Tmp $tmp } catch { }
         }
         throw
     }
 }
 
+function New-HookEntry {
+    # One settings.json hook entry: a matcher and one node command.
+    param([string]$Matcher, [string]$Module, [string]$HooksDir)
+    [ordered]@{
+        matcher = $Matcher
+        hooks   = @([ordered]@{ type = 'command'; command = "node `"$HooksDir/$Module.mjs`"" })
+    }
+}
+
 function Merge-EnforcementHookSettings {
-    # Merge gate-write (PreToolUse), auto-trigger-orchestrator,
-    # check-orchestrator-presence, and check-design (UserPromptSubmit) into
-    # settings.json. Idempotent.
+    # Merge the six enforcement hooks into settings.json: gate-write,
+    # ratchet-check, and em-dash-guard (PreToolUse), then
+    # auto-trigger-orchestrator, check-orchestrator-presence, and check-design
+    # (UserPromptSubmit). Idempotent. The entries match setup.sh in event,
+    # matcher, and order (0000035 ADR-001), and a parity suite checks it.
     param(
         [string]$SettingsPath,
         [string]$HooksDir
     )
 
-    $preToolEntry = @{
-        matcher = 'Write|Edit'
-        hooks   = @(@{ type = 'command'; command = "node $HooksDir/gate-write.mjs" })
-    }
-    $autoTriggerEntry = @{
-        matcher = '.*'
-        hooks   = @(@{ type = 'command'; command = "node $HooksDir/auto-trigger-orchestrator.mjs" })
-    }
-    $presenceEntry = @{
-        matcher = '.*'
-        hooks   = @(@{ type = 'command'; command = "node $HooksDir/check-orchestrator-presence.mjs" })
-    }
-    $userPromptEntry = @{
-        matcher = '.*'
-        hooks   = @(@{ type = 'command'; command = "node $HooksDir/check-design.mjs" })
-    }
+    $preToolEntries = @(
+        (New-HookEntry 'Write' 'gate-write' $HooksDir),
+        (New-HookEntry 'Edit' 'gate-write' $HooksDir),
+        (New-HookEntry 'Write' 'ratchet-check' $HooksDir),
+        (New-HookEntry 'Edit' 'ratchet-check' $HooksDir),
+        (New-HookEntry 'Write' 'em-dash-guard' $HooksDir),
+        (New-HookEntry 'Edit' 'em-dash-guard' $HooksDir)
+    )
+    $userPromptEntries = @(
+        (New-HookEntry '.*' 'auto-trigger-orchestrator' $HooksDir),
+        (New-HookEntry '.*' 'check-orchestrator-presence' $HooksDir),
+        (New-HookEntry '.*' 'check-design' $HooksDir)
+    )
 
     if (Test-Path $SettingsPath) {
-        $existing = Get-Content -Raw -Path $SettingsPath | ConvertFrom-Json
+        $existing = Get-Content -Raw -Path $SettingsPath -Encoding UTF8 | ConvertFrom-Json
 
         if (-not $existing.hooks) {
             $existing | Add-Member -NotePropertyName 'hooks' -NotePropertyValue ([PSCustomObject]@{}) -Force
         }
 
-        # Merge PreToolUse — remove stale gate-write entry, append fresh one
+        # Merge PreToolUse. Remove every earlier entry for the three modules,
+        # on any matcher, so an old single Write|Edit entry goes too.
         if (-not $existing.hooks.PreToolUse) {
             $existing.hooks | Add-Member -NotePropertyName 'PreToolUse' -NotePropertyValue @() -Force
         }
+        # Case-sensitive, and only <module>.mjs at a path boundary (0000035 S-004).
         $filtered = @($existing.hooks.PreToolUse | Where-Object {
-            -not ($_.hooks | Where-Object { $_.command -match 'gate-write' })
+            -not ($_.hooks | Where-Object {
+                "$($_.command)" -cmatch '(^|[\s"''/\\])(gate-write|ratchet-check|em-dash-guard)\.mjs\b'
+            })
         })
-        $existing.hooks.PreToolUse = $filtered + $preToolEntry
+        $existing.hooks.PreToolUse = $filtered + $preToolEntries
 
-        # Merge UserPromptSubmit — remove stale entries, append fresh ones in order
+        # Merge UserPromptSubmit. Remove stale entries, append fresh ones in order.
         if (-not $existing.hooks.UserPromptSubmit) {
             $existing.hooks | Add-Member -NotePropertyName 'UserPromptSubmit' -NotePropertyValue @() -Force
         }
         $filtered = @($existing.hooks.UserPromptSubmit | Where-Object {
             -not ($_.hooks | Where-Object {
-                $_.command -match 'auto-trigger-orchestrator' -or
-                $_.command -match 'check-orchestrator-presence' -or
-                $_.command -match 'check-design'
+                "$($_.command)" -cmatch '(^|[\s"''/\\])(auto-trigger-orchestrator|check-orchestrator-presence|check-design)\.mjs\b'
             })
         })
-        $existing.hooks.UserPromptSubmit = $filtered + $autoTriggerEntry + $presenceEntry + $userPromptEntry
+        $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
 
         Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 10)
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
@@ -305,8 +331,8 @@ function Merge-EnforcementHookSettings {
 
         $settings = [PSCustomObject]@{
             hooks = [PSCustomObject]@{
-                PreToolUse       = @($preToolEntry)
-                UserPromptSubmit = @($autoTriggerEntry, $presenceEntry, $userPromptEntry)
+                PreToolUse       = @($preToolEntries)
+                UserPromptSubmit = @($userPromptEntries)
             }
         }
         Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
@@ -319,19 +345,27 @@ function Merge-AllowedTools {
     # Preserves existing allowedTools entries — additive merge only.
     param([string]$SettingsPath)
 
-    $settings = @{}
+    # Plain ConvertFrom-Json, with no hashtable switch, so this runs on Windows
+    # PowerShell 5.1 (0000035 ADR-002).
+    $settings = [PSCustomObject]@{}
     if (Test-Path $SettingsPath) {
         $raw = Get-Content -Raw -Path $SettingsPath -Encoding UTF8
-        $settings = $raw | ConvertFrom-Json -AsHashtable -ErrorAction SilentlyContinue
-        if (-not $settings) { $settings = @{} }
+        try { $parsed = $raw | ConvertFrom-Json -ErrorAction Stop } catch { $parsed = $null }
+        if ($parsed -isnot [System.Management.Automation.PSCustomObject]) {
+            # Never overwrite a file that isn't a JSON object (0000035 S-006).
+            Write-Warning "Could not read .claude/settings.json as a JSON object, so Agent was not added to allowedTools"
+            return
+        }
+        $settings = $parsed
     }
 
-    $existing = if ($settings.ContainsKey('allowedTools') -and $settings['allowedTools']) {
-        @($settings['allowedTools'])
+    # A non-array allowedTools counts as empty, as in setup.sh.
+    $existing = if ($settings.PSObject.Properties['allowedTools'] -and $settings.allowedTools -is [System.Array]) {
+        @($settings.allowedTools)
     } else { @() }
 
-    if ($existing -notcontains 'Agent') {
-        $settings['allowedTools'] = $existing + @('Agent')
+    if ($existing -cnotcontains 'Agent') {
+        $settings | Add-Member -NotePropertyName 'allowedTools' -NotePropertyValue ($existing + @('Agent')) -Force
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
         Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
@@ -339,6 +373,16 @@ function Merge-AllowedTools {
     } else {
         Write-Host "  - .claude/settings.json (Agent already in allowedTools)"
     }
+}
+
+function Remove-LeftoverSettingsTmp {
+    # Remove the temporary file a hard stop left between the write and the
+    # rename (0000035 ADR-003, backlog 0000104). Runs before the first
+    # settings.json writer. A folder stays. A link goes without its target.
+    param([string]$SettingsRel)
+    $tmp = Join-Path $ProjectRoot "$SettingsRel.planifest-tmp"
+    # Silent, as in setup.sh. The next atomic write replaces it anyway.
+    try { Remove-SettingsTmpEntry -Tmp $tmp } catch { }
 }
 
 # Telemetry hook module names a pre-0000033 project may still reference from
@@ -372,7 +416,7 @@ function Remove-LegacyTelemetryWiring {
     if (Test-Path $settings) {
         try {
             # The raw contents are never logged (req-004 logging policy).
-            $existing = Get-Content -Raw -Path $settings -ErrorAction Stop | ConvertFrom-Json
+            $existing = Get-Content -Raw -Path $settings -Encoding UTF8 -ErrorAction Stop | ConvertFrom-Json
             $removed = 0
             # Case-sensitive, and only `<module>.mjs` at a path boundary, to
             # match setup.sh. A bare substring would also catch a user hook
@@ -381,6 +425,8 @@ function Remove-LegacyTelemetryWiring {
 
             if ($existing.hooks) {
                 foreach ($event in @($existing.hooks.PSObject.Properties.Name)) {
+                    # A non-array value stays as it was, as in setup.sh (0000035 req-002).
+                    if ($existing.hooks.$event -isnot [System.Array]) { continue }
                     $entries = @($existing.hooks.$event)
                     $kept = @()
                     foreach ($entry in $entries) {
@@ -443,7 +489,7 @@ function Remove-LegacyTelemetryWiring {
 }
 
 function Install-EnforcementHooks {
-    # Copy gate-write.mjs + check-design.mjs and wire settings.json.
+    # Copy the enforcement hook modules and wire all six into settings.json.
     # Always runs — no flag required.
     param(
         [string]$HooksSrcRel,
@@ -515,7 +561,7 @@ function Invoke-PlanifestGuardrails {
         }
     }
 
-    Write-Host "  `u{2705} Git guardrails activated."
+    Write-Host "  $([char]0x2705) Git guardrails activated."
 }
 
 function Initialize-PlanifestRepo {
@@ -884,6 +930,7 @@ function Invoke-PlanifestSetup {
     # Ordered BEFORE the enforcement hook install so that install is the last
     # writer of settings.json this run.
     if ($toolConfig.SettingsFile) {
+        Remove-LeftoverSettingsTmp -SettingsRel $toolConfig.SettingsFile
         Remove-LegacyTelemetryWiring -SettingsRel $toolConfig.SettingsFile
     }
 
@@ -1063,10 +1110,9 @@ if ($StrictOrchestrator) {
     Write-Host "  + plan/.orchestrator-strict (strict orchestrator mode enabled)"
 }
 
-$ToolLower = $Tool.ToLower()
-
-if ($ValidTools -contains $ToolLower) {
-    Invoke-PlanifestSetup -ToolName $ToolLower
+# Exact, case-sensitive match, the same as setup.sh (0000035 S-008).
+if ($ValidTools -ccontains $Tool) {
+    Invoke-PlanifestSetup -ToolName $Tool
 }
 else {
     Write-Host "Unknown tool: $Tool"

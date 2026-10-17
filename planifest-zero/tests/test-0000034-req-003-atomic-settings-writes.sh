@@ -143,7 +143,7 @@ assert_equals "yes" "$(grep -q '\[System.IO.File\]::Replace(\$tmp, \$full' "$PS1
   "req-003 (c): setup.ps1 swaps an existing settings.json with File.Replace"
 assert_equals "0" "$(grep -c 'Move-Item .*-Force' "$PS1" || true)" \
   "req-003 (c): setup.ps1 never uses Move-Item -Force, which deletes the target first"
-assert_equals "yes" "$(grep -q 'IsReadOnly' "$PS1" && grep -q 'Remove-Item -LiteralPath \$tmp' "$PS1" && echo yes || echo no)" \
+assert_equals "yes" "$(grep -q 'IsReadOnly' "$PS1" && grep -q 'Remove-SettingsTmpEntry -Tmp \$tmp' "$PS1" && echo yes || echo no)" \
   "req-003 (c): setup.ps1 refuses a read-only target and clears a leftover first"
 
 print_summary

@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000034-setup-hardening
+Last updated: 0000035-powershell-setup-parity
 
 ## Component dependency diagram
 
