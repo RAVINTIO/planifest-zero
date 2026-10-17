@@ -123,4 +123,22 @@ assert_equals "1" "$(node -e 'console.log(JSON.parse(require("fs").readFileSync(
   "req-001 (c): the top-level key keep survives"
 rm -rf "$WS"
 
+echo ""
+echo "=== req-001: a hook entry whose hooks is not an array stays as it was ==="
+
+# The entry keeps its one object, even though that command is a Planifest one.
+# The setup.ps1 suite plants the same entry, so both scripts must agree.
+WS="$(new_workspace)"
+cat > "$WS/.claude/settings.json" <<'JSON'
+{"hooks":{"PreToolUse":[{"matcher":"Write","hooks":{"type":"command","command":"node .claude/hooks/enforcement/gate-write.mjs"}}]}}
+JSON
+run_setup "$WS"
+assert_exit_zero "$?" "req-001: setup.sh exits 0 with a non-array hooks value"
+assert_equals '{"matcher":"Write","hooks":{"type":"command","command":"node .claude/hooks/enforcement/gate-write.mjs"}}' \
+  "$(node -e 'console.log(JSON.stringify(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks.PreToolUse[0]))' "$WS/.claude/settings.json")" \
+  "req-001: the non-array hook entry stays first and unchanged"
+assert_equals "7" "$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks.PreToolUse.length)' "$WS/.claude/settings.json")" \
+  "req-001: the six fresh PreToolUse entries follow it"
+rm -rf "$WS"
+
 print_summary

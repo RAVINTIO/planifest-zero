@@ -476,14 +476,30 @@ install_enforcement_hooks() {
           JSON.stringify(v) + "\n");
         s.hooks[ev] = [];
       }
+      // Per-command filter (0000038 ADR-002). For each hook entry, remove each
+      // Planifest command of that event. Drop the entry if it had commands and
+      // none remain. Otherwise keep it with its user commands in their order.
+      // An entry whose hooks value is not an array, or is empty, stays as it
+      // was. The fresh Planifest entries are appended afterwards. The match is
+      // case-sensitive, and only <module>.mjs at a path boundary counts
+      // (0000035 S-004). The rule matches setup.ps1.
+      const keepUserCommands = (entries, moduleRe) => {
+        const kept = [];
+        for (const entry of entries) {
+          const cmds = entry && entry.hooks;
+          if (!Array.isArray(cmds) || cmds.length === 0) { kept.push(entry); continue; }
+          const userCmds = cmds.filter(h => !moduleRe.test(String((h && h.command) || "")));
+          if (userCmds.length === 0) continue;
+          if (userCmds.length !== cmds.length) entry.hooks = userCmds;
+          kept.push(entry);
+        }
+        return kept;
+      };
       // PreToolUse: gate-write + ratchet-check + em-dash-guard for Write and Edit
-      // (idempotent: remove then re-add). Remove every earlier entry for the
-      // three modules on any matcher, so an old Write|Edit entry goes too
-      // (0000037 ADR-003). The rule matches setup.ps1. It is case-sensitive,
-      // and only <module>.mjs at a path boundary counts (0000035 S-004).
+      // (idempotent: remove then re-add). Remove the three modules on any
+      // matcher, so an old Write|Edit entry goes too (0000037 ADR-003).
       const preToolModule = /(^|[\s"\x27\/\\])(gate-write|ratchet-check|em-dash-guard)\.mjs\b/;
-      s.hooks.PreToolUse = (s.hooks.PreToolUse || [])
-        .filter(h => !(h.hooks||[]).some(e => preToolModule.test(String(e.command||""))));
+      s.hooks.PreToolUse = keepUserCommands(s.hooks.PreToolUse || [], preToolModule);
       s.hooks.PreToolUse.push(
         {matcher:"Write", hooks:[{type:"command",command:gate}]},
         {matcher:"Edit",  hooks:[{type:"command",command:gate}]},
@@ -493,12 +509,10 @@ install_enforcement_hooks() {
         {matcher:"Edit",  hooks:[{type:"command",command:emDash}]}
       );
       // UserPromptSubmit: auto-trigger first, then presence check, then check-design
-      // (REQ-002, REQ-008, idempotent)
-      s.hooks.UserPromptSubmit = (s.hooks.UserPromptSubmit || [])
-        .filter(h => !(h.hooks||[]).some(e =>
-          (e.command||"").includes("auto-trigger-orchestrator") ||
-          (e.command||"").includes("check-orchestrator-presence") ||
-          (e.command||"").includes("check-design")));
+      // (REQ-002, REQ-008, idempotent). The same path-boundary match as
+      // PreToolUse replaces the old bare substring test (0000038 req-002).
+      const promptModule = /(^|[\s"\x27\/\\])(auto-trigger-orchestrator|check-orchestrator-presence|check-design)\.mjs\b/;
+      s.hooks.UserPromptSubmit = keepUserCommands(s.hooks.UserPromptSubmit || [], promptModule);
       s.hooks.UserPromptSubmit.push(
         {matcher:".*", hooks:[{type:"command",command:trigger}]},
         {matcher:".*", hooks:[{type:"command",command:presence}]},
