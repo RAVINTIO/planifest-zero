@@ -176,3 +176,4 @@ Gate accepted: P8.
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Version 0.4.3 from `product-version.mjs`. PR #10 already open as a draft, so the description is updated and the PR marked ready. |
+PR #10 description updated and marked ready. Not merged. Gate accepted: P9 (2026-10-17T00:33:03Z).
