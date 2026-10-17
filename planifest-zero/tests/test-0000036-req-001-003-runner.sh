@@ -10,7 +10,10 @@
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/helpers/assert.sh"
+# This suite also runs from tests/regression/, so find tests/ either way.
+TESTS_DIR="$SCRIPT_DIR"
+[ -f "$TESTS_DIR/run-tests.sh" ] || TESTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$TESTS_DIR/helpers/assert.sh"
 
 # Builds a minimal tests/ folder: the runner, the helpers, one passing bash
 # suite, and an empty manifest.
@@ -18,8 +21,8 @@ make_tests_dir() {
   local dir
   dir="$(mktemp -d -t planifest_0000036_runner_XXXXXX)"
   mkdir -p "$dir/tests/helpers" "$dir/tests/regression"
-  cp "$SCRIPT_DIR/run-tests.sh" "$dir/tests/"
-  cp "$SCRIPT_DIR/helpers/assert.sh" "$dir/tests/helpers/"
+  cp "$TESTS_DIR/run-tests.sh" "$dir/tests/"
+  cp "$TESTS_DIR/helpers/assert.sh" "$dir/tests/helpers/"
   printf '#!/usr/bin/env bash\nexit 0\n' > "$dir/tests/test-pass.sh"
   printf '{"tests":[]}\n' > "$dir/tests/regression/regression-manifest.json"
   echo "$dir"
@@ -61,8 +64,8 @@ rm -rf "$D"
 
 # Only a runner that honours PLANIFEST_PREFLIGHT_ONLY may be called here.
 # Any other runner would run the whole pack, this suite included, again.
-if grep -q 'PLANIFEST_PREFLIGHT_ONLY' "$SCRIPT_DIR/run-tests.sh"; then
-  OUT="$(PLANIFEST_PREFLIGHT_ONLY=1 bash "$SCRIPT_DIR/run-tests.sh" 2>&1)"
+if grep -q 'PLANIFEST_PREFLIGHT_ONLY' "$TESTS_DIR/run-tests.sh"; then
+  OUT="$(PLANIFEST_PREFLIGHT_ONLY=1 bash "$TESTS_DIR/run-tests.sh" 2>&1)"
   CODE=$?
 else
   OUT="Undiscovered file: (runner has no pre-flight mode)"
@@ -113,7 +116,7 @@ rm -rf "$D"
 echo ""
 echo "=== req-002: the manifest check covers .ps1 regression suites ==="
 
-for pack in "$SCRIPT_DIR/test-regression-pack.sh" "$SCRIPT_DIR/regression/test-regression-pack.sh"; do
+for pack in "$TESTS_DIR/test-regression-pack.sh" "$TESTS_DIR/regression/test-regression-pack.sh"; do
   assert_contains "f.endsWith('.ps1')" "$(cat "$pack")" \
     "req-002: $(basename "$(dirname "$pack")")/test-regression-pack.sh lists unlisted .ps1 suites"
 done

@@ -134,3 +134,16 @@ Gate accepted: P5 (2026-10-17T00:28:10Z), continuous run. CI green after the fix
 | Telemetry | confirmed-disabled |
 | Notes | P6 Gate B (continuous run, auto-accepted): this run changes how tests run and adds a CI job. Updating `tests/README.md` (done in P5), `architecture-overview.md`, and `decisions-index.md`, plus Last updated on all four living docs. |
 Gate accepted: P6 (2026-10-17T00:28:42Z), continuous run. Zero drift. Recommendations, iteration log, and backlog 0000108 written.
+
+### P7: Archive
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T00:28:53Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Regression candidate `test-0000036-req-001-003-runner.sh` promoted under the continuous run, before the tag. |
