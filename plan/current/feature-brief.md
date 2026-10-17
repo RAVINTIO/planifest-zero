@@ -1,7 +1,7 @@
 ---
 title: "Feature Brief - setup-hook-filter-fixes"
 summary: "The business case, scope, and product requirements for the feature."
-status: "draft"
+status: "approved"
 version: "0.5.1"
 ---
 # Feature Brief - setup-hook-filter-fixes
@@ -97,19 +97,19 @@ None.
 
 **Happy path:**
 
-> To be confirmed in the Scope Lock Challenge.
+> You rerun setup. In a shared entry, your command stays and only the Planifest commands change. Both scripts give the same `settings.json`.
 
 **First-run path:**
 
-> To be confirmed in the Scope Lock Challenge.
+> With no `settings.json`, or with no hook entries yet, setup writes the Planifest entries as it does today.
 
 **Error / sad path:**
 
-> To be confirmed in the Scope Lock Challenge.
+> If `settings.json` is invalid JSON or `node` is missing, setup prints its existing warning and leaves the file unchanged. Atomic writes prevent a half-written file.
 
 **Cross-session continuity:**
 
-> To be confirmed in the Scope Lock Challenge.
+> Each step is a commit, so an interrupted run resumes from the build log. A second setup run gives the same file as one run.
 
 ## Acceptance Criteria
 
