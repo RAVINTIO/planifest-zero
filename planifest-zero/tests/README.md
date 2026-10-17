@@ -55,9 +55,7 @@ clean up after themselves, so a run leaves your working tree unaffected.
 ## CI
 
 The `windows-powershell` job in `.github/workflows/planifest.yml` runs
-`run-tests.ps1` on `windows-latest`, once under each host. The Bash suites
-don't run in CI yet. The rename suite fails while `planifest-framework/` exists
-(backlog 0000097).
+`run-tests.ps1` on `windows-latest`, once under each host.
 
 ## The regression pack
 
