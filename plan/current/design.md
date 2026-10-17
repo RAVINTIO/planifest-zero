@@ -71,7 +71,7 @@ P3 runs req-004 last, so the old installed skills keep their source files until 
 - R-003: the human squash-merges PR #9 or PR #10 and GitHub closes this stacked PR. Likelihood: high. Impact: low. The fix is a cherry-pick onto a branch from `main`, with no force push.
 
 ## Dependencies
-- Upstream: PR #9 (0000035) and PR #10 (0000036). This branch stacks on PR #10.
+- Upstream: 0000035 and 0000036, both merged to `main`.
 - Downstream: backlog 0000108, and every later feature in this repo.
 
 ## Active Skills

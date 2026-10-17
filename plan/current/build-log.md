@@ -53,3 +53,5 @@ Version confirmed: 0.4.4
 Gate accepted: P0 (2026-10-17T01:58:09Z)
 
 Rebuild: PR #9 squash-merged at 2026-10-17T01:59:47Z, so PR #10 conflicted. I cherry-picked 0000036 onto `feat/0000036-test-runner-coverage-v2` from `main`, then this run onto `feat/0000037-self-host-on-planifest-zero-v2`. No force push.
+
+Rebuild: PR #11 squash-merged at 2026-10-17T09:36:56Z. I cherry-picked this run onto `feat/0000037-self-host-on-planifest-zero-v3` from `main`. PR #10 is closed. No force push.
