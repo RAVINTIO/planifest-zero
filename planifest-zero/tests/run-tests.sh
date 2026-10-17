@@ -32,13 +32,15 @@ KNOWN_NON_SUITES=(
   "regression/test-gate-write-windows.mjs" # the regression copy of the same
   "regression/regression-manifest.json"    # the promoted-suite list
   "regression/.gitkeep"                    # keeps the folder in git
+  "helpers/assert.sh"                      # Bash assert helpers
+  "helpers/assert.ps1"                     # PowerShell assert helpers (0000036 ADR-002)
+  "helpers/setup-workspace.ps1"            # temporary projects for the setup.ps1 suites
 )
 
 is_known_file() {
   local rel="$1" dir base known
   dir="$(dirname "$rel")"
   base="$(basename "$rel")"
-  case "$rel" in helpers/*) return 0 ;; esac   # assert helpers for both shells
   [ "$base" = ".DS_Store" ] && return 0        # macOS Finder metadata
   if [ "$dir" = "." ] || [ "$dir" = "regression" ]; then
     case "$base" in test-*.sh|test-*.ps1) return 0 ;; esac

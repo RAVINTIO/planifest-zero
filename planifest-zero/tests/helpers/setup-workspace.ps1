@@ -25,12 +25,18 @@ $global:PlanifestModules = @(
     'auto-trigger-orchestrator', 'check-orchestrator-presence', 'check-design'
 )
 
+$global:Workspaces = @()
+
 function New-SetupWorkspace {
     $ws = Join-Path ([System.IO.Path]::GetTempPath()) ("planifest_0000036_" + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $ws | Out-Null
     Copy-Item -Path $global:FrameworkDir -Destination (Join-Path $ws 'planifest-zero') -Recurse
     New-Item -ItemType Directory -Path (Join-Path $ws '.claude') | Out-Null
     & git -C $ws init -q 2>&1 | Out-Null
+    # Without its own repo, setup's git config would reach a parent repo
+    # (0000036 S-001).
+    if ($LASTEXITCODE -ne 0) { throw "git init failed in $ws" }
+    $global:Workspaces += $ws
     return $ws
 }
 
@@ -39,17 +45,30 @@ function Remove-SetupWorkspace {
     Remove-Item -LiteralPath $Workspace -Recurse -Force -ErrorAction SilentlyContinue
 }
 
+# Removes every workspace this suite made. Suites call it from a finally
+# block, so a stopped run cleans up too (0000036 S-002).
+function Remove-AllWorkspaces {
+    foreach ($ws in $global:Workspaces) { Remove-SetupWorkspace $ws }
+    $global:Workspaces = @()
+}
+
 # Runs setup.ps1 in a child process of the same host. Returns the exit code
 # and the combined output.
 function Invoke-Setup {
     param([string]$Workspace, [string[]]$SetupArgs)
     $setup = Join-Path $Workspace 'planifest-zero\setup.ps1'
     Push-Location $Workspace
+    # Stop git searching above the workspace's parent folder.
+    $savedCeiling = $env:GIT_CEILING_DIRECTORIES
+    $env:GIT_CEILING_DIRECTORIES = Split-Path -Parent $Workspace
     try {
         $output = & $global:HostExe -NoProfile -ExecutionPolicy Bypass -File $setup @SetupArgs 2>&1 | Out-String
         $code = $LASTEXITCODE
     }
-    finally { Pop-Location }
+    finally {
+        $env:GIT_CEILING_DIRECTORIES = $savedCeiling
+        Pop-Location
+    }
     return [PSCustomObject]@{ Code = $code; Output = $output }
 }
 

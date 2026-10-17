@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [ main, master ]
 
+# Every job reads the repo and nothing more (0000036 S-006).
+permissions:
+  contents: read
+
 jobs:
   validate-branch:
     runs-on: ubuntu-latest
@@ -49,7 +53,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      # Pinned to the v4 commit, with no token left in .git/config while the
+      # PR's code runs (0000036 S-005).
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: PowerShell suites on Windows PowerShell 5.1
         shell: powershell

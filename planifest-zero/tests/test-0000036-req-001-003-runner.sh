@@ -49,9 +49,12 @@ for f in README.md run-tests.ps1 test-gate-write-windows.mjs regression/test-gat
 done
 mkdir -p "$D/tests/test-dir"
 echo 'x' > "$D/tests/test-dir/test-nested.sh"
+echo 'x' > "$D/tests/helpers/test-misplaced.sh"
 OUT="$(PLANIFEST_PWSH=/nonexistent/pwsh bash "$D/tests/run-tests.sh" 2>&1)"
-assert_equals "1" "$(printf '%s\n' "$OUT" | grep -c 'Undiscovered file:' || true)" \
-  "req-001 (b): only the nested suite is stray"
+assert_equals "2" "$(printf '%s\n' "$OUT" | grep -c 'Undiscovered file:' || true)" \
+  "req-001 (b): only the nested suite and the misplaced helper suite are stray"
+assert_contains "Undiscovered file: helpers/test-misplaced.sh" "$OUT" \
+  "req-001 (b): a suite under helpers/ is stray (P5 S-004)"
 assert_contains "Undiscovered file: test-dir/test-nested.sh" "$OUT" \
   "req-001 (b): a suite-shaped file in a subfolder is stray"
 rm -rf "$D"
