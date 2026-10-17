@@ -19,8 +19,8 @@ version: "0.1.0"
 | 1 - Specification | pass | All artifacts produced: yes | 9 requirements. Filed backlog 0000111 |
 | 2 - ADRs | pass | 4 ADRs generated | P2 overlapped P1 and the start of P3 |
 | 3 - Code Generation | pass | Implementation complete: yes | 2 deviations, both in the build log |
-| 4 - Validation | in progress | Local run: 0 failing suites | CI on the draft PR proves the `bash-suites` and Windows jobs |
-| 5 - Security | in progress | Runs in parallel with P6 | See `security-report.md` |
+| 4 - Validation | complete | Local run: 0 failing suites. CI on PR #12 green on all four jobs at `87d67ec` | 1 self-correction for Linux portability |
+| 5 - Security | complete | Risk Low, no critical, high, or medium finding | See `security-report.md`. S-001 filed as backlog 0000112 |
 | 6 - Docs & Ship | pass (docs) | All docs synced: yes | Ship follows |
 
 ## Requirement Changes During Run
@@ -32,7 +32,15 @@ version: "0.1.0"
 
 ## Self-Correct Log
 
-None recorded. Each P3 requirement went RED then GREEN on its first cycle.
+Each P3 requirement went RED then GREEN on its first cycle.
+
+P4 needed 1 self-correction. CI run 1 failed 3 older suites on Linux:
+
+- `test-0000036-req-001-003-runner.sh` inherited `PLANIFEST_REQUIRE_PWSH=1` from the job.
+- `test-0000034-req-003-atomic-settings-writes.sh` read GNU `stat -f` output as a file mode.
+- `test-0000032-req-005-layout-docs-updated.sh` used a backslash-backtick, which GNU `grep` and `sed` read as a buffer anchor.
+
+The fix made all three portable, plus the two regression copies. CI run 2 passed.
 
 ## Quirks
 

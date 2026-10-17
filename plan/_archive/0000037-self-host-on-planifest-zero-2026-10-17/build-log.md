@@ -175,3 +175,30 @@ Gate: P6 (continuous run, no stop)
 | Telemetry | confirmed-disabled |
 | Notes | Regression candidates: req-007 and req-008 suites. Human chose to promote both. |
 P7: changelog, test report, and `.feature-id` written. 2 suites promoted. Archived to `plan/_archive/0000037-self-host-on-planifest-zero-2026-10-17/`.
+
+### P8: Build Assessment
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:55:00Z` |
+| Model tier | cheaper |
+| Skills loaded | planifest-build-assessment-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+
+P8: Complete. `build-report.md` written. The orchestrator corrected the iteration log, which said P4 had no self-corrections.
+
+### P9: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T12:00:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Version 0.5.0 from `product-version.mjs`. The custom-004 override selects option [1]. PR #12 already exists as a draft, so P9 updates its description and marks it ready. |
