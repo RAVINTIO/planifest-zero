@@ -55,3 +55,8 @@ Gate accepted: P0 (2026-10-17T01:58:09Z)
 Rebuild: PR #9 squash-merged at 2026-10-17T01:59:47Z, so PR #10 conflicted. I cherry-picked 0000036 onto `feat/0000036-test-runner-coverage-v2` from `main`, then this run onto `feat/0000037-self-host-on-planifest-zero-v2`. No force push.
 
 Rebuild: PR #11 squash-merged at 2026-10-17T09:36:56Z. I cherry-picked this run onto `feat/0000037-self-host-on-planifest-zero-v3` from `main`. PR #10 is closed. No force push.
+
+P0 exchange (scope extension): Q: add 0000108, 0000106, 0000107, and 0000103 as req-006 to req-009, at version 0.5.0? Hold 0000095 and 0000098 to 0000101. / A: yes, all as recommended. Human asked for a larger run.
+P0 exchange (backlog filing): human asked for a release-sizing backlog item. Filed 0000109.
+Version confirmed: 0.5.0 (supersedes 0.4.4)
+Design re-confirmed: 2026-10-17T09:43:01Z

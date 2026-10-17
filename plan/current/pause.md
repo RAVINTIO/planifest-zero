@@ -14,14 +14,14 @@ P0 is complete, and the human confirmed the design. Nothing in P1 has started.
 
 - Run mode is continuous (`plan/.run-mode`).
 - The branch `feat/0000037-self-host-on-planifest-zero-v3` is cut from `main`, which now holds 0000035 (PR #9) and 0000036 (PR #11). No PR blocks it.
-- Read `plan/current/design.md` for the five requirements, risks R-001 to R-006, and the constraints.
-- Read `plan/current/feature-brief.md` for the 10 acceptance criteria.
+- Read `plan/current/design.md` for the nine requirements, risks R-001 to R-008, and the constraints.
+- Read `plan/current/feature-brief.md` for the 15 acceptance criteria.
 - Read the P0 block in `plan/current/build-log.md` for every confirmed decision and Scope Lock answer.
 
 Steps remaining:
 
-1. P1: load `planifest-spec-agent`, and write one requirement file per req-001 to req-005, plus the execution plan, scope, risk register, and glossary.
-2. P2 to P9 follow as usual. P3 runs req-004 last. It sets `git config core.hooksPath planifest-zero/hooks` before `git rm -r planifest-framework/`.
+1. P1: load `planifest-spec-agent`, and write one requirement file per req-001 to req-009, plus the execution plan, scope, risk register, and glossary.
+2. P2 to P9 follow as usual. Follow the P3 order in `design.md`. req-004 sets `git config core.hooksPath planifest-zero/hooks` before `git rm -r planifest-framework/`. req-006 runs after req-004.
 3. After req-004, read each `planifest-framework/{path}` from `planifest-zero/{path}`. The auto-trigger hook no longer fires, so load `planifest-orchestrator` by name in any new session.
 4. Don't run `planifest-zero/setup.sh claude-code` on this repo. The human runs it after merging.
 

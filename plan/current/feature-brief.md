@@ -5,7 +5,7 @@ summary: "Switch this repo from the old planifest-framework/ copy to planifest-z
 # Feature Brief - self-host-on-planifest-zero
 
 **Feature ID:** 0000037-self-host-on-planifest-zero
-**Source:** backlog 0000097, which absorbs 0000086, 0000089, and 0000093
+**Source:** backlog 0000097, which absorbs 0000086, 0000089, and 0000093, plus backlog 0000103, 0000106, 0000107, and 0000108
 
 ## Business Goal
 
@@ -16,10 +16,14 @@ This repo ships `planifest-zero/`, but it runs its own pipeline on `planifest-fr
 - US-001: As the maintainer, I delete `planifest-framework/` from the repo, so that the rename suite passes in full.
 - US-002: As the maintainer, I keep this repo's setup record at `plan/state/claude-code.md`, so that it matches what `planifest-zero/setup.sh` writes.
 - US-003: As the maintainer, I remove the `validate-telemetry-schema` CI job, so that CI guards nothing the product no longer has.
+- US-004: As the maintainer, I see the Bash suites run in CI, so that a PR can't break one and still show green checks.
+- US-005: As a user who ran an older `setup.ps1`, I run `setup.sh` and get `gate-write` wired once, so that it doesn't run twice on each write.
+- US-006: As a user with a hand-edited `settings.json`, I run either setup script on a non-array hook event and get a warning and working hooks, so that setup doesn't fail or keep a broken entry.
+- US-007: As a user in a repo with prior runs, I start P0 without confirming standard-iterative mode, so that P0 skips a question with only one answer.
 
 ## Waves
 
-One wave. The run has three user stories.
+One wave. The run has seven small, independent user stories, above the 3-story rule of thumb by the human's choice.
 
 ## Target Architecture
 
@@ -63,11 +67,16 @@ No component owns data.
 - Update the two live references to the old folder name.
 - Point `core.hooksPath` at `planifest-zero/hooks` before the deletion.
 - Reword `custom-004-p9-push-and-raise-pr.md` to name the ship phase.
+- Add a `bash-suites` CI job on `ubuntu-latest` (0000108).
+- Make the `setup.sh` filter match Planifest entries on any matcher (0000106).
+- Warn and replace a non-array hook event value in both scripts (0000107).
+- Assume standard-iterative mode in the `planifest-zero` orchestrator when it's the only signal (0000103).
 - Add suites that prove each change.
 
 ### Out of Scope
 
-- Running the Bash suites in CI. Backlog 0000108 covers it.
+- Retiring the legacy telemetry cleanup (backlog 0000095).
+- Release sizing and the pipeline-governance group (backlog 0000098 to 0000101 and 0000109).
 - Changes to the five-phase pipeline in `planifest-zero/`.
 - Rewriting historical records under `plan/` or `docs/decisions-index.md`.
 
@@ -111,3 +120,8 @@ Derived at the Scope Lock Challenge. See `build-log.md`.
 8. `git config core.hooksPath` prints `planifest-zero/hooks`.
 9. `custom-004-p9-push-and-raise-pr.md` names the ship phase and no P9.
 10. The full local run reports 0 failing suites, and CI is green on every job.
+11. CI has a `bash-suites` job on `ubuntu-latest` with `PLANIFEST_REQUIRE_PWSH=1`, `contents: read`, and a pinned checkout, and it passes.
+12. After `setup.sh` runs on settings with a `Write|Edit` `gate-write` entry, `gate-write` appears once for `Write` and once for `Edit`.
+13. `setup.sh` on a non-array `PreToolUse` or `UserPromptSubmit` value exits 0, warns, and wires the Planifest entries.
+14. `setup.ps1` does the same as `setup.sh` in criterion 13, on Windows PowerShell 5.1 and PowerShell 7.
+15. The `planifest-zero` orchestrator states standard-iterative mode without asking when it's the only signal, and still asks when signals conflict.
