@@ -73,7 +73,7 @@ P3 order:
 ## Assumptions
 - No phase from P4 to P9 needs the four files that `planifest-zero/` lacks. Impact if wrong: that phase reads a missing file and must stop for direction.
 - Setup rewrites `writtenAt` in `plan/state/claude-code.md` on every run. That diff is expected, and the maintainer commits it with the reinstall.
-- `planifest-zero/setup.sh` reads `plan/state/claude-code.md` and carries no retired flag forward. Impact if wrong: the post-merge reinstall replays a retired flag, which warns and installs nothing.
+- `planifest-zero/setup.sh` writes `plan/state/claude-code.md` from its command-line flags, and the refresh-setup skill reads it back. A bare `setup.sh claude-code` writes an empty `flags` array. Impact if wrong: the post-merge reinstall replays a retired flag, which warns and installs nothing.
 
 ## Risks
 - R-001: a file in the repo still needs `planifest-framework/` after the deletion. Likelihood: low. Impact: medium. The rename suite and a full local run catch it.

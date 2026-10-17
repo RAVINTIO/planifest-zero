@@ -28,6 +28,7 @@ The template allows low, medium, or high for likelihood. Where the design says "
 | R-007 | technical | The Bash suites have only run on macOS. On `ubuntu-latest`, a GNU and BSD tool difference could fail a suite. | medium | medium | P4 fixes each failure. CI on the PR proves the fix. | open |
 | R-008 | operational | The run holds 7 user stories, above the 3-story rule of thumb. This is certain. | high | low | The items are small and independent, and the human chose the larger run. Backlog 0000109 covers release sizing. | accepted |
 | R-009 | security | The req-006 `bash-suites` job runs code from the PR. A token with write access or a stored credential could leak through it. | low | medium | Pin `actions/checkout` to a commit SHA. Set `persist-credentials: false` and `permissions: contents: read`. Reference no `secrets`. The req-006 suite asserts each one. | open |
+| R-010 | technical | `run-tests.sh` runs the `.ps1` suites with `pwsh`, so `bash-suites` also runs them on Linux. A suite that assumes Windows paths could fail there. | medium | medium | P4 fixes each failure. If a suite can't run on Linux, it skips there, and the `windows-powershell` job still covers it. | open |
 
 ## Assumptions Logged as Risks
 
@@ -37,4 +38,4 @@ Documented assumptions from the specification are logged here with likelihood: m
 |----|-----------|----------------|--------|
 | A-001 | No phase from P4 to P9 needs the four files that `planifest-zero/` lacks: `standards/telemetry-standards.md`, `templates/defect-report.template.md`, `workflows/change-pipeline.md`, and `workflows/fast-path.md`. | That phase reads a missing file and must stop for direction. | open |
 | A-002 | Setup rewrites `writtenAt` in `plan/state/claude-code.md` on every run. The maintainer commits that diff with the reinstall. | The maintainer sees an unexpected diff at the reinstall. | open |
-| A-003 | `planifest-zero/setup.sh` reads `plan/state/claude-code.md` and carries no retired flag forward. | The post-merge reinstall replays a retired flag, which warns and installs nothing. | open |
+| A-003 | `planifest-zero/setup.sh` writes `plan/state/claude-code.md` from its command-line flags, and the refresh-setup skill reads it back. A bare `setup.sh claude-code` writes an empty `flags` array. | The post-merge reinstall replays a retired flag, which warns and installs nothing. | open |

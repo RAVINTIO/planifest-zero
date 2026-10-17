@@ -73,3 +73,16 @@ Design re-confirmed: 2026-10-17T09:43:01Z
 | Parallel task batches | `1` |
 | Telemetry | confirmed-disabled |
 | Notes | Resumed from `pause.md`. The human asked mid-run to build as fast as possible with multiple subagents, and to file a backlog item for subagent acceleration. Filed 0000110. |
+
+### P2: ADRs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T10:12:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-adr-agent |
+| Agents spawned | `2` (ADR-001 and ADR-002, ADR-003 and ADR-004) |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Telemetry | confirmed-disabled |
+| Notes | P2 overlaps P1, because each ADR derives from the confirmed design alone. The human asked for maximum parallelism. |
