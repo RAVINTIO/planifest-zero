@@ -105,3 +105,6 @@ Gate: P1 (continuous run, no stop)
 
 P2 complete: ADR-001 to ADR-004. The orchestrator aligned the ADR-004 conflict definition with req-009. ADR-003 adds that the req-008 warning prints the replaced value as compact JSON.
 Gate: P2 (continuous run, no stop)
+
+P3 batch 1 results: req-001, req-002, req-003, req-005, and req-009 GREEN and committed.
+Deviation: req-001 removed the telemetry job, which held the five phase names that case (e) of `test-0000031-req-003-five-phases.sh` checked. The orchestrator removed case (e).
