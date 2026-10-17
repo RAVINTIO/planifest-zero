@@ -45,10 +45,16 @@ assert_contains 'Remove-SettingsTmpEntry' "$(extract_function_body 'Remove-Lefto
 echo ""
 echo "=== S-004: the hook filters match module files case-sensitively ==="
 
+# Both events filter through Remove-PlanifestHookCommands (0000038 ADR-002).
+# It tests each command with -cmatch, and each caller passes a <module>.mjs
+# pattern.
 MERGE="$(extract_function_body 'Merge-EnforcementHookSettings')"
-assert_equals "2" "$(printf '%s\n' "$MERGE" | grep -c -- "-cmatch '.*\\\\.mjs" || true)" \
-  "S-004: both filters use -cmatch on <module>.mjs"
-assert_equals "0" "$(printf '%s\n' "$MERGE" | grep -c -- ' -match ' || true)" \
+FILTER_FN="$(extract_function_body 'Remove-PlanifestHookCommands')"
+assert_equals "1" "$(printf '%s\n' "$FILTER_FN" | grep -c -- '-cmatch \$Pattern' || true)" \
+  "S-004: the per-command filter uses -cmatch"
+assert_equals "2" "$(printf '%s\n' "$MERGE" | grep -c -- "-Pattern '.*\\\\.mjs" || true)" \
+  "S-004: both filters pass a <module>.mjs pattern"
+assert_equals "0" "$(printf '%s\n' "$MERGE$FILTER_FN" | grep -c -- ' -match ' || true)" \
   "S-004: no filter uses case-insensitive -match"
 
 echo ""

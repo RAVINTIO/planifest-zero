@@ -92,7 +92,8 @@ assert_contains 'UserPromptSubmit = @($userPromptEntries)' "$BODY" \
 echo ""
 echo "=== req-001 (c): the PreToolUse filter clears all three modules on any matcher ==="
 
-FILTER="$(printf '%s\n' "$BODY" | awk '/PreToolUse \| Where-Object/{f=1} f{print} f && /^        \}\)/{exit}')"
+# The filter is the per-command Remove-PlanifestHookCommands call (0000038 ADR-002).
+FILTER="$(printf '%s\n' "$BODY" | awk '/Remove-PlanifestHookCommands -Entries \$existing\.hooks\.PreToolUse/{f=1} f{print} f && /-Pattern/{exit}')"
 for module in gate-write ratchet-check em-dash-guard; do
   assert_contains "$module" "$FILTER" "req-001 (c): the PreToolUse filter names $module"
 done
