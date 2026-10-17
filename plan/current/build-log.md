@@ -47,3 +47,16 @@ P0 exchange (design): Q: confirm design and four drafts? / A: "Ues", read as yes
 Scope Lock complete. All four scenario paths captured.
 Backlog pickup: 0000084 pulled in and deleted. All other entries left.
 Gate accepted: P0
+
+### P1: Spec
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T00:01:42Z` |
+| Model tier | primary |
+| Skills loaded | planifest-spec-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Continuous run. Five short requirements written inline. Finding: `test-regression-pack.sh` Section 7 already checks the manifest in both directions, for `.sh` only. The 0000084 status note was out of date, so req-002 extends the check to `.ps1`. |
