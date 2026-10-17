@@ -107,4 +107,12 @@ assert_contains "Regression suite:  0 passed, 1 failed." "$OUT" "req-003 (b): a 
 assert_equals "1" "$CODE" "req-003 (b): the failure fails the run"
 rm -rf "$D"
 
+echo ""
+echo "=== req-002: the manifest check covers .ps1 regression suites ==="
+
+for pack in "$SCRIPT_DIR/test-regression-pack.sh" "$SCRIPT_DIR/regression/test-regression-pack.sh"; do
+  assert_contains "f.endsWith('.ps1')" "$(cat "$pack")" \
+    "req-002: $(basename "$(dirname "$pack")")/test-regression-pack.sh lists unlisted .ps1 suites"
+done
+
 print_summary
