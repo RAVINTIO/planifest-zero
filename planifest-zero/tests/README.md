@@ -57,6 +57,10 @@ clean up after themselves, so a run leaves your working tree unaffected.
 The `windows-powershell` job in `.github/workflows/planifest.yml` runs
 `run-tests.ps1` on `windows-latest`, once under each host.
 
+The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest`. It sets
+`PLANIFEST_REQUIRE_PWSH=1`, so the run fails if `pwsh` is missing. The job
+also runs the `.ps1` suites under `pwsh` on Linux.
+
 ## The regression pack
 
 `regression/` holds suites promoted from completed feature runs, so behaviour
