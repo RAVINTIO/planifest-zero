@@ -34,7 +34,7 @@
 
 ## Engineering Layer
 - Stack: Bash, PowerShell, and Node.js scripts / no database / no ORM / no IaC / no cloud / local compute / GitHub Actions CI / no build target
-- Components: `planifest-zero`, the shipped framework. The run changes only its tests and tests README. The other files sit at repo level.
+- Components: `planifest-zero`, the shipped framework. The run changes its tests, tests README, `setup.sh`, `setup.ps1`, and orchestrator skill. The other files sit at repo level.
 - Data ownership: no component owns data
 - Deployment: none. The repo is the product.
 - API versioning: not applicable
@@ -61,7 +61,7 @@ P3 order:
 ## Scope
 - In:
   - the nine requirements above, each with a suite
-  - the living docs and version records for 0.4.4
+  - the living docs and version records for 0.5.0
 - Out:
   - Retiring the legacy telemetry cleanup (backlog 0000095). This repo's own reinstall still needs it.
   - Release sizing and the pipeline-governance group (backlog 0000098 to 0000101 and 0000109).

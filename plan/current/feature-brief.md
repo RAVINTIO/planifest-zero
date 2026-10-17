@@ -29,7 +29,7 @@ One wave. The run has seven small, independent user stories, above the 3-story r
 
 ### Components
 
-- `planifest-zero`: the shipped framework. This run changes only its tests README.
+- `planifest-zero`: the shipped framework. This run changes its tests, tests README, `setup.sh`, `setup.ps1`, and orchestrator skill.
 - Repo-level files outside any component: `.github/workflows/planifest.yml`, `refresh-planifest-zero-dir.ps1`, `planifest-overrides/`, and `plan/state/`.
 
 ### Data Ownership
