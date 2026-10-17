@@ -161,3 +161,18 @@ Archived to `plan/_archive/0000036-test-runner-coverage-2026-10-17/`. Changelog 
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | none |
+P8 corrections: the P4 note's "55 of 56 feature suites" is wrong. The local run found 58 feature suites: 55 passed, 1 failed, and 2 PowerShell suites skipped. The CI evidence is PR #10 run 38986555074, green on all four jobs. The accepted failure is the rename suite, cases (a) and (b), which failed before this feature and which backlog 0000097 tracks. Every run since 0000033 has accepted it on that basis. The continuous run mode is recorded in the P0 block.
+Gate accepted: P8.
+
+### P9: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T00:32:41Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Version 0.4.3 from `product-version.mjs`. PR #10 already open as a draft, so the description is updated and the PR marked ready. |
