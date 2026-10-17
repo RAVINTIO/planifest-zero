@@ -10,8 +10,8 @@
 
 id: "planifest-zero"
 name: "Planifest Framework"
-version: "0.4.2"
-feature: "0000035-powershell-setup-parity"
+version: "0.4.3"
+feature: "0000036-test-runner-coverage"
 
 versionPolicy: "max-component-version"
 
