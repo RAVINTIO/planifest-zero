@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000036-test-runner-coverage
+Last updated: 0000037-self-host-on-planifest-zero
 
 ## Component dependency diagram
 
@@ -52,7 +52,7 @@ graph TD
 
 **Every enforcement hook imports `read-stdin.mjs`.** All six hooks share the one module. Setup copies `hooks/enforcement/` as a unit, so the import always resolves.
 
-**Setup wires six hooks into `.claude/settings.json`.** `gate-write`, `ratchet-check`, and `em-dash-guard` run on `PreToolUse` for Write and Edit. `auto-trigger-orchestrator`, `check-orchestrator-presence`, and `check-design` run on `UserPromptSubmit`, in that order.
+**Setup wires six hooks into `.claude/settings.json`.** `gate-write`, `ratchet-check`, and `em-dash-guard` run on `PreToolUse` for Write and Edit. `auto-trigger-orchestrator`, `check-orchestrator-presence`, and `check-design` run on `UserPromptSubmit`, in that order. Setup finds its own entries by module name on any matcher, and replaces a non-array event value with a warning.
 
 **Nothing leaves the machine.** No hook or script makes an outbound network call. The framework has no external integration besides `node`.
 

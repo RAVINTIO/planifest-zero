@@ -4,7 +4,7 @@ Planifest is a specification-first framework for Claude Code. It requires the ag
 
 It treats the human as product owner and architect. The agent is the implementer, working within constraints the human sets.
 
-Version `0.2.0` targets Claude Code alone and follows the [Agent Skills specification](https://agentskills.io/specification).
+Version `0.5.0` targets Claude Code alone and follows the [Agent Skills specification](https://agentskills.io/specification).
 
 ---
 
@@ -48,7 +48,7 @@ repo/
 │   ├── templates/         ← File format templates for every artifact
 │   ├── schemas/           ← JSON Schema validation definitions
 │   ├── standards/         ← Code quality and design standards
-│   ├── hooks/             ← Enforcement and telemetry hooks, git hooks, CI workflow
+│   ├── hooks/             ← Enforcement hooks, git hooks, CI workflow
 │   ├── workflows/         ← The feature pipeline route definition
 │   ├── scripts/           ← Deterministic tooling
 │   └── tests/             ← The framework's own test suite
@@ -85,11 +85,10 @@ Quick start:
 
 The setup script copies skills into `.claude/skills/`, prunes retired skills, wires the enforcement hooks and git hooks, and writes the `CLAUDE.md` boot file.
 
-Two optional flags:
+One optional flag:
 
 | Flag | Effect |
 |------|--------|
-| `--structured-telemetry-mcp` | Installs the telemetry hooks. Pair with `--backend-url` to override the default endpoint. |
 | `--strict-orchestrator` | Writes `plan/.orchestrator-strict`, so the orchestrator must acknowledge each new session before work proceeds. |
 
 ---
@@ -119,7 +118,7 @@ Two optional flags:
 | [schemas/](planifest-zero/schemas/) | Shared type definitions and the domain document envelope |
 | [standards/](planifest-zero/standards/) | Code quality, API design, database, deployment, infrastructure, monorepo, observability, and testing standards |
 | [setup/](planifest-zero/setup/) | The Claude Code tool config, as a `.sh` and `.ps1` pair |
-| [hooks/](planifest-zero/hooks/) | Enforcement and telemetry hooks, git hooks, and the CI workflow |
+| [hooks/](planifest-zero/hooks/) | Enforcement hooks, git hooks, and the CI workflow |
 | [workflows/](planifest-zero/workflows/) | The feature pipeline route definition |
 | [scripts/](planifest-zero/scripts/) | Consistency checks, version derivation, regression promotion |
 | [tests/](planifest-zero/tests/) | Per-feature test scripts plus the promoted regression pack |

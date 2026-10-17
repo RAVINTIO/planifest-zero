@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000036-test-runner-coverage
+Last updated: 0000037-self-host-on-planifest-zero
 
 ## Registry
 

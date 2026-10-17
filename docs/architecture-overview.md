@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000036-test-runner-coverage
+Last updated: 0000037-self-host-on-planifest-zero
 
 ## What this repo is
 
@@ -12,6 +12,8 @@ The framework is not a service. It has no runtime of its own. It ships four thin
 2. **Hooks.** Node `.mjs` scripts that Claude Code invokes synchronously at tool-call boundaries. Enforcement hooks block or annotate. Git hooks guard commits and pushes. No hook makes an outbound network call.
 3. **Standards, templates, and schemas.** The reference material that skills bundle at install time.
 4. **Setup scripts.** `setup.sh` and `setup.ps1` copy the above into a target project and wire `.claude/settings.json`.
+
+The repo runs its own pipeline on the `planifest-zero/` it ships. Git reads its hooks from `planifest-zero/hooks` through `core.hooksPath`.
 
 ---
 
@@ -105,13 +107,15 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 **Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same six hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
 
+**Hook entry repair.** Both scripts find a Planifest `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse` or `UserPromptSubmit` holds a value that isn't an array, setup prints a warning with the old value. It then replaces the value with the Planifest entries and exits 0. An absent or null value gets the entries with no warning.
+
 ---
 
 ## Tests
 
 `planifest-zero/tests/run-tests.sh` runs every Bash and PowerShell suite. Before any suite runs, it checks every file under `tests/`. A file that is neither a suite nor on its known list fails the run, and the runner names it. Without `pwsh`, it prints how many PowerShell suites it skipped.
 
-The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them under Windows PowerShell 5.1 and PowerShell 7. The Bash suites run only locally until backlog 0000097 lands.
+The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them under Windows PowerShell 5.1 and PowerShell 7. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `PLANIFEST_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
 
 ---
 
