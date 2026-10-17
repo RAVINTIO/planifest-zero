@@ -184,7 +184,7 @@ Perform in order, before coaching begins:
 4. **Write the sentinel**: `plan/.orchestrator-active` containing the feature-id (or `pending`). Update once confirmed. Include in the discovery commit.
 5. **Create the build log** from `planifest-zero/templates/build-log.template.md`. Fill the header. On resume, append rather than overwrite. Append a `### P1: Discovery` block before any discovery work (Hard Limit 9). At ship, the summary table is completed.
 6. **Load repo instructions**: read all `.md` files in `planifest-overrides/instructions/` (if present). Write their contents into `design.md` under `## Repo Instructions` once it exists, or `## Repo Instructions: None`.
-7. **Detect adoption mode** per the table below. Apply the highest-priority signal only. Recommend-then-confirm. Record the confirmed mode in `design.md` and the build log.
+7. **Detect adoption mode** per the table below. Apply the highest-priority signal only. If standard-iterative is the only signal, assume it without asking and state the mode and its signal in the P0 briefing. Source in `src/` beside an archive is the normal iterative case. Recommend-then-confirm in every other case. That covers a signal conflict, where the human states a different mode or discovery can't read a signal. It also covers External Anchor, Retrofit, and Greenfield. Record the assumed or confirmed mode and its signal in `discovery.md`, `design.md`, and the build log.
 8. **Read the version**: `docs/about.md` frontmatter, cross-checked against the most recent archive entry. If `product.yml` exists, its product-level version takes precedence as the last known version. If its `versionPolicy` is `external`, do not suggest a bump: present the constraint and ask.
 9. **Product id check**: `product.yml` must exist at the project root with a non-empty `id`. If not, hard-stop and ask: `D: No declared product id found (product.yml is missing or has no id field). The id gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. What should the product id be? (kebab-case, stable across releases)`. Write or update only the `id` field, then resume.
 10. **Backlog pickup**: scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids. Check `plan/_archive/` and `plan/changelog/` for the high-water mark.
@@ -273,7 +273,7 @@ Before presenting the design for confirmation, verify:
 - [ ] Security section names auth strategy and data classification
 - [ ] Risks section has at least one entry with likelihood and impact
 - [ ] Multi-component: dependency order stated. Waved: waves grouped with rationale
-- [ ] Adoption mode confirmed
+- [ ] Adoption mode confirmed, or assumed standard-iterative as the only signal
 - [ ] Version confirmed, not lower than the last known version
 - [ ] Scope Lock Challenge complete, all four paths in the build log
 - [ ] `discovery.md` exists and is complete (Hard Limit 12)
