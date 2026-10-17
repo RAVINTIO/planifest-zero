@@ -102,3 +102,6 @@ Gate: P1 (continuous run, no stop)
 | Parallel task batches | `3` planned (batch 1, then req-004, then req-006) |
 | Telemetry | confirmed-disabled |
 | Notes | P3 batch 1 overlaps the end of P2. ADR-001 and ADR-002 are committed. ADR-003 and ADR-004 are in progress, and their requirement files already state the decisions. Each subagent runs its own TDD cycle inline, to cut dispatch overhead. |
+
+P2 complete: ADR-001 to ADR-004. The orchestrator aligned the ADR-004 conflict definition with req-009. ADR-003 adds that the req-008 warning prints the replaced value as compact JSON.
+Gate: P2 (continuous run, no stop)
