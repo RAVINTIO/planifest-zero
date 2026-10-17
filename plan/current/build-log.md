@@ -59,3 +59,6 @@ Gate accepted: P1 (2026-10-17T22:05:42Z)
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Notes | Two subagents (claude-sonnet-5-5) write the supporting artifacts while the orchestrator writes the two requirements and the execution plan. |
+Consistency check: 3 findings on the first run (5 and 4 criteria on req-001 and req-002, and a cross-feature ADR-003 reference). Criteria regrouped to 3 each, the parity criterion moved to req-002, and the reference reworded. Second run clean.
+Subagents: 2 of 2 completed (claude-sonnet-5-5, cheaper tier). R-004 added by the risk subagent: the two scripts hold separate copies of the filter rule.
+Gate accepted: P2 (2026-10-17T22:07:26Z, continuous run)
