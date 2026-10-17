@@ -127,3 +127,32 @@ Gate: P3 (continuous run, no stop)
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | The branch is pushed and a draft PR is open early, so CI runs while P5 and P6 proceed. |
+P6 Gate B (continuous run, auto-accepted): the run removes the old framework copy, adds the bash-suites CI job, and fixes setup hook merging. Updated: architecture-overview, component-registry, dependency-graph, decisions-index, about.md, README.md, product.yml, component.yml.
+
+P4 CI run 1 on PR #12: `windows-powershell` passed, which proves AC 14 on both hosts. `bash-suites` failed 3 suites on Linux (R-007). Causes: the 0000036 runner suite inherited `PLANIFEST_REQUIRE_PWSH=1`, GNU `stat -f` reads file system details, and GNU `grep` and `sed` read a backslash-backtick as a buffer anchor. Self-correction 1 fixed all three, plus the two regression copies.
+
+### P5: Security
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:22:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-security-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` (with P4 CI and P6) |
+| Telemetry | confirmed-disabled |
+| Notes | Risk Low. Findings S-001 to S-004 Low, S-005 and S-006 Info. No critical, high, or medium finding, so P5 proceeds without a stop. S-001 filed as backlog 0000112. S-004 goes in the PR description. |
+
+### P6: Docs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:22:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-docs-agent |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` (with P4 CI and P5) |
+| Telemetry | confirmed-disabled |
+| Notes | Version records at 0.5.0. Living docs updated. Drift fixed: a retired flag in `README.md` and a stale table in `docs/about.md`. The shipped workflow lacks a `permissions` block, recorded in `recommendations.md`. |
