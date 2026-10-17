@@ -30,4 +30,11 @@ assert_contains "shell: pwsh" "$JOB" "req-005: one step runs under PowerShell 7"
 assert_equals "2" "$(printf '%s\n' "$JOB" | grep -c 'planifest-zero/tests/run-tests.ps1' || true)" \
   "req-005: both steps run run-tests.ps1"
 
+# P5 S-005 and S-006.
+assert_equals "1" "$(printf '%s\n' "$JOB" | grep -cE 'uses: actions/checkout@[0-9a-f]{40}' || true)" \
+  "req-005: the job pins actions/checkout to a commit"
+assert_contains "persist-credentials: false" "$JOB" "req-005: the job leaves no token in .git/config"
+assert_equals "1" "$(awk '/^jobs:/{exit} /^permissions:/{p=1} p && /^  contents: read/{print}' "$WORKFLOW" | grep -c . || true)" \
+  "req-005: the workflow grants contents: read to every job"
+
 print_summary
