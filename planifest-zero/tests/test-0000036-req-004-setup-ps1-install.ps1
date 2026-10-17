@@ -8,6 +8,8 @@
 . (Join-Path $PSScriptRoot 'helpers\assert.ps1')
 . (Join-Path $PSScriptRoot 'helpers\setup-workspace.ps1')
 
+try {
+
 Write-Host ""
 Write-Host "=== req-004 (a): a fresh install wires the nine setup.sh entries ==="
 
@@ -71,5 +73,8 @@ $settings = Read-Settings $ws
 Assert-Equal 'keep-me' $settings.hooks.Stop "req-004 (e): the non-array Stop value is unchanged"
 Assert-True (-not (Get-HookEntries $settings).Contains('emit-event')) "req-004 (e): no telemetry entry remains"
 Remove-SetupWorkspace $ws
+
+}
+finally { Remove-AllWorkspaces }
 
 Complete-Suite

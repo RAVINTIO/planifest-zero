@@ -6,6 +6,8 @@
 . (Join-Path $PSScriptRoot 'helpers\assert.ps1')
 . (Join-Path $PSScriptRoot 'helpers\setup-workspace.ps1')
 
+try {
+
 $ws = New-SetupWorkspace
 
 Write-Host ""
@@ -36,4 +38,7 @@ $run = Invoke-Setup $ws @('claude-code', '--strict-orchestrator')
 Assert-Equal 0 $run.Code "req-004 (g): --strict-orchestrator still works"
 
 Remove-SetupWorkspace $ws
+}
+finally { Remove-AllWorkspaces }
+
 Complete-Suite
