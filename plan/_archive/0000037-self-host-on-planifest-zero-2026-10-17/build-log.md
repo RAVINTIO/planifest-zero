@@ -161,3 +161,17 @@ P4 CI run 2 on PR #12 at `87d67ec`: `bash-suites`, `windows-powershell`, `valida
 Gate: P4 (continuous run, no stop)
 Gate: P5 (risk Low, no stop)
 Gate: P6 (continuous run, no stop)
+
+### P7: Archive
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:45:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Regression candidates: req-007 and req-008 suites. Human chose to promote both. |
+P7: changelog, test report, and `.feature-id` written. 2 suites promoted. Archived to `plan/_archive/0000037-self-host-on-planifest-zero-2026-10-17/`.
