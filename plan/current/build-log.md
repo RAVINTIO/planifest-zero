@@ -60,3 +60,4 @@ Gate accepted: P0
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Continuous run. Five short requirements written inline. Finding: `test-regression-pack.sh` Section 7 already checks the manifest in both directions, for `.sh` only. The 0000084 status note was out of date, so req-002 extends the check to `.ps1`. |
+Gate accepted: P1 (2026-10-17T00:02:06Z), continuous run. 5 requirements, scope, risk register (5 risks), glossary, execution plan, component.yml 0.4.3.
