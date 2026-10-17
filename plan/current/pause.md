@@ -13,7 +13,7 @@ last_artifact: "plan/current/design.md"
 P0 is complete, and the human confirmed the design. Nothing in P1 has started.
 
 - Run mode is continuous (`plan/.run-mode`).
-- The branch `feat/0000037-self-host-on-planifest-zero` stacks on `feat/0000036-test-runner-coverage` (PR #10), which stacks on PR #9.
+- The branch `feat/0000037-self-host-on-planifest-zero-v2` stacks on `feat/0000036-test-runner-coverage-v2`, the rebuild of PR #10 onto `main` after PR #9 merged.
 - Read `plan/current/design.md` for the five requirements, risks R-001 to R-006, and the constraints.
 - Read `plan/current/feature-brief.md` for the 10 acceptance criteria.
 - Read the P0 block in `plan/current/build-log.md` for every confirmed decision and Scope Lock answer.
