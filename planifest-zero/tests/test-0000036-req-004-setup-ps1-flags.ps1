@@ -34,6 +34,9 @@ Assert-Equal 1 $run.Code "req-004 (g): --Strict-Orchestrator exits 1"
 Assert-Contains 'Unknown flag: --Strict-Orchestrator' $run.Output "req-004 (g): the error names the flag"
 $run = Invoke-Setup $ws @('Claude-Code')
 Assert-Equal 1 $run.Code "req-004 (g): the tool name Claude-Code exits 1"
+$run = Invoke-Setup $ws @('//example.invalid/token-abc')
+Assert-Equal 1 $run.Code "req-004 (g): a URL-shaped tool name exits 1"
+Assert-True (-not $run.Output.Contains('token-abc')) "req-004 (g): a tool name that isn't a plain name is never printed (P5 S-003)"
 $run = Invoke-Setup $ws @('claude-code', '--strict-orchestrator')
 Assert-Equal 0 $run.Code "req-004 (g): --strict-orchestrator still works"
 
