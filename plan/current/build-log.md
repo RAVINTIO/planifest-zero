@@ -61,3 +61,30 @@ Gate accepted: P0
 | Telemetry | confirmed-disabled |
 | Notes | Continuous run. Five short requirements written inline. Finding: `test-regression-pack.sh` Section 7 already checks the manifest in both directions, for `.sh` only. The 0000084 status note was out of date, so req-002 extends the check to `.ps1`. |
 Gate accepted: P1 (2026-10-17T00:02:06Z), continuous run. 5 requirements, scope, risk register (5 risks), glossary, execution plan, component.yml 0.4.3.
+
+### P2: ADRs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T00:02:33Z` |
+| Model tier | primary |
+| Skills loaded | planifest-adr-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Three short ADRs written inline. design_critic toggle absent, so off. |
+Gate accepted: P2 (2026-10-17T00:03:28Z), continuous run. ADR-001 stray files fail the run, ADR-002 plain PowerShell suites, ADR-003 Windows CI under both hosts. consistency-check clean.
+
+### P3: Codegen
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T00:03:28Z` |
+| Model tier | primary |
+| Skills loaded | planifest-codegen-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Inline, not decomposed: req-001 and req-003 edit the same runner, and req-004 and req-005 depend on req-003. |
