@@ -60,3 +60,16 @@ P0 exchange (scope extension): Q: add 0000108, 0000106, 0000107, and 0000103 as 
 P0 exchange (backlog filing): human asked for a release-sizing backlog item. Filed 0000109.
 Version confirmed: 0.5.0 (supersedes 0.4.4)
 Design re-confirmed: 2026-10-17T09:43:01Z
+
+### P1: Spec
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T10:05:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-orchestrator, planifest-spec-agent |
+| Agents spawned | `3` (requirements 001 to 005, requirements 006 to 009, plan artifacts) |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Telemetry | confirmed-disabled |
+| Notes | Resumed from `pause.md`. The human asked mid-run to build as fast as possible with multiple subagents, and to file a backlog item for subagent acceleration. Filed 0000110. |
