@@ -86,3 +86,19 @@ Design re-confirmed: 2026-10-17T09:43:01Z
 | Parallel task batches | `1` |
 | Telemetry | confirmed-disabled |
 | Notes | P2 overlaps P1, because each ADR derives from the confirmed design alone. The human asked for maximum parallelism. |
+
+P1 complete: 9 requirement files, execution plan, scope, risk register, and glossary. Gaps resolved by the orchestrator within the confirmed design: CI skips the `core.hooksPath` check, req-006 owns the tests README CI section, the override says "the ship phase", falsy hook values warn, and R-010 covers `.ps1` suites on Linux. Filed backlog 0000111 for `UserPromptSubmit` filter parity.
+Gate: P1 (continuous run, no stop)
+
+### P3: Codegen
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T10:25:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-codegen-agent |
+| Agents spawned | `6` in batch 1 (req-001, req-002, req-003, req-005, req-009, and req-007 with req-008) |
+| MCP calls | `0` |
+| Parallel task batches | `3` planned (batch 1, then req-004, then req-006) |
+| Telemetry | confirmed-disabled |
+| Notes | P3 batch 1 overlaps the end of P2. ADR-001 and ADR-002 are committed. ADR-003 and ADR-004 are in progress, and their requirement files already state the decisions. Each subagent runs its own TDD cycle inline, to cut dispatch overhead. |
