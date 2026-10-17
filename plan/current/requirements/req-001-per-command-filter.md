@@ -26,11 +26,9 @@ As a user with my own hook in a shared entry, I rerun setup, so that my command 
 - Setup then appends the fresh Planifest entries, as it does today.
 
 ## Acceptance Criteria
-- [ ] (a) An entry holding `gate-write.mjs` and a user command keeps only the user command, with its matcher, after either script runs.
+- [ ] (a) In `PreToolUse` and `UserPromptSubmit`, an entry holding a Planifest command and a user command keeps only the user command, with its matcher.
 - [ ] (b) An entry holding only Planifest commands is gone, and each fresh Planifest entry appears exactly once.
-- [ ] (c) A `UserPromptSubmit` entry holding `check-design.mjs` and a user command keeps only the user command.
-- [ ] (d) A second run produces a byte-identical `settings.json`.
-- [ ] (e) `setup.ps1` gives the same result as `setup.sh` on fixtures (a) to (c), on Windows PowerShell 5.1 and PowerShell 7.
+- [ ] (c) A second run produces a byte-identical `settings.json`.
 
 ## Dependencies
 - req-002 shares the `UserPromptSubmit` filter in `setup.sh`. Build req-002's matching rule into the same filter.

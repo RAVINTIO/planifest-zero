@@ -28,7 +28,7 @@ Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. T
 3. Otherwise keep the entry with its remaining commands, in their order.
 4. Append the fresh Planifest entries, as today.
 
-`setup.sh` replaces its `UserPromptSubmit` substring test with the case-sensitive path-boundary regex that `setup.ps1` already uses. Both scripts then match the same commands. This refines 0000037 ADR-003, which decided how setup repairs entries it owns. It does not supersede that ADR.
+`setup.sh` replaces its `UserPromptSubmit` substring test with the case-sensitive path-boundary regex that `setup.ps1` already uses. Both scripts then match the same commands. This refines the 0000037 any-matcher decision, which decided how setup repairs entries it owns. It does not supersede that ADR.
 
 ## Alternatives Considered
 
@@ -60,7 +60,7 @@ Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. T
 
 ## Related ADRs
 
-- 0000037 ADR-003 (`plan/_archive/0000037-self-host-on-planifest-zero-2026-10-17/adr/`) - extends. This ADR refines its repair rule and does not replace it.
+- The 0000037 any-matcher decision (`plan/_archive/0000037-self-host-on-planifest-zero-2026-10-17/adr/`) - extends. This ADR refines its repair rule and does not replace it.
 - 0000034 ADR-002 - depends-on (settings writes stay atomic)
 - ADR-001 - related-to (the stack is unchanged)
 
