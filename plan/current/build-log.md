@@ -93,3 +93,8 @@ Gate accepted: P3 (2026-10-17T22:21:21Z, continuous run)
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Notes | Security review by one subagent (claude-sonnet-5-5) runs alongside execution verification and CI. |
+CI run 1 (`39073831093`, fixtures commit only): bash-suites failed on the three undiscovered fixture files. Fixed by 0b36659 before CI saw it again. Not a self-correction in P4.
+CI at `68eb9d0` (`39074719087`): all four jobs pass. The .ps1 suite passed 32 of 32 on Windows PowerShell 5.1, PowerShell 7, and Linux.
+Verification: 6 of 6 criteria verified (5 by local setup.sh runs, 1 by CI on three hosts). Report at plan/current/verification-report.md.
+Security: overall Low. 0000037 S-001 mitigated. F-001 to F-007 all Low or informational. Backlog 0000113, 0000114, and 0000115 filed.
+Self-corrections in P4: 0.
