@@ -1,17 +1,19 @@
 # Planifest Tests
 
-This directory holds the framework's own test suite. The suites are Bash
-scripts, they run on macOS, Linux, and WSL, and they cover the Claude Code
-target only.
+This directory holds the framework's own test suite. Bash suites run on macOS,
+Linux, and WSL. PowerShell suites run on Windows PowerShell 5.1 and
+PowerShell 7. All suites cover the Claude Code target only.
 
 ## Layout
 
 | Path | Contents |
 |------|----------|
-| `test-*.sh` | Per-feature test suites |
-| `helpers/` | Shared assertions (`assert.sh`) |
+| `test-*.sh` | Per-feature Bash suites |
+| `test-*.ps1` | Per-feature PowerShell suites, which run `setup.ps1` |
+| `helpers/` | Shared assertions (`assert.sh`, `assert.ps1`) and the `setup.ps1` workspace helper |
 | `regression/` | The long-term regression pack and its manifest |
-| `run-tests.sh` | The runner |
+| `run-tests.sh` | The runner for every suite |
+| `run-tests.ps1` | The runner for the PowerShell suites only |
 
 ## Running the tests
 
@@ -19,10 +21,20 @@ target only.
 bash planifest-zero/tests/run-tests.sh
 ```
 
-The runner discovers every `test-*.sh` in this directory by glob. No suite is
-registered by hand. Add a conforming file and it runs on the next invocation.
-After the per-feature suites, the runner executes every `test-*.sh` under
-`regression/` and reports the two sets separately.
+The runner discovers every `test-*.sh` and `test-*.ps1` in this directory by
+glob. No suite is registered by hand. Add a conforming file and it runs on the
+next invocation. After the per-feature suites, the runner executes every suite
+under `regression/` and reports the two sets separately.
+
+The runner runs PowerShell suites with `pwsh`. If `pwsh` isn't on the `PATH`,
+it prints how many it skipped. Set `PLANIFEST_REQUIRE_PWSH=1` to make that skip
+fail the run, or `PLANIFEST_PWSH` to point at another PowerShell 7 program.
+
+Before any suite runs, the runner checks every file under this directory. A file
+that is neither a suite nor on the runner's known list makes the run fail, and
+the runner names it. If you add a helper or data file, add it to
+`KNOWN_NON_SUITES` in `run-tests.sh`. To run only this check, set
+`PLANIFEST_PREFLIGHT_ONLY=1`.
 
 You can also run a single suite directly:
 
@@ -30,8 +42,22 @@ You can also run a single suite directly:
 bash planifest-zero/tests/test-commit-msg-hook.sh
 ```
 
+To run only the PowerShell suites, under a host of your choice:
+
+```powershell
+powershell -NoProfile -File planifest-zero/tests/run-tests.ps1
+pwsh -NoProfile -File planifest-zero/tests/run-tests.ps1
+```
+
 Suites create their own temporary workspaces where they need isolation and
 clean up after themselves, so a run leaves your working tree unaffected.
+
+## CI
+
+The `windows-powershell` job in `.github/workflows/planifest.yml` runs
+`run-tests.ps1` on `windows-latest`, once under each host. The Bash suites
+don't run in CI yet. The rename suite fails while `planifest-framework/` exists
+(backlog 0000097).
 
 ## The regression pack
 
@@ -40,29 +66,18 @@ proven in one feature stays covered in every later one.
 
 `regression/regression-manifest.json` records each promoted test: its source
 feature, promotion date, and promoter. `scripts/promote-to-regression.sh`
-manages the manifest. Do not edit it by hand.
+manages the manifest. Do not edit it by hand. `test-regression-pack.sh` fails
+when a manifest entry has no file, or a suite has no entry.
 
 ## Adding a test
 
-1. Name the file `test-{feature-id}-{description}.sh` and put it in this
-   directory.
-2. Source `helpers/assert.sh` for the shared assertion functions.
+1. Name the file `test-{feature-id}-{description}.sh` or `.ps1`, and put it in
+   this directory.
+2. Source `helpers/assert.sh`, or dot-source `helpers/assert.ps1` and end with
+   `Complete-Suite`.
 3. Exit non-zero on failure. The runner counts a suite as failed on any
    non-zero exit.
+4. Keep a `.ps1` suite ASCII. Windows PowerShell 5.1 reads a file with no BOM as
+   ANSI, so build non-ASCII test text from `[char]` codes.
 
 The runner picks the file up automatically. Nothing else needs registering.
-
-## Manual verification (setup.ps1)
-
-No PowerShell runner exists in CI (backlog 0000084), so `setup.ps1` suites such
-as `test-0000032-req-002-powershell-write-to-plan-state.sh` assert statically
-against the script's source. A person with `pwsh` installed confirms the
-runtime behaviour by hand:
-
-1. Run `pwsh ./planifest-zero/setup.ps1 claude-code` from the repository root.
-2. Check that `plan/state/claude-code.md` exists and its `tool` field reads
-   `claude-code`.
-3. Confirm the run printed a line naming `plan/state/claude-code.md`.
-4. Run the same command again.
-5. Diff the file against its previous content. Only the `writtenAt` field
-   changes between the two runs.
