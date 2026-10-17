@@ -108,3 +108,22 @@ Gate: P2 (continuous run, no stop)
 
 P3 batch 1 results: req-001, req-002, req-003, req-005, and req-009 GREEN and committed.
 Deviation: req-001 removed the telemetry job, which held the five phase names that case (e) of `test-0000031-req-003-five-phases.sh` checked. The orchestrator removed case (e).
+
+P3 batch 2: req-004 GREEN. `core.hooksPath` set to `planifest-zero/hooks`, then `git rm -r` of the old folder (1096 files). The rename suite passes all 13 checks.
+P3 batch 3: req-006 GREEN. The `bash-suites` job is added, and the tests README describes it.
+Full local run: 65 feature suites and 16 regression suites pass, 0 fail. 3 PowerShell suites skip because `pwsh` isn't installed locally.
+Deviation: AC 14 (`setup.ps1` on both hosts) is unverified locally. The `windows-powershell` and `bash-suites` CI jobs prove it on the PR.
+Gate: P3 (continuous run, no stop)
+
+### P4: Validate
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T11:20:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-validate-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | The branch is pushed and a draft PR is open early, so CI runs while P5 and P6 proceed. |
