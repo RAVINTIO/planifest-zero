@@ -28,10 +28,11 @@ while ($i -lt $args.Count) {
     if ("$($args[$i])".StartsWith('--backend-url=')) {
         Write-Host "  ! Warning: ignoring retired flag --backend-url (removed in an earlier release)"
         # PowerShell 7 splits a -File argument such as --backend-url=https://x
-        # at its first colon, so the rest of the value arrives as the next
-        # argument. Skip it by the spaced-form rule, so it is never taken for
-        # the tool name and never printed (0000036 P3, found by the Windows CI).
-        $splitAtColon = "$($args[$i])".EndsWith(':')
+        # at its first colon and drops the colon, so the rest of the value
+        # arrives as the next argument. A form with no colon left was split.
+        # Skip the rest by the spaced-form rule, so it is never taken for the
+        # tool name and never printed (0000036 P3, found by the Windows CI).
+        $splitAtColon = -not "$($args[$i])".Contains(':')
         $i++
         if ($splitAtColon -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
         continue
