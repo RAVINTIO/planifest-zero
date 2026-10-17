@@ -188,10 +188,10 @@ const fs = require('fs');
 const m = JSON.parse(fs.readFileSync('regression-manifest.json','utf8'));
 const listed = new Set(m.tests.map(t => t.name));
 const unlisted = fs.readdirSync('.')
-  .filter(f => f.startsWith('test-') && f.endsWith('.sh') && !listed.has(f));
+  .filter(f => f.startsWith('test-') && (f.endsWith('.sh') || f.endsWith('.ps1')) && !listed.has(f));
 console.log(unlisted.join(' '));
 " 2>/dev/null )
-  assert_equals "" "$unlisted_tests" "every test-*.sh in tests/regression/ has a manifest entry"
+  assert_equals "" "$unlisted_tests" "every test-*.sh and test-*.ps1 in tests/regression/ has a manifest entry"
 fi
 
 print_summary

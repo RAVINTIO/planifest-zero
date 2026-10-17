@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000035-powershell-setup-parity
+Last updated: 0000036-test-runner-coverage
 
 ---
 
@@ -76,3 +76,11 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | ADR-001 | setup.ps1 writes the same hook entries as setup.sh | accepted | `setup.ps1` wires all six enforcement hooks in the `setup.sh` entry shape, and a static parity suite checks the match. |
 | ADR-002 | setup.ps1 supports Windows PowerShell 5.1 | accepted | `setup.ps1` uses no PowerShell 7-only feature, so it runs on the PowerShell that ships with Windows. |
 | ADR-003 | setup.ps1 flags are case-sensitive | accepted | The flag `switch` matches case, as `setup.sh` does. Both scripts remove a leftover temporary file at the start of each run. |
+
+### Feature 0000036: test-runner-coverage
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stray test files fail the run | accepted | `run-tests.sh` names every file under `tests/` that is neither a suite nor a known non-suite, and exits 1. |
+| ADR-002 | PowerShell suites use a plain assert helper | accepted | `test-*.ps1` suites use `helpers/assert.ps1` with no Pester. `run-tests.sh` runs them with `pwsh` or reports the skip. |
+| ADR-003 | CI runs the PowerShell suites on Windows under both hosts | accepted | A `windows-latest` job runs `run-tests.ps1` with `powershell` and with `pwsh`. Bash suites stay out of CI for now. |

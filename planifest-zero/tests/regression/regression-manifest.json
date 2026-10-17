@@ -113,6 +113,13 @@
       "promotionDate": "2026-10-17",
       "promotedBy": "human",
       "filePath": "tests/regression/test-0000035-req-001-hook-parity.sh"
+    },
+    {
+      "name": "test-0000036-req-001-003-runner.sh",
+      "sourceFeature": "0000036-test-runner-coverage",
+      "promotionDate": "2026-10-17",
+      "promotedBy": "human",
+      "filePath": "tests/regression/test-0000036-req-001-003-runner.sh"
     }
   ]
 }

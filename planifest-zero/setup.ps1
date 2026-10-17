@@ -27,7 +27,16 @@ $i = 0
 while ($i -lt $args.Count) {
     if ("$($args[$i])".StartsWith('--backend-url=')) {
         Write-Host "  ! Warning: ignoring retired flag --backend-url (removed in an earlier release)"
+        # PowerShell 7 splits a -File argument such as --backend-url=https://x
+        # at its first colon and drops the colon, so the rest of the value
+        # arrives as the next argument. A form with no colon left was split.
+        # Skip the rest by the spaced-form rule, so it is never taken for the
+        # tool name and never printed (0000036 P3, found by the Windows CI).
+        # A rest that starts with // is skipped too, in case a host keeps the colon.
+        $splitAtColon = -not "$($args[$i])".Contains(':')
         $i++
+        if ($i -lt $args.Count -and "$($args[$i])".StartsWith('//')) { $i++; continue }
+        if ($splitAtColon -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
         continue
     }
     if ($RetiredFlags -ccontains $args[$i]) {
@@ -1115,7 +1124,10 @@ if ($ValidTools -ccontains $Tool) {
     Invoke-PlanifestSetup -ToolName $Tool
 }
 else {
-    Write-Host "Unknown tool: $Tool"
+    # Print only a plain name, so a stray flag value never reaches the
+    # output (0000036 S-003).
+    if ($Tool -cmatch '^[a-z0-9-]+$') { Write-Host "Unknown tool: $Tool" }
+    else { Write-Host "Unknown tool (name not shown)" }
     Write-Host "Valid tools: $($ValidTools -join ', ')"
     exit 1
 }
