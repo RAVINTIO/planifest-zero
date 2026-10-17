@@ -88,3 +88,20 @@ Gate accepted: P2 (2026-10-17T00:03:28Z), continuous run. ADR-001 stray files fa
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Inline, not decomposed: req-001 and req-003 edit the same runner, and req-004 and req-005 depend on req-003. |
+Defect found by req-004 on its first Windows run: on PowerShell 7, `setup.ps1 claude-code --backend-url=https://example.invalid/x` exited 1 and printed `//example.invalid/x` in `Unknown tool`. PowerShell 7 splits a `-File` argument at its first colon and drops the colon. Fixed in `setup.ps1`: a `--backend-url=` form with no colon left skips the next argument by the spaced-form rule. Windows PowerShell 5.1 was never affected. The defect shipped in 0.4.1 and 0.4.2.
+Self-corrections: 4. A red-phase run of the runner suite called the old runner, which ran the whole pack recursively. It was stopped and the call is now guarded. Then three CI rounds for the PowerShell 7 split: the first fix tested for a trailing colon, a debug print showed the colon is dropped, and the third round passed.
+Gate accepted: P3 (2026-10-17T00:21:11Z), continuous run. req-001 to req-003 16/16 plus 2 req-002 checks, req-005 7/7, PowerShell suites 32/32 on both hosts in CI run 3.
+
+### P4: Validate
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T00:21:11Z` |
+| Model tier | primary |
+| Skills loaded | planifest-validate-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | Local `run-tests.sh`: 55 of 56 feature and 15 of 15 regression suites pass, with 2 PowerShell suites skipped because `pwsh` is missing. The one failure is the known rename suite (backlog 0000097). CI on PR #10: all four jobs green, including `windows-powershell` on 5.1 and 7. consistency-check clean. |
+Gate accepted: P4 (2026-10-17T00:21:11Z), continuous run. Zero self-corrections in P4.
