@@ -118,3 +118,18 @@ Gate accepted: P4 (2026-10-17T00:21:11Z), continuous run. Zero self-corrections 
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | One fresh-context reviewer over the diff from the PR #9 head. |
+P5 findings: Low overall. S-001 to S-005 Low, S-006 to S-008 Info. S-001 to S-006 fixed with tests. S-007 and S-008 accepted.
+Gate accepted: P5 (2026-10-17T00:28:10Z), continuous run. CI green after the fixes.
+
+### P6: Docs
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T00:28:10Z` |
+| Model tier | primary |
+| Skills loaded | planifest-docs-agent |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Telemetry | confirmed-disabled |
+| Notes | P6 Gate B (continuous run, auto-accepted): this run changes how tests run and adds a CI job. Updating `tests/README.md` (done in P5), `architecture-overview.md`, and `decisions-index.md`, plus Last updated on all four living docs. |

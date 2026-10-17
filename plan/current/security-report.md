@@ -76,3 +76,18 @@ Top actions before production:
 1. Check the `git init` result and set `GIT_CEILING_DIRECTORIES` in the workspace helper (S-001).
 2. Narrow the `helpers/*` exemption in the pre-flight (S-004).
 3. Harden the `--backend-url=` split rule and stop echoing an unknown tool value (S-003).
+
+## Resolution (after P5 fixes)
+
+| ID | Outcome |
+|----|---------|
+| S-001 | Fixed. `New-SetupWorkspace` throws if `git init` fails, and `Invoke-Setup` sets `GIT_CEILING_DIRECTORIES` to the workspace's parent folder. |
+| S-002 | Fixed. Both suites wrap their body in `try` and remove every workspace in `finally`. |
+| S-003 | Fixed. A rest that starts with `//` is skipped too. `setup.ps1` prints a tool name only when it matches `^[a-z0-9-]+$`. A runtime case checks it. |
+| S-004 | Fixed. `KNOWN_NON_SUITES` names the three helper files. A suite under `helpers/` is now stray, and a runner case checks it. |
+| S-005 | Fixed. The new job pins `actions/checkout` to the `v4` commit and sets `persist-credentials: false`. |
+| S-006 | Fixed. The workflow grants `contents: read` at the top level. |
+| S-007 | Accepted. Both cases need write access to the checkout. |
+| S-008 | Accepted. It matches the spaced form, which already behaves this way. |
+
+Overall risk rating after the fixes: **Low**. CI run on PR #10: `windows-powershell` green on both hosts, 34 of 34 assertions each.
