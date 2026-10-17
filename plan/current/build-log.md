@@ -156,3 +156,8 @@ P4 CI run 1 on PR #12: `windows-powershell` passed, which proves AC 14 on both h
 | Parallel task batches | `1` (with P4 CI and P5) |
 | Telemetry | confirmed-disabled |
 | Notes | Version records at 0.5.0. Living docs updated. Drift fixed: a retired flag in `README.md` and a stale table in `docs/about.md`. The shipped workflow lacks a `permissions` block, recorded in `recommendations.md`. |
+
+P4 CI run 2 on PR #12 at `87d67ec`: `bash-suites`, `windows-powershell`, `validate-branch`, and `self-description-check` all pass. Self-corrections: 1.
+Gate: P4 (continuous run, no stop)
+Gate: P5 (risk Low, no stop)
+Gate: P6 (continuous run, no stop)
