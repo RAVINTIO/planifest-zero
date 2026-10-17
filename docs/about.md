@@ -1,6 +1,6 @@
 ---
-version: "0.4.2"
-feature: "0000035-powershell-setup-parity"
+version: "0.4.3"
+feature: "0000036-test-runner-coverage"
 updated: "17 Oct 2026"
 ---
 # About

@@ -147,3 +147,4 @@ Gate accepted: P6 (2026-10-17T00:28:42Z), continuous run. Zero drift. Recommenda
 | Parallel task batches | `0` |
 | Telemetry | confirmed-disabled |
 | Notes | Regression candidate `test-0000036-req-001-003-runner.sh` promoted under the continuous run, before the tag. |
+Archived to `plan/_archive/0000036-test-runner-coverage-2026-10-17/`. Changelog and test report written. Gate accepted: P7 (2026-10-17T00:30:51Z).
