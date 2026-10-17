@@ -74,3 +74,22 @@ Gate accepted: P2 (2026-10-17T22:07:26Z, continuous run)
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Notes | req-001 and req-002 share the `setup.sh` filter, so the split is by script, not by requirement. One subagent builds both in `setup.sh` with the `.sh` suite. The other builds both in `setup.ps1` with the `.ps1` suite. Both read the shared fixtures in `planifest-zero/tests/fixtures/0000038-hook-filter/`. `pwsh` isn't installed locally, so CI proves the `.ps1` side (R-003). |
+Subagents: 2 of 2 completed (claude-opus-5-5, primary tier). The setup.sh suite was RED first (18 passed, 7 failed), then GREEN with 28 checks. The setup.ps1 suite could not run locally.
+Cross-agent fix: the ps1 subagent found that the runner pre-flight rejected the fixture files. The orchestrator relayed it to the sh subagent, which added them to KNOWN_NON_SUITES. The sh suite also gained the single-object hooks case from the ps1 suite.
+Older suites: four source checks that located the old setup.ps1 Where-Object filter now locate Remove-PlanifestHookCommands. Their requirements did not change.
+Finding: the old setup.sh exited 1 on a PreToolUse entry whose hooks value is a single object. The new filter keeps that entry as it was.
+Local runner: 66 feature and 18 regression suites pass. 4 PowerShell suites skipped (no pwsh).
+Docs: decisions index, architecture overview, and Last updated stamps on the four living docs.
+Gate accepted: P3 (2026-10-17T22:21:21Z, continuous run)
+
+### P4: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-17T22:21:21Z` |
+| Model tier | primary (verification), cheaper (security review) |
+| Skills loaded | planifest-validate-and-accept |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Security review by one subagent (claude-sonnet-5-5) runs alongside execution verification and CI. |
