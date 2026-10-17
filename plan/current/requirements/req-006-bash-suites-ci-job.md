@@ -20,6 +20,7 @@ As the maintainer, I see the Bash suites run in CI, so that a PR can't break one
 - The job runs `bash planifest-zero/tests/run-tests.sh` with `PLANIFEST_REQUIRE_PWSH=1`. The image has `pwsh`, so the job also runs the PowerShell suites on Linux.
 - The job sets `permissions: contents: read` and uses no secrets.
 - The job pins `actions/checkout` to the same commit as `windows-powershell`, with `persist-credentials: false`.
+- Rewrite the `## CI` section of `planifest-zero/tests/README.md` to describe the `bash-suites` job.
 - A new suite, `planifest-zero/tests/test-0000037-req-006-bash-suites-ci-job.sh`, checks the job block. It follows `test-0000036-req-005-windows-ci-job.sh`, and it skips in a consumer copy with no repo workflow.
 
 ## Acceptance Criteria

@@ -18,7 +18,7 @@ As a user in a repo with prior runs, I start P0 without confirming standard-iter
 ## Functional Requirements
 - In `planifest-zero/skills/planifest-orchestrator/SKILL.md`, step 7 of the P0 steps changes. If standard-iterative is the only signal, the orchestrator assumes it and states it in the P0 briefing without asking.
 - The orchestrator still asks in two cases:
-  - Signals conflict.
+  - Signals conflict. A conflict means the human states a different mode, or discovery can't read a signal.
   - The detected mode is external anchor, retrofit, or greenfield.
 - The orchestrator records the assumed mode and its signal in `discovery.md`, `design.md`, and the build log, as it does today for a confirmed mode.
 - The conflict warning after the Adoption Modes table stays. If the human states a different mode, the orchestrator warns once and asks.

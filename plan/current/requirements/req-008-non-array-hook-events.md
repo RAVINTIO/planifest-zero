@@ -18,6 +18,7 @@ As a user with a hand-edited `settings.json`, I run either setup script on a non
 ## Functional Requirements
 - Both `planifest-zero/setup.sh` and `planifest-zero/setup.ps1` apply one rule to `hooks.PreToolUse` and `hooks.UserPromptSubmit`. If the value is present and isn't an array, the script warns and replaces it with the Planifest entries.
 - The warning names the event and `.claude/settings.json`, and says setup replaced the value. Both scripts print the same text.
+- A present value that isn't an array warns, including `""`, `0`, and `false`.
 - An absent or `null` value keeps today's behaviour: the script wires the Planifest entries with no warning.
 - An array value keeps today's merge, with req-007's filter in `setup.sh`.
 - `setup.sh` no longer throws on an object or string value. `setup.ps1` no longer wraps the value with `@(...)` and keeps it as an entry.
