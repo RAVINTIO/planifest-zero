@@ -61,6 +61,8 @@ No component owns data.
 - Remove the `validate-telemetry-schema` job.
 - Remove the retired flag from `refresh-planifest-zero-dir.ps1`.
 - Update the two live references to the old folder name.
+- Point `core.hooksPath` at `planifest-zero/hooks` before the deletion.
+- Reword `custom-004-p9-push-and-raise-pr.md` to name the ship phase.
 - Add suites that prove each change.
 
 ### Out of Scope
@@ -106,4 +108,6 @@ Derived at the Scope Lock Challenge. See `build-log.md`.
 5. `.github/workflows/planifest.yml` has no `validate-telemetry-schema` job and no `PLANIFEST_TELEMETRY_URL`.
 6. `refresh-planifest-zero-dir.ps1` passes no retired flag.
 7. A run of `planifest-zero/setup.sh claude-code` in a copy of the repo leaves `plan/state/claude-code.md` with no retired flag.
-8. The full local run reports 0 failing suites, and CI is green on every job.
+8. `git config core.hooksPath` prints `planifest-zero/hooks`.
+9. `custom-004-p9-push-and-raise-pr.md` names the ship phase and no P9.
+10. The full local run reports 0 failing suites, and CI is green on every job.

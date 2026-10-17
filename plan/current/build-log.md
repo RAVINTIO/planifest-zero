@@ -35,3 +35,5 @@ summary: "Working telemetry file maintained by the orchestrator throughout the p
 
 Adoption mode: standard-iterative, detected from `plan/_archive/` and `docs/about.md`.
 Backlog pickup proposal: pull in 0000097. Discard 0000086, 0000089, and 0000093, which are superseded by 0000097. Leave 0000108 and every other entry.
+
+Scope Lock drafts: 4 of 4 dispatches completed. Two gaps folded into the draft design before presentation. `core.hooksPath` points at `planifest-framework/hooks` (R-005, req-004). The custom-004 override names P9 (req-005).
