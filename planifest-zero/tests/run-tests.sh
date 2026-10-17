@@ -1,32 +1,105 @@
 #!/usr/bin/env bash
 # Test runner for planifest-zero tests
 # Usage: bash planifest-zero/tests/run-tests.sh
+#
+# Environment:
+#   PLANIFEST_PWSH=<path>        PowerShell 7 program to run .ps1 suites (default: pwsh)
+#   PLANIFEST_REQUIRE_PWSH=1     fail the run when pwsh is missing (0000036 ADR-002)
+#   PLANIFEST_PREFLIGHT_ONLY=1   check for stray files, run no suite, and exit
 
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REGRESSION_DIR="$SCRIPT_DIR/regression"
+PWSH="${PLANIFEST_PWSH:-pwsh}"
 
 TOTAL_PASS=0
 TOTAL_FAIL=0
+PS_SKIPPED=0
 
-run_suite() {
-  local file="$1"
-  local name
-  name="$(basename "$file")"
-  echo ""
-  echo "--- $name ---"
-  if bash "$file"; then
-    TOTAL_PASS=$((TOTAL_PASS + 1))
-  else
-    TOTAL_FAIL=$((TOTAL_FAIL + 1))
+# ── Pre-flight: every file under tests/ is a suite or a known non-suite ──────
+#
+# A suite is test-*.sh or test-*.ps1 directly in tests/ or tests/regression/.
+# Any other file the runner would skip without a word, which is how a
+# misnamed suite once went unrun for a whole release (backlog 0000084). So
+# each one is named here, and the run fails (0000036 ADR-001). A new helper or
+# data file needs an entry in this list.
+KNOWN_NON_SUITES=(
+  "README.md"                              # how to run the tests
+  "run-tests.sh"                           # this runner
+  "run-tests.ps1"                          # the PowerShell-only runner (0000036 ADR-002)
+  "test-gate-write-windows.mjs"            # called by test-gate-write-windows.sh
+  "regression/test-gate-write-windows.mjs" # the regression copy of the same
+  "regression/regression-manifest.json"    # the promoted-suite list
+  "regression/.gitkeep"                    # keeps the folder in git
+)
+
+is_known_file() {
+  local rel="$1" dir base known
+  dir="$(dirname "$rel")"
+  base="$(basename "$rel")"
+  case "$rel" in helpers/*) return 0 ;; esac   # assert helpers for both shells
+  [ "$base" = ".DS_Store" ] && return 0        # macOS Finder metadata
+  if [ "$dir" = "." ] || [ "$dir" = "regression" ]; then
+    case "$base" in test-*.sh|test-*.ps1) return 0 ;; esac
   fi
+  for known in "${KNOWN_NON_SUITES[@]}"; do
+    [ "$rel" = "$known" ] && return 0
+  done
+  return 1
 }
 
-# Every test-*.sh in this directory is discovered and run automatically —
-# no suite needs to be registered by hand. Add a new test-*.sh file and it
-# runs on the next invocation (backlog 0000004: hardcoded list silently
-# skipped 5 of 14 suites, including this feature's own).
-for suite in "$SCRIPT_DIR"/test-*.sh; do
+UNDISCOVERED=0
+while IFS= read -r file; do
+  rel="${file#"$SCRIPT_DIR"/}"
+  if ! is_known_file "$rel"; then
+    echo "Undiscovered file: $rel"
+    UNDISCOVERED=$((UNDISCOVERED + 1))
+  fi
+done < <(find "$SCRIPT_DIR" \( -type f -o -type l \) | LC_ALL=C sort)
+
+if [ "${PLANIFEST_PREFLIGHT_ONLY:-0}" = "1" ]; then
+  [ "$UNDISCOVERED" -eq 0 ]
+  exit $?
+fi
+
+HAVE_PWSH=0
+command -v "$PWSH" >/dev/null 2>&1 && HAVE_PWSH=1
+
+# Runs one suite and prints its name. Returns 0 on pass, 1 on fail, and 2 when
+# a PowerShell suite can't run because pwsh is missing.
+run_one() {
+  local file="$1"
+  echo ""
+  echo "--- $(basename "$file") ---"
+  case "$file" in
+    *.ps1)
+      if [ "$HAVE_PWSH" -eq 0 ]; then
+        echo "  SKIP: pwsh not found"
+        return 2
+      fi
+      "$PWSH" -NoProfile -File "$file"
+      ;;
+    *)
+      bash "$file"
+      ;;
+  esac
+}
+
+run_suite() {
+  run_one "$1"
+  case $? in
+    0) TOTAL_PASS=$((TOTAL_PASS + 1)) ;;
+    2) PS_SKIPPED=$((PS_SKIPPED + 1)) ;;
+    *) TOTAL_FAIL=$((TOTAL_FAIL + 1)) ;;
+  esac
+}
+
+# Every test-*.sh and test-*.ps1 in this directory is discovered and run
+# automatically. No suite needs to be registered by hand (backlog 0000004:
+# hardcoded list silently skipped 5 of 14 suites, including this feature's own).
+for suite in "$SCRIPT_DIR"/test-*.sh "$SCRIPT_DIR"/test-*.ps1; do
+  [ -e "$suite" ] || continue
   run_suite "$suite"
 done
 
@@ -38,21 +111,21 @@ REGRESSION_FAIL=0
 echo ""
 echo "=== Regression Suite ==="
 
-REGRESSION_DIR="$SCRIPT_DIR/regression"
-REGRESSION_TESTS=("$REGRESSION_DIR"/test-*.sh)
+REGRESSION_TESTS=()
+for regression_test in "$REGRESSION_DIR"/test-*.sh "$REGRESSION_DIR"/test-*.ps1; do
+  [ -e "$regression_test" ] && REGRESSION_TESTS+=("$regression_test")
+done
 
-if [ ! -e "${REGRESSION_TESTS[0]}" ]; then
+if [ "${#REGRESSION_TESTS[@]}" -eq 0 ]; then
   echo "  No regression tests yet."
 else
   for regression_test in "${REGRESSION_TESTS[@]}"; do
-    name="$(basename "$regression_test")"
-    echo ""
-    echo "--- $name ---"
-    if bash "$regression_test"; then
-      REGRESSION_PASS=$((REGRESSION_PASS + 1))
-    else
-      REGRESSION_FAIL=$((REGRESSION_FAIL + 1))
-    fi
+    run_one "$regression_test"
+    case $? in
+      0) REGRESSION_PASS=$((REGRESSION_PASS + 1)) ;;
+      2) PS_SKIPPED=$((PS_SKIPPED + 1)) ;;
+      *) REGRESSION_FAIL=$((REGRESSION_FAIL + 1)) ;;
+    esac
   done
 fi
 
@@ -62,9 +135,21 @@ echo ""
 echo "================================"
 echo "Feature suites:    $TOTAL_PASS passed, $TOTAL_FAIL failed."
 echo "Regression suite:  $REGRESSION_PASS passed, $REGRESSION_FAIL failed."
+if [ "$PS_SKIPPED" -gt 0 ]; then
+  echo "Skipped $PS_SKIPPED PowerShell suites: pwsh not found"
+fi
+if [ "$UNDISCOVERED" -gt 0 ]; then
+  echo "Undiscovered files: $UNDISCOVERED (named above)"
+fi
 echo "================================"
 
-if [ "$TOTAL_FAIL" -eq 0 ] && [ "$REGRESSION_FAIL" -eq 0 ]; then
+PS_REQUIRED_FAIL=0
+if [ "$PS_SKIPPED" -gt 0 ] && [ "${PLANIFEST_REQUIRE_PWSH:-0}" = "1" ]; then
+  echo "PLANIFEST_REQUIRE_PWSH=1, so the skipped PowerShell suites fail the run."
+  PS_REQUIRED_FAIL=1
+fi
+
+if [ "$TOTAL_FAIL" -eq 0 ] && [ "$REGRESSION_FAIL" -eq 0 ] && [ "$UNDISCOVERED" -eq 0 ] && [ "$PS_REQUIRED_FAIL" -eq 0 ]; then
   echo "All tests passed."
   exit 0
 else
