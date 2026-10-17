@@ -20,6 +20,7 @@ foreach ($flag in @('--structured-telemetry-mcp', '--context-mode-mcp', '--inclu
 foreach ($form in @(@('claude-code', '--backend-url', 'https://example.invalid/token-abc'), @('claude-code', '--backend-url=https://example.invalid/token-abc'))) {
     $run = Invoke-Setup $ws $form
     Assert-Equal 0 $run.Code "req-004 (f): $($form[1]) exits 0"
+    if ($run.Code -ne 0) { Write-Host ($run.Output -replace 'token-abc', 'TOKEN') }
     Assert-True (-not $run.Output.Contains('token-abc')) "req-004 (f): $($form[1]) never prints the URL"
 }
 
