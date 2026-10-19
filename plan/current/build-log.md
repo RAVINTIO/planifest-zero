@@ -38,3 +38,4 @@ P1 exchange (release plan): Q: next release 0.6.0 with backlog 0000113, 0000114,
 Version confirmed: 0.6.0
 P1 exchange (release sizing design): Q: optional `releaseSize` in `product.yml` (small, medium, large; budgets 4, 8, 14 points; S/M/L classes by files touched at 1, 2, 4 points; default medium; replaces the 3-story rule in three places)? / A: confirmed.
 P1 exchange (invalid JSON behaviour): Q: both scripts print one fixed message naming the file, leave it unchanged, and exit 1; the telemetry cleanup keeps warn-and-continue? / A: confirmed.
+Backlog: 0000109, 0000113, 0000114, and 0000115 pulled in and their folders deleted. 0000095, 0000098, 0000099, 0000100, 0000101, and 0000110 left.
