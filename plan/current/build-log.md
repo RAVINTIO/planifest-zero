@@ -98,3 +98,5 @@ Gate accepted: P3 (2026-10-19T01:54:35Z, continuous run)
 | Parallel task batches | `1` |
 | Notes | Security review by one subagent (claude-sonnet-5-5) runs alongside execution verification. CI already passed at `cc50ec3`. |
 Verification: 8 of 8 criteria verified (4 by local setup.sh runs, 3 by file inspection, and 1 by CI on three hosts). Report at plan/current/verification-report.md.
+Security: overall Low. F-001 to F-003 Low, F-004 to F-006 informational. 0000038 F-001, F-004, and F-005 mitigated. R-001 is proven by CI run `39187093043` on Windows PowerShell 5.1. Backlog 0000121 and 0000122 filed.
+Self-corrections in P4: 0.
