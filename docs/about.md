@@ -1,5 +1,5 @@
 ---
-version: "0.5.1"
+version: "0.6.0"
 feature: "0000038-setup-hook-filter-fixes"
 updated: "19 Oct 2026"
 ---
@@ -10,7 +10,7 @@ updated: "19 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.5.1` |
+| Version | `0.6.0` |
 | Last feature | `0000038-setup-hook-filter-fixes` |
 | Updated | `19 Oct 2026` |
 
