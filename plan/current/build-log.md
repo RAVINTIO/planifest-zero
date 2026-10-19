@@ -85,3 +85,15 @@ Docs: architecture overview, decisions index, and Last updated stamps on the fou
 Local runner: 68 feature and 18 regression suites pass. 5 PowerShell suites skipped (no pwsh).
 CI at `cc50ec3` (`39187093043`): all four jobs pass. The `.ps1` suite passed 36 of 36 on Windows PowerShell 5.1, PowerShell 7, and Linux.
 Gate accepted: P3 (2026-10-19T01:54:35Z, continuous run)
+
+### P4: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-19T01:54:56Z` |
+| Model tier | primary (verification), cheaper (security review) |
+| Skills loaded | planifest-validate-and-accept |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Security review by one subagent (claude-sonnet-5-5) runs alongside execution verification. CI already passed at `cc50ec3`. |
