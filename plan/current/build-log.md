@@ -36,3 +36,4 @@ Adoption mode: standard-iterative, detected from `plan/_archive/` and `docs/abou
 Pre-flight: PR #13 merged. `main` matches `origin/main` at `328adfb`. Branch `feat/0000039-setup-hardening-release-sizing` created from `main`.
 P1 exchange (release plan): Q: next release 0.6.0 with backlog 0000113, 0000114, 0000115, and 0000109? / A: yes, confirmed.
 Version confirmed: 0.6.0
+P1 exchange (release sizing design): Q: optional `releaseSize` in `product.yml` (small, medium, large; budgets 4, 8, 14 points; S/M/L classes by files touched at 1, 2, 4 points; default medium; replaces the 3-story rule in three places)? / A: confirmed.
