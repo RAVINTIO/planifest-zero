@@ -98,3 +98,4 @@ CI at `68eb9d0` (`39074719087`): all four jobs pass. The .ps1 suite passed 32 of
 Verification: 6 of 6 criteria verified (5 by local setup.sh runs, 1 by CI on three hosts). Report at plan/current/verification-report.md.
 Security: overall Low. 0000037 S-001 mitigated. F-001 to F-007 all Low or informational. Backlog 0000113, 0000114, and 0000115 filed.
 Self-corrections in P4: 0.
+Gate accepted: P4 (2026-10-19T00:14:18Z, human acceptance)
