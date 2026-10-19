@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000038-setup-hook-filter-fixes
+Last updated: 0000039-setup-hardening-release-sizing
 
 ---
 
@@ -101,3 +101,12 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 |-----|-------|--------|---------|
 | ADR-001 | The stack stays as it is | accepted | No new language, runtime, or test framework. |
 | ADR-002 | Setup filters Planifest hook commands one at a time | accepted | Both scripts remove only Planifest commands from a `PreToolUse` or `UserPromptSubmit` entry and keep user commands. `setup.sh` matches `UserPromptSubmit` by path boundary. Refines 0000037 ADR-003. |
+
+### Feature 0000039: setup-hardening-release-sizing
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as it is | accepted | No new language, runtime, or dependency. |
+| ADR-002 | Invalid JSON exits 1 with a fixed message | accepted | The hook install step prints one fixed line naming the file, leaves it unchanged, and exits 1. The telemetry cleanup still warns and carries on. |
+| ADR-003 | A single-object `hooks` value counts as a one-item array | accepted | Both scripts apply the per-command filter to a single-object `hooks` value. Refines 0000038 ADR-002. |
+| ADR-004 | The release budget lives in `product.yml` | accepted | An optional `releaseSize` field sets a budget of 4, 8, or 14 points, with `medium` as the default. It replaces the fixed 3-story rule. |

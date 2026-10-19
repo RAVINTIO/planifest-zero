@@ -126,15 +126,16 @@ rm -rf "$WS"
 echo ""
 echo "=== req-001: a hook entry whose hooks is not an array stays as it was ==="
 
-# The entry keeps its one object, even though that command is a Planifest one.
-# The setup.ps1 suite plants the same entry, so both scripts must agree.
+# The entry keeps its string value, even though it names a Planifest module.
+# A single-object hooks value now counts as a one-item array (0000039 req-002),
+# so this case plants a value that is neither an array nor an object.
 WS="$(new_workspace)"
 cat > "$WS/.claude/settings.json" <<'JSON'
-{"hooks":{"PreToolUse":[{"matcher":"Write","hooks":{"type":"command","command":"node .claude/hooks/enforcement/gate-write.mjs"}}]}}
+{"hooks":{"PreToolUse":[{"matcher":"Write","hooks":"node .claude/hooks/enforcement/gate-write.mjs"}]}}
 JSON
 run_setup "$WS"
 assert_exit_zero "$?" "req-001: setup.sh exits 0 with a non-array hooks value"
-assert_equals '{"matcher":"Write","hooks":{"type":"command","command":"node .claude/hooks/enforcement/gate-write.mjs"}}' \
+assert_equals '{"matcher":"Write","hooks":"node .claude/hooks/enforcement/gate-write.mjs"}' \
   "$(node -e 'console.log(JSON.stringify(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks.PreToolUse[0]))' "$WS/.claude/settings.json")" \
   "req-001: the non-array hook entry stays first and unchanged"
 assert_equals "7" "$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks.PreToolUse.length)' "$WS/.claude/settings.json")" \
