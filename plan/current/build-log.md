@@ -37,3 +37,4 @@ Pre-flight: PR #13 merged. `main` matches `origin/main` at `328adfb`. Branch `fe
 P1 exchange (release plan): Q: next release 0.6.0 with backlog 0000113, 0000114, 0000115, and 0000109? / A: yes, confirmed.
 Version confirmed: 0.6.0
 P1 exchange (release sizing design): Q: optional `releaseSize` in `product.yml` (small, medium, large; budgets 4, 8, 14 points; S/M/L classes by files touched at 1, 2, 4 points; default medium; replaces the 3-story rule in three places)? / A: confirmed.
+P1 exchange (invalid JSON behaviour): Q: both scripts print one fixed message naming the file, leave it unchanged, and exit 1; the telemetry cleanup keeps warn-and-continue? / A: confirmed.
