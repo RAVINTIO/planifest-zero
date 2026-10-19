@@ -39,3 +39,9 @@ Version confirmed: 0.6.0
 P1 exchange (release sizing design): Q: optional `releaseSize` in `product.yml` (small, medium, large; budgets 4, 8, 14 points; S/M/L classes by files touched at 1, 2, 4 points; default medium; replaces the 3-story rule in three places)? / A: confirmed.
 P1 exchange (invalid JSON behaviour): Q: both scripts print one fixed message naming the file, leave it unchanged, and exit 1; the telemetry cleanup keeps warn-and-continue? / A: confirmed.
 Backlog: 0000109, 0000113, 0000114, and 0000115 pulled in and their folders deleted. 0000095, 0000098, 0000099, 0000100, 0000101, and 0000110 left.
+Scope Lock (happy path): either script replaces a Planifest single-object `hooks` value with one fresh entry, keeps a user object, and `setup.ps1` keeps deep values. Discovery reads `releaseSize` and recommends a fill up to the budget. [source: draft-accepted]
+Scope Lock (first-run path): with no `settings.json`, setup writes the entries as today. With no `releaseSize`, discovery uses `medium` (8 points). [source: draft-accepted]
+Scope Lock (error path): invalid JSON gives one fixed message, exit 1, and an unchanged file. An unknown `releaseSize` value gets a note, the `medium` budget, and a request to fix the field. [source: draft-accepted]
+Scope Lock (cross-session continuity): commits allow resume from the build log, a second setup run is idempotent, and `product.yml` gives every session the same budget. [source: draft-accepted]
+Scope Lock complete. All four scenario paths captured.
+Sizing note: under the new rule this release scores 9 points (M 2, M 2, S 1, L 4) against the medium budget of 8. The human confirmed the scope before the rule existed, so it stays.

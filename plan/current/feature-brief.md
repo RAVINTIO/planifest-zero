@@ -71,6 +71,7 @@ None.
 - An optional `releaseSize` field in `product.yml`: `small`, `medium`, or `large`.
 - Size classes at discovery: S (1 to 2 files, 1 point), M (3 to 6 files, 2 points), and L (7 or more files, 4 points).
 - Budgets: `small` 4 points, `medium` 8, and `large` 14. The default is `medium`.
+- An unknown `releaseSize` value gets a note at discovery and the `medium` budget.
 - The orchestrator, the feature brief template, and the feature brief guide point to the setting instead of the 3-story rule.
 - Planted-value, single-object, and deep-nesting cases in the `.sh` and `.ps1` suites, and a suite for the sizing text.
 
@@ -103,7 +104,21 @@ None.
 
 ## Scenario Paths
 
-Captured in the Scope Lock Challenge. See the build log.
+**Happy path:**
+
+> You rerun either setup script on a valid `settings.json`. A single-object `hooks` value that runs a Planifest command is replaced by one fresh entry, and a user object stays. Deep values survive `setup.ps1`. In a later discovery run, the orchestrator reads `releaseSize`, sizes each candidate, and recommends a fill up to the budget.
+
+**First-run path:**
+
+> With no `settings.json`, setup writes the Planifest entries as it does today. With no `releaseSize` in `product.yml`, discovery uses the `medium` budget of 8 points.
+
+**Error / sad path:**
+
+> With invalid JSON, both scripts print one fixed message naming the file, exit 1, and leave the file unchanged. If `releaseSize` holds an unknown value, discovery says so, uses `medium`, and asks you to fix the field.
+
+**Cross-session continuity:**
+
+> Each artifact is a commit, so an interrupted run resumes from the build log. A second setup run gives the same file as one run. The release size lives in `product.yml`, so every session reads the same budget.
 
 ## Acceptance Criteria
 
@@ -113,4 +128,5 @@ Captured in the Scope Lock Challenge. See the build log.
 - [ ] A single-object `hooks` value that runs only a user command stays after either script runs.
 - [ ] A value nested 15 levels deep in `settings.json` survives `setup.ps1` unchanged.
 - [ ] The orchestrator skill defines `releaseSize`, the three size classes, the three budgets, and the `medium` default.
+- [ ] The orchestrator skill tells discovery to note an unknown `releaseSize` value and use `medium`.
 - [ ] No skill or template in `planifest-zero/` states the fixed 3-story rule.
