@@ -1,7 +1,7 @@
 ---
 title: "Feature Brief - setup-hardening-release-sizing"
 summary: "The business case, scope, and product requirements for the feature."
-status: "draft"
+status: "approved"
 version: "0.6.0"
 ---
 # Feature Brief - setup-hardening-release-sizing

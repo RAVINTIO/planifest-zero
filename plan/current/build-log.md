@@ -45,3 +45,6 @@ Scope Lock (error path): invalid JSON gives one fixed message, exit 1, and an un
 Scope Lock (cross-session continuity): commits allow resume from the build log, a second setup run is idempotent, and `product.yml` gives every session the same budget. [source: draft-accepted]
 Scope Lock complete. All four scenario paths captured.
 Sizing note: under the new rule this release scores 9 points (M 2, M 2, S 1, L 4) against the medium budget of 8. The human confirmed the scope before the rule existed, so it stays.
+P1 exchange (run mode): Q: continuous? / A: continuous.
+Design confirmed: 2026-10-19T01:34:45Z
+Gate accepted: P1 (2026-10-19T01:34:45Z)
