@@ -1,8 +1,8 @@
 # Planifest Component Manifest
 id: "planifest-zero"
 name: "Planifest Framework"
-feature: "0000037-self-host-on-planifest-zero"
-version: "0.5.0"
+feature: "0000038-setup-hook-filter-fixes"
+version: "0.5.1"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
