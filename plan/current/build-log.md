@@ -76,3 +76,12 @@ Gate accepted: P2 (2026-10-19T01:36:48Z, continuous run)
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Notes | Split by file, not by requirement, because req-001 and req-002 share the hook install step in each script. Agent 1: req-001 and req-002 in `setup.sh` with a `.sh` suite. Agent 2: req-001 to req-003 in `setup.ps1` with a `.ps1` suite. Agent 3: req-004 in the orchestrator skill and two templates with a `.sh` text suite. The orchestrator wrote the shared fixtures in `planifest-zero/tests/fixtures/0000039-setup-hardening/` and registered them with the runner first, which avoids the 0000038 pre-flight failure. Subagents don't commit. The orchestrator commits each one's work. |
+Subagents: 3 of 3 completed (claude-opus-5-5, primary tier). The `setup.sh` suite went RED at 19 passed and 6 failed, then GREEN at 25. The req-004 suite went RED at 2 passed and 19 failed, then GREEN at 21. The `setup.ps1` suite could not run locally, so its RED step was reasoned, not observed.
+Older suites: both 0000038 suites planted a single-object Planifest `hooks` value and expected it to stay. req-002 reverses that, so each now plants a string `hooks` value to keep the "stays as it was" case.
+Deviation: `setup.ps1` checks text against strict JSON before `ConvertFrom-Json`, because PowerShell 7 accepts trailing commas. Recorded in req-001.
+Parity fix: `setup.ps1` printed the error line with a two-space indent. The orchestrator removed it to match `setup.sh` and req-001.
+Backlog 0000120 filed: some valid JSON fails `ConvertFrom-Json`, so `setup.ps1` reports it as invalid.
+Docs: architecture overview, decisions index, and Last updated stamps on the four living docs.
+Local runner: 68 feature and 18 regression suites pass. 5 PowerShell suites skipped (no pwsh).
+CI at `cc50ec3` (`39187093043`): all four jobs pass. The `.ps1` suite passed 36 of 36 on Windows PowerShell 5.1, PowerShell 7, and Linux.
+Gate accepted: P3 (2026-10-19T01:54:35Z, continuous run)
