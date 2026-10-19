@@ -2,7 +2,7 @@
 
 **Feature:** setup-hook-filter-fixes
 **Version:** 0.5.1
-**PR:** pending
+**PR:** https://github.com/planifest/planifest-zero/pull/13
 
 ## What changed
 
