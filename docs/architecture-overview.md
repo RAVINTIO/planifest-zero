@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000038-setup-hook-filter-fixes
+Last updated: 0000039-setup-hardening-release-sizing
 
 ## What this repo is
 
@@ -28,6 +28,8 @@ The pipeline runs five phases. There is one route: every change is a feature cha
 | Implement | `IM:` | planifest-implement |
 | Validate and accept | `VA:` | planifest-validate-and-accept |
 | Ship | `SH:` | planifest-ship |
+
+Discovery sizes each release against a budget. The optional `releaseSize` field in `product.yml` sets it to `small`, `medium`, or `large`, and the default is `medium`. Discovery gives each candidate requirement a size class from the files it touches, then recommends a fill up to the budget.
 
 The implement phase dispatches a TDD trio per requirement: planifest-test-writer, planifest-implementer, and planifest-refactor. Four support skills complete the set of twelve: planifest-loop-runner, planifest-optimise-agent, planifest-migrator, and planifest-refresh-setup.
 
@@ -109,7 +111,11 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 **Hook entry repair.** Both scripts find a Planifest `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse` or `UserPromptSubmit` holds a value that isn't an array, setup prints a warning with the old value. It then replaces the value with the Planifest entries and exits 0. An absent or null value gets the entries with no warning.
 
-**Per-command filter.** Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. Setup removes each Planifest command and keeps any user command in the same entry. If an entry holds only Planifest commands, setup drops it. An entry with no commands, or a `hooks` value that isn't an array, stays as it was. A command counts as Planifest only when it runs `<module>.mjs` at a path boundary, matched case-sensitively.
+**Per-command filter.** Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. Setup removes each Planifest command and keeps any user command in the same entry. If an entry holds only Planifest commands, setup drops it. A `hooks` value that holds one object counts as a one-item array, so setup filters it the same way. An entry with no commands stays as it was. A command counts as Planifest only when it runs `<module>.mjs` at a path boundary, matched case-sensitively.
+
+**Invalid JSON.** If `settings.json` isn't valid JSON, the hook install step prints one fixed line that names the file. The line never holds the file's contents. Setup leaves the file unchanged and exits 1, because it can't install the hooks. The telemetry cleanup still warns and carries on.
+
+**JSON depth.** `setup.ps1` writes `settings.json` with `ConvertTo-Json -Depth 100`, so a deeply nested user value survives a rewrite.
 
 ---
 

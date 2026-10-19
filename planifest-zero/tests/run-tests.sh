@@ -38,6 +38,10 @@ KNOWN_NON_SUITES=(
   "fixtures/0000038-hook-filter/README.md"              # what the 0000038 fixtures hold
   "fixtures/0000038-hook-filter/settings-before.json"  # planted settings.json for the 0000038 suites
   "fixtures/0000038-hook-filter/expected-after.txt"    # hook commands after one setup run
+  "fixtures/0000039-setup-hardening/README.md"                # what the 0000039 fixtures hold
+  "fixtures/0000039-setup-hardening/invalid-settings.json"    # invalid JSON with a planted value (0000039 req-001)
+  "fixtures/0000039-setup-hardening/single-object-hooks.json" # single-object hooks values (0000039 req-002)
+  "fixtures/0000039-setup-hardening/deep-settings.json"       # a value nested 15 levels deep (0000039 req-003)
 )
 
 is_known_file() {

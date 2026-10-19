@@ -104,17 +104,20 @@ Remove-SetupWorkspace $ws
 Write-Host ""
 Write-Host "=== req-001: an entry whose hooks is not an array ==="
 
-# The entry stays as it was, even though its one command is a Planifest one.
+# The entry stays as it was, even though it names a Planifest module. A
+# single-object hooks value now counts as a one-item array (0000039
+# req-002), so this case plants a value that is neither an array nor an
+# object.
 $ws = New-SetupWorkspace
-Write-SettingsText $ws '{"hooks":{"PreToolUse":[{"matcher":"Write","hooks":{"type":"command","command":"node .claude/hooks/enforcement/gate-write.mjs"}}]}}'
+Write-SettingsText $ws '{"hooks":{"PreToolUse":[{"matcher":"Write","hooks":"node .claude/hooks/enforcement/gate-write.mjs"}]}}'
 $run = Invoke-Setup $ws @('claude-code')
 Assert-Equal 0 $run.Code "req-001: setup.ps1 exits 0 with a non-array hooks value"
 if ($run.Code -ne 0) { Write-Host $run.Output }
 $settings = Read-Settings $ws
 $odd = @($settings.hooks.PreToolUse)[0]
 Assert-Equal 'Write' "$($odd.matcher)" "req-001: the non-array entry stays first"
-Assert-True ($odd.hooks -is [System.Management.Automation.PSCustomObject]) "req-001: the non-array hooks value stays an object"
-Assert-Equal 'node .claude/hooks/enforcement/gate-write.mjs' "$($odd.hooks.command)" "req-001: the non-array hooks value keeps its command"
+Assert-True ($odd.hooks -is [string]) "req-001: the non-array hooks value stays a string"
+Assert-Equal 'node .claude/hooks/enforcement/gate-write.mjs' "$($odd.hooks)" "req-001: the non-array hooks value keeps its text"
 Assert-Equal 7 (@($settings.hooks.PreToolUse).Count) "req-001: the six fresh PreToolUse entries follow it"
 Remove-SetupWorkspace $ws
 

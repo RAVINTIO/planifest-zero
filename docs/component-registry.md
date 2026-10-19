@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000038-setup-hook-filter-fixes
+Last updated: 0000039-setup-hardening-release-sizing
 
 ## Registry
 

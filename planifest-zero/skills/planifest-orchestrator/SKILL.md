@@ -172,7 +172,25 @@ Detect the tool from `CLAUDE_CODE_*` env vars or a `.claude/` directory. Check h
 
 ### Decomposition
 
-Split big features. A feature with more than 3 user stories is too big. With more than 5 or 6 features, group them into waves. Each wave is a separate pipeline run that reads the prior wave's manifests rather than its code. For multi-component work in one repository, follow `planifest-zero/standards/monorepo-standards.md`. When two components need the same data, one owns it and the other consumes it through a defined interface. Shared writes are a Hard Limit violation: coach a redesign.
+Size each release against a point budget. The budget comes from the optional `releaseSize` field in `product.yml`. If `releaseSize` is absent, use `medium`.
+
+| `releaseSize` | Budget (points) |
+|---------------|-----------------|
+| `small` | 4 |
+| `medium` (default) | 8 |
+| `large` | 14 |
+
+Estimate a size class for each candidate requirement from the files it is likely to touch.
+
+| Class | Files touched | Points |
+|-------|---------------|--------|
+| S | 1 to 2 | 1 |
+| M | 3 to 6 | 2 |
+| L | 7 or more | 4 |
+
+Recommend a fill from the backlog up to the budget. The human confirms the fill. If the candidates exceed the budget, recommend a split. If `releaseSize` holds an unknown value, note it in `discovery.md`, use the `medium` budget, and ask the human to fix the field.
+
+With more than 5 or 6 features, group them into waves. Each wave is a separate pipeline run that reads the prior wave's manifests rather than its code. For multi-component work in one repository, follow `planifest-zero/standards/monorepo-standards.md`. When two components need the same data, one owns it and the other consumes it through a defined interface. Shared writes are a Hard Limit violation: coach a redesign.
 
 ### Discovery Start Actions
 
@@ -187,7 +205,7 @@ Perform in order, before coaching begins:
 7. **Detect adoption mode** per the table below. Apply the highest-priority signal only. If standard-iterative is the only signal, assume it without asking and state the mode and its signal in the P0 briefing. Source in `src/` beside an archive is the normal iterative case. Recommend-then-confirm in every other case. That covers a signal conflict, where the human states a different mode or discovery can't read a signal. It also covers External Anchor, Retrofit, and Greenfield. Record the assumed or confirmed mode and its signal in `discovery.md`, `design.md`, and the build log.
 8. **Read the version**: `docs/about.md` frontmatter, cross-checked against the most recent archive entry. If `product.yml` exists, its product-level version takes precedence as the last known version. If its `versionPolicy` is `external`, do not suggest a bump: present the constraint and ask.
 9. **Product id check**: `product.yml` must exist at the project root with a non-empty `id`. If not, hard-stop and ask: `D: No declared product id found (product.yml is missing or has no id field). The id gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. What should the product id be? (kebab-case, stable across releases)`. Write or update only the `id` field, then resume.
-10. **Backlog pickup**: scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids. Check `plan/_archive/` and `plan/changelog/` for the high-water mark.
+10. **Backlog pickup**: scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids. Check `plan/_archive/` and `plan/changelog/` for the high-water mark. Read `releaseSize` from `product.yml` to set the release budget (see Decomposition).
 11. **Write `discovery.md`** (Hard Limit 12): copy `planifest-zero/templates/discovery.template.md` to `plan/current/discovery.md` and populate it with the findings from steps 2 to 10 plus a `planifest-zero/skills-inbox/` scan. Commit it on its own before coaching begins. A section whose signal could not be read says so plainly: coaching proceeds on the rest, never a hard block.
 12. **Suggest a version bump**: a feature run defaults to a minor bump (x.Y.0). A breaking change is major. Recommend-then-confirm. **Hard block on downgrade**: if the human proposes a version lower than the last known one, refuse: `D: Blocked: {proposed} is lower than the last known version ({current}). Provide a version >= {current}.` Record the confirmed version in `design.md` and the build log.
 13. **Strict-mode ack**: if `plan/.orchestrator-strict` exists, write `plan/.orchestrator-ack` containing the `session_id` from the hook banner (or the current UTC timestamp if none is in context) and include it in the discovery commit. This silences the strict-mode banner for the session.

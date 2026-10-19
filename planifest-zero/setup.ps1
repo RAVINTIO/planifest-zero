@@ -279,8 +279,10 @@ function Remove-PlanifestHookCommands {
     # Filter one event's entries one command at a time (0000038 ADR-002).
     # Each command that matches the pattern goes. An entry that had commands
     # and has none left goes too. Any other entry keeps its remaining
-    # commands in their order. An entry with no commands, or whose hooks
-    # value is not an array, stays as it was. The kept commands go back into
+    # commands in their order. A single-object hooks value counts as a
+    # one-item array (0000039 req-002, ADR-003). An entry with no commands,
+    # or whose hooks value is neither an array nor an object, stays as it
+    # was. The kept commands go back into
     # the entry as an array built with @(), never through the pipeline, so
     # Windows PowerShell 5.1 can't unwrap a one-item array (0000035 ADR-002,
     # 0000038 R-001). Callers wrap the output in @().
@@ -288,6 +290,9 @@ function Remove-PlanifestHookCommands {
     foreach ($entry in @($Entries)) {
         $hooks = $null
         if ($null -ne $entry) { $hooks = $entry.hooks }
+        # Wrap a single object with @(). A kept entry keeps its object form,
+        # since only a removal writes entry.hooks (0000039 req-002).
+        if ($hooks -is [System.Management.Automation.PSCustomObject]) { $hooks = @($hooks) }
         if (-not ($hooks -is [array]) -or $hooks.Count -eq 0) { $entry; continue }
         $keptHooks = @()
         foreach ($hook in $hooks) {
@@ -298,6 +303,71 @@ function Remove-PlanifestHookCommands {
         if ($keptHooks.Count -ne $hooks.Count) { $entry.hooks = $keptHooks }
         $entry
     }
+}
+
+function Test-JsonText {
+    # True when the text is one strict JSON value, as node's JSON.parse reads
+    # it. ConvertFrom-Json accepts some invalid JSON, such as a trailing
+    # comma, so setup.ps1 checks the text first. Both scripts then reject the
+    # same files (0000039 req-001). Anchored patterns match strings and
+    # numbers, and a string of brackets tracks the nesting, so deep input
+    # never recurses.
+    param([string]$Text)
+    $strRe = [regex]'\G"(?:[^"\\\u0000-\u001F]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))*"'
+    $numRe = [regex]'\G-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?'
+    $wsRe = [regex]'\G[ \t\n\r]*'
+    $n = $Text.Length
+    $i = 0
+    $stack = ''
+    $state = 'value'
+    $canClose = $false
+    while ($true) {
+        $i += $wsRe.Match($Text, $i).Length
+        if ($i -ge $n) { break }
+        $c = $Text[$i]
+        $top = [char]0
+        if ($stack.Length -gt 0) { $top = $stack[$stack.Length - 1] }
+        if ($state -eq 'value') {
+            if ($c -eq [char]'{') { $stack += '{'; $i++; $state = 'key'; $canClose = $true; continue }
+            if ($c -eq [char]'[') { $stack += '['; $i++; $canClose = $true; continue }
+            if ($c -eq [char]']' -and $canClose) {
+                $stack = $stack.Substring(0, $stack.Length - 1); $i++; $state = 'after'; continue
+            }
+            $m = $strRe.Match($Text, $i)
+            if (-not $m.Success) { $m = $numRe.Match($Text, $i) }
+            if ($m.Success) { $i += $m.Length; $state = 'after'; continue }
+            $word = $null
+            foreach ($literal in @('true', 'false', 'null')) {
+                if ([string]::CompareOrdinal($Text, $i, $literal, 0, $literal.Length) -eq 0) { $word = $literal; break }
+            }
+            if ($null -eq $word) { return $false }
+            $i += $word.Length; $state = 'after'; continue
+        }
+        if ($state -eq 'key') {
+            if ($c -eq [char]'}' -and $canClose) {
+                $stack = $stack.Substring(0, $stack.Length - 1); $i++; $state = 'after'; continue
+            }
+            $m = $strRe.Match($Text, $i)
+            if (-not $m.Success) { return $false }
+            $i += $m.Length; $state = 'colon'; continue
+        }
+        if ($state -eq 'colon') {
+            if ($c -ne [char]':') { return $false }
+            $i++; $state = 'value'; $canClose = $false; continue
+        }
+        # After a value: a comma, a matching close, or nothing at top level.
+        if ($stack.Length -eq 0) { return $false }
+        if ($c -eq [char]',') {
+            $i++; $canClose = $false
+            if ($top -eq [char]'{') { $state = 'key' } else { $state = 'value' }
+            continue
+        }
+        if (($c -eq [char]'}' -and $top -eq [char]'{') -or ($c -eq [char]']' -and $top -eq [char]'[')) {
+            $stack = $stack.Substring(0, $stack.Length - 1); $i++; continue
+        }
+        return $false
+    }
+    return ($state -eq 'after' -and $stack.Length -eq 0)
 }
 
 function Merge-EnforcementHookSettings {
@@ -327,7 +397,18 @@ function Merge-EnforcementHookSettings {
     )
 
     if (Test-Path $SettingsPath) {
-        $existing = Get-Content -Raw -Path $SettingsPath -Encoding UTF8 | ConvertFrom-Json
+        # An invalid file stops setup with one fixed line that names it. The
+        # content and the parser message never reach the output, and the
+        # file stays as it was (0000039 req-001, ADR-002).
+        $raw = Get-Content -Raw -Path $SettingsPath -Encoding UTF8
+        $existing = $null
+        if (Test-JsonText "$raw") {
+            try { $existing = $raw | ConvertFrom-Json -ErrorAction Stop } catch { $existing = $null }
+        }
+        if ($null -eq $existing) {
+            [Console]::Error.WriteLine("! Error: $SettingsRel is not valid JSON. Fix it and rerun setup.")
+            exit 1
+        }
 
         if (-not $existing.hooks) {
             $existing | Add-Member -NotePropertyName 'hooks' -NotePropertyValue ([PSCustomObject]@{}) -Force
@@ -343,7 +424,7 @@ function Merge-EnforcementHookSettings {
             $prop = $existing.hooks.PSObject.Properties[$eventName]
             if ($null -eq $prop -or $null -eq $prop.Value) { continue }
             if ($prop.Value -is [array]) { continue }
-            $oldValue = ConvertTo-Json -InputObject $prop.Value -Compress -Depth 10
+            $oldValue = ConvertTo-Json -InputObject $prop.Value -Compress -Depth 100
             [Console]::Error.WriteLine("  ! Warning: hooks.$eventName in $SettingsRel is not an array. Setup replaced it with the Planifest entries. Old value: $oldValue")
             $existing.hooks.$eventName = @()
         }
@@ -368,7 +449,8 @@ function Merge-EnforcementHookSettings {
             -Pattern '(^|[\s"''/\\])(auto-trigger-orchestrator|check-orchestrator-presence|check-design)\.mjs\b')
         $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
 
-        Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 10)
+        # Depth 100 keeps deep user values whole (0000039 req-003).
+        Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 100)
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
     }
     else {
@@ -381,7 +463,7 @@ function Merge-EnforcementHookSettings {
                 UserPromptSubmit = @($userPromptEntries)
             }
         }
-        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
+        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
         Write-Host "  + .claude/settings.json (created with enforcement hook entries)"
     }
 }
@@ -414,7 +496,7 @@ function Merge-AllowedTools {
         $settings | Add-Member -NotePropertyName 'allowedTools' -NotePropertyValue ($existing + @('Agent')) -Force
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 10)
+        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
         Write-Host "  ~ .claude/settings.json (Agent added to allowedTools)"
     } else {
         Write-Host "  - .claude/settings.json (Agent already in allowedTools)"
@@ -493,7 +575,7 @@ function Remove-LegacyTelemetryWiring {
             }
 
             if ($removed -gt 0) {
-                Write-SettingsAtomic -Path $settings -Json ($existing | ConvertTo-Json -Depth 10)
+                Write-SettingsAtomic -Path $settings -Json ($existing | ConvertTo-Json -Depth 100)
                 Write-Host "  - removed telemetry hook entries from $SettingsRel"
             }
         } catch {

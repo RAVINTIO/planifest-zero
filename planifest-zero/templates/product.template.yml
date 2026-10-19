@@ -26,6 +26,13 @@ feature: "{{feature-id of the release that last set this version}}"
 #                           planifest-overrides/instructions/external-versioning.md
 versionPolicy: "max-component-version"
 
+# Optional. The release budget that discovery fills (0000039 ADR-004):
+#   small  : 4 points
+#   medium : 8 points (default when absent or unknown)
+#   large  : 14 points
+# Discovery sizes each candidate S (1 point), M (2), or L (4) by files touched.
+# releaseSize: "medium"
+
 components:
   - id: "{{component-id}}"
     path: "{{relative/path/to/component.yml, e.g. src/my-component/component.yml}}"

@@ -462,7 +462,17 @@ install_enforcement_hooks() {
       const design   = process.env.PLANIFEST_DESIGN;
       const sf       = process.env.PLANIFEST_SETTINGS;
       let s = {};
-      if (fs.existsSync(sf)) s = JSON.parse(fs.readFileSync(sf,"utf8").replace(/^\uFEFF/,""));
+      // On invalid JSON, print one fixed line that names the file, write
+      // nothing, and exit 1 (0000039 req-001, ADR-002). The parser message
+      // can quote file content, so it never reaches the output.
+      if (fs.existsSync(sf)) {
+        const raw = fs.readFileSync(sf,"utf8").replace(/^\uFEFF/,"");
+        try { s = JSON.parse(raw); } catch (_) {
+          process.stderr.write("! Error: " + process.env.PLANIFEST_SETTINGS_REL +
+            " is not valid JSON. Fix it and rerun setup.\n");
+          process.exit(1);
+        }
+      }
       s.hooks = s.hooks || {};
       // A present value that is not an array is non-array (0000037 ADR-003).
       // Warn, print the old value, and replace it with the Planifest entries.
@@ -479,18 +489,22 @@ install_enforcement_hooks() {
       // Per-command filter (0000038 ADR-002). For each hook entry, remove each
       // Planifest command of that event. Drop the entry if it had commands and
       // none remain. Otherwise keep it with its user commands in their order.
-      // An entry whose hooks value is not an array, or is empty, stays as it
-      // was. The fresh Planifest entries are appended afterwards. The match is
+      // A hooks value that is one object counts as a one-item array, and a
+      // kept one stays an object (0000039 req-002, ADR-003). Any other
+      // non-array value, or an empty array, stays as it was. The fresh
+      // Planifest entries are appended afterwards. The match is
       // case-sensitive, and only <module>.mjs at a path boundary counts
       // (0000035 S-004). The rule matches setup.ps1.
       const keepUserCommands = (entries, moduleRe) => {
         const kept = [];
         for (const entry of entries) {
-          const cmds = entry && entry.hooks;
+          const v = entry && entry.hooks;
+          const single = v !== null && typeof v === "object" && !Array.isArray(v);
+          const cmds = single ? [v] : v;
           if (!Array.isArray(cmds) || cmds.length === 0) { kept.push(entry); continue; }
           const userCmds = cmds.filter(h => !moduleRe.test(String((h && h.command) || "")));
           if (userCmds.length === 0) continue;
-          if (userCmds.length !== cmds.length) entry.hooks = userCmds;
+          if (!single && userCmds.length !== cmds.length) entry.hooks = userCmds;
           kept.push(entry);
         }
         return kept;
@@ -520,7 +534,7 @@ install_enforcement_hooks() {
       );
       fs.mkdirSync(path.dirname(sf),{recursive:true});
       writeSettings(sf, JSON.stringify(s,null,2)+"\n");
-    '
+    ' || exit 1
     echo "  ~ $settings_rel (enforcement hooks wired)"
   else
     echo "  ! Warning: node not found — skipping settings.json enforcement hook wiring"
@@ -533,13 +547,24 @@ merge_allowed_tools() {
   # Preserves existing allowedTools entries — additive merge only.
   # Requires node (always available for Claude Code targets).
   local settings_file="$1"
+  # The path relative to the project root, for the error line (0000039 req-001).
+  local settings_rel="${settings_file#"$PROJECT_ROOT"/}"
 
   if command -v node >/dev/null 2>&1; then
-    PLANIFEST_SETTINGS="$settings_file" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
+    PLANIFEST_SETTINGS="$settings_file" PLANIFEST_SETTINGS_REL="$settings_rel" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
       const fs = require("fs"), path = require("path");
       const sf = process.env.PLANIFEST_SETTINGS;
       let s = {};
-      if (fs.existsSync(sf)) s = JSON.parse(fs.readFileSync(sf,"utf8").replace(/^﻿/,""));
+      // The same fixed line and exit 1 as the hook install step, with no file
+      // content in the output (0000039 req-001).
+      if (fs.existsSync(sf)) {
+        const raw = fs.readFileSync(sf,"utf8").replace(/^﻿/,"");
+        try { s = JSON.parse(raw); } catch (_) {
+          process.stderr.write("! Error: " + process.env.PLANIFEST_SETTINGS_REL +
+            " is not valid JSON. Fix it and rerun setup.\n");
+          process.exit(1);
+        }
+      }
       const existing = Array.isArray(s.allowedTools) ? s.allowedTools : [];
       if (!existing.includes("Agent")) {
         s.allowedTools = existing.concat(["Agent"]);
@@ -549,7 +574,7 @@ merge_allowed_tools() {
       } else {
         console.log("  - .claude/settings.json (Agent already in allowedTools)");
       }
-    '
+    ' || exit 1
   else
     echo "  ! Warning: node not found — skipping allowedTools update"
     echo "  ! Manually add \"Agent\" to allowedTools in .claude/settings.json"
