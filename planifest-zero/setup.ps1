@@ -406,7 +406,7 @@ function Merge-EnforcementHookSettings {
             try { $existing = $raw | ConvertFrom-Json -ErrorAction Stop } catch { $existing = $null }
         }
         if ($null -eq $existing) {
-            [Console]::Error.WriteLine("  ! Error: $SettingsRel is not valid JSON. Fix it and rerun setup.")
+            [Console]::Error.WriteLine("! Error: $SettingsRel is not valid JSON. Fix it and rerun setup.")
             exit 1
         }
 
