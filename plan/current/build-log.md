@@ -100,3 +100,33 @@ Gate accepted: P3 (2026-10-19T01:54:35Z, continuous run)
 Verification: 8 of 8 criteria verified (4 by local setup.sh runs, 3 by file inspection, and 1 by CI on three hosts). Report at plan/current/verification-report.md.
 Security: overall Low. F-001 to F-003 Low, F-004 to F-006 informational. 0000038 F-001, F-004, and F-005 mitigated. R-001 is proven by CI run `39187093043` on Windows PowerShell 5.1. Backlog 0000121 and 0000122 filed.
 Self-corrections in P4: 0.
+Gate accepted: P4 (2026-10-19T05:28:46Z, human acceptance)
+
+### P5: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-19T05:28:46Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Sequential close-out steps, so no subagents. The changelog, archive, version bump, and tag depend on each other. |
+Telemetry: the four stale failure markers in `plan/.telemetry-failures/` remain, as reported at the 0000038 ship.
+Changelog: plan/changelog/0000039-setup-hardening-release-sizing-2026-10-19.md
+
+---
+
+## Summary (filled at ship, P5)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `7` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P2, P3, P4) |
+| Primary tier agent calls | `3` (P3) |
+| Cheaper tier agent calls | `4` (3 in P2, 1 in P4) |
+| Self-corrections | `1` (P3: the error line indent in `setup.ps1`) |
+| Phases skipped | none |
