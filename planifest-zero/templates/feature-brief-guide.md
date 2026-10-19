@@ -40,7 +40,7 @@ Each feature should be **small enough for one agent session**. Think:
 - One UI screen with its state management, data fetching, and tests
 - One integration with its adapter, contract, and error handling
 
-**Rule of thumb:** If a feature has more than 3 user stories, split it.
+**Release size:** The orchestrator sizes each release against the `releaseSize` budget in `product.yml`. See Decomposition in the orchestrator skill.
 
 The Priority column uses MoSCoW: must-have, should-have, could-have. The orchestrator builds must-haves first.
 
