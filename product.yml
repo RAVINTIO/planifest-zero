@@ -10,8 +10,8 @@
 
 id: "planifest-zero"
 name: "Planifest Framework"
-version: "0.5.0"
-feature: "0000037-self-host-on-planifest-zero"
+version: "0.5.1"
+feature: "0000038-setup-hook-filter-fixes"
 
 versionPolicy: "max-component-version"
 

@@ -35,6 +35,9 @@ KNOWN_NON_SUITES=(
   "helpers/assert.sh"                      # Bash assert helpers
   "helpers/assert.ps1"                     # PowerShell assert helpers (0000036 ADR-002)
   "helpers/setup-workspace.ps1"            # temporary projects for the setup.ps1 suites
+  "fixtures/0000038-hook-filter/README.md"              # what the 0000038 fixtures hold
+  "fixtures/0000038-hook-filter/settings-before.json"  # planted settings.json for the 0000038 suites
+  "fixtures/0000038-hook-filter/expected-after.txt"    # hook commands after one setup run
 )
 
 is_known_file() {

@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000037-self-host-on-planifest-zero
+Last updated: 0000038-setup-hook-filter-fixes
 
 ## What this repo is
 
@@ -108,6 +108,8 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 **Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same six hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
 
 **Hook entry repair.** Both scripts find a Planifest `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse` or `UserPromptSubmit` holds a value that isn't an array, setup prints a warning with the old value. It then replaces the value with the Planifest entries and exits 0. An absent or null value gets the entries with no warning.
+
+**Per-command filter.** Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. Setup removes each Planifest command and keeps any user command in the same entry. If an entry holds only Planifest commands, setup drops it. An entry with no commands, or a `hooks` value that isn't an array, stays as it was. A command counts as Planifest only when it runs `<module>.mjs` at a path boundary, matched case-sensitively.
 
 ---
 

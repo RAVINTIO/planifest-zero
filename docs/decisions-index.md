@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000037-self-host-on-planifest-zero
+Last updated: 0000038-setup-hook-filter-fixes
 
 ---
 
@@ -94,3 +94,10 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | ADR-002 | The Bash suites run in CI on Ubuntu | accepted | A `bash-suites` job runs `run-tests.sh` with `PLANIFEST_REQUIRE_PWSH=1` and `contents: read`. The `validate-telemetry-schema` job goes. |
 | ADR-003 | Setup repairs the hook entries it owns | accepted | `setup.sh` removes Planifest `PreToolUse` entries on any matcher. Both scripts warn on a non-array hook event and replace it. |
 | ADR-004 | P0 states standard-iterative mode without asking | accepted | When standard-iterative is the only signal, the orchestrator states the mode and its signal. Every other case keeps the question. |
+
+### Feature 0000038: setup-hook-filter-fixes
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as it is | accepted | No new language, runtime, or test framework. |
+| ADR-002 | Setup filters Planifest hook commands one at a time | accepted | Both scripts remove only Planifest commands from a `PreToolUse` or `UserPromptSubmit` entry and keep user commands. `setup.sh` matches `UserPromptSubmit` by path boundary. Refines 0000037 ADR-003. |

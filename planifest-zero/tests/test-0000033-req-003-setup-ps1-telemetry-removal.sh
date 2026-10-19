@@ -90,7 +90,8 @@ done
 
 # Each surviving UserPromptSubmit hook must appear in the de-duplication filter
 # as well as the entry build, so a re-run replaces rather than duplicates it.
-DEDUP_BLOCK="$(echo "$ENFORCEMENT_BODY" | awk '/UserPromptSubmit \| Where-Object/{flag=1} flag{print} flag && /^        \}\)/{exit}')"
+# The filter is the per-command Remove-PlanifestHookCommands call (0000038 ADR-002).
+DEDUP_BLOCK="$(echo "$ENFORCEMENT_BODY" | awk '/Remove-PlanifestHookCommands -Entries \$existing\.hooks\.UserPromptSubmit/{flag=1} flag{print} flag && /-Pattern/{exit}')"
 for hook in auto-trigger-orchestrator check-orchestrator-presence check-design; do
   assert_contains "$hook" "$DEDUP_BLOCK" \
     "req-003: UserPromptSubmit de-duplication filter still matches $hook"

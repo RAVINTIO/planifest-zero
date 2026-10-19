@@ -1,7 +1,7 @@
 ---
-version: "0.5.0"
-feature: "0000037-self-host-on-planifest-zero"
-updated: "17 Oct 2026"
+version: "0.5.1"
+feature: "0000038-setup-hook-filter-fixes"
+updated: "19 Oct 2026"
 ---
 # About
 
@@ -10,9 +10,9 @@ updated: "17 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.5.0` |
-| Last feature | `0000037-self-host-on-planifest-zero` |
-| Updated | `17 Oct 2026` |
+| Version | `0.5.1` |
+| Last feature | `0000038-setup-hook-filter-fixes` |
+| Updated | `19 Oct 2026` |
 
 ## What this is
 
