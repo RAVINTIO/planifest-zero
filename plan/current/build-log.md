@@ -60,3 +60,7 @@ Gate accepted: P1 (2026-10-19T01:34:45Z)
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Notes | Three subagents (claude-sonnet-5-5) in one batch: setup requirements, the sizing requirement with all ADRs, and scope with risks and glossary. The orchestrator writes the execution plan after the requirements land. |
+Subagents: 3 of 3 completed (claude-sonnet-5-5, cheaper tier). The risk subagent added R-005 to R-007.
+Backlog 0000118 filed by the risk subagent. It overlaps req-001, which already covers the `setup.sh` allowedTools parse and the first `setup.ps1` parse. Flagged to the human for discard at the next pickup.
+Consistency check: clean on the first run.
+Gate accepted: P2 (2026-10-19T01:36:48Z, continuous run)
