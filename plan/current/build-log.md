@@ -99,3 +99,32 @@ Verification: 6 of 6 criteria verified (5 by local setup.sh runs, 1 by CI on thr
 Security: overall Low. 0000037 S-001 mitigated. F-001 to F-007 all Low or informational. Backlog 0000113, 0000114, and 0000115 filed.
 Self-corrections in P4: 0.
 Gate accepted: P4 (2026-10-19T00:14:18Z, human acceptance)
+
+### P5: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-19T00:15:31Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Sequential close-out steps, so no subagents. The changelog, archive, version bump, and tag depend on each other. |
+Telemetry: four stale failure markers in `plan/.telemetry-failures/` (fetch failed, and one missing product id), dated 2026-10-16 to 2026-10-17. The five-phase orchestrator defines no telemetry gate. Reported to the human at ship.
+Changelog: plan/changelog/0000038-setup-hook-filter-fixes-2026-10-19.md
+
+---
+
+## Summary (filled at ship, P5)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `5` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P2, P3, P4) |
+| Primary tier agent calls | `2` (P3) |
+| Cheaper tier agent calls | `3` (2 in P2, 1 in P4) |
+| Self-corrections | `0` |
+| Phases skipped | none |
