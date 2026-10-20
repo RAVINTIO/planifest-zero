@@ -1,8 +1,8 @@
 ---
-title: "Discovery - pending"
+title: "Discovery - 0000040-setup-json-checks-and-park"
 summary: "Raw discovery-pass findings: what the orchestrator knew before coaching began."
 ---
-# Discovery - pending
+# Discovery - 0000040-setup-json-checks-and-park
 
 > Created at the start of discovery (P1), before the first coaching question, in every adoption mode.
 > Raw findings only. Decisions belong in `design.md`, the Q&A audit trail in `build-log.md`.
@@ -14,7 +14,7 @@ summary: "Raw discovery-pass findings: what the orchestrator knew before coachin
 |-------|-------|
 | Adoption mode detected | `standard-iterative` (assumed, only signal) |
 | Detection signal | `plan/_archive/` holds 10 feature dirs, and `docs/about.md` exists |
-| Git pre-flight | `feat/pending` cut from `main` at cc15394 after pull. PR #16 merged, so the redundant branch `chore/override-delete-redundant-branches` was deleted. No open PRs. Working tree clean. |
+| Git pre-flight | `feat/0000040-setup-json-checks-and-park` cut from `main` at cc15394 after pull. PR #16 merged, so the redundant branch `chore/override-delete-redundant-branches` was deleted. No open PRs. Working tree clean. |
 | Skills inbox | empty |
 
 ## Mode Findings

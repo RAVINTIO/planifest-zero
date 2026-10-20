@@ -1,8 +1,8 @@
 ---
-title: "Build Log - pending"
+title: "Build Log - 0000040-setup-json-checks-and-park"
 summary: "Working record of the pipeline run, maintained by the orchestrator."
 ---
-# Build Log - pending
+# Build Log - 0000040-setup-json-checks-and-park
 
 > Created at discovery (P1). Appended by the orchestrator at each phase boundary. Survives session changes.
 
@@ -10,7 +10,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 | Field | Value |
 |-------|-------|
-| Feature ID | `pending` |
+| Feature ID | `0000040-setup-json-checks-and-park` |
 | Pipeline start | `2026-10-20T07:23:03Z` |
 | Tool | `claude-code` |
 | Primary model | `claude-opus-5-5` |
@@ -36,6 +36,10 @@ P1 exchange (backlog fill): Q: Which backlog items should this release pull in? 
 P1 exchange (version): Q: Which version? / A: 0.6.1 (patch).
 P1 exchange (run mode): Q: Continuous or interactive? / A: Continuous.
 Adoption mode: standard-iterative, assumed as the only signal (archive present).
+P1 exchange (version revisited): Q: Park is a new capability. Keep 0.6.1 or move to 0.7.0? / A: 0.7.0.
+P1 exchange (JSON rules): Q: How should both scripts handle valid JSON they cannot use? / A: One shared fixed message. setup.ps1 also rejects case-duplicate keys and depth over 1024. setup.sh accepts case-duplicate keys.
+P1 exchange (park design): Q: How should park work? / A: The feature branch holds the work. A chore PR files the backlog entry. Pull-in checks out the branch and resumes. Discard deletes the branch after confirmation.
+Backlog pickup: pulled in 0000120, 0000121, 0000122, 0000101. Left 0000095, 0000098, 0000099, 0000100, 0000110.
 
 ---
 
