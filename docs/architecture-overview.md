@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000039-setup-hardening-release-sizing
+Last updated: 0000040-setup-json-checks-and-park
 
 ## What this repo is
 
@@ -30,6 +30,8 @@ The pipeline runs five phases. There is one route: every change is a feature cha
 | Ship | `SH:` | planifest-ship |
 
 Discovery sizes each release against a budget. The optional `releaseSize` field in `product.yml` sets it to `small`, `medium`, or `large`, and the default is `medium`. Discovery gives each candidate requirement a size class from the files it touches, then recommends a fill up to the budget.
+
+**Park.** When the human says "park", the orchestrator shelves the feature on its branch. It writes `plan/current/park.md`, pushes the branch, and raises a `chore/park-{feature-id}` PR. That PR files a backlog entry with status `parked`. The working tree then returns to `main`. The git and `gh` steps live in the orchestrator's `scripts/park.mjs`. At a later discovery, backlog pickup offers resume or discard for a parked entry. Park and pickup never merge a PR, never commit to `main`, and never force-push.
 
 The implement phase dispatches a TDD trio per requirement: planifest-test-writer, planifest-implementer, and planifest-refactor. Four support skills complete the set of twelve: planifest-loop-runner, planifest-optimise-agent, planifest-migrator, and planifest-refresh-setup.
 
@@ -114,6 +116,10 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 **Per-command filter.** Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. Setup removes each Planifest command and keeps any user command in the same entry. If an entry holds only Planifest commands, setup drops it. A `hooks` value that holds one object counts as a one-item array, so setup filters it the same way. An entry with no commands stays as it was. A command counts as Planifest only when it runs `<module>.mjs` at a path boundary, matched case-sensitively.
 
 **Invalid JSON.** If `settings.json` isn't valid JSON, the hook install step prints one fixed line that names the file. The line never holds the file's contents. Setup leaves the file unchanged and exits 1, because it can't install the hooks. The telemetry cleanup still warns and carries on.
+
+**Not a settings object.** If `settings.json` is valid JSON but not a settings object, both scripts print one fixed line that names the file. That covers a top level that isn't an object, and a `hooks` value that is present and isn't an object. Setup leaves the file unchanged and exits 1. `setup.ps1` also gives this line for keys that differ only by case, because `ConvertFrom-Json` can't read them. `setup.sh` accepts those keys, because Node reads them.
+
+**Nesting cap.** `setup.ps1` checks JSON nesting with a counter and a stack, so the check runs in linear time. Nesting deeper than 1024 levels gets the not-a-settings-object line.
 
 **JSON depth.** `setup.ps1` writes `settings.json` with `ConvertTo-Json -Depth 100`, so a deeply nested user value survives a rewrite.
 
