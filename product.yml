@@ -10,8 +10,8 @@
 
 id: "planifest-zero"
 name: "Planifest Framework"
-version: "0.6.0"
-feature: "0000038-setup-hook-filter-fixes"
+version: "0.7.0"
+feature: "0000040-setup-json-checks-and-park"
 
 versionPolicy: "max-component-version"
 

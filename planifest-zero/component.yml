@@ -1,8 +1,8 @@
 # Planifest Component Manifest
 id: "planifest-zero"
 name: "Planifest Framework"
-feature: "0000038-setup-hook-filter-fixes"
-version: "0.6.0"
+feature: "0000040-setup-json-checks-and-park"
+version: "0.7.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
@@ -121,7 +121,7 @@ pipeline:
 
 metadata:
   createdAt: "2026-05-02"
-  updatedAt: "2026-10-17"
+  updatedAt: "2026-10-22"
   createdBy: "agent"
   lastModifiedBy: "agent"
   skill: "planifest-implement"
