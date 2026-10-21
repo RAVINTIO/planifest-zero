@@ -45,6 +45,7 @@ Scope Lock (first-run path): Setup with no settings.json creates one as today. T
 Scope Lock (error path): A failed push or gh pr create during park reports the exact error and stops with park.md committed locally. A non-object settings.json gets the fixed line, exit 1, and no file change. [source: draft-accepted]
 Scope Lock (cross-session continuity): A session that ends between the park commit and the chore PR resumes from park.md and finishes the PR step. Setup writes nothing until all checks pass. [source: draft-accepted]
 Scope Lock complete. All four scenario paths captured.
+Gate accepted: P1 (2026-10-21T17:25:23Z). Human confirmed the design.
 
 ---
 
