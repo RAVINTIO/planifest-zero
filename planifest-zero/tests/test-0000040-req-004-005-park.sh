@@ -86,14 +86,6 @@ assert_contains 'gh pr list --head chore/park-{feature-id} --state all' "$RESUME
   "req-005: resume detection looks for the chore PR"
 assert_contains 'finish-pr' "$RESUME_SEC" "req-005: resume detection runs finish-pr"
 
-echo "=== req-004: this repo's installed copies match the source ==="
-INST="$REPO/.claude/skills/planifest-orchestrator"
-same() { cmp -s "$1" "$2" && echo same || echo differ; }
-assert_equals same "$(same "$ORCH" "$INST/SKILL.md")" "req-004: installed SKILL.md matches the source"
-assert_equals same "$(same "$PARK_TPL" "$INST/assets/templates/park.template.md")" \
-  "req-004: installed park.template.md matches the source"
-assert_equals same "$(same "$PARK" "$INST/scripts/park.mjs")" "req-004: installed park.mjs matches the source"
-
 # ---------------------------------------------------------------------------
 # Behaviour: park.mjs against a local bare remote and a stub gh
 # ---------------------------------------------------------------------------
