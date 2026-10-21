@@ -103,6 +103,21 @@ Self-correct cycle 1 (test): the park suite compared the gitignored `.claude/` i
 Self-correct cycle 2 (security): review found F-001 to F-005 in `park.mjs` (2 medium, 3 low). Root cause: code. Fix: branch, slug, and id validation, exact refspecs (108d1ce). Result: park suite RED at 89 passed and 14 failed, then GREEN at 104. Full runner passes.
 Backlog filed: 0000130 (non-array warning prints the old hook value, predates this feature).
 CI run 39647163506 at `837025a`: all four jobs pass after the park fix.
+Gate accepted: P4 (2026-10-22, human accepted after asking what the gate covers and why it precedes ship)
+
+---
+
+### P5: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-22` |
+| Model tier | primary |
+| Skills loaded | planifest-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Steps run in order, each committed. Custom rule 004: push the branch and tag, and raise the PR without asking. |
 
 ---
 
