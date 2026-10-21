@@ -102,6 +102,7 @@ Verification: 15 of 15 criteria verified by execution. req-002 and req-003 throu
 Self-correct cycle 1 (test): the park suite compared the gitignored `.claude/` install copy, which CI lacks. Root cause: test-bug. Fix: removed the check, which no criterion covers. Result: suite GREEN at 81.
 Self-correct cycle 2 (security): review found F-001 to F-005 in `park.mjs` (2 medium, 3 low). Root cause: code. Fix: branch, slug, and id validation, exact refspecs (108d1ce). Result: park suite RED at 89 passed and 14 failed, then GREEN at 104. Full runner passes.
 Backlog filed: 0000130 (non-array warning prints the old hook value, predates this feature).
+CI run 39647163506 at `837025a`: all four jobs pass after the park fix.
 
 ---
 
