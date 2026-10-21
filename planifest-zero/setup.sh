@@ -473,6 +473,16 @@ install_enforcement_hooks() {
           process.exit(1);
         }
       }
+      // Valid JSON that is not a settings object stops setup before any write
+      // (0000040 req-001, ADR-002). The top level must be a plain object. A
+      // hooks value must be absent, null, or a plain object. The line never
+      // includes file content.
+      const isPlainObject = v => v !== null && typeof v === "object" && !Array.isArray(v);
+      if (!isPlainObject(s) || (s.hooks != null && !isPlainObject(s.hooks))) {
+        process.stderr.write("! Error: " + process.env.PLANIFEST_SETTINGS_REL +
+          " is valid JSON but not a settings object setup can read. Fix it and rerun setup.\n");
+        process.exit(1);
+      }
       s.hooks = s.hooks || {};
       // A present value that is not an array is non-array (0000037 ADR-003).
       // Warn, print the old value, and replace it with the Planifest entries.
