@@ -75,6 +75,14 @@ Gate accepted: P1 (2026-10-21T17:25:23Z). Human confirmed the design.
 | Parallel task batches | `1` |
 | Notes | Split by file, as in 0000039. Agent 1: req-001 in `setup.sh`. Agent 2: req-002 and req-003 in `setup.ps1`. Agent 3: req-004 and req-005 in the orchestrator skill, the park template, the backlog template, and a new `park.mjs`. Suites build their inputs inline, so no new fixture files need runner registration. Subagents don't commit. |
 
+Subagents: 3 of 3 completed (claude-opus-5-5, primary tier). The `setup.sh` suite went RED at 41 passed and 22 failed, then GREEN at 63. The park suite went RED at 27 passed and 57 failed, then GREEN at 84. The `setup.ps1` suite could not run locally, so its RED step was reasoned, not observed.
+Deviation: park's git and `gh` steps live in `scripts/park.mjs` beside the orchestrator skill. Recorded in the execution plan.
+Backlog filed: 0000127 (setup.sh telemetry cleanup warns on a null file), 0000128 (setup.ps1 telemetry cleanup can rewrite a one-item top-level array), 0000129 (a failed chore commit in park.mjs can carry the entry file).
+Docs: architecture overview, decisions index, and Last updated stamps on the four living docs.
+Local runner: 70 feature and 18 regression suites pass. 6 PowerShell suites skipped (no pwsh).
+Draft PR #17 opened so CI runs the PowerShell suites.
+Gate accepted: P3 (2026-10-21T17:40:33Z, continuous run)
+
 ---
 
 <!-- Copy and fill in this block at each phase boundary. Headings use the form
