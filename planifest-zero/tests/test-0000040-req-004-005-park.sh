@@ -160,6 +160,8 @@ assert_equals "$(git -C "$TMP/work" rev-parse "$BR")" "$(origin_ref "$BR")" \
   "req-004: the feature branch is pushed with park.md"
 assert_contains 'Park Record' "$(git --git-dir="$TMP/origin.git" show "$BR:plan/current/park.md" 2>&1)" \
   "req-004: park.md is on origin's feature branch"
+assert_equals "refs/heads/$BR" "$(git -C "$TMP/work" config "branch.$BR.merge")" \
+  "req-004: park sets the feature branch upstream"
 CHORE_ENTRY=$(git --git-dir="$TMP/origin.git" show "$CHORE:$ENTRY_DIR/entry.md" 2>&1)
 assert_contains "**Parked branch:** $BR" "$CHORE_ENTRY" "req-004: the chore branch holds a parked entry naming the branch"
 assert_contains 'status: "parked"' "$CHORE_ENTRY" "req-004: the entry has status parked"
@@ -226,5 +228,65 @@ assert_equals no "$(git -C "$TMP/work" rev-parse -q --verify "refs/heads/$BR" >/
   "req-005: a confirmed discard removes the local branch"
 assert_equals "" "$(origin_ref "$BR")" "req-005: a confirmed discard removes the origin branch"
 assert_equals "" "$(grep 'pr merge' "$GH_LOG")" "req-005: pickup never runs gh pr merge"
+
+# ---------------------------------------------------------------------------
+# Argument validation (security findings F-001 to F-005)
+# ---------------------------------------------------------------------------
+nonzero() { [ "$1" -ne 0 ] && echo nonzero || echo zero; }
+local_ref() { git -C "$TMP/work" rev-parse -q --verify "refs/heads/$1" 2>/dev/null; }
+
+echo "=== req-005: resume refuses an option as the branch ==="
+setup_repo
+echo "uncommitted" >> "$TMP/work/feature.txt"
+OUT=$(run_park resume -f); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-005: resume -f exits non-zero"
+assert_contains 'uncommitted' "$(cat "$TMP/work/feature.txt")" "req-005: resume -f keeps the uncommitted edit"
+
+echo "=== req-005: resume refuses main ==="
+setup_repo
+git -C "$TMP/work" checkout -q main
+(cd "$TMP/work" && echo local > local.txt && git add . && git commit -qm "chore: local main")
+(cd "$TMP/seed" && echo remote > remote.txt && git add . && git commit -qm "chore: remote main" && git push -q origin main)
+MAIN_BEFORE=$(local_ref main)
+OUT=$(run_park resume main); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-005: resume main exits non-zero"
+assert_equals "$MAIN_BEFORE" "$(local_ref main)" "req-005: resume main makes no commit on main"
+
+echo "=== req-005: discard refuses a full ref name and main ==="
+setup_repo
+git -C "$TMP/work" push -q origin "$BR:refs/heads/extra"
+git -C "$TMP/work" checkout -q main
+OUT=$(run_park discard refs/heads/extra --confirmed); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-005: discard refs/heads/extra exits non-zero"
+assert_equals yes "$([ -n "$(origin_ref extra)" ] && echo yes || echo no)" "req-005: discard refs/heads/extra keeps the origin branch"
+MAIN_BEFORE=$(origin_ref main)
+OUT=$(run_park discard main --confirmed); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-005: discard main exits non-zero"
+OUT=$(run_park discard refs/heads/main --confirmed); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-005: discard refs/heads/main exits non-zero"
+assert_equals "$MAIN_BEFORE" "$(origin_ref main)" "req-005: discard keeps origin main"
+
+echo "=== req-005: a branch named +x is refused ==="
+git -C "$TMP/work" branch +x
+OUT=$(run_park discard +x --confirmed); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-005: discard +x exits non-zero"
+assert_equals yes "$([ -n "$(local_ref +x)" ] && echo yes || echo no)" "req-005: discard +x keeps the local branch"
+OUT=$(run_park resume +x); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-005: resume +x exits non-zero"
+assert_equals main "$(cur_branch)" "req-005: resume +x leaves the working tree on main"
+
+echo "=== req-004: park refuses a bad slug or backlog id ==="
+setup_repo
+OUT=$(run_park park --entry "$TMP/entry.md" --backlog-id 0000900 --slug ../escaped); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-004: park --slug ../escaped exits non-zero"
+assert_equals "" "$(origin_ref "$BR")" "req-004: a bad slug pushes nothing"
+assert_equals "" "$(origin_ref "$CHORE")" "req-004: a bad slug cuts no chore branch on origin"
+assert_equals no "$([ -e "$TMP/work/plan/backlog" ] && echo yes || echo no)" "req-004: a bad slug writes nothing"
+assert_equals "$BR" "$(cur_branch)" "req-004: a bad slug leaves the working tree on the feature branch"
+OUT=$(run_park park --entry "$TMP/entry.md" --backlog-id ../../escaped); RC=$?
+assert_equals nonzero "$(nonzero $RC)" "req-004: park with a bad --backlog-id exits non-zero"
+assert_equals "" "$(origin_ref "$BR")" "req-004: a bad backlog id pushes nothing"
+assert_equals no "$([ -e "$TMP/work/escaped-park-demo" ] && echo yes || echo no)" "req-004: a bad backlog id writes nothing"
+assert_equals "" "$(cat "$GH_LOG")" "req-004: a bad slug or backlog id makes no gh call"
 
 print_summary

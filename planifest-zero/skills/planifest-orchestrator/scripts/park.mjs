@@ -29,6 +29,18 @@
 //              plan/current/park.md for the skill to restore.
 //   discard    Deletes the branch locally and on origin.
 //
+// Validation runs before any git call that changes state:
+//   - Every branch the script takes or derives must pass one check. That
+//     covers the feature branch, the chore branch, and the resume and discard
+//     argument. The check rejects a leading "-" or "+", a "refs/" or "heads/"
+//     prefix, main, HEAD, and any name that git check-ref-format --branch
+//     rejects. A refused branch prints one fixed error line and exits 1.
+//   - --backlog-id must be seven digits. --slug must be lower-case words of
+//     letters and digits joined by single hyphens. The entry path must stay
+//     under plan/backlog/.
+//   - Pushes and remote deletes use exact refspecs under refs/heads/, so git
+//     never reads a branch name as an option, a forced push, or another ref.
+//
 // If a git or gh call fails, the script prints the exact error and exits 1.
 // A failed park or finish-pr returns the working tree to the feature branch.
 // The script never merges a pull request, never commits to main, and never
@@ -36,11 +48,15 @@
 
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, isAbsolute, relative, resolve } from 'node:path';
 
 const REMOTE = 'origin';
 const MAIN = 'main';
 const PARK_RECORD = 'plan/current/park.md';
+const BACKLOG_DIR = 'plan/backlog';
+const BACKLOG_ID = /^[0-9]{7}$/;
+const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const BAD_BRANCH = 'Refusing an invalid branch name. Use a plain branch name that is not main.';
 
 class ParkError extends Error {}
 
@@ -56,6 +72,21 @@ function run(cmd, args, { allowFail = false } = {}) {
 const git = (...args) => run('git', args).out;
 const gitOk = (...args) => run('git', args, { allowFail: true }).ok;
 const currentBranch = () => git('branch', '--show-current');
+
+// One check for every branch the script takes or derives. It runs before any
+// git call that changes state, and it prints a fixed line that never echoes the name.
+function checkBranch(name) {
+  const bad = !name
+    || /^[-+]/.test(name)
+    || /^(refs|heads)\//.test(name)
+    || name === MAIN
+    || name === 'HEAD'
+    || spawnSync('git', ['check-ref-format', '--branch', name], { encoding: 'utf8' }).status !== 0;
+  if (bad) throw new ParkError(BAD_BRANCH);
+  return name;
+}
+const headRef = (branch) => `refs/heads/${branch}`;
+const pushSpec = (branch) => `${headRef(branch)}:${headRef(branch)}`;
 
 function parseArgs(argv) {
   const opts = { positional: [] };
@@ -74,10 +105,19 @@ function parseArgs(argv) {
 function parkContext(opts) {
   const branch = opts.branch || currentBranch();
   if (!branch || branch === MAIN) throw new ParkError(`Park runs from a feature branch, not "${branch || 'detached HEAD'}".`);
+  checkBranch(branch);
   const featureId = opts['feature-id'] || branch.replace(/^feat\//, '');
+  const chore = checkBranch(`chore/park-${featureId}`);
   const slug = opts.slug || featureId.replace(/^\d+-/, '');
   if (!opts.entry) throw new ParkError('--entry <file> is required.');
   if (!opts['backlog-id']) throw new ParkError('--backlog-id <id> is required.');
+  if (!BACKLOG_ID.test(opts['backlog-id'])) throw new ParkError('--backlog-id must be seven digits.');
+  if (!SLUG.test(slug)) throw new ParkError('--slug must be lower-case letters and digits joined by single hyphens.');
+  const entryPath = `${BACKLOG_DIR}/${opts['backlog-id']}-park-${slug}/entry.md`;
+  const fromBacklog = relative(resolve(BACKLOG_DIR), resolve(entryPath));
+  if (!fromBacklog || fromBacklog.startsWith('..') || isAbsolute(fromBacklog)) {
+    throw new ParkError(`The entry path must stay under ${BACKLOG_DIR}/.`);
+  }
   if (!existsSync(opts.entry)) throw new ParkError(`Entry file not found: ${opts.entry}`);
   const entry = readFileSync(opts.entry, 'utf8');
   if (!entry.includes(`**Parked branch:** ${branch}`)) {
@@ -86,9 +126,9 @@ function parkContext(opts) {
   return {
     branch,
     featureId,
-    chore: `chore/park-${featureId}`,
+    chore,
     entry,
-    entryPath: `plan/backlog/${opts['backlog-id']}-park-${slug}/entry.md`,
+    entryPath,
   };
 }
 
@@ -122,7 +162,7 @@ function finishPr(ctx) {
     if (!gitOk('diff', '--cached', '--quiet')) {
       commitOffMain(`chore(backlog): park ${ctx.featureId}`);
     }
-    git('push', '-u', REMOTE, ctx.chore);
+    git('push', '-u', REMOTE, pushSpec(ctx.chore));
     const url = run('gh', [
       'pr', 'create', '--base', MAIN, '--head', ctx.chore,
       '--title', `chore(backlog): park ${ctx.featureId}`,
@@ -158,7 +198,7 @@ function park(opts) {
     throw new ParkError(`${PARK_RECORD} has uncommitted changes. Commit it first.`);
   }
   onFeatureBranch(ctx, () => {
-    git('push', '-u', REMOTE, ctx.branch);
+    git('push', '-u', REMOTE, pushSpec(ctx.branch));
     finishPr(ctx);
   });
 }
@@ -173,8 +213,9 @@ function finishPrCommand(opts) {
 function resume(opts) {
   const [branch] = opts.positional;
   if (!branch) throw new ParkError('resume needs a branch name.');
+  checkBranch(branch);
   git('fetch', REMOTE);
-  git('checkout', branch);
+  git('checkout', '--end-of-options', branch);
   git('merge', '--no-edit', `${REMOTE}/${MAIN}`);
   console.log(`Resumed ${branch} with ${REMOTE}/${MAIN} merged. Restore state from ${PARK_RECORD}.`);
 }
@@ -182,11 +223,11 @@ function resume(opts) {
 function discard(opts) {
   const [branch] = opts.positional;
   if (!branch) throw new ParkError('discard needs a branch name.');
+  checkBranch(branch);
   if (!opts.confirmed) throw new ParkError(`Discard deletes ${branch}. Pass --confirmed only after the human confirms.`);
-  if (branch === MAIN) throw new ParkError('Refusing to delete main.');
   if (currentBranch() === branch) throw new ParkError(`Check out ${MAIN} before you discard ${branch}.`);
-  if (gitOk('rev-parse', '-q', '--verify', `refs/heads/${branch}`)) git('branch', '-D', branch);
-  if (git('ls-remote', '--heads', REMOTE, branch)) git('push', REMOTE, '--delete', branch);
+  if (gitOk('rev-parse', '-q', '--verify', headRef(branch))) git('branch', '-D', '--end-of-options', branch);
+  if (git('ls-remote', '--heads', REMOTE, headRef(branch))) git('push', REMOTE, `:${headRef(branch)}`);
   console.log(`Discarded ${branch} locally and on ${REMOTE}.`);
 }
 
