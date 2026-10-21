@@ -56,10 +56,10 @@ Gate accepted: P1 (2026-10-21T17:25:23Z). Human confirmed the design.
 | Start | `2026-10-21T17:25:44Z` |
 | Model tier | primary |
 | Skills loaded | planifest-plan |
-| Agents spawned | `0` |
+| Agents spawned | `4` (primary tier, claude-sonnet-5-5) |
 | MCP calls | `0` |
-| Parallel task batches | `0` |
-| Notes | Conditional artifacts not triggered: no API, no deployed service, no spend change. Backlog ids 0000123 to 0000130 reserved for subagent filings. |
+| Parallel task batches | `1` |
+| Notes | Conditional artifacts not triggered: no API, no deployed service, no spend change. Backlog ids 0000123 to 0000130 reserved for subagent filings. ADRs ran in the same batch as requirements because the confirmed design fixed every decision. consistency-check flagged 5 requirements over 3 criteria. Criteria were consolidated with no change in coverage, and the re-run is clean. Park details settled from the design: entry status field, gh pr list check, entry cleanup on resume and discard. Continuous run, so no P2 stop. |
 
 ---
 

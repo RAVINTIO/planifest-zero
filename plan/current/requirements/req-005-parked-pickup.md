@@ -28,13 +28,9 @@ As a human on the loop, I pick up a parked entry at a later P1, so that I either
 - Pickup never merges a pull request, never commits to `main`, and never force-pushes.
 
 ## Acceptance Criteria
-- [ ] The orchestrator skill backlog pickup step names the `parked` status and offers resume or discard for it.
-- [ ] The skill states that resume checks out the branch, merges `origin/main`, and restores state from `park.md`.
-- [ ] The skill states that discard deletes the branch locally and on `origin` only after the human confirms.
-- [ ] The Resume Detection list has a step for `park.md` that finishes the chore PR when none exists.
-- [ ] Against a test repo, resuming a parked entry leaves the working tree on the feature branch with `origin/main` merged and the recorded phase restored.
-- [ ] Against a test repo, declining the discard confirmation leaves the branch in place locally and on `origin`.
-- [ ] Against a test repo, confirming the discard removes the branch locally and on `origin`.
+- [ ] (a) The backlog pickup step offers resume or discard for a `parked` entry. It states the four resume steps in order and that discard runs only after the human confirms.
+- [ ] (b) The Resume Detection list has a `park.md` step that finishes the chore PR when `gh pr list` finds none.
+- [ ] (c) Against a test repo, resume leaves the working tree on the feature branch with `origin/main` merged and the recorded phase restored. A declined discard keeps the branch locally and on `origin`, and a confirmed discard removes it from both.
 
 ## Dependencies
 - req-004 writes `park.md` and the `parked` entry that this requirement reads.

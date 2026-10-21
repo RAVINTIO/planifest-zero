@@ -30,12 +30,9 @@ As a person running `setup.sh`, I get one fixed error line and exit 1 when `sett
 - The message text is identical to the one in req-002. A parity test asserts the exact line for both scripts.
 
 ## Acceptance Criteria
-- [ ] (a) With `["x"]`, `null`, `"text"`, `42`, or `true` as the whole content of `.claude/settings.json`, `setup.sh` prints `! Error: .claude/settings.json is valid JSON but not a settings object setup can read. Fix it and rerun setup.` to stderr and exits 1.
-- [ ] (b) With `{"hooks":"text"}`, `{"hooks":[]}`, or `{"hooks":5}`, the same line prints and the exit code is 1.
-- [ ] (c) After each run in (a) and (b), `settings.json` is byte-identical to its input.
-- [ ] (d) A value planted in a rejected file, such as `["PLANTED-VALUE"]`, appears in neither stdout nor stderr.
-- [ ] (e) With `{"hooks":null}` and with `{"a":1,"A":2}`, `setup.sh` exits 0 and wires the hooks.
-- [ ] (f) With `{"a":1,`, the output is the existing `! Error: .claude/settings.json is not valid JSON. Fix it and rerun setup.` and the exit code is 1.
+- [ ] (a) Each of `["x"]`, `null`, `"text"`, `42`, `true`, `{"hooks":"text"}`, `{"hooks":[]}`, and `{"hooks":5}` makes `setup.sh` print `! Error: .claude/settings.json is valid JSON but not a settings object setup can read. Fix it and rerun setup.` to stderr and exit 1. The file stays byte-identical.
+- [ ] (b) A value planted in a rejected file, such as `["PLANTED-VALUE"]`, appears in neither stdout nor stderr.
+- [ ] (c) `{"hooks":null}` and `{"a":1,"A":2}` exit 0 with the hooks wired. `{"a":1,` still prints the existing invalid-JSON line and exits 1.
 
 ## Dependencies
 - 0000039 ADR-002 (invalid-JSON message) and 0000037 ADR-003 (non-array hooks events) stand.

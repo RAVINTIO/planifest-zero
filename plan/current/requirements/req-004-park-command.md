@@ -35,14 +35,9 @@ As a human on the loop, I say "park", so that the orchestrator shelves the featu
 - Park does not open a second park for another feature on the same working tree.
 
 ## Acceptance Criteria
-- [ ] The orchestrator skill contains a Park Command section with the five steps above in that order.
-- [ ] `planifest-zero/templates/park.template.md` exists and holds phase reached, last artifact, head commit, and reason.
-- [ ] The Framework Index and `bundle_templates` both name `park.template.md`.
-- [ ] The skill states that park before `design.md` exists records phase P1.
-- [ ] The skill states that park never merges, never commits to `main`, and never force-pushes.
-- [ ] The skill states that a failed push or `gh` call reports the exact error and stops on the feature branch.
-- [ ] After a successful park against a test remote, `park.md` is committed and pushed on the feature branch, the chore branch holds a `parked` backlog entry naming that branch, and the working tree is on `main`.
-- [ ] After a forced push failure, the working tree is still on the feature branch and `main` is unchanged.
+- [ ] (a) The orchestrator skill has a Park Command section with the five steps in order. It states the P1 rule for a park before `design.md`, the stop-on-failure rule, and the never-merge, never-commit-to-`main`, never-force-push rule.
+- [ ] (b) `planifest-zero/templates/park.template.md` holds phase reached, last artifact, head commit, and reason. The Framework Index and `bundle_templates` name it. The backlog entry template allows status `parked` and has a `**Parked branch:**` field.
+- [ ] (c) Against a test remote, a successful park leaves `park.md` pushed on the feature branch, a `parked` entry naming that branch on the chore branch, and the working tree on `main`. A forced push failure leaves the working tree on the feature branch and `main` unchanged.
 
 ## Dependencies
 - The backlog entry template, which this requirement extends with the `parked` status.

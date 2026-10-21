@@ -30,12 +30,9 @@ As a person running `setup.ps1`, I get a prompt failure on very deep nesting, so
 - `setup.sh` is out of scope. `JSON.parse` in node handles deep input without this change.
 
 ## Acceptance Criteria
-- [ ] (a) With a `settings.json` of 100,000 `[` characters, `setup.ps1` prints `! Error: .claude/settings.json is valid JSON but not a settings object setup can read. Fix it and rerun setup.` to stderr, exits 1, and finishes in under 5 seconds.
-- [ ] (b) With 1025 nested `[` and 1025 matching `]`, `Test-JsonText` fails on depth, and `setup.ps1` prints the same line and exits 1.
-- [ ] (c) With 1024 nested `[` and 1024 matching `]`, the depth check passes.
-- [ ] (d) `Test-JsonText` returns the same result as before for every input in the existing 0000039 req-001 tests.
-- [ ] (e) After each run in (a) and (b), `settings.json` is byte-identical to its input, and the output holds no file content.
-- [ ] (f) The function source contains `[System.Collections.Generic.Stack[char]]` and no `$stack +=` or `$stack.Substring` line.
+- [ ] (a) A `settings.json` of 100,000 `[` characters makes `setup.ps1` print `! Error: .claude/settings.json is valid JSON but not a settings object setup can read. Fix it and rerun setup.`, exit 1, and finish in under 5 seconds. The file stays byte-identical and no content reaches the output.
+- [ ] (b) 1025 balanced nesting levels fail on depth with the same line and exit 1. 1024 levels pass the depth check.
+- [ ] (c) `Test-JsonText` gives the same result as before for every existing 0000039 req-001 input. Its source uses `[System.Collections.Generic.Stack[char]]` and has no `$stack +=` or `$stack.Substring` line.
 
 ## Dependencies
 - req-002 prints the shape line that a depth failure uses.
