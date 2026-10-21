@@ -40,6 +40,11 @@ P1 exchange (version revisited): Q: Park is a new capability. Keep 0.6.1 or move
 P1 exchange (JSON rules): Q: How should both scripts handle valid JSON they cannot use? / A: One shared fixed message. setup.ps1 also rejects case-duplicate keys and depth over 1024. setup.sh accepts case-duplicate keys.
 P1 exchange (park design): Q: How should park work? / A: The feature branch holds the work. A chore PR files the backlog entry. Pull-in checks out the branch and resumes. Discard deletes the branch after confirmation.
 Backlog pickup: pulled in 0000120, 0000121, 0000122, 0000101. Left 0000095, 0000098, 0000099, 0000100, 0000110.
+Scope Lock (happy path): Park writes park.md, commits and pushes the branch, raises a chore PR with a backlog entry, and checks out main. Setup on a valid object is unchanged. [source: draft-accepted]
+Scope Lock (first-run path): Setup with no settings.json creates one as today. The first park adds only park.md and one backlog entry, and a park before design.md records phase P1. [source: draft-accepted]
+Scope Lock (error path): A failed push or gh pr create during park reports the exact error and stops with park.md committed locally. A non-object settings.json gets the fixed line, exit 1, and no file change. [source: draft-accepted]
+Scope Lock (cross-session continuity): A session that ends between the park commit and the chore PR resumes from park.md and finishes the PR step. Setup writes nothing until all checks pass. [source: draft-accepted]
+Scope Lock complete. All four scenario paths captured.
 
 ---
 

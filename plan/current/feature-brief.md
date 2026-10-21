@@ -102,7 +102,13 @@ One wave. The release holds 7 of 8 points.
 
 ## Scenario Paths
 
-Filled at the Scope Lock Challenge.
+**Happy path:** The human says "park" mid-run. The orchestrator writes `park.md`, commits and pushes the feature branch, raises a chore PR with a backlog entry naming the branch, and checks out `main`. Setup on a valid settings object behaves exactly as today.
+
+**First-run path:** Setup with no `settings.json` creates one as today, so the shape check never fires. The first park on a repo adds only `park.md` and one backlog entry. A park before `design.md` exists records phase P1.
+
+**Error / sad path:** If a push or `gh pr create` fails during park, the orchestrator reports the exact error and stops. The branch keeps `park.md` committed locally, and the working tree stays on it. A non-object `settings.json` gets the fixed line and exit 1, with the file unchanged.
+
+**Cross-session continuity:** If the session ends after the park commit but before the chore PR, the next session finds `park.md` on the branch and finishes the PR step. Setup writes nothing until all checks pass, so an interrupted run leaves `settings.json` unchanged.
 
 ## Acceptance Criteria
 
