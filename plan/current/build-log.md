@@ -121,35 +121,15 @@ Gate accepted: P4 (2026-10-22, human accepted after asking what the gate covers 
 
 ---
 
-<!-- Copy and fill in this block at each phase boundary. Headings use the form
-     "### P<n>: {Phase Name}" with n from 2 to 5 and the phase names
-     P2: Plan, P3: Implement, P4: Validate and Accept, P5: Ship.
-
-### P<n>: {Phase Name}
-
-| Field | Value |
-|-------|-------|
-| Start | `{{timestamp}}` |
-| Model tier | primary |
-| Skills loaded | `{{skill names}}` |
-| Agents spawned | `{{count}}` |
-| MCP calls | `{{count}}` |
-| Parallel task batches | `{{count}}` |
-| Notes | `{{free text or "none"}}` |
-
--->
-
----
-
 ## Summary (filled at ship, P5)
 
 | Metric | Value |
 |--------|-------|
-| Total phases completed | `{{count}}` |
-| Total agents spawned | `{{count}}` |
-| Total MCP calls | `{{count}}` |
-| Phases using parallelism | `{{count}}` |
-| Primary tier agent calls | `{{count}}` |
-| Cheaper tier agent calls | `{{count}}` |
-| Self-corrections | `{{count}}` |
-| Phases skipped | `{{list or "none"}}` |
+| Total phases completed | `5` |
+| Total agents spawned | `9` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P2, P3, P4) |
+| Primary tier agent calls | `3` (P3) |
+| Cheaper tier agent calls | `4` (P2). The log does not record the tier of the 2 P4 agents. |
+| Self-corrections | `2` (P4: the park suite install-copy check, and the F-001 to F-005 fixes) |
+| Phases skipped | none |
