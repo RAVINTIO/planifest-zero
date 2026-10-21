@@ -21,8 +21,9 @@ As a human on the loop, I pick up a parked entry at a later P1, so that I either
   1. Check out the branch the entry names.
   2. Merge `origin/main` into it.
   3. Restore state from `plan/current/park.md` the way resume detection restores state from `pause.md`.
-- Discard deletes the branch locally and on `origin`. It runs only after the human confirms.
-- Resume detection gains a step for `park.md`. If the file exists and no chore PR exists for `chore/park-{feature-id}`, the orchestrator finishes the chore PR step of park (req-004 steps 3 to 5).
+  4. Delete the parked entry folder and `park.md` in one commit on the feature branch, as ordinary pull-in deletes its entry.
+- Discard deletes the branch locally and on `origin`. It runs only after the human confirms. It then deletes the parked entry folder with a build-log note, as ordinary discard does.
+- Resume detection gains a step for `park.md`. It applies when the session is still on the feature branch. If the file exists and `gh pr list --head chore/park-{feature-id} --state all` returns nothing, the orchestrator finishes the chore PR step of park (req-004 steps 3 to 5).
   - A failed push or `gh` call stops with the exact error, as in req-004.
 - Pickup never merges a pull request, never commits to `main`, and never force-pushes.
 

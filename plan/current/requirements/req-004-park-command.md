@@ -26,6 +26,8 @@ As a human on the loop, I say "park", so that the orchestrator shelves the featu
   3. Cut `chore/park-{feature-id}` from `main`. Add a backlog entry from the backlog template with status `parked` that names the feature branch.
   4. Push the chore branch and run `gh pr create`.
   5. Check out `main`.
+- The backlog entry template gains `parked` as a status value and a `**Parked branch:**` field. A parked entry fills both.
+- A parked entry reaches `main` only when the human merges the chore PR. Until then, a session on `main` does not see it.
 - If `plan/current/design.md` does not exist, the phase reached is P1.
 - The sentinels in `plan/` live on the feature branch only. Park removes nothing from `main`.
 - If any push or `gh` call fails, park reports the exact error and stops. The working tree stays on the feature branch, and `park.md` stays committed locally.
