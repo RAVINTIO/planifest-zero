@@ -55,7 +55,10 @@ flowchart LR
 
 1. One implementer builds req-001 in `setup.sh` with the `.sh` suite.
 2. A second implementer builds req-002 and req-003 in `setup.ps1` with the `.ps1` suite, in parallel. Both change the same check path.
-3. A third implementer builds req-004 and req-005 in the orchestrator skill and the new park template, with a text suite, in parallel. Both edit the same skill sections.
+3. A third implementer builds req-004 and req-005 in the orchestrator skill and the new park template, in parallel. Both edit the same skill sections.
+   - The git and `gh` steps live in `planifest-zero/skills/planifest-orchestrator/scripts/park.mjs`, which setup copies with the skill. The skill text calls it.
+   - Node keeps one script for every platform, so park needs no `.ps1` twin.
+   - A `.sh` suite runs the script against a local bare remote with a stub `gh` on `PATH`.
 
 ## Assumptions
 
