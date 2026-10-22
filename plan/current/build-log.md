@@ -70,3 +70,15 @@ Requirement Change (P2): The telemetry cleanup skip widens from shape failures t
 P2 exchange (parse failure skip): Q: Widen the cleanup skip to cover invalid JSON and text ConvertFrom-Json rejects? / A: Widen.
 
 Gate accepted: P2 (2026-10-22T22:08:59Z). Continuous run, no stop.
+
+### P3: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-22T22:09:33Z` |
+| Model tier | primary |
+| Skills loaded | planifest-implement, planifest-test-writer, planifest-implementer, planifest-refactor |
+| Agents spawned | `3` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Split by file. Agent A: REQ-001 and the setup.sh half of REQ-003. Agent B: REQ-002 and the setup.ps1 half of REQ-003. Agent C: REQ-004 in park.mjs. Subagents don't commit. Execution plan order updated to match. |

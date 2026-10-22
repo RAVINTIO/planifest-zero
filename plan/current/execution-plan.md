@@ -84,20 +84,19 @@ flowchart LR
 
 ## Implementation order
 
-REQ-003 edits the warning lines in both setup scripts. REQ-001 edits `setup.sh` and REQ-002 edits `setup.ps1`. REQ-003 therefore shares a file with each of them, and the edits must not run at the same time.
+REQ-003 edits the warning lines in both setup scripts. REQ-001 edits `setup.sh` and REQ-002 edits `setup.ps1`. Work splits by file, so no two implementers edit the same file, as in 0000039 and 0000040.
 
-| Step | Requirements | Files | Runs |
-|------|-------------|-------|------|
-| 1 | REQ-001 | `setup.sh`, the `.sh` cleanup test | Parallel with REQ-002 and REQ-004 |
-| 1 | REQ-002 | `setup.ps1`, the `.ps1` cleanup test | Parallel with REQ-001 and REQ-004 |
-| 1 | REQ-004 | `park.mjs`, `test-0000040-req-004-005-park.sh` | Parallel with REQ-001 and REQ-002 |
-| 2 | REQ-003 | `setup.sh`, `setup.ps1`, four existing tests, one parity test | After REQ-001 and REQ-002 finish |
+| Agent | Requirements | Files | Runs |
+|-------|-------------|-------|------|
+| A | REQ-001, the `setup.sh` half of REQ-003 | `setup.sh`, the `.sh` tests, the parity test | Parallel with B and C |
+| B | REQ-002, the `setup.ps1` half of REQ-003 | `setup.ps1`, the `.ps1` tests | Parallel with A and C |
+| C | REQ-004 | `park.mjs`, `test-0000040-req-004-005-park.sh` | Parallel with A and B |
 
-1. Step 1 runs three implementers in parallel. The three touch different files and share no state.
-   - REQ-001 changes the inline node script in `remove_legacy_telemetry_wiring`.
-   - REQ-002 changes `Remove-LegacyTelemetryWiring`.
-   - REQ-004 changes `finishPr` in `park.mjs`.
-2. Step 2 runs REQ-003 alone, after step 1 finishes. It changes the warning in `install_enforcement_hooks` and in `Merge-EnforcementHookSettings`. Sequencing avoids a merge conflict in both scripts.
+1. One batch runs three implementers in parallel. They touch different files and share no state.
+   - Agent A changes `remove_legacy_telemetry_wiring` and the warning in `install_enforcement_hooks`.
+   - Agent B changes `Remove-LegacyTelemetryWiring` and the warning in `Merge-EnforcementHookSettings`.
+   - Agent C changes `finishPr` in `park.mjs`.
+2. The parity test reads both scripts' warning text as files, so it passes once A and B both finish.
 3. Each requirement follows the TDD loop. The test writer confirms RED, the implementer confirms GREEN, and the refactor pass follows.
 4. PowerShell tests run only in CI, because `pwsh` is not installed locally. They skip locally.
    - For REQ-002, the RED check for 0000128 runs in CI, because nobody has run the PowerShell reading.
