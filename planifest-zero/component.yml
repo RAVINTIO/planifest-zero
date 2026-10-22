@@ -1,8 +1,8 @@
 # Planifest Component Manifest
 id: "planifest-zero"
 name: "Planifest Framework"
-feature: "0000040-setup-json-checks-and-park"
-version: "0.7.0"
+feature: "0000041-setup-cleanup-and-park-hardening"
+version: "0.8.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"

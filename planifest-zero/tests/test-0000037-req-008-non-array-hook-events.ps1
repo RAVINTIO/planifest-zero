@@ -3,7 +3,8 @@
 # whichever host runs this file.
 # If the value is present and isn't an array, setup.ps1 warns on stderr,
 # replaces it with the Planifest entries, and exits 0 (ADR-003). The warning
-# matches the setup.sh text. An absent or null value gets no warning.
+# matches the setup.sh text and omits the old value (0000041 ADR-003). An
+# absent or null value gets no warning.
 # Keep this file ASCII.
 
 . (Join-Path $PSScriptRoot 'helpers\assert.ps1')
@@ -56,8 +57,10 @@ foreach ($ev in @('PreToolUse', 'UserPromptSubmit')) {
         $run = Invoke-Setup $ws @('claude-code')
         Assert-Equal 0 $run.Code "req-008: setup.ps1 exits 0 with $ev set to $val"
         if ($run.Code -ne 0) { Write-Host $run.Output }
-        $warning = "  ! Warning: hooks.$ev in .claude/settings.json is not an array. Setup replaced it with the Planifest entries. Old value: $val"
-        Assert-Contains (Get-FlatText $warning) (Get-FlatText $run.Output) "req-008: setup.ps1 warns about $ev and prints the old value"
+        $warning = "  ! Warning: hooks.$ev in .claude/settings.json is not an array. Setup replaced it with the Planifest entries."
+        Assert-Contains (Get-FlatText $warning) (Get-FlatText $run.Output) "req-008: setup.ps1 warns about $ev"
+        # The warning never prints the old value (0000041 ADR-003).
+        Assert-True (-not (Get-FlatText $run.Output).Contains('Old value')) "req-008: setup.ps1 never prints the old $ev value"
         $settings = Read-Settings $ws
         Assert-Equal $expected[$ev] (Get-EventEntries $settings $ev) "req-008: $ev is an array of only the Planifest entries"
         Assert-Equal $expected[$other] (Get-EventEntries $settings $other) "req-008: $other still gets the Planifest entries"

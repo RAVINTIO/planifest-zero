@@ -43,11 +43,13 @@
 //
 // If a git or gh call fails, the script prints the exact error and exits 1.
 // A failed park or finish-pr returns the working tree to the feature branch.
+// If the entry's add or commit fails, the script first unstages and deletes
+// the entry. A failed cleanup step never replaces the original error.
 // The script never merges a pull request, never commits to main, and never
 // force-pushes. It has no dependencies beyond Node and the git and gh tools.
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, relative, resolve } from 'node:path';
 
 const REMOTE = 'origin';
@@ -118,6 +120,10 @@ function parkContext(opts) {
   if (!fromBacklog || fromBacklog.startsWith('..') || isAbsolute(fromBacklog)) {
     throw new ParkError(`The entry path must stay under ${BACKLOG_DIR}/.`);
   }
+  // A failed commit deletes the target path, so it must never hold the only copy.
+  if (resolve(opts.entry) === resolve(entryPath)) {
+    throw new ParkError(`--entry must not be the target path ${entryPath}. Write the entry outside the working tree.`);
+  }
   if (!existsSync(opts.entry)) throw new ParkError(`Entry file not found: ${opts.entry}`);
   const entry = readFileSync(opts.entry, 'utf8');
   if (!entry.includes(`**Parked branch:** ${branch}`)) {
@@ -146,6 +152,17 @@ function commitOffMain(message) {
   git('commit', '-m', message);
 }
 
+// Unstages and deletes the entry after a failed add or commit. Each step
+// swallows its own failure, so the caller always rethrows the original error.
+function removeEntry(ctx) {
+  run('git', ['reset', '-q', '--', ctx.entryPath], { allowFail: true });
+  try {
+    rmSync(ctx.entryPath, { force: true });
+  } catch {
+    // The original error matters more than a failed delete.
+  }
+}
+
 function finishPr(ctx) {
   const existing = run('gh', ['pr', 'list', '--head', ctx.chore, '--state', 'all']).out;
   if (existing) {
@@ -158,9 +175,14 @@ function finishPr(ctx) {
     git('checkout', '-B', ctx.chore, base);
     mkdirSync(dirname(ctx.entryPath), { recursive: true });
     writeFileSync(ctx.entryPath, ctx.entry);
-    git('add', '--', ctx.entryPath);
-    if (!gitOk('diff', '--cached', '--quiet')) {
-      commitOffMain(`chore(backlog): park ${ctx.featureId}`);
+    try {
+      git('add', '--', ctx.entryPath);
+      if (!gitOk('diff', '--cached', '--quiet')) {
+        commitOffMain(`chore(backlog): park ${ctx.featureId}`);
+      }
+    } catch (err) {
+      removeEntry(ctx);
+      throw err;
     }
     git('push', '-u', REMOTE, pushSpec(ctx.chore));
     const url = run('gh', [

@@ -5,8 +5,8 @@
 #
 # If the value is present and isn't an array, setup.sh warns on stderr,
 # replaces it with the Planifest entries, and exits 0 (ADR-003). The warning
-# names the event and the file, and prints the old value as compact JSON.
-# setup.ps1 prints the same text. An absent or null value gets no warning.
+# names the event and the file, and never prints the old value (0000041
+# ADR-003). setup.ps1 prints the same text. An absent or null value gets no warning.
 # Each case runs setup.sh in a temporary workspace.
 
 set -uo pipefail
@@ -55,7 +55,7 @@ expected_entries() {
 }
 
 warning_for() {
-  printf '  ! Warning: hooks.%s in .claude/settings.json is not an array. Setup replaced it with the Planifest entries. Old value: %s' "$1" "$2"
+  printf '  ! Warning: hooks.%s in .claude/settings.json is not an array. Setup replaced it with the Planifest entries.' "$1"
 }
 
 for EV in PreToolUse UserPromptSubmit; do
@@ -70,8 +70,10 @@ for EV in PreToolUse UserPromptSubmit; do
     run_setup "$WS"
     assert_exit_zero "$?" "req-008: setup.sh exits 0 with $EV set to $VAL"
     ERR="$(cat "$WS/stderr.txt")"
-    assert_contains "$(warning_for "$EV" "$VAL")" "$ERR" \
-      "req-008: setup.sh warns about $EV on stderr and prints the old value"
+    assert_equals "$(warning_for "$EV")" "$ERR" \
+      "req-008: setup.sh warns about $EV on stderr with the new line only"
+    assert_equals "0" "$(grep -c -F -- "Old value" "$WS/stderr.txt" || true)" \
+      "req-008: the warning about $EV does not print the old value"
     assert_equals "$(expected_entries "$EV")" "$(event_entries "$WS/.claude/settings.json" "$EV")" \
       "req-008: $EV is an array of only the Planifest entries"
     assert_equals "$(expected_entries "$OTHER")" "$(event_entries "$WS/.claude/settings.json" "$OTHER")" \

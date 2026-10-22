@@ -209,7 +209,7 @@ Assert-Equal 'leaf-0000039' "$leaf" "req-003: leaf-0000039 survives the telemetr
 Remove-SetupWorkspace $ws
 
 Write-Host ""
-Write-Host "=== req-003: the non-array warning prints a deep old value in full ==="
+Write-Host "=== req-003: the non-array warning omits a deep old value ==="
 
 $ws = New-SetupWorkspace
 $deepValue = '"deep-warn-0000039"'
@@ -218,7 +218,10 @@ Write-SettingsText $ws ('{"hooks":{"PreToolUse":' + $deepValue + '}}')
 $run = Invoke-SetupSplit $ws @('claude-code')
 Assert-Equal 0 $run.Code "req-003: setup.ps1 exits 0 with a deep non-array PreToolUse value"
 if ($run.Code -ne 0) { Write-Host $run.Stdout; Write-Host $run.Stderr }
-Assert-Contains "Old value: $deepValue" $run.Stderr "req-003: the warning prints the 12-level old value unchanged"
+# The warning never prints the old value (0000041 ADR-003).
+Assert-Contains "  ! Warning: hooks.PreToolUse in .claude/settings.json is not an array. Setup replaced it with the Planifest entries." $run.Stderr "req-003: setup.ps1 warns about the deep PreToolUse value"
+Assert-True (-not $run.Stderr.Contains('Old value')) "req-003: the warning prints no Old value"
+Assert-True (-not ($run.Stdout + $run.Stderr).Contains('deep-warn-0000039')) "req-003: the 12-level old value stays out of the output"
 Remove-SetupWorkspace $ws
 
 }

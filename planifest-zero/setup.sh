@@ -55,6 +55,15 @@ function writeSettings(sf, text) {
 }
 '
 
+# Prepended to every node script that reads settings.json before it acts on
+# the hooks (0000040 req-001, ADR-002). A settings object is a plain object
+# whose hooks value is absent, null, or a plain object. The hook install step
+# and remove_legacy_telemetry_wiring apply the same rule.
+PLANIFEST_SETTINGS_SHAPE_JS='
+const isPlainObject = v => v !== null && typeof v === "object" && !Array.isArray(v);
+const isSettingsObject = s => isPlainObject(s) && (s.hooks == null || isPlainObject(s.hooks));
+'
+
 # --- Shared functions ---
 
 copy_skills() {
@@ -313,7 +322,9 @@ remove_legacy_telemetry_wiring() {
   # Prints one line per removal (decision 4), warns and continues on failure so
   # setup still exits 0 (decision 4), and prints nothing when there is nothing
   # to remove, which makes an upgraded project indistinguishable from a fresh
-  # install on the second run (decision 5).
+  # install on the second run (decision 5). A file that is invalid JSON or not
+  # a settings object skips in silence, because install_enforcement_hooks
+  # reports that fault (0000041 ADR-002). Only a read or write error warns.
   local settings_rel="$1"   # e.g. .claude/settings.json
 
   # 1. Telemetry hook entries in the project's settings.json.
@@ -322,7 +333,7 @@ remove_legacy_telemetry_wiring() {
     local result
     result="$(PLANIFEST_SETTINGS="$settings" \
       PLANIFEST_TELEMETRY_MODULES="$TELEMETRY_HOOK_MODULES" \
-      PLANIFEST_TELEMETRY_MATCHER="$TELEMETRY_MCP_MATCHER" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
+      PLANIFEST_TELEMETRY_MATCHER="$TELEMETRY_MCP_MATCHER" node -e "$PLANIFEST_WRITE_SETTINGS_JS$PLANIFEST_SETTINGS_SHAPE_JS"'
       const fs = require("fs");
       const sf      = process.env.PLANIFEST_SETTINGS;
       const modules = process.env.PLANIFEST_TELEMETRY_MODULES.split(" ").filter(Boolean);
@@ -330,7 +341,12 @@ remove_legacy_telemetry_wiring() {
       // Never log the file contents (req-004 logging policy): report only
       // "removed" or "none" on stdout.
       const raw = fs.readFileSync(sf, "utf8").replace(/^﻿/, "");
-      const s = JSON.parse(raw);
+      // Invalid JSON or a value that is not a settings object counts as
+      // nothing to clean (0000041 ADR-002). The hook install step runs next
+      // and prints the one line for the fault.
+      let s;
+      try { s = JSON.parse(raw); } catch (_) { s = undefined; }
+      if (!isSettingsObject(s)) { console.log("none"); process.exit(0); }
       // A command is telemetry only when it runs `<module>.mjs` at a path
       // boundary, which is every shape an old setup wrote. A bare substring
       // would also catch a user hook such as ./my-tools/emit-event-logger.sh.
@@ -452,7 +468,7 @@ install_enforcement_hooks() {
   local design_cmd="node \"$hooks_dir_rel/check-design.mjs\""
 
   if command -v node >/dev/null 2>&1; then
-    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" PLANIFEST_SETTINGS_REL="$settings_rel" node -e "$PLANIFEST_WRITE_SETTINGS_JS"'
+    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" PLANIFEST_SETTINGS_REL="$settings_rel" node -e "$PLANIFEST_WRITE_SETTINGS_JS$PLANIFEST_SETTINGS_SHAPE_JS"'
       const fs = require("fs"), path = require("path");
       const gate     = process.env.PLANIFEST_GATE;
       const ratchet  = process.env.PLANIFEST_RATCHET;
@@ -477,23 +493,22 @@ install_enforcement_hooks() {
       // (0000040 req-001, ADR-002). The top level must be a plain object. A
       // hooks value must be absent, null, or a plain object. The line never
       // includes file content.
-      const isPlainObject = v => v !== null && typeof v === "object" && !Array.isArray(v);
-      if (!isPlainObject(s) || (s.hooks != null && !isPlainObject(s.hooks))) {
+      if (!isSettingsObject(s)) {
         process.stderr.write("! Error: " + process.env.PLANIFEST_SETTINGS_REL +
           " is valid JSON but not a settings object setup can read. Fix it and rerun setup.\n");
         process.exit(1);
       }
       s.hooks = s.hooks || {};
       // A present value that is not an array is non-array (0000037 ADR-003).
-      // Warn, print the old value, and replace it with the Planifest entries.
-      // An absent or null value gets the entries with no warning. setup.ps1
-      // prints the same text.
+      // Warn and replace it with the Planifest entries. The warning names the
+      // event and the file, never the old value, which can hold a secret
+      // (0000041 ADR-003). An absent or null value gets the entries with no
+      // warning. setup.ps1 prints the same text.
       for (const ev of ["PreToolUse", "UserPromptSubmit"]) {
         const v = s.hooks[ev];
         if (v === undefined || v === null || Array.isArray(v)) continue;
         process.stderr.write("  ! Warning: hooks." + ev + " in " + process.env.PLANIFEST_SETTINGS_REL +
-          " is not an array. Setup replaced it with the Planifest entries. Old value: " +
-          JSON.stringify(v) + "\n");
+          " is not an array. Setup replaced it with the Planifest entries.\n");
         s.hooks[ev] = [];
       }
       // Per-command filter (0000038 ADR-002). For each hook entry, remove each
