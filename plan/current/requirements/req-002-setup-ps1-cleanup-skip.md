@@ -24,8 +24,8 @@ As a person running `setup.ps1`, I keep my `settings.json` unchanged when it is 
 - The first-character check is needed because PowerShell 7 unrolls a one-item top-level array into its item. PowerShell 5.1 reads through it. The parsed value alone can't show the array.
 - If the shape test fails, the cleanup prints nothing, writes nothing, and moves on to its other steps. This skip is "nothing to clean" and is not a failure.
 - After the skip, the hook install step prints the shape check line from 0000040 ADR-002 and exits 1. The line is `! Error: {path} is valid JSON but not a settings object setup can read. Fix it and rerun setup.`
-- Text that is not valid JSON keeps today's behaviour in the cleanup.
-- A real failure in the cleanup still prints a warning and continues (0000033 ADR-002).
+- If the text is not valid JSON, or `ConvertFrom-Json` throws, the cleanup also skips in silence. That covers case-duplicate keys and nesting deeper than 1024. The hook install step then prints its own line and exits 1.
+- A real failure in the cleanup still prints a warning and continues (0000033 ADR-002). A real failure is a read or write error, not a parse or shape failure.
 - A valid settings object with a telemetry entry still has the entry removed, with the same printed line as today.
 - The cleanup never prints `settings.json` content or a parser message (0000033 req-004).
 
@@ -33,7 +33,7 @@ As a person running `setup.ps1`, I keep my `settings.json` unchanged when it is 
 - [ ] (a) A `settings.json` that holds `[{"hooks":{"Stop":[...telemetry entry...]}}]` makes `setup.ps1` print the shape check line and exit 1. The file stays byte-identical.
 - [ ] (b) A `settings.json` that holds `null` or `{"hooks":"text"}` makes `setup.ps1` print only the shape check line and exit 1. The file stays byte-identical.
 - [ ] (c) A valid settings object with a telemetry entry still has the entry removed.
-- [ ] (d) Text that is not valid JSON behaves as it did before this change.
+- [ ] (d) A file that holds `{bad` makes `setup.ps1` print only the invalid JSON line and exit 1. A file that holds `{"a":1,"A":2}` makes it print only the shape check line and exit 1. Each file stays byte-identical.
 
 ## Dependencies
 - 0000040 ADR-002 (shape check line and exit 1) stands. `Merge-EnforcementHookSettings` owns the shape test that the cleanup copies.

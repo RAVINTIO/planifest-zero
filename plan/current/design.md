@@ -14,10 +14,10 @@
   - US-002: As a person running `setup.ps1`, I keep my `settings.json` unchanged when it is not a settings object, so that setup never rewrites a file it rejects. (0000128)
   - US-003: As a person running either setup script, I get a warning that names the event and the file but not the old value, so that a secret in a hook command never reaches the terminal or a log. (0000130)
   - US-004: As a human on the loop, I return to a clean feature branch when park's local add or commit fails, so that the parked entry never leaks into the feature branch. (0000129)
-- Acceptance criteria confirmed: 5 (see `feature-brief.md`)
+- Acceptance criteria confirmed: 6 (see `feature-brief.md`)
 - Constraints:
   - 0000040 ADR-002 stands. The shape check line and exit 1 are unchanged.
-  - 0000033 ADR-002 stands. The cleanup runs on every setup run and warns on a real failure. A skip on a non-object file is "nothing to clean", not a failure.
+  - 0000033 ADR-002 stands. The cleanup runs on every setup run and warns on a real failure. A skip on a file that fails the parse or the shape rule is "nothing to clean", not a failure.
   - 0000033 req-004 stands. Setup never prints `settings.json` content or a parser message.
   - Park never merges, never commits to `main`, and never force-pushes.
 - Integrations: git CLI (park only)
@@ -44,7 +44,8 @@
 - Both cleanups apply the 0000040 shape rule before they touch the file. The top level must be a plain object. `hooks` must be absent, `null`, or a plain object.
 - If the rule fails, the cleanup prints nothing and writes nothing. The hook install step then prints the shape check line and exits 1.
 - `setup.ps1` uses the same test as `Merge-EnforcementHookSettings`: the first non-space character is `{` and the parsed value is a `PSCustomObject`.
-- Invalid JSON keeps today's behaviour in both scripts.
+- If the parse fails, the cleanup also skips in silence. That covers invalid JSON, and in `setup.ps1` any text `ConvertFrom-Json` rejects. The hook install step is the one reporter of every parse or shape fault.
+- A real failure is a read or write error. The cleanup still warns on one (0000033 ADR-002).
 
 ### Non-array warning (US-003)
 - New text in both scripts: `  ! Warning: hooks.{event} in {file} is not an array. Setup replaced it with the Planifest entries.`

@@ -68,7 +68,7 @@ One wave. The release holds 7 of 8 points.
 ## Scope Boundaries
 
 ### In Scope
-- The telemetry cleanup in both scripts skips without output or a write when `settings.json` fails the 0000040 shape rule. The hook install step then reports the fault.
+- The telemetry cleanup in both scripts skips without output or a write when `settings.json` fails the parse or the 0000040 shape rule. The hook install step then reports the fault.
 - The non-array warning in both scripts names the event and the file, and drops the old value.
 - `park.mjs` unstages and removes the written entry when a local add or commit fails, before it checks out the feature branch.
 - A test for each change. PowerShell tests run in CI.
@@ -113,5 +113,6 @@ One wave. The release holds 7 of 8 points.
 - [ ] `setup.sh` given `null`, `["x"]`, or `{"hooks":"text"}` prints only the 0000040 shape check line on stderr, exits 1, and leaves the file unchanged.
 - [ ] `setup.ps1` given `[{"hooks":{"Stop":[...telemetry entry...]}}]` exits 1 with the shape check line and leaves the file byte-identical.
 - [ ] `setup.ps1` given `null` or `{"hooks":"text"}` prints only the shape check line and exits 1.
+- [ ] Both scripts given `{bad` print only the invalid JSON line, exit 1, and leave the file unchanged.
 - [ ] Both scripts, given a non-array `hooks.PreToolUse` that holds a secret string, warn with the event name and the file and never print the secret.
 - [ ] When the chore commit fails, `park.mjs` exits non-zero and returns to the feature branch. The working tree then holds neither the entry file nor a staged change.
