@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000039-setup-hardening-release-sizing
+Last updated: 0000040-setup-json-checks-and-park
 
 ---
 
@@ -110,3 +110,13 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | ADR-002 | Invalid JSON exits 1 with a fixed message | accepted | The hook install step prints one fixed line naming the file, leaves it unchanged, and exits 1. The telemetry cleanup still warns and carries on. |
 | ADR-003 | A single-object `hooks` value counts as a one-item array | accepted | Both scripts apply the per-command filter to a single-object `hooks` value. Refines 0000038 ADR-002. |
 | ADR-004 | The release budget lives in `product.yml` | accepted | An optional `releaseSize` field sets a budget of 4, 8, or 14 points, with `medium` as the default. It replaces the fixed 3-story rule. |
+
+### Feature 0000040: setup-json-checks-and-park
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as it is | accepted | No new language, runtime, or dependency. |
+| ADR-002 | Valid JSON that is not a settings object exits 1 | accepted | Both scripts print one shared fixed line, leave the file unchanged, and exit 1. Extends 0000039 ADR-002. |
+| ADR-003 | Only `setup.ps1` rejects case-duplicate keys | accepted | `ConvertFrom-Json` can't read them, so `setup.ps1` gives the shared line. `setup.sh` accepts them. |
+| ADR-004 | JSON depth is capped at 1024 | accepted | `Test-JsonText` uses a counter and a `Stack[char]`, runs in linear time, and fails past 1024 levels. |
+| ADR-005 | Park keeps the work on the feature branch | accepted | Park pushes the branch and files a `parked` backlog entry by chore PR. Pickup resumes or discards it. |

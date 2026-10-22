@@ -310,15 +310,21 @@ function Test-JsonText {
     # it. ConvertFrom-Json accepts some invalid JSON, such as a trailing
     # comma, so setup.ps1 checks the text first. Both scripts then reject the
     # same files (0000039 req-001). Anchored patterns match strings and
-    # numbers, and a string of brackets tracks the nesting, so deep input
-    # never recurses.
-    param([string]$Text)
+    # numbers, and a typed stack tracks the nesting, so deep input never
+    # recurses. Push and pop cost constant time, so the cost grows linearly
+    # with the input (0000040 req-003, ADR-004).
+    # Nesting past $maxDepth fails at once, since ConvertFrom-Json can't read
+    # it anyway. A caller can pass a [ref] as -Failure. A depth failure sets
+    # it to 'depth', so the caller can tell it from a syntax failure.
+    param([string]$Text, $Failure)
+    $maxDepth = 1024
     $strRe = [regex]'\G"(?:[^"\\\u0000-\u001F]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))*"'
     $numRe = [regex]'\G-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?'
     $wsRe = [regex]'\G[ \t\n\r]*'
     $n = $Text.Length
     $i = 0
-    $stack = ''
+    $stack = [System.Collections.Generic.Stack[char]]::new()
+    $depth = 0
     $state = 'value'
     $canClose = $false
     while ($true) {
@@ -326,12 +332,20 @@ function Test-JsonText {
         if ($i -ge $n) { break }
         $c = $Text[$i]
         $top = [char]0
-        if ($stack.Length -gt 0) { $top = $stack[$stack.Length - 1] }
+        if ($depth -gt 0) { $top = $stack.Peek() }
         if ($state -eq 'value') {
-            if ($c -eq [char]'{') { $stack += '{'; $i++; $state = 'key'; $canClose = $true; continue }
-            if ($c -eq [char]'[') { $stack += '['; $i++; $canClose = $true; continue }
+            if ($c -eq [char]'{' -or $c -eq [char]'[') {
+                $depth++
+                if ($depth -gt $maxDepth) {
+                    if ($Failure -is [ref]) { $Failure.Value = 'depth' }
+                    return $false
+                }
+                $stack.Push($c); $i++; $canClose = $true
+                if ($c -eq [char]'{') { $state = 'key' }
+                continue
+            }
             if ($c -eq [char]']' -and $canClose) {
-                $stack = $stack.Substring(0, $stack.Length - 1); $i++; $state = 'after'; continue
+                [void]$stack.Pop(); $depth--; $i++; $state = 'after'; continue
             }
             $m = $strRe.Match($Text, $i)
             if (-not $m.Success) { $m = $numRe.Match($Text, $i) }
@@ -345,7 +359,7 @@ function Test-JsonText {
         }
         if ($state -eq 'key') {
             if ($c -eq [char]'}' -and $canClose) {
-                $stack = $stack.Substring(0, $stack.Length - 1); $i++; $state = 'after'; continue
+                [void]$stack.Pop(); $depth--; $i++; $state = 'after'; continue
             }
             $m = $strRe.Match($Text, $i)
             if (-not $m.Success) { return $false }
@@ -356,18 +370,18 @@ function Test-JsonText {
             $i++; $state = 'value'; $canClose = $false; continue
         }
         # After a value: a comma, a matching close, or nothing at top level.
-        if ($stack.Length -eq 0) { return $false }
+        if ($depth -eq 0) { return $false }
         if ($c -eq [char]',') {
             $i++; $canClose = $false
             if ($top -eq [char]'{') { $state = 'key' } else { $state = 'value' }
             continue
         }
         if (($c -eq [char]'}' -and $top -eq [char]'{') -or ($c -eq [char]']' -and $top -eq [char]'[')) {
-            $stack = $stack.Substring(0, $stack.Length - 1); $i++; continue
+            [void]$stack.Pop(); $depth--; $i++; continue
         }
         return $false
     }
-    return ($state -eq 'after' -and $stack.Length -eq 0)
+    return ($state -eq 'after' -and $depth -eq 0)
 }
 
 function Merge-EnforcementHookSettings {
@@ -400,13 +414,35 @@ function Merge-EnforcementHookSettings {
         # An invalid file stops setup with one fixed line that names it. The
         # content and the parser message never reach the output, and the
         # file stays as it was (0000039 req-001, ADR-002).
-        $raw = Get-Content -Raw -Path $SettingsPath -Encoding UTF8
-        $existing = $null
-        if (Test-JsonText "$raw") {
-            try { $existing = $raw | ConvertFrom-Json -ErrorAction Stop } catch { $existing = $null }
-        }
-        if ($null -eq $existing) {
+        $raw = "$(Get-Content -Raw -Path $SettingsPath -Encoding UTF8)"
+        $jsonFailure = $null
+        if (-not (Test-JsonText $raw -Failure ([ref]$jsonFailure)) -and $jsonFailure -ne 'depth') {
             [Console]::Error.WriteLine("! Error: $SettingsRel is not valid JSON. Fix it and rerun setup.")
+            exit 1
+        }
+
+        # Valid JSON that setup can't read as a settings object stops setup
+        # with its own fixed line, before any write (0000040 req-002,
+        # ADR-002). Each of these fails:
+        # - nesting past the depth cap (req-003, ADR-004)
+        # - a parse failure, such as case-duplicate keys (ADR-003)
+        # - a top level that is not an object
+        # - a hooks value that is present, not null, and not an object
+        # The top-level test reads the first character. PowerShell 7 unrolls
+        # a one-item array into its item, so the parsed value can't show it.
+        $existing = $null
+        $readable = ($jsonFailure -ne 'depth') -and $raw.TrimStart().StartsWith('{')
+        if ($readable) {
+            try { $existing = ConvertFrom-Json -InputObject $raw -ErrorAction Stop } catch { $readable = $false }
+        }
+        if ($readable -and $existing -isnot [System.Management.Automation.PSCustomObject]) { $readable = $false }
+        if ($readable) {
+            $hooksProp = $existing.PSObject.Properties['hooks']
+            if ($null -ne $hooksProp -and $null -ne $hooksProp.Value -and
+                $hooksProp.Value -isnot [System.Management.Automation.PSCustomObject]) { $readable = $false }
+        }
+        if (-not $readable) {
+            [Console]::Error.WriteLine("! Error: $SettingsRel is valid JSON but not a settings object setup can read. Fix it and rerun setup.")
             exit 1
         }
 

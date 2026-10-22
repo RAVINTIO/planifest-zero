@@ -1,7 +1,7 @@
 ---
 name: planifest-orchestrator
 description: Owns discovery and routing for the five-phase Planifest pipeline. Coaches a human from feature brief to confirmed design, then invokes the plan, implement, validate-and-accept, and ship phase skills in sequence.
-bundle_templates: [feature-brief.template.md, design.template.md, discovery.template.md, build-log.template.md, backlog-entry.template.md, pause.template.md]
+bundle_templates: [feature-brief.template.md, design.template.md, discovery.template.md, build-log.template.md, backlog-entry.template.md, pause.template.md, park.template.md]
 bundle_standards: [stack-summary.md, monorepo-standards.md, api-design-standards.md, observability-standards.md, agent-dispatch-standards.md, framework-update-policy.md]
 ---
 
@@ -76,9 +76,10 @@ On every session start, before any action:
 5. **`.feature-id` staleness.** If present and its contents differ from the current work, flag it for human review before proceeding.
 6. **Skips.** If `plan/current/.skips` exists, acknowledge the skipped phases at the top of your response.
 7. **Pause restore.** If `plan/current/pause.md` exists, open with `{prefix}: Resuming: {active_task}`, restore state from the file, delete it, and continue from the pause point.
-8. **Run-mode restore.** Read `plan/.run-mode` if present and restore `continuous` or `interactive` without re-asking. Any other value, or an absent file, defaults to `interactive`.
-9. **`discovery.md` trust-or-regenerate.** If present and complete for the confirmed adoption mode, trust it as-is. If missing or incomplete mid-run, regenerate it fresh. Never patch a partial file.
-10. **Open.** Artifacts found: open with `{prefix}: Resuming` and no re-coaching. No artifacts: open with `D:` and begin discovery.
+8. **Park restore.** If you are still on the feature branch and `plan/current/park.md` exists, park did not finish. Run `gh pr list --head chore/park-{feature-id} --state all`. If it returns nothing, finish the chore PR step of park (Park Command steps 3 to 5) with `node scripts/park.mjs finish-pr`. If a push or `gh` call fails, report the exact error and stop, as in the Park Command.
+9. **Run-mode restore.** Read `plan/.run-mode` if present and restore `continuous` or `interactive` without re-asking. Any other value, or an absent file, defaults to `interactive`.
+10. **`discovery.md` trust-or-regenerate.** If present and complete for the confirmed adoption mode, trust it as-is. If missing or incomplete mid-run, regenerate it fresh. Never patch a partial file.
+11. **Open.** Artifacts found: open with `{prefix}: Resuming` and no re-coaching. No artifacts: open with `D:` and begin discovery.
 
 ---
 
@@ -94,6 +95,7 @@ Never assume you know a template's format. Read the relevant file immediately be
 | `plan/current/design.md` | `planifest-zero/templates/design.template.md` |
 | A backlog entry | `planifest-zero/templates/backlog-entry.template.md` |
 | A pause record | `planifest-zero/templates/pause.template.md` |
+| A park record | `planifest-zero/templates/park.template.md` |
 | Any loop (before entering it) | Load the `planifest-loop-runner` skill |
 
 ---
@@ -114,6 +116,26 @@ When the human says "pause" or similar:
 2. Read `planifest-zero/templates/pause.template.md` and write `plan/current/pause.md` with state sufficient for exact-point resume.
 3. Confirm: `{prefix}: Paused: {active_task}. Pause record written. Resume by loading planifest-orchestrator in a new session.`
 4. Stop all pipeline work.
+
+## Park Command
+
+When the human says "park" or similar, shelve the feature on its branch and return the working tree to `main`. The git and `gh` steps live in `scripts/park.mjs` beside this skill. Its header documents the arguments.
+
+1. Read `planifest-zero/templates/park.template.md` and write `plan/current/park.md` on the feature branch. Fill all four fields: phase reached, last artifact, head commit, and reason.
+2. Commit `park.md`, then push the feature branch. Run `node scripts/park.mjs park --entry {entry file} --backlog-id {next backlog id}` to do steps 2 to 5.
+3. Cut `chore/park-{feature-id}` from `main`. Add a backlog entry from `planifest-zero/templates/backlog-entry.template.md` with status `parked` and a `**Parked branch:**` field that names the feature branch. Write the entry outside the working tree and pass its path as `--entry`.
+4. Push the chore branch and run `gh pr create`.
+5. Check out `main`. Confirm: `{prefix}: Parked: {feature-id} on {branch}. Chore PR raised. Merge it to file the parked entry.`
+
+Rules:
+
+- If `plan/current/design.md` does not exist, the phase reached is P1.
+- The sentinels in `plan/` live on the feature branch only. Park removes nothing from `main`.
+- The parked entry reaches `main` only when the human merges the chore PR. Until then, a session on `main` does not see it.
+- If any push or `gh` call fails, report the exact error and stop. The working tree stays on the feature branch, and `park.md` stays committed locally.
+- Park never merges a pull request, never commits to `main`, and never force-pushes.
+- `park.mjs` refuses `main`, an option or full ref name as a branch, a backlog id that is not seven digits, and a slug that is not kebab-case. If it refuses, report the error and stop.
+- Allow one park per working tree. If another feature's `chore/park-*` branch exists, do not open a second park. Ask the human to finish that one first.
 
 ## Context Hygiene
 
@@ -206,6 +228,13 @@ Perform in order, before coaching begins:
 8. **Read the version**: `docs/about.md` frontmatter, cross-checked against the most recent archive entry. If `product.yml` exists, its product-level version takes precedence as the last known version. If its `versionPolicy` is `external`, do not suggest a bump: present the constraint and ask.
 9. **Product id check**: `product.yml` must exist at the project root with a non-empty `id`. If not, hard-stop and ask: `D: No declared product id found (product.yml is missing or has no id field). The id gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. What should the product id be? (kebab-case, stable across releases)`. Write or update only the `id` field, then resume.
 10. **Backlog pickup**: scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids. Check `plan/_archive/` and `plan/changelog/` for the high-water mark. Read `releaseSize` from `product.yml` to set the release budget (see Decomposition).
+    - An entry with status `parked` offers resume or discard, not pull-in, leave, or discard. Resume runs these steps in order. `node scripts/park.mjs resume {branch}` does steps 1 and 2.
+      1. Check out the branch the entry names.
+      2. Merge `origin/main` into it. If the merge conflicts, report the exact error and stop.
+      3. Restore state from `plan/current/park.md` the way Resume Detection restores from `pause.md`.
+      4. Delete the parked entry folder and `park.md` in one commit on the feature branch, as pull-in deletes its entry.
+    - Discard deletes the branch locally and on `origin`. It runs only after the human confirms. Run `node scripts/park.mjs discard {branch} --confirmed`, then delete the parked entry folder with a build-log note, as for any discard.
+    - Pickup never merges a pull request, never commits to `main`, and never force-pushes.
 11. **Write `discovery.md`** (Hard Limit 12): copy `planifest-zero/templates/discovery.template.md` to `plan/current/discovery.md` and populate it with the findings from steps 2 to 10 plus a `planifest-zero/skills-inbox/` scan. Commit it on its own before coaching begins. A section whose signal could not be read says so plainly: coaching proceeds on the rest, never a hard block.
 12. **Suggest a version bump**: a feature run defaults to a minor bump (x.Y.0). A breaking change is major. Recommend-then-confirm. **Hard block on downgrade**: if the human proposes a version lower than the last known one, refuse: `D: Blocked: {proposed} is lower than the last known version ({current}). Provide a version >= {current}.` Record the confirmed version in `design.md` and the build log.
 13. **Strict-mode ack**: if `plan/.orchestrator-strict` exists, write `plan/.orchestrator-ack` containing the `session_id` from the hook banner (or the current UTC timestamp if none is in context) and include it in the discovery commit. This silences the strict-mode banner for the session.

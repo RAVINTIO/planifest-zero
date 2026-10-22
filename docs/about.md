@@ -1,7 +1,7 @@
 ---
-version: "0.6.0"
-feature: "0000038-setup-hook-filter-fixes"
-updated: "19 Oct 2026"
+version: "0.7.0"
+feature: "0000040-setup-json-checks-and-park"
+updated: "22 Oct 2026"
 ---
 # About
 
@@ -10,9 +10,9 @@ updated: "19 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.6.0` |
-| Last feature | `0000038-setup-hook-filter-fixes` |
-| Updated | `19 Oct 2026` |
+| Version | `0.7.0` |
+| Last feature | `0000040-setup-json-checks-and-park` |
+| Updated | `22 Oct 2026` |
 
 ## What this is
 
