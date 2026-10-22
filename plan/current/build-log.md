@@ -53,3 +53,15 @@ Scope Lock complete. All four scenario paths captured.
 P1 exchange (ADR-002 reading): Q: Is a silent skip on a non-object file consistent with 0000033 ADR-002? / A: Accepted the reading that a skip is "nothing to clean", not a failure.
 
 Gate accepted: P1 (2026-10-22T21:49:32Z). Design confirmed by the human.
+
+### P2: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-22T21:49:45Z` |
+| Model tier | primary |
+| Skills loaded | planifest-plan |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | none |
