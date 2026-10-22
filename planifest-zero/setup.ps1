@@ -384,39 +384,6 @@ function Test-JsonText {
     return ($state -eq 'after' -and $depth -eq 0)
 }
 
-function Read-SettingsObject {
-    # The shape check that the hook install step and
-    # Remove-LegacyTelemetryWiring share (0000040 ADR-002, 0000041 ADR-002).
-    # Returns 'ok', 'invalid', or 'shape', and never prints. On 'ok' the
-    # parsed settings object goes to -Settings. Text that fails Test-JsonText
-    # on syntax is 'invalid'. Each of these is 'shape':
-    # - nesting past the depth cap (0000040 req-003, ADR-004)
-    # - a parse failure, such as case-duplicate keys (0000040 ADR-003)
-    # - a top level that is not an object
-    # - a hooks value that is present, not null, and not an object
-    # The top-level test reads the first character. PowerShell 7 unrolls a
-    # one-item array into its item, so the parsed value can't show it.
-    param([string]$Raw, [ref]$Settings)
-    $jsonFailure = $null
-    if (-not (Test-JsonText $Raw -Failure ([ref]$jsonFailure)) -and $jsonFailure -ne 'depth') {
-        return 'invalid'
-    }
-    $parsed = $null
-    $readable = ($jsonFailure -ne 'depth') -and $Raw.TrimStart().StartsWith('{')
-    if ($readable) {
-        try { $parsed = ConvertFrom-Json -InputObject $Raw -ErrorAction Stop } catch { $readable = $false }
-    }
-    if ($readable -and $parsed -isnot [System.Management.Automation.PSCustomObject]) { $readable = $false }
-    if ($readable) {
-        $hooksProp = $parsed.PSObject.Properties['hooks']
-        if ($null -ne $hooksProp -and $null -ne $hooksProp.Value -and
-            $hooksProp.Value -isnot [System.Management.Automation.PSCustomObject]) { $readable = $false }
-    }
-    if (-not $readable) { return 'shape' }
-    $Settings.Value = $parsed
-    return 'ok'
-}
-
 function Merge-EnforcementHookSettings {
     # Merge the six enforcement hooks into settings.json: gate-write,
     # ratchet-check, and em-dash-guard (PreToolUse), then
@@ -446,17 +413,35 @@ function Merge-EnforcementHookSettings {
     if (Test-Path $SettingsPath) {
         # An invalid file stops setup with one fixed line that names it. The
         # content and the parser message never reach the output, and the
-        # file stays as it was (0000039 req-001, ADR-002). Valid JSON that
-        # setup can't read as a settings object stops setup with its own
-        # fixed line, before any write (0000040 req-002, ADR-002).
+        # file stays as it was (0000039 req-001, ADR-002).
         $raw = "$(Get-Content -Raw -Path $SettingsPath -Encoding UTF8)"
-        $existing = $null
-        $check = Read-SettingsObject -Raw $raw -Settings ([ref]$existing)
-        if ($check -eq 'invalid') {
+        $jsonFailure = $null
+        if (-not (Test-JsonText $raw -Failure ([ref]$jsonFailure)) -and $jsonFailure -ne 'depth') {
             [Console]::Error.WriteLine("! Error: $SettingsRel is not valid JSON. Fix it and rerun setup.")
             exit 1
         }
-        if ($check -ne 'ok') {
+
+        # Valid JSON that setup can't read as a settings object stops setup
+        # with its own fixed line, before any write (0000040 req-002,
+        # ADR-002). Each of these fails:
+        # - nesting past the depth cap (req-003, ADR-004)
+        # - a parse failure, such as case-duplicate keys (ADR-003)
+        # - a top level that is not an object
+        # - a hooks value that is present, not null, and not an object
+        # The top-level test reads the first character. PowerShell 7 unrolls
+        # a one-item array into its item, so the parsed value can't show it.
+        $existing = $null
+        $readable = ($jsonFailure -ne 'depth') -and $raw.TrimStart().StartsWith('{')
+        if ($readable) {
+            try { $existing = ConvertFrom-Json -InputObject $raw -ErrorAction Stop } catch { $readable = $false }
+        }
+        if ($readable -and $existing -isnot [System.Management.Automation.PSCustomObject]) { $readable = $false }
+        if ($readable) {
+            $hooksProp = $existing.PSObject.Properties['hooks']
+            if ($null -ne $hooksProp -and $null -ne $hooksProp.Value -and
+                $hooksProp.Value -isnot [System.Management.Automation.PSCustomObject]) { $readable = $false }
+        }
+        if (-not $readable) {
             [Console]::Error.WriteLine("! Error: $SettingsRel is valid JSON but not a settings object setup can read. Fix it and rerun setup.")
             exit 1
         }
@@ -466,17 +451,17 @@ function Merge-EnforcementHookSettings {
         }
 
         # A present value that is not an array is non-array (0000037 ADR-003).
-        # Warn and replace it with the Planifest entries. The warning never
-        # prints the old value, since a hook command can hold a secret
-        # (0000041 ADR-003). An absent or null value gets the entries with no
-        # warning. Test the property directly, never through the pipeline, so
-        # Windows PowerShell 5.1 can't unwrap or wrap it (0000035 ADR-002).
-        # setup.sh prints the same text.
+        # Warn, print the old value, and replace it with the Planifest
+        # entries. An absent or null value gets the entries with no warning.
+        # Test the property directly, never through the pipeline, so Windows
+        # PowerShell 5.1 can't unwrap or wrap it (0000035 ADR-002). setup.sh
+        # prints the same text.
         foreach ($eventName in @('PreToolUse', 'UserPromptSubmit')) {
             $prop = $existing.hooks.PSObject.Properties[$eventName]
             if ($null -eq $prop -or $null -eq $prop.Value) { continue }
             if ($prop.Value -is [array]) { continue }
-            [Console]::Error.WriteLine("  ! Warning: hooks.$eventName in $SettingsRel is not an array. Setup replaced it with the Planifest entries.")
+            $oldValue = ConvertTo-Json -InputObject $prop.Value -Compress -Depth 100
+            [Console]::Error.WriteLine("  ! Warning: hooks.$eventName in $SettingsRel is not an array. Setup replaced it with the Planifest entries. Old value: $oldValue")
             $existing.hooks.$eventName = @()
         }
 
@@ -585,8 +570,7 @@ function Remove-LegacyTelemetryWiring {
     # ADR-002), with the same printed wording. Runs on every invocation, and is
     # called BEFORE Install-EnforcementHooks so that install is the last writer
     # of settings.json this run. Prints one line per removal, warns and
-    # continues on a read or write failure, and prints nothing when there is
-    # nothing to remove.
+    # continues on failure, and prints nothing when there is nothing to remove.
     param(
         [string]$SettingsRel
     )
@@ -596,19 +580,14 @@ function Remove-LegacyTelemetryWiring {
     if (Test-Path $settings) {
         try {
             # The raw contents are never logged (req-004 logging policy).
-            $raw = "$(Get-Content -Raw -Path $settings -Encoding UTF8 -ErrorAction Stop)"
-            # A file that fails the parse or the shape check has nothing to
-            # clean. Skip it with no output and no write. The hook install
-            # step then prints its one line and exits 1 (0000041 ADR-002).
-            $existing = $null
-            $check = Read-SettingsObject -Raw $raw -Settings ([ref]$existing)
+            $existing = Get-Content -Raw -Path $settings -Encoding UTF8 -ErrorAction Stop | ConvertFrom-Json
             $removed = 0
             # Case-sensitive, and only `<module>.mjs` at a path boundary, to
             # match setup.sh. A bare substring would also catch a user hook
             # such as ./my-tools/emit-event-logger.sh.
             $moduleRegex = "(^|[\s""'/\\])(" + ($TelemetryHookModules -join '|') + ")\.mjs\b"
 
-            if ($check -eq 'ok' -and $existing.hooks) {
+            if ($existing.hooks) {
                 foreach ($event in @($existing.hooks.PSObject.Properties.Name)) {
                     # A non-array value stays as it was, as in setup.sh (0000035 req-002).
                     if ($existing.hooks.$event -isnot [System.Array]) { continue }
