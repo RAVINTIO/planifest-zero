@@ -37,11 +37,9 @@ As a person running either setup script, I get a warning that names the event an
 - PowerShell tests run only in CI. They skip locally when `pwsh` is missing.
 
 ## Acceptance Criteria
-- [ ] (a) Given a non-array `hooks.PreToolUse` that holds a secret string, such as `"PLANTED-SECRET"`, each script prints exactly `  ! Warning: hooks.PreToolUse in .claude/settings.json is not an array. Setup replaced it with the Planifest entries.` and the secret appears in neither stdout nor stderr.
-- [ ] (b) The same holds for a non-array `hooks.UserPromptSubmit`, with the event name changed in the line.
-- [ ] (c) After the run, the event holds the Planifest entries and no other value. An absent or `null` event prints no warning.
-- [ ] (d) The test suite asserts that the warning text is identical in `setup.sh` and `setup.ps1`.
-- [ ] (e) No test asserts `Old value:` as present in setup output.
+- [ ] (a) Given a non-array `hooks.PreToolUse` or `hooks.UserPromptSubmit` that holds a secret string, such as `"PLANTED-SECRET"`, each script prints exactly `  ! Warning: hooks.{event} in .claude/settings.json is not an array. Setup replaced it with the Planifest entries.` The secret appears in neither stdout nor stderr.
+- [ ] (b) After the run, the event holds the Planifest entries and no other value. An absent or `null` event prints no warning.
+- [ ] (c) The test suite asserts that the warning text is identical in `setup.sh` and `setup.ps1`, and no test asserts `Old value:` as present in setup output.
 
 ## Dependencies
 - 0000037 ADR-003 stands: a non-array value is replaced with the Planifest entries, and an absent or `null` value gets no warning.

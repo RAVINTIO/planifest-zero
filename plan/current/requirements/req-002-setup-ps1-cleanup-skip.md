@@ -30,10 +30,9 @@ As a person running `setup.ps1`, I keep my `settings.json` unchanged when it is 
 - The cleanup never prints `settings.json` content or a parser message (0000033 req-004).
 
 ## Acceptance Criteria
-- [ ] (a) A `settings.json` that holds `[{"hooks":{"Stop":[...telemetry entry...]}}]` makes `setup.ps1` print the shape check line and exit 1. The file stays byte-identical.
-- [ ] (b) A `settings.json` that holds `null` or `{"hooks":"text"}` makes `setup.ps1` print only the shape check line and exit 1. The file stays byte-identical.
+- [ ] (a) A `settings.json` that holds `[{"hooks":{"Stop":[...telemetry entry...]}}]` makes `setup.ps1` print only the shape check line and exit 1. The file stays byte-identical.
+- [ ] (b) Each of `null`, `{"hooks":"text"}`, and `{"a":1,"A":2}` makes `setup.ps1` print only the shape check line and exit 1. A file that holds `{bad` makes it print only the invalid JSON line and exit 1. Each file stays byte-identical.
 - [ ] (c) A valid settings object with a telemetry entry still has the entry removed.
-- [ ] (d) A file that holds `{bad` makes `setup.ps1` print only the invalid JSON line and exit 1. A file that holds `{"a":1,"A":2}` makes it print only the shape check line and exit 1. Each file stays byte-identical.
 
 ## Dependencies
 - 0000040 ADR-002 (shape check line and exit 1) stands. `Merge-EnforcementHookSettings` owns the shape test that the cleanup copies.

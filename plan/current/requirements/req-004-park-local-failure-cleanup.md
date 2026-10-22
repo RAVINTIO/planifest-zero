@@ -29,12 +29,9 @@ As a human on the loop, I return to a clean feature branch when park's local add
 - The source of truth is `planifest-zero/skills/`. Setup refreshes the copy under `.claude/skills/`.
 
 ## Acceptance Criteria
-- [ ] With a failing `pre-commit` hook in a temporary repo, park exits non-zero and prints the git error.
-- [ ] After that failure, the working tree is on the feature branch.
-- [ ] After that failure, the working tree holds neither the entry file nor a staged change.
-- [ ] After that failure, `park.md` is still committed on the feature branch.
-- [ ] A failure in the cleanup itself leaves the original error as the one park reports.
-- [ ] Push and `gh` failure behaviour matches the existing park tests, which still pass.
+- [ ] (a) With a failing `pre-commit` hook in a temporary repo, park exits non-zero and reports the git error. A failure in the cleanup itself never replaces that error.
+- [ ] (b) After that failure, the working tree is on the feature branch and holds neither the entry file nor a staged change. `park.md` is still committed on the feature branch.
+- [ ] (c) Push and `gh` failure behaviour is unchanged, and the existing park tests still pass.
 
 ## Dependencies
 - Feature 0000040 req-004, which introduced `park.mjs`, `finishPr`, and `onFeatureBranch`.

@@ -31,11 +31,9 @@ As a person running `setup.sh`, I see only the shape check line when `settings.j
 - The cleanup never prints `settings.json` content or a parser message (0000033 req-004).
 
 ## Acceptance Criteria
-- [ ] (a) Each of `null`, `["x"]`, and `{"hooks":"text"}` makes `setup.sh` print only `! Error: .claude/settings.json is valid JSON but not a settings object setup can read. Fix it and rerun setup.` to stderr and exit 1. The file stays byte-identical.
-- [ ] (b) For each input in (a), the cleanup prints no line of its own. Stdout holds no cleanup line, and stderr holds no "could not remove telemetry hook entries" warning.
-- [ ] (c) A valid settings object with a telemetry entry still has the entry removed, and `setup.sh` prints the removal line as today.
-- [ ] (d) A file that holds `{bad` makes `setup.sh` print only `! Error: .claude/settings.json is not valid JSON. Fix it and rerun setup.` to stderr and exit 1. The file stays byte-identical.
-- [ ] (e) If the cleanup's write fails, it still prints the "could not remove telemetry hook entries" warning and setup continues.
+- [ ] (a) Each of `null`, `["x"]`, and `{"hooks":"text"}` makes `setup.sh` print only `! Error: .claude/settings.json is valid JSON but not a settings object setup can read. Fix it and rerun setup.` to stderr and exit 1. Stdout holds no cleanup line, stderr holds no "could not remove telemetry hook entries" warning, and the file stays byte-identical.
+- [ ] (b) A file that holds `{bad` makes `setup.sh` print only `! Error: .claude/settings.json is not valid JSON. Fix it and rerun setup.` to stderr and exit 1. The file stays byte-identical.
+- [ ] (c) A valid settings object with a telemetry entry still has the entry removed, and `setup.sh` prints the removal line as today. If the cleanup's write fails, it still prints the "could not remove telemetry hook entries" warning and setup continues.
 
 ## Dependencies
 - 0000040 ADR-002 (shape check line and exit 1) stands. The shape rule comes from 0000040 req-001.
