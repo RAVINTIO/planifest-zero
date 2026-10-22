@@ -115,3 +115,15 @@ CI on PR #18 (run 39866180506): bash-suites, windows-powershell, self-descriptio
 Local runner: 72 feature and 18 regression suites pass. 7 PowerShell suites skipped (no pwsh).
 
 Gate accepted: P4 (2026-10-22T22:53:51Z). Human accepted.
+
+### P5: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-22T22:54:03Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Ship steps run in order, each depending on the last, so none run in parallel. |
