@@ -24,6 +24,7 @@ As a human on the loop, I return to a clean feature branch when park's local add
 - The cleanup never throws over the original error and never replaces it. If a cleanup step fails, park ignores that failure and rethrows the original error.
 - The human sees the exact git error, and the script exits non-zero.
 - `park.md` stays committed on the feature branch. The cleanup touches only the entry path.
+- Park refuses an `--entry` that resolves to the target entry path, before any git call. The cleanup deletes that path, so it must never hold the only copy (P4 security finding F-001).
 - Park's push and `gh` failure paths are out of scope and stay unchanged.
 - Park never merges a pull request, never commits to `main`, and never force-pushes.
 - The source of truth is `planifest-zero/skills/`. Setup refreshes the copy under `.claude/skills/`.

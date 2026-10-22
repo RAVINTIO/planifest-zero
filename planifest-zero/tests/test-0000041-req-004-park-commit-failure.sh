@@ -110,4 +110,15 @@ assert_equals "" "$(printf '%s\n' "$OUT" | grep -E '^ +at ')" "req-004: a failed
 assert_equals "$BR" "$(cur_branch)" "req-004: a failed cleanup still returns to the feature branch"
 assert_equals "" "$(git -C "$TMP/work" diff --cached --name-only)" "req-004: a failed cleanup still unstages the entry"
 
+echo "=== req-004: park refuses an --entry that is the target path (0000041 F-001) ==="
+# The cleanup deletes the target path, so it must never be the only copy.
+setup_repo
+mkdir -p "$TMP/work/$(dirname "$ENTRY")"
+cp "$TMP/entry.md" "$TMP/work/$ENTRY"
+OUT=$(run_park park --entry "$ENTRY" --backlog-id 0000900); RC=$?
+assert_equals 1 "$RC" "req-004: park exits 1 when --entry is the target path"
+assert_contains "--entry must not be the target path" "$OUT" "req-004: the refusal names the --entry fault"
+assert_equals yes "$(present "$ENTRY")" "req-004: the only copy of the entry survives"
+assert_equals "$BR" "$(cur_branch)" "req-004: a refused --entry leaves the feature branch checked out"
+
 print_summary

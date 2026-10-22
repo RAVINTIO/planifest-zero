@@ -120,6 +120,10 @@ function parkContext(opts) {
   if (!fromBacklog || fromBacklog.startsWith('..') || isAbsolute(fromBacklog)) {
     throw new ParkError(`The entry path must stay under ${BACKLOG_DIR}/.`);
   }
+  // A failed commit deletes the target path, so it must never hold the only copy.
+  if (resolve(opts.entry) === resolve(entryPath)) {
+    throw new ParkError(`--entry must not be the target path ${entryPath}. Write the entry outside the working tree.`);
+  }
   if (!existsSync(opts.entry)) throw new ParkError(`Entry file not found: ${opts.entry}`);
   const entry = readFileSync(opts.entry, 'utf8');
   if (!entry.includes(`**Parked branch:** ${branch}`)) {
