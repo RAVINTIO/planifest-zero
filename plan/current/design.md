@@ -53,7 +53,7 @@
 ### Park cleanup (US-004)
 - In `finishPr`, if `git add` or the chore commit fails, run `git reset -q -- {entry}` and delete the written entry file. Then rethrow, so `onFeatureBranch` returns to the feature branch.
 - The cleanup itself never throws over the original error.
-- Both copies of `park.mjs` change: `planifest-zero/skills/` and the installed `.claude/skills/`.
+- The source of truth is `planifest-zero/skills/`. Setup refreshes the installed copy under `.claude/skills/`.
 
 ## Scope
 - In:
@@ -73,7 +73,7 @@
 ## Risks
 - `pwsh` is missing on this machine, so PowerShell tests skip locally. Likelihood: high. Impact: medium. Mitigation: CI runs the PowerShell suite before acceptance.
 - The two scripts' warning text drifts apart. Likelihood: low. Impact: low. Mitigation: parity tests assert the exact line in both.
-- The two `park.mjs` copies drift apart. Likelihood: low. Impact: medium. Mitigation: the existing copy-parity check covers skills.
+- The two `park.mjs` copies drift apart. Likelihood: low. Impact: medium. Mitigation: P4 reruns setup to refresh the installed copy and checks the two with `diff`.
 
 ## Dependencies
 - Upstream: 0000040 ADR-002 (shape check), 0000033 ADR-002 (telemetry cleanup), 0000037 ADR-003 (non-array hooks events).
