@@ -91,3 +91,5 @@ Backlog filed: 0000139 (a read-only settings.json gives a node stack trace in th
 Docs: architecture overview, decisions index (with a supersession row), and Last updated stamps on the four living docs.
 Local runner: 72 feature and 18 regression suites pass. 7 PowerShell suites skipped (no pwsh).
 Draft PR #18 opened so CI runs the PowerShell suites.
+CI on PR #18 (run 39864514066): bash-suites, windows-powershell, self-description-check, and validate-branch pass. The Windows job ran 7 PowerShell suites on 5.1 and 7, and `test-0000041-req-002-003-ps1-cleanup-and-warning.ps1` passed 78 of 78 on each. GREEN confirmed in CI. RED for req-002 stays reasoned until P4.
+Gate accepted: P3 (2026-10-22T22:29:51Z, continuous run)
