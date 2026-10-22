@@ -73,4 +73,4 @@ Both setup scripts merge six enforcement hooks into `.claude/settings.json`. Two
 
 ## Superseded By
 
-- None
+- 0000041 ADR-003 - supersedes decision item 4 only (printing the old value). The rest stands.
