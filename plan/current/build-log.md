@@ -45,3 +45,9 @@ Backlog pickup:
 
 Version: 0.8.0 (minor, from 0.7.0), confirmed by the human.
 Run mode: continuous, confirmed by the human.
+Scope Lock (happy path): A valid settings object and a healthy park run behave exactly as today. [source: draft-accepted]
+Scope Lock (first-run path): With no settings.json the cleanup skips and setup creates the file as today. Park has no first-run change. [source: draft-accepted]
+Scope Lock (error path): A non-object settings.json gets only the shape check line, exit 1, and an unchanged file. A failed park add or commit prints the git error, unstages and deletes the entry, and returns to a clean feature branch. [source: draft-accepted]
+Scope Lock (cross-session continuity): Setup writes nothing to a rejected file. After a failed park commit, park.md stays committed and a rerun starts clean. [source: draft-accepted]
+Scope Lock complete. All four scenario paths captured.
+P1 exchange (ADR-002 reading): Q: Is a silent skip on a non-object file consistent with 0000033 ADR-002? / A: Accepted the reading that a skip is "nothing to clean", not a failure.
