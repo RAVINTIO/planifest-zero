@@ -10,8 +10,8 @@
 
 id: "planifest-zero"
 name: "Planifest Framework"
-version: "0.7.0"
-feature: "0000040-setup-json-checks-and-park"
+version: "0.8.0"
+feature: "0000041-setup-cleanup-and-park-hardening"
 
 versionPolicy: "max-component-version"
 
