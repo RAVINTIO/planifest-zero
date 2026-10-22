@@ -35,5 +35,5 @@ summary: "Raw discovery-pass findings: what the orchestrator knew before coachin
   - `remove_legacy_telemetry_wiring` in `planifest-zero/setup.sh` (0000127). It parses `settings.json` with no shape check.
   - `Remove-LegacyTelemetryWiring` in `planifest-zero/setup.ps1` (0000128). It has no shape check.
   - The non-array warning at `planifest-zero/setup.sh:495` and `planifest-zero/setup.ps1:464` (0000130). Both print the old value.
-  - `park` in `.claude/skills/planifest-orchestrator/scripts/park.mjs` (0000129).
+  - `park` in `planifest-zero/skills/planifest-orchestrator/scripts/park.mjs`, with an installed copy under `.claude/skills/` (0000129).
 - Tooling: `pwsh` is not installed on this machine, so PowerShell tests run in CI only.
