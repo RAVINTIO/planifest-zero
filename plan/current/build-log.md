@@ -61,10 +61,12 @@ Gate accepted: P1 (2026-10-22T21:49:32Z). Design confirmed by the human.
 | Start | `2026-10-22T21:49:45Z` |
 | Model tier | primary |
 | Skills loaded | planifest-plan |
-| Agents spawned | `0` |
+| Agents spawned | `8` |
 | MCP calls | `0` |
-| Parallel task batches | `0` |
-| Notes | none |
+| Parallel task batches | `2` |
+| Notes | Batch 1: four requirement agents (primary tier) and one scope, risk, and glossary agent (cheaper tier). Batch 2: two ADR agents and the execution plan agent (primary tier). Consistency check clean after merging criteria to three per requirement. |
 
 Requirement Change (P2): The telemetry cleanup skip widens from shape failures to parse failures too. Before, the design kept today's extra cleanup warning on invalid JSON. Active phase: P2. Changed: design.md, feature-brief.md (one new criterion), req-001, req-002. Re-run: none, since P3 has not started. Classified additive.
 P2 exchange (parse failure skip): Q: Widen the cleanup skip to cover invalid JSON and text ConvertFrom-Json rejects? / A: Widen.
+
+Gate accepted: P2 (2026-10-22T22:08:59Z). Continuous run, no stop.
