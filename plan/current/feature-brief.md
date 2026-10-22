@@ -1,7 +1,7 @@
 ---
 title: "Feature Brief - setup cleanup and park hardening"
 summary: "The telemetry cleanup in both setup scripts skips a settings file it can't read, the non-array warning stops printing hook values, and park cleans up after a failed local commit."
-status: "draft"
+status: "approved"
 version: "0.1.0"
 ---
 # Feature Brief - setup cleanup and park hardening

@@ -51,3 +51,5 @@ Scope Lock (error path): A non-object settings.json gets only the shape check li
 Scope Lock (cross-session continuity): Setup writes nothing to a rejected file. After a failed park commit, park.md stays committed and a rerun starts clean. [source: draft-accepted]
 Scope Lock complete. All four scenario paths captured.
 P1 exchange (ADR-002 reading): Q: Is a silent skip on a non-object file consistent with 0000033 ADR-002? / A: Accepted the reading that a skip is "nothing to clean", not a failure.
+
+Gate accepted: P1 (2026-10-22T21:49:32Z). Design confirmed by the human.
