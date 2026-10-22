@@ -113,3 +113,5 @@ Execution verification: 9 verified, 0 failed, 9 not-verifiable locally (all need
 CI RED check: throwaway draft PR #19 ran the new suites against the old `setup.ps1`. The 0000041 suite failed 23 assertions on 5.1 and 21 on 7, including req-002 (a). PR closed and branch deleted.
 CI on PR #18 (run 39866180506): bash-suites, windows-powershell, self-description-check, and validate-branch pass.
 Local runner: 72 feature and 18 regression suites pass. 7 PowerShell suites skipped (no pwsh).
+
+Gate accepted: P4 (2026-10-22T22:53:51Z). Human accepted.
