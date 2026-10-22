@@ -82,3 +82,12 @@ Gate accepted: P2 (2026-10-22T22:08:59Z). Continuous run, no stop.
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Notes | Split by file. Agent A: REQ-001 and the setup.sh half of REQ-003. Agent B: REQ-002 and the setup.ps1 half of REQ-003. Agent C: REQ-004 in park.mjs. Subagents don't commit. Execution plan order updated to match. |
+
+Subagents: 3 of 3 completed (claude-opus-5-5, primary tier).
+- Agent A (setup.sh): new suite RED at 30 passed and 12 failed, GREEN at 42 passed. The shape rule now lives in one shared snippet, `PLANIFEST_SETTINGS_SHAPE_JS`.
+- Agent B (setup.ps1): RED and GREEN reasoned, not observed, because `pwsh` is missing locally. New helper `Read-SettingsObject` serves the cleanup and the hook install step.
+- Agent C (park.mjs): new suite RED at 15 passed and 4 failed, GREEN at 19 passed. A mutation check confirmed the cleanup-failure case.
+Backlog filed: 0000139 (a read-only settings.json gives a node stack trace in the setup.sh hook install step, which predates this feature).
+Docs: architecture overview, decisions index (with a supersession row), and Last updated stamps on the four living docs.
+Local runner: 72 feature and 18 regression suites pass. 7 PowerShell suites skipped (no pwsh).
+Draft PR #18 opened so CI runs the PowerShell suites.
