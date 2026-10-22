@@ -127,3 +127,18 @@ Gate accepted: P4 (2026-10-22T22:53:51Z). Human accepted.
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Notes | Ship steps run in order, each depending on the last, so none run in parallel. |
+
+---
+
+## Summary (filled at ship, P5)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `13` (P2: 8, P3: 3, P4: 2) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P2: 2 batches, P3: 1, P4: 1) |
+| Primary tier agent calls | `12` (P2: 7 on Sonnet, P3: 3 on Opus, P4: 2 on Opus) |
+| Cheaper tier agent calls | `1` (P2: scope, risks, and glossary on Haiku) |
+| Self-corrections | `1` (P4: security finding F-001) |
+| Phases skipped | `none` |
