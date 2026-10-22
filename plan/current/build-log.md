@@ -93,3 +93,15 @@ Local runner: 72 feature and 18 regression suites pass. 7 PowerShell suites skip
 Draft PR #18 opened so CI runs the PowerShell suites.
 CI on PR #18 (run 39864514066): bash-suites, windows-powershell, self-description-check, and validate-branch pass. The Windows job ran 7 PowerShell suites on 5.1 and 7, and `test-0000041-req-002-003-ps1-cleanup-and-warning.ps1` passed 78 of 78 on each. GREEN confirmed in CI. RED for req-002 stays reasoned until P4.
 Gate accepted: P3 (2026-10-22T22:29:51Z, continuous run)
+
+### P4: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-22T22:30:02Z` |
+| Model tier | primary |
+| Skills loaded | planifest-validate-and-accept |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Security review and execution verification run as parallel agents. A throwaway branch checks req-002 RED in CI. |
