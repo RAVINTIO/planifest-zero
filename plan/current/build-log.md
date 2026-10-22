@@ -105,3 +105,11 @@ Gate accepted: P3 (2026-10-22T22:29:51Z, continuous run)
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Notes | Security review and execution verification run as parallel agents. A throwaway branch checks req-002 RED in CI. |
+
+Checks: no lint, typecheck, or build step exists for this stack. Library audit: no dependency added. Semantic coverage: every req-001 to req-004 criterion maps to a test (see `verification-report.md`).
+Security review: overall low. F-001 (a failed commit could delete the only entry copy when `--entry` named the target path) was introduced by req-004 and fixed in P4. F-002 filed as backlog 0000142. F-003 stays with backlog 0000139.
+Self-correction cycles: 1. Check: security review F-001. Root cause: `removeEntry` deletes the target path, which `--entry` could name. Fix: `parkContext` refuses that path. Result: park suite RED at 21 and 2 failed, GREEN at 23.
+Execution verification: 9 verified, 0 failed, 9 not-verifiable locally (all need `pwsh`). Those 9 rest on CI.
+CI RED check: throwaway draft PR #19 ran the new suites against the old `setup.ps1`. The 0000041 suite failed 23 assertions on 5.1 and 21 on 7, including req-002 (a). PR closed and branch deleted.
+CI on PR #18 (run 39866180506): bash-suites, windows-powershell, self-description-check, and validate-branch pass.
+Local runner: 72 feature and 18 regression suites pass. 7 PowerShell suites skipped (no pwsh).
