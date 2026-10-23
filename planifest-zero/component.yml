@@ -2,7 +2,7 @@
 id: "planifest-zero"
 name: "Planifest Zero"
 feature: "0000041-setup-cleanup-and-park-hardening"
-version: "0.8.0"
+version: "0.9.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
