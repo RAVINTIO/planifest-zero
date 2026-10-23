@@ -74,7 +74,7 @@ Run executes one roadmap step from `position`. Ship owns the merge that ends it 
 - P0 builds `feature-brief.md` from the backlog entries that the step's row lists. It pulls each entry in and deletes its folder in the same commit. It does not ask pull-in, leave, or discard.
 - P0 self-confirms the design and the Scope Lock Challenge. Each scope lock line ends with `[source: draft-accepted (roadmap)]`. The design confirmation records `draft-accepted (roadmap)` in place of a human confirmation.
 - P0 stops only when a backlog entry is too vague to draft a brief from. Print `Blocked:` with the entry and what is missing. The exception stops in Exception Stops still apply, including the credential stop.
-- P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the roadmap branch's version. That is the last known version from Discovery Start Actions step 8. The downgrade block still applies.
+- P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the roadmap branch's version. That is the last known version from Discovery Start Actions step 8. The roadmap branch's version comes from `product.yml`, or from `docs/about.md` when `product.yml` is absent. The downgrade block still applies.
 
 All messages use the `R-C Run:` prefix.
 

@@ -43,6 +43,8 @@ echo "=== req-004 (c): per-step bump ==="
 assert_contains '`Bump`' "$RC" "req-004 (c): Bump field"
 assert_contains '`major`, `minor`, or `patch`' "$RC" "req-004 (c): bump values"
 assert_contains 'default `minor`' "$RC" "req-004 (c): default minor"
+assert_contains "roadmap branch's version comes from \`product.yml\`" "$RC" "req-004 (c): bump applies to the roadmap branch's version from product.yml"
+assert_contains '`docs/about.md` when `product.yml` is absent' "$RC" "req-004 (c): docs/about.md fallback"
 assert_contains 'downgrade block' "$RC" "req-004 (c): downgrade block kept"
 assert_contains 'R-C Run' "$(printf '%s\n' "$DSA" | grep 'Suggest a version bump')" "req-004 (c): version step points to R-C Run"
 
