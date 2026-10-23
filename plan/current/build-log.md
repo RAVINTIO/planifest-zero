@@ -49,3 +49,4 @@ P0 exchange (roadmap prefixes): Q: Rename R-A Plan to avoid clashing with P1 Pla
 P0 exchange (chart approval): Q: Land R-A Chart through a chore PR? / A: No. A roadmap can be added on any branch, like a backlog entry, including mid-feature. An agent may suggest a roadmap and help the human structure it.
 P0 exchange (R-A Chart): Q: What is R-A Chart? / A: Picking up a roadmap plan and starting to run it. Chart either writes a new plan from an idea or picks up a draft plan from plan/roadmap/. Filing a draft plan can happen on any branch, like a backlog entry.
 P0 exchange (R-A Chart): Q: Confirm the filing and Chart split? / A: Yes, just like backlog items. Drafts are filed on any branch. Chart picks them up with pull-in, leave, or discard.
+P0 exchange (backlog model): Q: Roadmap drafts follow the backlog model for filing, pickup, pull-in, and malformed entries? / A: Confirmed.
