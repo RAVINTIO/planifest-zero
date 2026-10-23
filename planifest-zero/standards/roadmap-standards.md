@@ -107,11 +107,18 @@ Every message in this stage begins with `R-D Advance:` after the `P4 Ship:` pref
    gh pr create --base roadmap/{id}-{slug}
    ```
 
-3. Wait for CI with `gh pr checks`. If any check is red or pending, stop. Push the branch, then print the line below and exit:
+3. Wait for CI in two parts.
+   1. Poll `gh pr checks {n}` until at least one check is listed, for up to 2 minutes. Checks are always pending straight after `gh pr create`, so pending is not a stop. If none appears, push the branch, print the line below, and exit:
 
-   ```
-   R-D Advance: Blocked: CI is {red|pending} on PR #{n}. Fix the failing check, then tell me to retry.
-   ```
+      ```
+      R-D Advance: Blocked: no CI ran on PR #{n}. CI must trigger on pull requests to `roadmap/**`.
+      ```
+
+   2. Run `gh pr checks {n} --watch --fail-fast`. A Claude session runs it with the longest Bash timeout, or as a background task if CI takes over 10 minutes. Stop only if a check fails. Push the branch, print the line below, and exit:
+
+      ```
+      R-D Advance: Blocked: CI failed on PR #{n}. Fix the failing check, then tell me to retry.
+      ```
 
 4. If every check is green, squash-merge the PR.
 
@@ -127,6 +134,8 @@ Every message in this stage begins with `R-D Advance:` after the `P4 Ship:` pref
    git tag v{version} -m "{feature-id}" "$sha"
    git push origin v{version}
    ```
+
+Consumer CI must trigger on pull requests to `roadmap/**`. The pack's workflow template `planifest-zero/hooks/planifest.yml` includes that branch pattern. A project with its own workflow adds it.
 
 The tag comes after the merge because a squash creates a new commit. A tag on the feature branch tip, or on the fetched branch tip, could point at the wrong commit. The merge commit is the exact commit the PR created. If a push or merge fails, stop and report the exact error. Do not retry with force.
 

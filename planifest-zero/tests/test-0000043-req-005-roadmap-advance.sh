@@ -60,6 +60,18 @@ assert_equals "yes" "$([ -n "$s7" ] && [ -n "$s8" ] && [ "$s7" -lt "$s8" ] && ec
 assert_equals "yes" "$([ -n "$rs" ] && [ -n "$s8" ] && [ "$rs" -gt "$s8" ] && echo yes || echo no)" "req-005 (c): roadmap section sits after the normal steps"
 
 echo ""
+echo "=== req-005 (d): CI wait polls, then watches ==="
+assert_contains 'at least one check is listed' "$ADV" "req-005 (d): polls until a check is listed"
+assert_contains '2 minutes' "$ADV" "req-005 (d): poll limit is 2 minutes"
+assert_contains 'no CI ran on PR #{n}' "$ADV" "req-005 (d): no-CI stop line"
+assert_contains "pull requests to \`roadmap/**\`" "$SEC" "req-005 (d): CI must trigger on PRs to roadmap/**"
+assert_contains 'gh pr checks {n} --watch --fail-fast' "$ADV" "req-005 (d): watches with fail-fast"
+assert_contains 'longest Bash timeout' "$ADV" "req-005 (d): Claude session uses the longest Bash timeout"
+assert_contains 'background task' "$ADV" "req-005 (d): background task for CI over 10 minutes"
+assert_contains 'Blocked: CI failed on PR #{n}' "$ADV" "req-005 (d): Blocked only on a failed check"
+assert_equals "0" "$(printf '%s\n' "$ADV" | grep -c 'CI is {red|pending}')" "req-005 (d): pending is no longer a stop"
+
+echo ""
 echo "=== req-005: pipeline reference records both tag orders ==="
 SHIPREF="$(section '## Ship Phase' "$REF")"
 assert_contains 'roadmap' "$SHIPREF" "req-005: pipeline reference Ship Phase mentions roadmap steps"

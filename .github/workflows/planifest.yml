@@ -2,7 +2,7 @@ name: Planifest Strict Pipeline
 
 on:
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, 'roadmap/**' ]
 
 # Every job reads the repo and nothing more (0000036 S-006).
 permissions:
