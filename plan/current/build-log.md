@@ -63,7 +63,9 @@ P1 exchange (run mode): Q: Continuous or interactive for this run? / A: Continuo
 | Start | `2026-10-23T07:15:13Z` |
 | Model tier | primary (requirements, ADRs), cheaper (scope, risk register, glossary) |
 | Skills loaded | planifest-plan |
-| Agents spawned | `pending` |
+| Agents spawned | `12` |
 | MCP calls | `0` |
-| Parallel task batches | `pending` |
+| Parallel task batches | `3` |
 | Notes | Chat prefix `P1 Plan:` maps to this log block. |
+P2 note: The consistency check flagged 7 to 9 acceptance criteria per requirement (limit 3). P1 split the four requirements into ten (REQ-001 to REQ-010) and updated the design, execution plan, risk register, and ADRs. Check clean on rerun.
+P2 gate: skipped under continuous run (0.8.0 rule). Artifacts: 10 requirements, 4 ADRs, execution plan, scope, risk register, glossary. Backlog 0000190 filed in Planifest Framework on human request.
