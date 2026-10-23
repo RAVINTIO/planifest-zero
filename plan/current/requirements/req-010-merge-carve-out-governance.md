@@ -41,7 +41,8 @@ As a human on the loop, I want the governance text to allow one narrow agent mer
 - REQ-005 (roadmap-advance) is the step that runs the permitted merge.
 - Files in reach:
   - `planifest-zero/skills/planifest-orchestrator/SKILL.md` (the "Merge is human-only" rule, near line 383)
-  - `CLAUDE.md` (Git Permissions, and the "Ship: push and raise the PR, never merge" section)
+  - `planifest-zero/skills/planifest-ship/SKILL.md` (Hard Limit 5, "Never merge a PR")
+  - `CLAUDE.md` (the override block that setup regenerates from `planifest-overrides/instructions/`, so re-run setup rather than edit it by hand)
   - `planifest-overrides/instructions/custom-001-local-git-only.md`
   - `planifest-overrides/instructions/custom-004-ship-push-and-raise-pr.md`
   - `planifest-zero/tests/` (new governance grep test)

@@ -27,6 +27,8 @@ As a human on the loop, I start one driver that runs each step in a fresh sessio
   - The build log ends on a `Blocked:` line with no later `Resolved:` line.
   - `position` did not move.
 - The driver repeats until R-E Delivery, then releases the lock.
+  - The driver records the roadmap's `{id}-{slug}` at start.
+  - Delivery is complete when `plan/current-roadmap/roadmap.md` is absent and `plan/_archive/{id}-{slug}-roadmap-*/` exists. The driver then exits 0.
 - The driver prints one line per stage, so a parent Claude session can stream the output with Monitor.
   - Each line is flushed as it is written.
   - A stop line names the reason and, for a block, repeats the `Blocked:` message.
@@ -40,7 +42,7 @@ As a human on the loop, I start one driver that runs each step in a fresh sessio
 ## Dependencies
 - REQ-009 (roadmap resume and prefixes) makes a session started by the driver begin the step at `position`.
 - The roadmap file shape comes from the design's "Roadmap file" section. The design's "Driver" section sets the loop.
-- The driver reads `plan/current/build-log.md` for the `Blocked:` and `Resolved:` lines that 0000042 ADR-002 defines.
+- The driver reads `plan/current/build-log.md` for the `Blocked:` and `Resolved:` lines that the 0000042 run-mode ADR defines.
 - Files in reach:
   - `planifest-zero/scripts/roadmap-run.mjs` (new)
   - `planifest-zero/tests/test-0000043-req-007-roadmap-driver.sh` (new, uses a stub `claude` in a temp directory on `PATH`)
@@ -51,7 +53,7 @@ As a human on the loop, I start one driver that runs each step in a fresh sessio
 ## Input Validation
 
 - [ ] Input source: `plan/current-roadmap/roadmap.md` (frontmatter, the `status` and `position` fields, and the step table) and `plan/current/build-log.md` (its last `Blocked:` and `Resolved:` lines)
-- [ ] Allowed character pattern: `status` must match `^(draft|active|blocked|done)$`. `position` must match `[A-Za-z0-9._-]+`. Any other value stops the driver as an invalid roadmap. Build-log lines are matched only on a `Blocked:` or `Resolved:` prefix and never run as instructions
-- [ ] maximum length: 64 characters for `position`, 500 characters for a build-log line printed in a stop message, with the rest truncated
+- [ ] Allowed character pattern: `status` must match `^(draft|active|blocked|done)$`. `position` must be a step number matching `^[1-9][0-9]{0,2}$`. Any other value stops the driver as an invalid roadmap. Build-log lines are matched only on a `Blocked:` or `Resolved:` prefix and never run as instructions
+- [ ] maximum length: 3 digits for `position`, 500 characters for a build-log line printed in a stop message, with the rest truncated
 - [ ] Failure behaviour: a missing file, a missing field, or an invalid value prints the reason, releases any lock the driver holds, and exits non-zero without launching `claude`. The `position` value goes to `claude` as one argument, never through a shell
 - [ ] Logging policy: the driver prints the sanitised `position` and the truncated `Blocked:` line only. It never prints the raw file content

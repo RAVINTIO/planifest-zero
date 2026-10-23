@@ -96,7 +96,7 @@ Resume detection checks `plan/current-roadmap/` before `plan/current/`:
 - Scalability target: not applicable
 - Security:
   - merge-guard, a PreToolUse hook on Bash, blocks `gh pr merge` unless the PR's base is `roadmap/*` and the flag is `--squash`.
-  - The exception stops from 0000042 ADR-002 apply to every step, including the credential stop.
+  - The exception stops in the 0000042 run-mode ADR apply to every step, including the credential stop.
   - Data classification: no regulated data. The pack holds no secrets.
 - Data privacy: no regulated data
 - Observability: the driver prints one line per stage. Each step's build log records `R-C Run:` and `R-D Advance:` lines.

@@ -37,7 +37,7 @@ As a human on the loop, I let the agent squash-merge a green step into the roadm
 ## Dependencies
 - The roadmap file format and `position` field come from the roadmap activate and resume requirements in this feature.
 - merge-guard (REQ-006) must allow `gh pr merge --squash` for a `roadmap/*` base.
-- The exception stops from 0000042 ADR-002 define the `Blocked:` format.
+- The exception stops in the 0000042 run-mode ADR define the `Blocked:` format.
 - Tests go in `planifest-zero/tests/test-0000043-req-005-roadmap-advance.sh` (new), using the grep helpers in `planifest-zero/tests/helpers/assert.sh`.
 - Files in reach:
   - `planifest-zero/skills/planifest-ship/SKILL.md` (Hard Limits 4 and 5, Steps 6 to 8, and the Step 10 closing line)

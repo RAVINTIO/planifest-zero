@@ -27,8 +27,9 @@ As a human on the loop, I let each step run P0 to P4 with no coaching stops, so 
   - The design confirmation records `draft-accepted (roadmap)` in place of a human confirmation.
 - P0 stops only when a backlog entry is too vague to draft a brief from.
   - The stop prints a `Blocked:` message that names the entry and what is missing.
-  - The exception stops from 0000042 ADR-002 still apply, including the credential stop.
+  - The exception stops in the 0000042 run-mode ADR still apply, including the credential stop.
 - P0 applies the step's `Bump` to the roadmap branch's version.
+  - The roadmap branch's version is the `version` in `product.yml`, or in `docs/about.md` when `product.yml` is absent. This is the existing last-known-version rule.
   - `Bump` takes `major`, `minor`, or `patch`, and `minor` is the default when the field is empty.
   - The existing downgrade block still applies, and a result lower than the last known version stops P0 with the existing `Blocked:` message.
 - All R-C messages use the `R-C Run:` prefix.
