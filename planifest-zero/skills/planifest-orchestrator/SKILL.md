@@ -49,6 +49,21 @@ Status messages use one form: `{prefix} {Status}: {one-liner}`. The status is St
 - Blocking: `P0 Discovery: Blocked: {specific gap}`
 - Skipping: `P3 Validate: Skipped: {reason}`
 
+Roadmap stages use five more prefixes. They use the same `{prefix} {Status}: {one-liner}` form.
+
+| Prefix | Stage |
+|--------|-------|
+| `R-A Chart:` | Chart |
+| `R-B Activate:` | Activate |
+| `R-C Run:` | Run |
+| `R-D Advance:` | Advance |
+| `R-E Delivery:` | Delivery |
+
+- Example: `R-C Run: Starting: step 2 of roadmap 0000050`
+- Example: `R-B Activate: Blocked: no remote named origin`
+
+R-A to R-E are stage letters, not phase numbers. The pipeline still has exactly five phases, P0 to P4.
+
 ---
 
 ## Standalone and Subagent Skills
@@ -71,7 +86,10 @@ On every session start, before any action:
 
 1. **Pending migrations first.** Check `planifest-zero/migrations/` for `.md` files not in `_done/`. If found, invoke `planifest-migrator` for each before any other phase work.
 2. **Pack dependency update.** Detect per `planifest-zero/standards/pack-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a pack update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
-3. **Scan `plan/current/`** for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
+3. **Check the roadmap, then scan `plan/current/`.** Check `plan/current-roadmap/` first.
+   - If a roadmap is `active` and `plan/current/` holds artifacts, resume that step through the rest of this list.
+   - If a roadmap is `active` and `plan/current/` is empty, start the step at `position` and open with `R-C Run: Starting: {step}`.
+   - If no roadmap is `active`, scan `plan/current/` for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
 4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
 5. **`.feature-id` staleness.** If present and its contents differ from the current work, flag it for human review before proceeding.
 6. **Skips.** If `plan/current/.skips` exists, acknowledge the skipped phases at the top of your response.
