@@ -23,6 +23,9 @@ version: "0.9.0"
   - P2 needs a schema change.
   - The P3 security review finds an unmitigated critical or high issue.
   - A push or `gh pr create` fails.
+  - A possible credential appears in a file the run will commit, or in the PR body.
+- Each exception stop leaves a `Blocked:` line in the build log, and resume does not pass it until a `Resolved:` line follows (REQ-011).
+- Acceptance evidence carries no raw output, and ship scans the PR body for credentials (REQ-011).
 - A resume with a missing or unknown `plan/.run-mode` asks the run-mode question again. It names the value it found and logs the answer (US-001, US-002).
 - Phases P0 Discovery to P4 Ship replace the P1 to P5 numbering. Build-log headings use `### P<n>: {Phase Name}`, with n from 0 to 4 (US-003).
 - Every message starts with one of five prefixes, such as `P2 Implement:` (US-003).

@@ -109,7 +109,7 @@ One wave. The human chose one large release of 13 points against a budget of 14.
 
 > Confirmed in the build log Scope Lock.
 
-**Error / sad path:** In both modes, 5 failed attempts, a schema change, an unmitigated critical or high security finding, or a failed push or PR stops the run. The `Blocked:` message names the action needed. Work stays committed and pushed, and the run resumes in the same mode.
+**Error / sad path:** In both modes, 5 failed attempts, a schema change, an unmitigated critical or high security finding, a failed push or PR, or a possible credential stops the run. The `Blocked:` message names the action needed. Work stays committed and pushed, and the run resumes in the same mode.
 
 > Confirmed in the build log Scope Lock.
 

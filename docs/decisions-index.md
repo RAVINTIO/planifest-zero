@@ -137,6 +137,6 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
 | ADR-001 | The stack stays as it is | accepted | No new language, runtime, or dependency. |
-| ADR-002 | Gated and autonomous run modes | accepted | Replaces the two earlier run modes with `gated` and `autonomous`. Autonomous runs to a raised PR. Four exception stops apply to both modes. |
+| ADR-002 | Gated and autonomous run modes | accepted | Replaces the two earlier run modes with `gated` and `autonomous`. Autonomous runs to a raised PR. Five exception stops apply to both modes. |
 | ADR-003 | Phase numbers P0 to P4 and number-plus-name prefixes | accepted | Phases run P0 Discovery to P4 Ship. Messages start with `P0 Discovery:` to `P4 Ship:`. A guard test blocks stale cites. Supersedes 0000031 ADR-001 in part. |
 | ADR-004 | Pack wording and identifier map | accepted | No tracked file outside history describes Planifest Zero with the retired word. Identifiers follow one map, and an allowlist test enforces the rule. |

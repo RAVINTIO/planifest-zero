@@ -76,6 +76,9 @@ Excluded paths: `plan/_archive`, `plan/changelog`, `plan/current`, `planifest-ze
 | req-010 (a) allowlist test reports zero non-allowlisted lines | Test | verified | `req-010 (a)` passes. My count: 0 lines naming Planifest Zero as a framework. |
 | req-010 (b) test fails on a planted "Planifest Zero is a framework" line | Test | verified | `req-010 (b)` plants the line in a scratch `README.md` and asserts a flag with file and line. |
 | req-010 (c) no diff under `plan/_archive` or `plan/changelog` | `git diff main --stat` | verified | Empty output. |
+| req-011 (a) each stop logs `Blocked:` and `Resolved:`, and resume refuses an unresolved stop | Skill text, test | not-verifiable | Live stop and resume not executable. Test req-011 (a) asserts both lines and the resume check (4 of 4). Added at P3 for F-002. |
+| req-011 (b) evidence carries no raw output, and ship scans the PR body before `gh pr create` | Skill text, test | not-verifiable | Live ship not executable. Test req-011 (b) asserts the redaction rule, the scan, and its stop message (4 of 4). Added at P3 for F-003. |
+| req-011 (c) the Exception Stops table has a fifth credential row that stops before the commit and any push | Read, test | verified | The installed orchestrator table has five rows, and the credential row says "Stop before the commit and before any push." Test req-011 (c) 5 of 5. Added at P3 for F-004. |
 
 ## Semantic coverage
 
@@ -91,12 +94,13 @@ Excluded paths: `plan/_archive`, `plan/changelog`, `plan/current`, `planifest-ze
 | req-008 | `test-0000042-req-008-pack-prose.sh` | (a) README and about checks plus "distinct". (b) 38 per-file checks. (c) "21 test-tool library standards remain" and two stack evaluation line counts. |
 | req-009 | `test-0000042-req-009-pack-identifiers.sh` | (a) 14 "no in-scope line names the old ..." checks plus exists and gone checks. (b) "has the ## The pack heading", "passes against the repository". (c) no dedicated test. `run-tests.sh` covers it. |
 | req-010 | `test-0000042-req-010-pack-wording-allowlist.sh`, mirrored in `tests/regression/` | (a) "no tracked line outside the allowlist uses the word". (b) "flags the planted line with its file and line number". (c) no test, so I checked `git diff main --stat` by hand. |
+| req-011 | `test-0000042-req-011-exception-stop-records-and-redaction.sh` | (a) "appends a Blocked: line", "appends a Resolved: line", "resume checks for an unresolved Blocked: line". (b) "forbids raw output", "scans the PR body". (c) "has a credential row", "has five exception rows". |
 
 Coverage gaps: none. Three criteria (req-004 (c), req-009 (c), req-010 (c)) and two parts of req-007 (a) rely on the whole-suite run or a manual check, not a dedicated assertion.
 
 ## Summary
 
-- Verified: 26 (4 brief criteria, 22 requirement criteria).
+- Verified: 27 (4 brief criteria, 23 requirement criteria).
 - Failed: 0.
-- Not-verifiable: 9 (4 brief criteria, 5 requirement criteria). All describe live agent run-mode behaviour. The skill text and static assertions that govern them pass.
+- Not-verifiable: 11 (4 brief criteria, 7 requirement criteria). All describe live agent run-mode behaviour. The skill text and static assertions that govern them pass.
 - Tracked files changed by setup: one, `plan/state/claude-code.md` (`writtenAt` only). Not reverted, not committed.

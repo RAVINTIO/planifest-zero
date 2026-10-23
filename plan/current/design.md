@@ -53,6 +53,9 @@
   - P2 needs a schema change.
   - The P3 security review finds an unmitigated critical or high issue.
   - A push or `gh pr create` fails.
+  - A possible credential appears in a file the run will commit, or in the PR body. (added at P3 for F-004)
+- Each exception stop appends a `Blocked:` line to the build log, and the human's answer appends a `Resolved:` line. Resume does not pass an unresolved stop (added at P3 for F-002).
+- Acceptance evidence holds results, counts, and `file:line` cites only. Ship scans the PR body for credential patterns before `gh pr create` (added at P3 for F-003).
 - On resume, a missing or unknown `plan/.run-mode` makes the agent ask the run-mode question and name the value it found. It writes the answer and logs it. The fresh-start stale check stays as it is.
 - Each exception stop prints `{prefix} Blocked: {action needed}`, such as `P3 Validate: Blocked: ...`, so the message still starts with its phase prefix.
 - In `autonomous`, P3 writes its evidence to `plan/current/acceptance-evidence.md`, because the PR doesn't exist yet. P4 copies it into an `## Acceptance evidence` section of the PR body.
@@ -127,6 +130,7 @@ None
 | REQ-008 - framework-prose | planifest-implement | Prose rewording across docs, skills, and setup output |
 | REQ-009 - framework-identifiers | planifest-implement | Identifier and file renames per the ADR-004 map |
 | REQ-010 - framework-allowlist-test | planifest-implement | New allowlist grep test |
+| REQ-011 - exception-stop-records-and-redaction | planifest-implement | Added at P3 to fix security findings F-002 to F-004 |
 
 The consistency check allows three acceptance criteria per requirement, so P1 split the four planned requirements into ten. The scope and the 13 points are unchanged.
 

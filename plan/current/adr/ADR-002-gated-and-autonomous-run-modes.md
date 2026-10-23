@@ -1,6 +1,6 @@
 ---
 title: "ADR 002: Gated and autonomous run modes"
-summary: "The run modes interactive and continuous become gated and autonomous. Gated stops at the P1 to P4 gates. Autonomous stops at none and runs to a raised PR. Four exceptions stop both modes."
+summary: "The run modes interactive and continuous become gated and autonomous. Gated stops at the P1 to P4 gates. Autonomous stops at none and runs to a raised PR. Five exceptions stop both modes."
 status: "accepted"
 version: "0.1.0"
 ---
@@ -40,14 +40,17 @@ How should the agent run P1 to P4?
 
 **Autonomous.** The run stops at none of those gates. P3 puts its acceptance evidence in the PR description instead of a gate. P4 raises the PR and ends with `P4 Ship: Complete: PR #{n} ready for your review`. The agent never merges the PR and never commits to `main`.
 
-**Exception stops.** Both modes stop on four exceptions:
+**Exception stops.** Both modes stop on five exceptions:
 
 1. A requirement or check still fails after 5 attempts.
 2. P2 needs a schema change.
 3. The P3 security review finds an unmitigated critical or high issue.
 4. A push or `gh pr create` fails.
+5. A possible credential appears in a file the run will commit, or in the PR body. P3 added this stop for security finding F-004.
 
 Each stop prints a message that starts with `Blocked:` and names the action the human needs to take. Work stays committed and pushed. The run resumes in the same mode.
+
+Each stop appends a `Blocked:` line to the build log, and the human's answer appends a `Resolved:` line. A resumed run does not pass an unresolved stop. P3 added this record for security finding F-002.
 
 **Resume rule.** On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the run-mode question. It names the value it found, or says the file is missing. It then writes the answer and logs it. A valid value restores that mode without a question. The fresh-start stale check is unchanged.
 
@@ -73,7 +76,7 @@ Each stop prints a message that starts with `Blocked:` and names the action the 
 
 **Positive:**
 - A human can start a run and return to a raised PR with no stops in between.
-- Two modes with one question make the choice plain. Both modes share the same four exception stops.
+- Two modes with one question make the choice plain. Both modes share the same five exception stops.
 - The human still reviews and merges every PR, so the final check stays.
 
 **Negative:**

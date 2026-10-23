@@ -20,7 +20,7 @@ Each file follows the naming convention `req-{NNN}-{kebab-slug}.md` and the [Req
 | File | Requirement | Source | Points |
 |------|------------|--------|--------|
 | [req-001-run-mode-question.md](requirements/req-001-run-mode-question.md) | The run-mode question and `plan/.run-mode` values `gated` and `autonomous` | US-001, US-002 | 4 (REQ-001 to REQ-003) |
-| [req-002-gate-and-exception-stops.md](requirements/req-002-gate-and-exception-stops.md) | Gate stops per mode and the four exception stops | US-001, US-002 | |
+| [req-002-gate-and-exception-stops.md](requirements/req-002-gate-and-exception-stops.md) | Gate stops per mode and the first four exception stops | US-001, US-002 | |
 | [req-003-run-mode-resume.md](requirements/req-003-run-mode-resume.md) | Resume with a missing or unknown run mode | US-001, US-002 | |
 | [req-004-phase-numbers-p0-to-p4.md](requirements/req-004-phase-numbers-p0-to-p4.md) | Phases P0 to P4 and the build-log headings | US-003 | 4 (REQ-004 to REQ-006) |
 | [req-005-message-prefixes.md](requirements/req-005-message-prefixes.md) | The five message prefixes and one status form | US-003 | |
@@ -29,6 +29,7 @@ Each file follows the naming convention `req-{NNN}-{kebab-slug}.md` and the [Req
 | [req-008-framework-prose.md](requirements/req-008-framework-prose.md) | No prose describes Planifest Zero as a framework | US-005 | 4 (REQ-008 to REQ-010) |
 | [req-009-framework-identifiers.md](requirements/req-009-framework-identifiers.md) | Identifier and file renames per ADR-004 | US-005 | |
 | [req-010-framework-allowlist-test.md](requirements/req-010-framework-allowlist-test.md) | The allowlist grep test | US-005 | |
+| [req-011-exception-stop-records-and-redaction.md](requirements/req-011-exception-stop-records-and-redaction.md) | Stop records, evidence redaction, and the credential stop (added at P3 for F-002 to F-004) | US-001, US-002 | 1 |
 
 The consistency check allows three acceptance criteria per requirement, so each story group splits into several files. The points stay with the group.
 
