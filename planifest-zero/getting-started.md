@@ -32,6 +32,7 @@ These are the core working directories:
   - `plan/_archive/` holds completed runs, filed at ship.
   - `plan/changelog/` holds one change record per feature (`{feature-id}-{YYYY-MM-DD}.md`).
   - `plan/backlog/` holds deferred items.
+  - `plan/roadmap/` holds draft roadmaps, and `plan/current-roadmap/` holds the one active roadmap. See [roadmap-standards.md](standards/roadmap-standards.md).
 - `src/` holds component source code, tests, and component manifests (`component.yml`).
 - `docs/` holds the living repository documentation, always current. It includes the component registry and dependency graph.
 - `planifest-overrides/` holds your customisations: project instructions, capability skills, setup config, and library standards. Setup never overwrites it. See [project-operations.md, Customising](project-operations.md#customising-with-planifest-overrides).
@@ -87,6 +88,8 @@ Feature brief: plan/current/feature-brief.md
 ```
 
 The orchestrator runs discovery: it assesses your brief, coaches you through any gaps, and produces a confirmed design. It then asks how the agent should run P1 to P4. Gated stops for you at the end of each phase. Autonomous runs to a raised PR and stops only for escalations.
+
+To chain several features, ask the orchestrator to chart a roadmap. You approve it once, and a driver script runs each step. See [roadmap-standards.md](standards/roadmap-standards.md).
 
 Every change takes this route. A small change is a small run, not a different pipeline.
 
