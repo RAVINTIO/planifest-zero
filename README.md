@@ -35,7 +35,7 @@ The pipeline runs five phases. Every change, however small, takes the same route
 5. **Validate and accept.** CI checks and a security review run, then the human accepts.
 6. **Ship.** The plan is archived, the run is assessed, and the pull request is raised.
 
-Every agent response carries a phase prefix (`D:`, `PL:`, `IM:`, `VA:`, `SH:`), so you always know where you are. Every artifact follows a template, so output stays consistent across sessions and models.
+Every agent response carries a phase prefix, from `P0 Discovery:` to `P4 Ship:`, so you always know where you are. Every artifact follows a template, so output stays consistent across sessions and models.
 
 ---
 

@@ -75,7 +75,7 @@ cp planifest-zero/templates/feature-brief.template.md plan/current/feature-brief
 
 Fill it in. The [feature brief guide](templates/feature-brief-guide.md) walks you through each section.
 
-Every agent response begins with a phase prefix (`D:`, `PL:`, `IM:`, `VA:`, `SH:`), so you always know where you are in the pipeline. See [pipeline-reference.md, Phase indicators](pipeline-reference.md#phase-indicators) for the full table.
+Every agent response begins with a phase prefix, from `P0 Discovery:` to `P4 Ship:`, so you always know where you are in the pipeline. See [pipeline-reference.md, Phase indicators](pipeline-reference.md#phase-indicators) for the full table.
 
 ### 5. Start the orchestrator
 

@@ -23,11 +23,11 @@ The pipeline runs five phases. There is one route: every change is a feature cha
 
 | Phase | Prefix | Owning skill |
 |-------|--------|--------------|
-| Discovery | `D:` | planifest-orchestrator |
-| Plan | `PL:` | planifest-plan |
-| Implement | `IM:` | planifest-implement |
-| Validate and accept | `VA:` | planifest-validate-and-accept |
-| Ship | `SH:` | planifest-ship |
+| Discovery | `P0 Discovery:` | planifest-orchestrator |
+| Plan | `P1 Plan:` | planifest-plan |
+| Implement | `P2 Implement:` | planifest-implement |
+| Validate and accept | `P3 Validate:` | planifest-validate-and-accept |
+| Ship | `P4 Ship:` | planifest-ship |
 
 Discovery sizes each release against a budget. The optional `releaseSize` field in `product.yml` sets it to `small`, `medium`, or `large`, and the default is `medium`. Discovery gives each candidate requirement a size class from the files it touches, then recommends a fill up to the budget.
 

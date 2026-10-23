@@ -18,19 +18,21 @@ Every agent response begins with a phase prefix. You always know where you are.
 
 | Prefix | Phase | What the agent is doing |
 |--------|-------|-------------------------|
-| `D:` | Discovery | Assessing the brief, asking gap questions, confirming scope, version, and adoption mode |
-| `PL:` | Plan | Writing requirements, scope, glossary, risk register, and ADRs behind one confirmation gate |
-| `IM:` | Implement | Generating code, tests, and documentation together |
-| `VA:` | Validate and accept | Running CI checks, self-correcting, security review, human acceptance |
-| `SH:` | Ship | Changelog, archive, build assessment, git tag, PR |
+| `P0 Discovery:` | P0 Discovery | Assessing the brief, asking gap questions, confirming scope, version, and adoption mode |
+| `P1 Plan:` | P1 Plan | Writing requirements, scope, glossary, risk register, and ADRs behind one confirmation gate |
+| `P2 Implement:` | P2 Implement | Generating code, tests, and documentation together |
+| `P3 Validate:` | P3 Validate and Accept | Running CI checks, self-correcting, security review, human acceptance |
+| `P4 Ship:` | P4 Ship | Changelog, archive, build assessment, git tag, PR |
 
-Standard response formats:
+Messages shorten P3 to "Validate". Skills and the build log keep the full name "Validate and Accept".
 
-- Entering a phase: `PL: Starting, {one-liner}`
-- Resuming: `PL: Resuming, {what was in progress, what is next}`
-- Completing: `PL: Complete, {one-liner summary}`
-- Blocked: `D: Blocked, {specific gap}`
-- Skipped: `VA: Skipped, {reason}`
+Status messages use one form: `{prefix} {Status}: {one-liner}`. The status is Starting, Resuming, Complete, Blocked, or Skipped.
+
+- Entering a phase: `P1 Plan: Starting: {one-liner}`
+- Resuming: `P1 Plan: Resuming: {what was in progress, what is next}`
+- Completing: `P1 Plan: Complete: {one-liner summary}`
+- Blocked: `P0 Discovery: Blocked: {specific gap}`
+- Skipped: `P3 Validate: Skipped: {reason}`
 
 If you see a `Resuming` message at the start of a session, the orchestrator detected existing artifacts in `plan/current/` and is continuing where it left off.
 
