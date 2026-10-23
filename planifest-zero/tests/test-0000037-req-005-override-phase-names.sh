@@ -13,7 +13,7 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 
 FRAMEWORK="$SCRIPT_DIR/.."
 REPO_ROOT="$FRAMEWORK/.."
-OVERRIDE="$REPO_ROOT/planifest-overrides/instructions/custom-004-p9-push-and-raise-pr.md"
+OVERRIDE="$REPO_ROOT/planifest-overrides/instructions/custom-004-ship-push-and-raise-pr.md"
 SHIP_SKILL="$FRAMEWORK/skills/planifest-ship/SKILL.md"
 
 if [ ! -f "$OVERRIDE" ]; then

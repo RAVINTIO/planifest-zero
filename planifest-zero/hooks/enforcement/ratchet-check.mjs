@@ -33,7 +33,7 @@
  * On consumption, the matched line is removed (file deleted when empty) and
  * the full record (path, reason, timestamp) is copied into the permanent
  * audit log at plan/ratchet-audit-log.md (top-level plan/, not plan/current/,
- * so it survives both per-feature archiving at P7 and framework re-vendoring —
+ * so it survives both per-feature archiving at ship (P4) and framework re-vendoring —
  * see ADR-001 Affected Components). The reason field is capped at 500 chars
  * in the audit log, truncated with a trailing marker if longer.
  *
