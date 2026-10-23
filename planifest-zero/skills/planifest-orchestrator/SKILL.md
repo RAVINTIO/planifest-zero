@@ -183,6 +183,26 @@ Coach the human on these points:
 
 If a named backlog entry does not exist, stop the chart and name the missing entry. The human's confirmation approves the roadmap.
 
+### R-B Activate
+
+Activate turns a charted roadmap into a live branch. Run these checks first:
+
+- A remote named `origin` exists.
+- `gh` access works.
+- No `roadmap/{id}-*` branch exists on `origin`.
+- No other roadmap is active. The rule is one active roadmap per working tree. If one is active, refuse and name the roadmap that is already active.
+
+If a check fails, stop with a `Blocked:` message, as in `R-B Activate: Blocked: {failed check}`, before any branch or file changes.
+
+When the checks pass:
+
+1. Cut `roadmap/{id}-{slug}` from `main`.
+2. In one commit, write `plan/current-roadmap/roadmap.md` with `status: active` and delete the draft folder `plan/roadmap/{id}-{slug}/`.
+3. Push the roadmap branch to `origin`.
+4. Offer to start the driver `planifest-zero/scripts/roadmap-run.mjs`.
+
+A Claude session runs the driver as a background task, because a foreground Bash call times out after 10 minutes. Tell the human that the parent session must not edit the working tree while the driver runs.
+
 ---
 
 ## P0: Discovery
