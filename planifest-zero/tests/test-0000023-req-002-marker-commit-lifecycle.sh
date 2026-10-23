@@ -5,7 +5,8 @@
 # Covers: session markers (plan/.orchestrator-active, plan/.orchestrator-ack,
 # plan/.run-mode) must be committed at the point they are written (discovery),
 # and the ship phase must clear them, stage the deletions, and confirm with
-# git ls-files that none remain tracked.
+# git ls-files that none remain tracked. Since 0000042 req-001,
+# plan/.run-mode holds `gated` or `autonomous`.
 
 set -uo pipefail
 
@@ -43,6 +44,8 @@ assert_contains 'write `plan/.run-mode`' "$ORCH_CONTENT" \
   "req-002: the run-mode marker is written at design confirmation"
 assert_contains "Include it in the discovery commit." "$ORCH_CONTENT" \
   "req-002: .run-mode is committed at the point it is written"
+assert_contains '`gated` or `autonomous`' "$ORCH_CONTENT" \
+  "req-002: the run-mode marker holds gated or autonomous"
 
 echo ""
 echo "=== req-002: deletion-side clearing (ship phase) ==="

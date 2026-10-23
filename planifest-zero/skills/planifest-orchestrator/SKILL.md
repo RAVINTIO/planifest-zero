@@ -77,7 +77,7 @@ On every session start, before any action:
 6. **Skips.** If `plan/current/.skips` exists, acknowledge the skipped phases at the top of your response.
 7. **Pause restore.** If `plan/current/pause.md` exists, open with `{prefix}: Resuming: {active_task}`, restore state from the file, delete it, and continue from the pause point.
 8. **Park restore.** If you are still on the feature branch and `plan/current/park.md` exists, park did not finish. Run `gh pr list --head chore/park-{feature-id} --state all`. If it returns nothing, finish the chore PR step of park (Park Command steps 3 to 5) with `node scripts/park.mjs finish-pr`. If a push or `gh` call fails, report the exact error and stop, as in the Park Command.
-9. **Run-mode restore.** Read `plan/.run-mode` if present and restore `continuous` or `interactive` without re-asking. Any other value, or an absent file, defaults to `interactive`.
+9. **Run-mode restore.** Read `plan/.run-mode` if present and restore `gated` or `autonomous` without re-asking. Any other value, or an absent file, defaults to `gated`.
 10. **`discovery.md` trust-or-regenerate.** If present and complete for the confirmed adoption mode, trust it as-is. If missing or incomplete mid-run, regenerate it fresh. Never patch a partial file.
 11. **Open.** Artifacts found: open with `{prefix} Resuming: {one-liner}` and no re-coaching. No artifacts: open with `P0 Discovery: Starting` and begin discovery.
 
@@ -335,14 +335,13 @@ Read `planifest-zero/templates/design.template.md`, then write `plan/current/des
 Before asking for confirmation, ask the run-mode question:
 
 ```
-Do you want to review and confirm after each phase completes, or authorise a
-continuous run for this session?
+How should the agent run P1 to P4?
 
-  [1] Check after each phase
-  [2] Continuous run: proceed without phase confirmations
+  [1] Gated: the agent stops for you at the end of each phase
+  [2] Autonomous: the agent runs to a raised PR and stops only for escalations
 ```
 
-Record the answer and write `plan/.run-mode` (`continuous` or `interactive`). Include it in the discovery commit. In interactive mode, append `Gate accepted: P{N} ({ISO-8601 timestamp})` to the build log at each confirmed gate.
+Record the answer and write `plan/.run-mode` (`gated` or `autonomous`). No other value is valid. Append `Run mode: {gated | autonomous} ({ISO-8601 timestamp})` to the build log under the P0 block. Include it in the discovery commit. Only this skill writes `plan/.run-mode`. Phase skills read it and never write it. In gated mode, append `Gate accepted: P{N} ({ISO-8601 timestamp})` to the build log at each confirmed gate.
 
 **Do not proceed to plan until the human has confirmed the design.** This is the hard gate. Present it, revise on request, and once confirmed, commit `design.md` and `feature-brief.md`. The pipeline then begins.
 
@@ -371,9 +370,9 @@ Conventions for every downstream phase:
 
 | Phase | Invoke | Gate condition | STOP rule |
 |-------|--------|----------------|-----------|
-| P1 Plan | planifest-plan | Artifact set complete (requirements, ADRs, OpenAPI where applicable) | STOP for confirmation. Exception: continuous run. |
-| P2 Implement | planifest-implement | Implementation matches the spec, and docs land with code | STOP for confirmation. Exception: continuous run. |
-| P3 Validate and Accept | planifest-validate-and-accept | CI green plus human acceptance | Acceptance ALWAYS stops. A continuous run does not bypass it. |
+| P1 Plan | planifest-plan | Artifact set complete (requirements, ADRs, OpenAPI where applicable) | Gated: STOP for confirmation. Autonomous: no stop. |
+| P2 Implement | planifest-implement | Implementation matches the spec, and docs land with code | Gated: STOP for confirmation. Autonomous: no stop. |
+| P3 Validate and Accept | planifest-validate-and-accept | CI green plus human acceptance | Acceptance ALWAYS stops. |
 | P4 Ship | planifest-ship | Archive, build report, changelog, tag, and PR (or PR description) confirmed | Final gate. Always stops. |
 
 **Before P2:** check the declared stack against installed capability skills and recommend loading relevant ones. Then apply subagent decomposition for every requirement: consult `## Skill Map` in `design.md` for the best-fit skill, select the model tier, and dispatch per the dispatch standards below.

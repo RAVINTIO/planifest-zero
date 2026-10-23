@@ -86,7 +86,7 @@ Run the Planifest pipeline.
 Feature brief: plan/current/feature-brief.md
 ```
 
-The orchestrator runs discovery: it assesses your brief, coaches you through any gaps, and produces a confirmed design. It then asks whether you want per-phase confirmation or a continuous run before executing the rest of the pipeline.
+The orchestrator runs discovery: it assesses your brief, coaches you through any gaps, and produces a confirmed design. It then asks how the agent should run P1 to P4. Gated stops for you at the end of each phase. Autonomous runs to a raised PR and stops only for escalations.
 
 Every change takes this route. A small change is a small run, not a different pipeline.
 

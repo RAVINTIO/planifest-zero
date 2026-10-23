@@ -65,8 +65,9 @@ planifest-validate-and-accept runs CI (lint, typecheck, test, build),
 self-corrects up to 5 times, performs the security review, and verifies
 acceptance criteria by running the software.
 
-**Gate: human acceptance.** The human accepts the working feature. This gate
-always stops, in every run mode.
+**Gate: human acceptance.** In gated mode, the human accepts the working
+feature. In autonomous mode, the acceptance evidence goes in the PR
+description instead.
 
 ### 5. Ship
 
@@ -74,19 +75,27 @@ planifest-ship archives `plan/current/` to `plan/_archive/{feature-id}/`,
 files the build assessment, writes the changelog entry, tags the release,
 and raises the PR.
 
-**Gate: the ship gate.** The human confirms the shipped result and merges
-the PR. This gate always stops, in every run mode.
+**Gate: the ship gate.** In gated mode, the human confirms the result before
+the PR. In autonomous mode, the agent raises the PR and stops. The human
+merges the PR in every mode.
 
 ## Run modes
 
-The orchestrator asks for a run mode during discovery and records it in
-`plan/.run-mode`.
+At the end of discovery, the orchestrator asks how to run P1 to P4. It records
+the answer in `plan/.run-mode` and logs it in the build log.
 
-- **Interactive** (default): the pipeline stops at every gate and waits for
-  the human.
-- **Continuous**: the pipeline proceeds through the plan and implement gates
-  on its own self-checks, reporting rather than waiting.
+- **Gated**: the pipeline stops for the human at the plan, implement,
+  acceptance, and ship gates.
+- **Autonomous**: the pipeline stops at none of those gates. It runs to a
+  raised PR and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
 
-Two stops hold in both modes: human acceptance and the ship gate. Continuous
-mode never bypasses them. Design confirmation also always involves the
-human, because the run mode is chosen at that conversation.
+Both modes stop for escalations. Each stop starts with `Blocked:` and names
+the action the human needs to take. The four escalations are:
+
+- A check still fails after 5 attempts.
+- Implement needs a schema change.
+- The security review finds an unmitigated critical or high issue.
+- A push or `gh pr create` fails.
+
+Design confirmation always involves the human, because the run mode is chosen
+in that conversation. Merging the PR is human-only in every mode.
