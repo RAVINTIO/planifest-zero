@@ -109,6 +109,15 @@ Resume detection checks `plan/current-roadmap/` before `plan/current/`:
 - Deployment: copied into consumer repos by `setup.sh` and `setup.ps1`.
 - API versioning: not applicable
 
+## Component Paths
+- `planifest-zero/`
+- `planifest-overrides/`
+- `docs/`
+- `.github/`
+
+Added at P3. These are the confirmed component's paths, so gate-write can match them. P2 subagents wrote through Bash when gate-write blocked them, because this section was missing.
+
+
 ## Scope
 - In:
   - Roadmap drafts, `roadmap-entry.template.md`, and shared ids
@@ -128,14 +137,6 @@ Resume detection checks `plan/current-roadmap/` before `plan/current/`:
 - Deferred:
   - Workflow quality gates (backlog 0000100). Nothing is blocked.
   - Subagent acceleration (backlog 0000110). Nothing is blocked.
-
-## Component Paths
-- `planifest-zero/`
-- `planifest-overrides/`
-- `docs/`
-- `.github/`
-
-Added at P3. These are the confirmed component's paths, so gate-write can match them. P2 subagents wrote through Bash when gate-write blocked them, because this section was missing.
 
 ## Assumptions
 - `claude -p` in a child process inherits the repo's hooks and the user's auth - impact if wrong: the driver can't run steps, and the chain runner needs another launch method.

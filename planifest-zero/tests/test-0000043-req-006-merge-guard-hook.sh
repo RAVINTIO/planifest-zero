@@ -141,4 +141,10 @@ assert_equals "1" "$SH_COUNT" "req-006 (c): a second setup.sh run leaves one mer
 assert_equals "yes" "$SH_INSTALLED" "req-006 (c): setup.sh installs merge-guard.mjs"
 assert_equals "1" "$(grep -c 'gate-write|ratchet-check|em-dash-guard|merge-guard' "$SETUP_PS1")" "req-006 (c): setup.ps1 filter pattern covers merge-guard"
 
+echo ""
+echo "=== req-006: a block reaches the agent on stderr ==="
+# Claude Code shows the agent only stderr when a PreToolUse hook exits 2.
+ERR=$(payload "gh pr merge 7 --squash" | env PATH="$TMP/bin:$PATH" STUB_BASE="main" node "$GUARD" 2>&1 >/dev/null)
+assert_contains "[Planifest] merge-guard" "$ERR" "req-006: the block reason is on stderr"
+
 print_summary
