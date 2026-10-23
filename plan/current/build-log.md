@@ -53,3 +53,17 @@ Scope Lock (cross-session continuity): Run mode and phase position live in commi
 Scope Lock complete. All four scenario paths captured.
 P1 exchange (design): Q: Confirm the design? / A: Confirmed by human.
 P1 exchange (run mode): Q: Continuous or interactive for this run? / A: Continuous. The 0.8.0 skills drive this run, so build-log headings keep P1 to P5. Chat messages already use the new prefixes, so message P0 to P4 map to log P1 to P5.
+
+---
+
+### P2: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-23T07:15:13Z` |
+| Model tier | primary (requirements, ADRs), cheaper (scope, risk register, glossary) |
+| Skills loaded | planifest-plan |
+| Agents spawned | `pending` |
+| MCP calls | `0` |
+| Parallel task batches | `pending` |
+| Notes | Chat prefix `P1 Plan:` maps to this log block. |
