@@ -5,7 +5,7 @@
 - Adoption mode: standard-iterative (assumed, only signal: `plan/_archive/` and `docs/about.md` present)
 - Feature ID: 0000042-autonomous-mode-and-prefixes
 - Version: 0.9.0 (minor, from 0.8.0, confirmed by the human)
-- Run mode: {pending}
+- Run mode: continuous (this run uses the 0.8.0 skills, where `autonomous` does not yet exist)
 - Discovery: see `plan/current/discovery.md`
 
 ## Product Layer

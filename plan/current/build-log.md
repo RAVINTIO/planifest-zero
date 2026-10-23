@@ -52,3 +52,4 @@ Scope Lock (error path): In both modes, 5 failed attempts, a schema change, an u
 Scope Lock (cross-session continuity): Run mode and phase position live in committed files. A new session reads `plan/.run-mode` and the build log first, restores whichever mode the file holds without asking, and resumes at the last phase with its prefix. A gated run re-shows its pending gate. Pause and park keep working with the new phase numbers. [source: draft-edited]
 Scope Lock complete. All four scenario paths captured.
 P1 exchange (design): Q: Confirm the design? / A: Confirmed by human.
+P1 exchange (run mode): Q: Continuous or interactive for this run? / A: Continuous. The 0.8.0 skills drive this run, so build-log headings keep P1 to P5. Chat messages already use the new prefixes, so message P0 to P4 map to log P1 to P5.
