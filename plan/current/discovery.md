@@ -35,3 +35,6 @@ summary: "Raw discovery-pass findings: what the orchestrator knew before coachin
 - The orchestrator still says "P0 briefing" (line 227), a stale phase number.
 - `product.yml` and `planifest-zero/component.yml` name the product "Planifest Framework". Planifest Framework is a separate product (`planifest/planifest-framework`).
 - Installed copies under `.claude/skills/` mirror `planifest-zero/skills/` and refresh through setup.
+- No hook in `planifest-zero/hooks/` parses `### P<n>:` headings, despite orchestrator Hard Limit 10. The hooks already say "Phase 0" in three messages (`check-design.mjs:52`, `gate-write.mjs:108`, `gate-write.mjs:123`).
+- The installed `.claude/hooks/enforcement/` holds four files with no source in `planifest-zero/hooks/`: `check-telemetry-failures.mjs`, `check-telemetry-receipts.mjs`, and `phase-enum.mjs`, plus their wiring if any. `.claude/` is not tracked.
+- About 28 non-test files and 23 test files cite a phase number. About 71 files contain "framework", many as generic uses such as the 22 `test-frameworks.md` standards.
