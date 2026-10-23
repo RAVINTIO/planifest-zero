@@ -1,12 +1,12 @@
 # Architecture Overview
 
-Last updated: 0000042-autonomous-mode-and-prefixes
+Last updated: 0000043-autonomous-roadmaps
 
 ## What this repo is
 
 This repo is Planifest Zero itself. It holds one component, `planifest-zero`, which other projects install into their working tree.
 
-Planifest Zero is not a service. It has no runtime of its own. It ships four things:
+Planifest Zero is not a service. It has no runtime of its own. It ships these things:
 
 1. **Skills.** Markdown instructions that Claude Code auto-discovers from `.claude/skills/`. Twelve skills drive the five-phase pipeline.
 2. **Hooks.** Node `.mjs` scripts that Claude Code invokes synchronously at tool-call boundaries. Enforcement hooks block or annotate. Git hooks guard commits and pushes. No hook makes an outbound network call.
@@ -56,6 +56,18 @@ Discovery sizes each release against a budget. The optional `releaseSize` field 
 
 **Park.** When the human says "park", the orchestrator shelves the feature on its branch. It writes `plan/current/park.md`, pushes the branch, and raises a `chore/park-{feature-id}` PR. That PR files a backlog entry with status `parked`. The working tree then returns to `main`. The git and `gh` steps live in the orchestrator's `scripts/park.mjs`. If a local add or commit fails on the chore branch, park unstages and deletes the entry, then returns to the feature branch. Park refuses an `--entry` that is the target path, so that cleanup never deletes the only copy. At a later discovery, backlog pickup offers resume or discard for a parked entry. Park and pickup never merge a PR, never commit to `main`, and never force-push.
 
+### Roadmaps
+
+A roadmap is a chain of feature steps that the human approves once. The standard `planifest-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `R-A Chart:`, `R-B Activate:`, `R-C Run:`, `R-D Advance:`, and `R-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
+
+- **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/roadmap.md` on any branch. The one active roadmap lives in `plan/current-roadmap/roadmap.md` on the branch `roadmap/{id}-{slug}`. Roadmap ids share the backlog sequence.
+- **Chart and activate.** R-A Chart runs on `main` and ends with the human's single approval. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
+- **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the roadmap branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
+- **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the tag still comes before the PR.
+- **Delivery.** R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The human merges it.
+- **Driver.** `planifest-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step.
+- **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `roadmap/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
+
 The implement phase dispatches a TDD trio per requirement: planifest-test-writer, planifest-implementer, and planifest-refactor. Four support skills complete the set of twelve: planifest-loop-runner, planifest-optimise-agent, planifest-migrator, and planifest-refresh-setup.
 
 ---
@@ -90,7 +102,7 @@ Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from 
 
 Enforcement is deterministic where it can be, and instructional where it cannot.
 
-**Deterministic.** A hook exits 2 with a human-readable message and Claude Code blocks the tool call. `gate-write` blocks writes to `src/` without a confirmed design. `ratchet-check` blocks weakening edits to an active loop's artifacts. `em-dash-guard` rejects U+2014 in scoped prose paths.
+**Deterministic.** A hook exits 2 with a human-readable message and Claude Code blocks the tool call. `gate-write` blocks writes to `src/` without a confirmed design. `ratchet-check` blocks weakening edits to an active loop's artifacts. `em-dash-guard` rejects U+2014 in scoped prose paths. `merge-guard` blocks a `gh pr merge` that is not a squash into a `roadmap/*` branch.
 
 **Instructional.** Skills tell the agent what to do. The orchestrator's hard limits, the one-question-at-a-time rule, and the phase gates all rely on the agent following its instructions.
 
@@ -132,7 +144,7 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 **Leftover temporary file.** Each run removes a leftover `settings.json.planifest-tmp` before its first settings write, even when `node` is missing. It removes a file or a link, never a folder, and never follows a link.
 
-**Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same six hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
+**Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same seven hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
 
 **Hook entry repair.** Both scripts find a Planifest `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse` or `UserPromptSubmit` holds a value that isn't an array, setup prints a warning that names the event and the file. The warning never prints the old value, because a hook command can hold a secret. It then replaces the value with the Planifest entries and exits 0. An absent or null value gets the entries with no warning.
 

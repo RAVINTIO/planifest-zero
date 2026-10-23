@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000042-autonomous-mode-and-prefixes
+Last updated: 0000043-autonomous-roadmaps
 
 ---
 
@@ -63,6 +63,7 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | 0000037 ADR-003 (decision item 4 only, narrowed) | 0000041 ADR-003 | The non-array warning no longer prints the old value. Warn, replace, and exit 0 stand. |
 | 0000031 ADR-001 (phase numbers and prefixes only, superseded in part) | 0000042 ADR-003 | Phases take the numbers P0 to P4 and number-plus-name prefixes. The five-phase contract and skill consolidation stand. |
 | 0000023 run-mode gate rules (in skills and tests, no ADR) | 0000042 ADR-002 | The two earlier run modes become `gated` and `autonomous`. |
+| 0000042 ADR-002 (merge rule only, amended) | 0000043 ADR-003 | The agent may squash-merge its own step PR into a `roadmap/*` branch after a clean P3 and green CI. Merging into `main` stays human-only. |
 
 ### Feature 0000034: setup-hardening
 
@@ -140,3 +141,14 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | ADR-002 | Gated and autonomous run modes | accepted | Replaces the two earlier run modes with `gated` and `autonomous`. Autonomous runs to a raised PR. Five exception stops apply to both modes. |
 | ADR-003 | Phase numbers P0 to P4 and number-plus-name prefixes | accepted | Phases run P0 Discovery to P4 Ship. Messages start with `P0 Discovery:` to `P4 Ship:`. A guard test blocks stale cites. Supersedes 0000031 ADR-001 in part. |
 | ADR-004 | Pack wording and identifier map | accepted | No tracked file outside history describes Planifest Zero with the retired word. Identifiers follow one map, and an allowlist test enforces the rule. |
+
+### Feature 0000043: autonomous-roadmaps
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as declared | accepted | No new language, runtime, or dependency. Adds one Node hook, `merge-guard`, and one Node script, `roadmap-run.mjs`. |
+| ADR-002 | Roadmap storage and lifecycle | accepted | Drafts live in `plan/roadmap/`. The one active roadmap lives in `plan/current-roadmap/` on the roadmap branch. Ids share the backlog sequence. |
+| ADR-003 | Agent squash-merge into roadmap branches | accepted | The agent may run `gh pr merge --squash` for its own step PR into `roadmap/*` after a clean P3 and green CI. `merge-guard` enforces it. Amends the 0000042 run-mode merge rule. |
+| ADR-004 | Driver script runs each step in a fresh session | accepted | `roadmap-run.mjs` runs each step as its own `claude -p` session in auto permission mode. A lock file stops a second driver. |
+| ADR-005 | Tag after the squash merge in a roadmap step | accepted | A roadmap step squash-merges first, then tags the squash commit and pushes the tag. Outside a roadmap, tag-before-PR stays. |
+| ADR-006 | Self-confirmed roadmap steps and stage prefixes | accepted | A step's P0 builds the brief from its backlog entries and self-confirms. R-A Chart is the single human approval. Stages R-A to R-E sit beside P0 to P4. |
