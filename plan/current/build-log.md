@@ -88,3 +88,17 @@ P3 batch 2 (REQ-001 to REQ-003, REQ-007 in parallel): GREEN. Commits e74d8d1, 87
 P3 batch 3 (REQ-008 to REQ-010): GREEN. Commits 981f204, 4612336, 3496939. Suite 82 feature and 19 regression passed, 7 PowerShell skipped. Deviations recorded in ADR-004 "Implementation notes (P2)". Requirement counts corrected to 21 test-frameworks.md files.
 P3 docs: living docs updated (0730166). Decisions index adds 0000042 ADR-001 to ADR-004 and two superseded rows.
 P3 gate: skipped under continuous run (0.8.0 rule).
+
+---
+
+### P4: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-23T08:33:13Z` |
+| Model tier | primary (security review), cheaper (checks) |
+| Skills loaded | planifest-validate-and-accept |
+| Agents spawned | `pending` |
+| MCP calls | `0` |
+| Parallel task batches | `pending` |
+| Notes | Chat prefix `P3 Validate:` maps to this log block. |
