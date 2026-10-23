@@ -83,3 +83,4 @@ P2 gate: skipped under continuous run (0.8.0 rule). Artifacts: 10 requirements, 
 | MCP calls | `0` |
 | Parallel task batches | `pending` |
 | Notes | Chat prefix `P2 Implement:` maps to this log block. Order: REQ-004 to REQ-006, then REQ-001 to REQ-003 with REQ-007, then REQ-008 to REQ-010. |
+P3 batch 1 (REQ-004 to REQ-006): GREEN. Commits af6ed11, 22f2d2e, 4ff8e0c. Suite 75 feature and 18 regression passed, 7 PowerShell skipped (no pwsh). Deviations: the guard skips all of `plan/backlog/` (REQ-006 updated). Root `CLAUDE.md` is gitignored, so the source `templates/standard-boot.md` carries the change.

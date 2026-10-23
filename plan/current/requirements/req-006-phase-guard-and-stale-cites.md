@@ -33,7 +33,7 @@ As a human on the loop, I read a phase number and name at the start of every mes
   - `plan/_archive/`
   - `plan/changelog/`
   - `planifest-zero/migrations/_done/`
-  - Existing entries under `plan/backlog/`
+  - Every entry under `plan/backlog/`. Entries are history-like, and telling old from new would need a fixed id list.
   - `plan/current/`
 - The test prints each offending file and line.
 
