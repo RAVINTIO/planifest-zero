@@ -19,31 +19,37 @@ Each file follows the naming convention `req-{NNN}-{kebab-slug}.md` and the [Req
 
 | File | Requirement | Source | Points |
 |------|------------|--------|--------|
-| [req-001-run-modes-gated-autonomous.md](requirements/req-001-run-modes-gated-autonomous.md) | `gated` and `autonomous` replace `interactive` and `continuous`, with four exception stops | US-001, US-002 | 4 |
-| [req-002-phase-numbers-and-prefixes.md](requirements/req-002-phase-numbers-and-prefixes.md) | Phases P0 to P4 and the five message prefixes | US-003 | 4 |
-| [req-003-product-name-planifest-zero.md](requirements/req-003-product-name-planifest-zero.md) | `name: "Planifest Zero"` in both manifests | US-004 | 1 |
-| [req-004-remove-framework-wording.md](requirements/req-004-remove-framework-wording.md) | No file describes or names Planifest Zero as a framework | US-005 | 4 |
+| [req-001-run-mode-question.md](requirements/req-001-run-mode-question.md) | The run-mode question and `plan/.run-mode` values `gated` and `autonomous` | US-001, US-002 | 4 (REQ-001 to REQ-003) |
+| [req-002-gate-and-exception-stops.md](requirements/req-002-gate-and-exception-stops.md) | Gate stops per mode and the four exception stops | US-001, US-002 | |
+| [req-003-run-mode-resume.md](requirements/req-003-run-mode-resume.md) | Resume with a missing or unknown run mode | US-001, US-002 | |
+| [req-004-phase-numbers-p0-to-p4.md](requirements/req-004-phase-numbers-p0-to-p4.md) | Phases P0 to P4 and the build-log headings | US-003 | 4 (REQ-004 to REQ-006) |
+| [req-005-message-prefixes.md](requirements/req-005-message-prefixes.md) | The five message prefixes and one status form | US-003 | |
+| [req-006-phase-guard-and-stale-cites.md](requirements/req-006-phase-guard-and-stale-cites.md) | Stale cites, the `custom-004` rename, and the guard test | US-003 | |
+| [req-007-product-name-planifest-zero.md](requirements/req-007-product-name-planifest-zero.md) | `name: "Planifest Zero"` in both manifests | US-004 | 1 |
+| [req-008-framework-prose.md](requirements/req-008-framework-prose.md) | No prose describes Planifest Zero as a framework | US-005 | 4 (REQ-008 to REQ-010) |
+| [req-009-framework-identifiers.md](requirements/req-009-framework-identifiers.md) | Identifier and file renames per ADR-004 | US-005 | |
+| [req-010-framework-allowlist-test.md](requirements/req-010-framework-allowlist-test.md) | The allowlist grep test | US-005 | |
 
-REQ-001 covers two user stories. The two stories share one question, one file, and one set of gate rules, so one requirement keeps them together.
+The consistency check allows three acceptance criteria per requirement, so each story group splits into several files. The points stay with the group.
 
 ## Implementation order
 
 Several requirements edit the same files, so P2 runs them in this order:
 
-1. REQ-002 renumbers every phase cite. REQ-001 and REQ-004 then edit text that already uses the new numbers.
-2. REQ-001 and REQ-003 run in parallel. They touch different files, apart from the orchestrator skill, which only REQ-001 edits for run modes.
-3. REQ-004 runs last. It renames identifiers per ADR-004 and adds the allowlist test.
+1. REQ-004 to REQ-006 renumber every phase cite. Later requirements then edit text that already uses the new numbers.
+2. REQ-001 to REQ-003 and REQ-007 run in parallel. REQ-007 touches only the two manifests and a new test.
+3. REQ-008 to REQ-010 run last. They reword prose, rename identifiers per ADR-004, and add the allowlist test.
 
-Inside REQ-004, subagents split by directory so no two edit one file.
+Inside REQ-008 and REQ-009, subagents split by directory so no two edit one file.
 
 ## Non-Functional Requirements
 
 | ID | Category | Requirement | Target | Measurement |
 |----|----------|------------|--------|-------------|
-| NFR-001 | Consistency | Phase cites stay inside P0 to P4 | 0 cites of P5 to P9 or a letter prefix outside history | Grep guard test from REQ-002 |
-| NFR-002 | Consistency | "Framework" never names Planifest Zero | 0 lines outside the allowlist and history | Allowlist test from REQ-004 |
+| NFR-001 | Consistency | Phase cites stay inside P0 to P4 | 0 cites of P5 to P9 or a letter prefix outside history | Grep guard test from REQ-006 |
+| NFR-002 | Consistency | "Framework" never names Planifest Zero | 0 lines outside the allowlist and history | Allowlist test from REQ-010 |
 | NFR-003 | Reliability | The full suite passes | 0 failures in `run-tests.sh` and `run-tests.ps1` | CI on the pull request |
-| NFR-004 | Security | An unmitigated critical or high finding stops an autonomous run | Stop in 100% of cases | REQ-001 test asserts the stop rule in the validate-and-accept skill |
+| NFR-004 | Security | An unmitigated critical or high finding stops an autonomous run | Stop in 100% of cases | REQ-002 test asserts the stop rule in the validate-and-accept skill |
 
 ## API Summary
 
