@@ -99,7 +99,7 @@
 - Renaming test files that carry old feature ids is unnecessary. Tests keep their names and change their assertions. Impact if wrong: names such as `continuous-run-p1-p3` mislead a reader.
 
 ## Risks
-- The wording and renumbering edits touch the same files and conflict when run in parallel. Likelihood: high. Impact: medium. Mitigation: P2 runs REQ-002 before REQ-004, or splits subagents by file.
+- The wording and renumbering edits touch the same files and conflict when run in parallel. Likelihood: high. Impact: medium. Mitigation: P2 runs REQ-004 to REQ-006 before REQ-008 to REQ-010, or splits subagents by file.
 - A stray old phase number or "framework" survives. Likelihood: medium. Impact: low. Mitigation: grep tests for both, run in CI.
 - Autonomous hides a P3 finding until the PR. Likelihood: low. Impact: high. Mitigation: the security stop, and P3 evidence in the PR description.
 - This run uses the 0.8.0 skills while it edits them. Likelihood: high. Impact: low. Mitigation: setup refreshes `.claude/skills/` at P3, and the run keeps the old numbers in its own log.
@@ -114,10 +114,18 @@ None
 ## Skill Map
 | Requirement | Best-fit Skill | Rationale |
 |-------------|----------------|-----------|
-| REQ-001 - run-modes-gated-autonomous | planifest-implement | TDD change to the orchestrator, phase skills, docs, and the 0000023 test |
-| REQ-002 - phase-numbers-and-prefixes | planifest-implement | TDD renumbering across skills, templates, docs, hooks, and tests |
-| REQ-003 - product-name-planifest-zero | planifest-implement | Two-field change with a grep test |
-| REQ-004 - remove-framework-wording | planifest-implement | TDD wording and identifier change with an allowlist grep test |
+| REQ-001 - run-mode-question | planifest-implement | TDD change to the orchestrator run-mode question and `plan/.run-mode` values |
+| REQ-002 - gate-and-exception-stops | planifest-implement | TDD change to the gate rows and exception stops in the phase skills |
+| REQ-003 - run-mode-resume | planifest-implement | TDD change to resume detection and `pipeline-reference.md` |
+| REQ-004 - phase-numbers-p0-to-p4 | planifest-implement | TDD renumbering across skills, templates, docs, hooks, and tests |
+| REQ-005 - message-prefixes | planifest-implement | TDD change to the prefix tables in the orchestrator and `pipeline-reference.md` |
+| REQ-006 - phase-guard-and-stale-cites | planifest-implement | Grep guard test, stale cites, and the `custom-004` rename |
+| REQ-007 - product-name-planifest-zero | planifest-implement | Two-field change with a grep test |
+| REQ-008 - framework-prose | planifest-implement | Prose rewording across docs, skills, and setup output |
+| REQ-009 - framework-identifiers | planifest-implement | Identifier and file renames per the ADR-004 map |
+| REQ-010 - framework-allowlist-test | planifest-implement | New allowlist grep test |
+
+The consistency check allows three acceptance criteria per requirement, so P1 split the four planned requirements into ten. The scope and the 13 points are unchanged.
 
 ## Repo Instructions
 - `custom-001-local-git-only.md`: fetch, pull, push, and `gh pr create` without asking. Work on a `feat/` branch with no worktrees. Committing to `main` and merging PRs are human-only. Commit after every meaningful artifact.
