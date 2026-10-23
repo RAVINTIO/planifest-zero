@@ -23,15 +23,16 @@ As a human on the loop, I let the agent squash-merge a green step into the roadm
   - The step's Status becomes `merged`.
   - The step's Version holds the released version.
   - `position` moves to the next step.
-- The agent waits for CI with `gh pr checks`.
-  - Red or pending CI is an exception stop. The agent logs `Blocked:`, pushes, and exits.
+- The agent polls `gh pr checks` until checks appear, then waits with `gh pr checks {n} --watch --fail-fast`.
+  - Pending CI waits and does not block.
+  - The agent logs `Blocked:`, pushes, and exits in two cases. No CI ran after 2 minutes, or a check failed.
 - On green CI, the agent runs `gh pr merge --squash`, then fetches.
 - The agent tags the squash commit on the roadmap branch with the step's version, then pushes the tag.
 - A normal run outside a roadmap keeps today's order. The tag comes before the PR, and the agent never merges.
 
 ## Acceptance Criteria
 - [ ] (a) The ship skill states the roadmap-step PR command with `--base roadmap/{id}-{slug}` and requires the same PR to set the step to `merged`, fill Version, and move `position`.
-- [ ] (b) The ship skill requires green `gh pr checks` before `gh pr merge --squash`, treats red or pending CI as a `Blocked:` stop, then fetches, tags the squash commit, and pushes the tag.
+- [ ] (b) The ship skill polls until checks appear, waits with `gh pr checks {n} --watch --fail-fast`, and requires green checks before `gh pr merge --squash`. It treats no CI after 2 minutes or a failed check as a `Blocked:` stop, and lets pending CI wait. It then fetches, tags the squash commit, and pushes the tag.
 - [ ] (c) The ship skill keeps the tag-before-PR order and the no-merge rule for a run outside a roadmap.
 
 ## Dependencies

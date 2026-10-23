@@ -21,9 +21,9 @@ Each `planifest-zero/tests/test-0000043-req-001` to `req-010` script ran alone. 
 | 003 | (c) driver offer, background task, parent must not edit tree | same, "req-003 (c)" | yes |
 | 004 | (a) branch from roadmap branch, brief and deletion in one commit, `autonomous` unasked | `test-0000043-req-004-roadmap-step-discovery.sh`, "req-004 (a)" | yes |
 | 004 | (b) `draft-accepted (roadmap)`, stop only when too vague | same, "req-004 (b)" | yes |
-| 004 | (c) `Bump` values, default `minor`, downgrade block | same, "req-004 (c)" | partial, see Gaps |
+| 004 | (c) `Bump` values, default `minor`, downgrade block | same, "req-004 (c)" | yes |
 | 005 | (a) `--base roadmap/{id}-{slug}`, `merged`, Version, `position` in same PR | `test-0000043-req-005-roadmap-advance.sh`, "req-005 (a)" | yes |
-| 005 | (b) green checks, squash, fetch, tag, push tag, `Blocked:` | same, "req-005 (b)" and "(d)" | yes, see Gaps for the pending-CI drift |
+| 005 | (b) green checks, squash, fetch, tag, push tag, `Blocked:` | same, "req-005 (b)" and "(d)" | yes, requirement text updated to match the build |
 | 005 | (c) tag-before-PR and no-merge outside a roadmap | same, "req-005 (c)" | yes |
 | 006 | (a) squash into `roadmap/*` exits 0, main, no flag, failed `gh` exit 2 with `[Planifest]` | `test-0000043-req-006-merge-guard-hook.sh`, "req-006 (a)" | yes |
 | 006 | (b) non-merge, non-Bash, malformed stdin exit 0 | same, "req-006 (b)" | yes |
@@ -43,8 +43,8 @@ Each `planifest-zero/tests/test-0000043-req-001` to `req-010` script ran alone. 
 
 ## Gaps
 
-- **req-004 (c), partial.** No assertion checks that the bump applies to "the roadmap branch's version". The test checks `Bump`, its values, the default and the downgrade block.
-- **req-005 (b), spec drift.** The criterion says red or pending CI is a `Blocked:` stop. The skill and the test (d) say only a failed check blocks and pending CI waits. Update the requirement text to match what was built.
+- **req-004 (c), closed in b4a824b.** The standard names `product.yml` and `docs/about.md` as the source of the roadmap branch's version, and the test asserts both.
+- **req-005 (b), closed.** The requirement text now matches the build: pending CI waits, and only no CI after 2 minutes or a failed check blocks.
 - **req-009 (c), indirect.** The req-009 test asserts only Hard Limit 10. The three 0000042 tests are covered by the suite run, not by an assertion in the req-009 script.
 
 ## Execution evidence
@@ -57,7 +57,7 @@ Each `planifest-zero/tests/test-0000043-req-001` to `req-010` script ran alone. 
 | Driver, failed `claude` | Same, stub exits 3 | verified | Exit 1. Line `R-C Run: Blocked: claude exited 3 on step 1`. Lock absent. |
 | Driver, inactive roadmap | Same, `status` draft | verified | Exit 1. Line `R-C Run: Blocked: roadmap status is draft, not active`. Zero stub calls. |
 | Driver, `.git/info/exclude` | Same fixture after `git init` | verified | Exit 0. `plan/.roadmap-runner.lock` on line 7 of `.git/info/exclude`. |
-| Driver, roadmap with the template's quoted frontmatter | Same, frontmatter left as `status: "active"` as the template writes it | failed | Exit 1 with `R-C Run: Blocked: roadmap status is missing or invalid`. Zero stub calls. See Defect. |
+| Driver, roadmap with the template's quoted frontmatter | Same, frontmatter left as `status: "active"` as the template writes it | verified, fixed in 2f0b6ed | Exit 0 after the fix. Before it: exit 1 with `R-C Run: Blocked: roadmap status is missing or invalid`. `field()` now strips one pair of quotes, and the body field wins over the frontmatter. The req-007 test covers a filled-in copy of the template. |
 | Template | Read `roadmap-entry.template.md` | verified | Frontmatter `title`, `summary`, `status`. Fields **Goal**, **Branch**, **Status**, **Position**. Section `Stop conditions`. Status comment lists `draft | active | blocked | done`. Header row `| Step | Feature id | Backlog entries | Bump | Version | Status |`. |
 | Setup, hook registration | Copied `planifest-zero/` and `product.yml` to a temp project, `git init`, `bash planifest-zero/setup.sh claude-code` | verified | Exit 0, 0 stderr lines. `.claude/settings.json` holds one `PreToolUse` entry for `merge-guard` with matcher `Bash`. `merge-guard.mjs` present in `.claude/hooks/enforcement/`. |
 | Setup, generated `CLAUDE.md` | Same project with `planifest-overrides/` copied in, setup rerun | verified | Exit 0. `CLAUDE.md` line 47 and line 78 carry the `roadmap/*` carve-out and name `merge-guard`. Without `planifest-overrides/` the file has no carve-out, because the text comes from the overrides. |
@@ -66,7 +66,7 @@ Each `planifest-zero/tests/test-0000043-req-001` to `req-010` script ran alone. 
 
 ## Defect
 
-The driver reads the first `status:` line it finds, which is the frontmatter line. The template writes `status: "draft"` with quotes, so an active roadmap with `status: "active"` makes `field()` in `planifest-zero/scripts/roadmap-run.mjs` return `"active"` with quotes. The driver then fails the status check. The test fixture uses an unquoted value, so the suite does not catch it. Fix by stripping quotes in `field()` or by writing frontmatter unquoted when Activate runs. Add a quoted-frontmatter case to the req-007 test.
+Fixed in 2f0b6ed. The template writes quoted frontmatter such as `status: "draft"`, and the driver rejected the quoted value. `field()` in `planifest-zero/scripts/roadmap-run.mjs` now strips one matching pair of quotes and a trailing comment. It reads the body field first and falls back to the frontmatter.
 
 ## Live acceptance run
 
