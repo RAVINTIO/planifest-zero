@@ -42,3 +42,4 @@ P0 exchange (roadmap plan): Q: Does the feature store a roadmap plan that sequen
 P0 exchange (roadmap folder): Q: One roadmap or many? / A: As many as needed under plan/roadmap/, one folder per plan, in the same format as backlog entries.
 P0 exchange (roadmap state): Q: Where does the active roadmap live? / A: plan/current-roadmap/ holds the active roadmap and its state. Each feature runs as usual in plan/current/ within it.
 P0 exchange (roadmap versions): Q: How does each step version? / A: The roadmap stores a bump per step: major, minor, or patch. Most steps are minor.
+P0 exchange (merge style): Q: Merge commits at both levels? / A: No. The agent squash-merges each feature into roadmap/*. The human likely merge-commits the roadmap PR into main, so each feature keeps one commit.
