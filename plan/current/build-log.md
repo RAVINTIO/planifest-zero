@@ -58,3 +58,4 @@ Scope Lock (first-run path): With no roadmap folder or draft, Chart writes a new
 Scope Lock (error path): An exception stop in a step logs Blocked, pushes, and exits. The driver stops when position does not move, leaves the roadmap active, and resumes that step on the next run. Red or pending CI at Advance is the same stop. [source: draft-accepted]
 Scope Lock (cross-session continuity): All state lives in git. The next run resumes a step through normal resume detection, or starts the step at position. The roadmap update rides in the step's squash commit. [source: draft-accepted]
 Scope Lock complete. All four scenario paths captured.
+Run mode: autonomous (2026-10-23T22:45:55Z)
