@@ -33,7 +33,7 @@ invokes in order.
 | 4 | Validate and accept | planifest-validate-and-accept | Passing CI, security review, verified acceptance criteria |
 | 5 | Ship | planifest-ship | Archive, build assessment, changelog, tag, PR |
 
-### 1. Discovery
+### P0: Discovery
 
 The orchestrator reads the brief, coaches the human through gaps one question
 at a time, picks up backlog entries, locks scope, and writes the design.
@@ -41,7 +41,7 @@ at a time, picks up backlog entries, locks scope, and writes the design.
 **Gate: design confirmation.** The human confirms `plan/current/design.md`.
 That confirmation ends discovery. No later phase starts without it.
 
-### 2. Plan
+### P1: Plan
 
 planifest-plan produces one artifact set: the execution plan, functional
 requirements, scope, risk register, glossary, and an ADR for every
@@ -50,7 +50,7 @@ significant decision.
 **Gate: the plan gate.** One gate for the whole artifact set. Requirements
 and ADRs are confirmed together, not separately.
 
-### 3. Implement
+### P2: Implement
 
 planifest-implement builds the feature through a TDD loop per requirement.
 Code, tests, and docs land together. Code never ships without its
@@ -59,7 +59,7 @@ documentation.
 **Gate: the implement gate.** Every requirement has code, tests, and docs,
 and the implementation matches the confirmed plan.
 
-### 4. Validate and accept
+### P3: Validate and accept
 
 planifest-validate-and-accept runs CI (lint, typecheck, test, build),
 self-corrects up to 5 times, performs the security review, and verifies
@@ -69,7 +69,7 @@ acceptance criteria by running the software.
 feature. In autonomous mode, the acceptance evidence goes in the PR
 description instead.
 
-### 5. Ship
+### P4: Ship
 
 planifest-ship archives `plan/current/` to `plan/_archive/{feature-id}/`,
 files the build assessment, writes the changelog entry, tags the release,
