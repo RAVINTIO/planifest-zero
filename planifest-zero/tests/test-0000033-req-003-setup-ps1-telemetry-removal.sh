@@ -2,7 +2,7 @@
 # Tests for feature 0000033-remove-telemetry-mcp, req-003:
 # setup-ps1-telemetry-removal.
 #
-# Covers ADR-001 (telemetry is not a framework concern): setup.ps1 carries no
+# Covers ADR-001 (telemetry is not a pack concern): setup.ps1 carries no
 # telemetry flag, no telemetry function, and no telemetry hook entry, while the
 # surviving enforcement hooks and the 0000032 setup-config record still install.
 # ADR-001 decision 6 drops the backendUrl field from the record and the marker.

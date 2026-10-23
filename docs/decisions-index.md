@@ -44,7 +44,7 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
-| ADR-001 | Telemetry is not a framework concern | accepted | Removes the telemetry system from `planifest-zero` with no replacement and no extension seam. Drops `backendUrl` from the setup-config record, narrowing 0000032 ADR-001. |
+| ADR-001 | Telemetry is not a pack concern | accepted | Removes the telemetry system from `planifest-zero` with no replacement and no extension seam. Drops `backendUrl` from the setup-config record, narrowing 0000032 ADR-001. |
 | ADR-002 | Setup cleans up telemetry wiring on every run | accepted | Every setup run removes legacy telemetry hook entries, the opt-in sentinel, and the marker directories. One line per removal, a warning without failing. |
 | ADR-003 | The phase vocabulary lives in prose, not in a module | accepted | Deletes `phase-enum.mjs` and states the five phase names in `pipeline-reference.md`. The `product.yml` id and its hard stop stay, for versioning. |
 

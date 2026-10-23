@@ -54,7 +54,7 @@ Twelve skills drive the pipeline.
 | `planifest-refactor` | TDD refactor: improves quality while all tests stay passing |
 | `planifest-loop-runner` | Canonical loop mechanics: state files, stop rules, escalation format |
 | `planifest-optimise-agent` | Reviews skills for superfluous content, one suggestion at a time |
-| `planifest-migrator` | Applies pending framework migrations interactively |
+| `planifest-migrator` | Applies pending pack migrations interactively |
 | `planifest-refresh-setup` | Re-runs setup with the flags currently in effect |
 
 The TDD trio (`planifest-test-writer`, `planifest-implementer`, `planifest-refactor`) is dispatched by `planifest-implement`, once per requirement.
@@ -295,7 +295,7 @@ In retrofit mode, discovery includes a codebase scan before coaching. The orches
 
 ## Updating the pack
 
-"Updating the framework" means pulling new files into `planifest-zero/` (via git pull, a submodule update, or copying from the source repo) and then re-running the setup script to propagate the changes.
+"Updating the pack" means pulling new files into `planifest-zero/` (via git pull, a submodule update, or copying from the source repo) and then re-running the setup script to propagate the changes.
 
 ### Re-run setup after update
 
@@ -384,16 +384,16 @@ planifest-overrides/
 
 ### library-standards/
 
-Override framework library preferences per language. Files here take precedence over `planifest-zero/standards/library-standards/`:
+Override the pack's library preferences per language. Files here take precedence over `planifest-zero/standards/library-standards/`:
 
 ```
 planifest-overrides/
 └── library-standards/
     └── typescript/
-        └── prefer-avoid.md    ← replaces the framework default for TypeScript
+        └── prefer-avoid.md    ← replaces the pack default for TypeScript
 ```
 
-Agents check `planifest-overrides/library-standards/` first. Structure matches the framework default.
+Agents check `planifest-overrides/library-standards/` first. Structure matches the pack default.
 
 ---
 

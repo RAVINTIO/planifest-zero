@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test assertion helpers for the Planifest framework test suite
+# Test assertion helpers for the Planifest Zero test suite
 # Usage: source this file, call assert_* functions, call print_summary at the end.
 #
 # JSON helpers use jq if available, fall back to Node.js — matching the hook scripts.

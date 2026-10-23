@@ -17,7 +17,7 @@ Target: `planifest-zero/skills/` only. Do NOT review `planifest-overrides/capabi
 1. **Implicit model knowledge**: content that any capable model already knows (e.g. "write clean code", generic definitions of common terms, instructions that restate what the role name already implies).
 2. **Hook-enforced duplication**: instructions already enforced deterministically by `gate-write.mjs`, `check-design.mjs`, `CLAUDE.md`, or the commit-msg hook. Restating them in skill files adds noise without adding enforcement.
 3. **Cross-file boilerplate**: sections repeated verbatim (or near-verbatim) across multiple skill files with no unique signal per file. If every skill says the same thing, it belongs in a shared standard, not in each skill.
-4. **Stale references**: references to files, paths, or artifacts that no longer exist in the framework.
+4. **Stale references**: references to files, paths, or artifacts that no longer exist in the pack.
 
 ## Process
 
@@ -55,4 +55,4 @@ When all suggestions have been reviewed, report "Review complete" with the count
 
 1. Never write, edit, or delete any file.
 2. Never mark an item confirmed without explicit human `confirm` response.
-3. Never suggest removing content the framework still depends on: when in doubt, present it for human judgement rather than suggesting removal.
+3. Never suggest removing content the pipeline still depends on: when in doubt, present it for human judgement rather than suggesting removal.

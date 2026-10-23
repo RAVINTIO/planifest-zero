@@ -24,7 +24,7 @@ CLEANUP_WARNING="could not remove telemetry hook entries"
 REMOVAL_LINE="  - removed telemetry hook entries from .claude/settings.json"
 TELEMETRY_SETTINGS='{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"node .claude/hooks/emit-event.mjs"}]}]}}'
 
-# One copy of the framework serves every case. Each case gets a fresh project.
+# One copy of the pack serves every case. Each case gets a fresh project.
 TEMPLATE="$(mktemp -d -t planifest_0000041_req001_tpl_XXXXXX)"
 cp -r "$ZERO_DIR" "$TEMPLATE/planifest-zero"
 

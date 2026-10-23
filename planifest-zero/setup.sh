@@ -670,7 +670,7 @@ initialize_repo() {
       echo "  - .gitignore (already exists at root, skipped)"
     fi
   else
-    echo "  ! Warning: .gitignore not found in framework directory ($gitignore_src)"
+    echo "  ! Warning: .gitignore not found in the planifest-zero directory ($gitignore_src)"
   fi
 
   local src_dir="$PROJECT_ROOT/src"
@@ -719,7 +719,7 @@ EOF
 
 ```
 repo/
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ planifest-zero/        Ã¢â€ Â The framework (skills, templates, schemas, standards)
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ planifest-zero/        Ã¢â€ Â The pack (skills, templates, schemas, standards)
 Ã¢â€â€š                                 Drop this in. Don't modify it per-project.
 Ã¢â€â€š
 Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ plan/                       Ã¢â€ Â The specifications (organized by feature)
@@ -733,9 +733,9 @@ repo/
 
 ---
 
-## `planifest-zero/` Ã¢â‚¬â€ The Framework
+## `planifest-zero/` Ã¢â‚¬â€ The pack
 
-This folder is the Planifest framework itself. It is the same across every project. You do not modify it per-feature Ã¢â‚¬â€ you update it when the framework evolves.
+This folder is Planifest Zero itself. It is the same across every project. You do not modify it per-feature Ã¢â‚¬â€ you update it when Planifest Zero evolves.
 
 ```
 planifest-zero/
@@ -1189,5 +1189,5 @@ fi
 echo ""
 echo "Setup complete."
 echo "  Source of truth: planifest-zero/"
-echo "  Re-run after updating framework files."
+echo "  Re-run after you update the pack."
 

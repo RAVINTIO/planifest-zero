@@ -2,7 +2,7 @@
 # Tests for feature 0000033-remove-telemetry-mcp, req-002:
 # setup.sh telemetry removal.
 #
-# Covers ADR-001 (telemetry is not a framework concern): setup.sh carries no
+# Covers ADR-001 (telemetry is not a pack concern): setup.sh carries no
 # telemetry flags, no telemetry functions, and writes no telemetry wiring. The
 # six surviving enforcement hooks must still install. Per ADR-001 decision 6
 # the setup-config record drops backendUrl and holds tool, flags, writtenAt.

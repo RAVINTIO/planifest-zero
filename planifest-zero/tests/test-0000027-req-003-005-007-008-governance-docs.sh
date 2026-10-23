@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Content-pinning tests for the doc/workflow-only requirements of feature
-# 0000027 that survive the five-phase framework cut-down: req-003 (subagent
-# backlog filing), req-005 (framework update policy), req-007 (skill-scope
+# 0000027 that survive the five-phase cut-down: req-003 (subagent
+# backlog filing), req-005 (pack update policy), req-007 (skill-scope
 # test), req-008 (minimal plan-phase artifact set). Asserts the required
 # content exists in its current homes rather than executing prose.
 
@@ -34,10 +34,10 @@ echo "=== req-005: explicit discovery flow for a planifest-zero/ dependency upda
 
 ORCHESTRATOR_SKILL="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 orch_content=$(cat "$ORCHESTRATOR_SKILL")
-assert_contains "Framework dependency update" "$orch_content" \
-  "req-005: orchestrator has a distinct resume-detection step for framework updates"
+assert_contains "Pack dependency update" "$orch_content" \
+  "req-005: orchestrator has a distinct resume-detection step for pack updates"
 assert_contains "pack-update-policy.md" "$orch_content" \
-  "req-005: orchestrator points to the Framework Update Policy doc"
+  "req-005: orchestrator points to the Pack Update Policy doc"
 
 assert_equals "yes" "$([ -f "$ZERO_DIR/standards/pack-update-policy.md" ] && echo yes || echo no)" \
   "req-005: standards/pack-update-policy.md exists"
@@ -45,7 +45,7 @@ assert_equals "yes" "$([ -f "$ZERO_DIR/standards/pack-update-policy.md" ] && ech
 if [ -f "$ZERO_DIR/standards/pack-update-policy.md" ]; then
   policy_content=$(cat "$ZERO_DIR/standards/pack-update-policy.md")
   assert_contains "provenance" "$policy_content" \
-    "req-005: Framework Update Policy requires provenance confirmation"
+    "req-005: Pack Update Policy requires provenance confirmation"
 fi
 assert_contains "provenance" "$orch_content" \
   "req-005: orchestrator requires provenance confirmation before accepting the update"

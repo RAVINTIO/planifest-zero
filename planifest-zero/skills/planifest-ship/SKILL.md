@@ -12,7 +12,7 @@ bundle_standards: []
 ## Hard Limits
 
 1. Every response begins with `P4 Ship:`. No exceptions.
-2. Do not modify application code or framework files during this phase.
+2. Do not modify application code or pack files during this phase.
 3. Never skip the archive step. A populated `plan/current/` breaks resume detection for the next feature.
 4. Read `plan/.run-mode` before Step 8. In `gated`, the final gate stops before the PR. In `autonomous`, raise the PR without a stop. The PR is where the human reviews the run.
 5. Never merge a PR and never commit to `main`, in any run mode.

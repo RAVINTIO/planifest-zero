@@ -26,7 +26,7 @@ When `Build target: docker` is declared in `plan/current/design.md`, run every C
 
 Run the stack's declared checks in this order:
 
-0. **Library audit**: check `planifest-overrides/library-standards/{language}/prefer-avoid.md`, then the framework copy. If an avoided library is installed, fail and name the preferred alternative.
+0. **Library audit**: check `planifest-overrides/library-standards/{language}/prefer-avoid.md`, then the pack copy. If an avoided library is installed, fail and name the preferred alternative.
 1. **Semantic correctness**: every requirement needs a mapped, executing test identifiable by req-ID. Every acceptance criterion needs a covering test. Produce a coverage table. A missing criterion is a failure, not a warning.
 2. **Lint**
 3. **Typecheck**

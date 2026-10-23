@@ -32,10 +32,10 @@ assert_equals "yes" "$(grep_has 'Wave 1 ships before Wave 2 begins' "$TEMPLATES/
 assert_equals "yes" "$(grep_has 'deferred to Wave 2' "$TEMPLATES/scope-guide.md")" \
   "req-003: scope-guide.md deferred example uses Wave"
 
-# no decomposition-sense stragglers anywhere in Planifest-authored framework files
+# no decomposition-sense stragglers anywhere in Planifest Zero files
 STRAYS=$(grep -rl -i "if phased\|phase-{n}\|phase-2\.md\|phased feature" "$ZERO_DIR" --include="*.md" 2>/dev/null | grep -v external-skills || true)
 assert_equals "" "$STRAYS" \
-  "req-003: no decomposition-sense 'phased' wording remains in framework files"
+  "req-003: no decomposition-sense 'phased' wording remains in pack files"
 
 # ── AC: pipeline-phase sense untouched ───────────────────────────────────────
 

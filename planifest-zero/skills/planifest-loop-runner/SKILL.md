@@ -24,7 +24,7 @@ Before arming any loop, read `planifest-overrides/loop-toggles.yml` (see `templa
 - `report-only` → run the loop, write findings/verdicts, block nothing, mutate nothing.
 - `on` → verdicts gate progression per the owning skill's rules.
 
-The framework never creates `planifest-overrides/loop-toggles.yml`. Enabling a loop is always a deliberate human act.
+The pipeline never creates `planifest-overrides/loop-toggles.yml`. Enabling a loop is always a deliberate human act.
 
 ## Loop State (per instance)
 

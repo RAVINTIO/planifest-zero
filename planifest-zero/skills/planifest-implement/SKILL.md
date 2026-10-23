@@ -41,7 +41,7 @@ For each component at `src/{component-id}/`: application code, shared types and 
 
 Build multiple components in dependency order: shared packages, then data owners, then consumers. Each component is finished (code, tests, docs) before the next starts. Halt and escalate on a circular dependency.
 
-Before writing any dependency manifest, check `planifest-overrides/library-standards/{language}/prefer-avoid.md`, then the framework's `standards/library-standards/` lists. Substitute preferred alternatives for avoided libraries. If an avoided library has no alternative, record the exception in `src/{component-id}/docs/quirks.md` and escalate. Skip the audit when the lists are stubs. Follow `standards/library-standards/_version-policy.md` for version pinning.
+Before writing any dependency manifest, check `planifest-overrides/library-standards/{language}/prefer-avoid.md`, then the pack's `standards/library-standards/` lists. Substitute preferred alternatives for avoided libraries. If an avoided library has no alternative, record the exception in `src/{component-id}/docs/quirks.md` and escalate. Skip the audit when the lists are stubs. Follow `standards/library-standards/_version-policy.md` for version pinning.
 
 ## TDD inner loop
 

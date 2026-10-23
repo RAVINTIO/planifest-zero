@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests for feature 0000009: framework rail tightening
+# Tests for feature 0000009: rail tightening
 # Covers REQ-001 through REQ-012 (design.md numbering).
 
 set -uo pipefail

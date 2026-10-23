@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Tests for feature 0000037-self-host-on-planifest-zero, req-004 (ADR-001).
 #
-# The old framework copy is gone from the tree and from git. Git reads its
-# hooks from planifest-zero/hooks, so commit-msg stays active. The tests
-# README names no old folder.
+# The old folder is gone from the tree and from git.
+# Git reads its hooks from planifest-zero/hooks, so commit-msg stays active.
+# The tests README names no old folder.
 
 set -uo pipefail
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Tests for feature 0000005-pack-governance
 # Covers: req-001 through req-016
-# Amended for the 0000030 framework cut-down. Retired agent skills
+# Amended for the 0000030 cut-down. Retired agent skills
 # (codegen-agent, validate-agent, change-agent) are gone, so the wiring
 # assertions now point at the surviving phase skills that carry the
 # same rules (planifest-plan, planifest-implement,

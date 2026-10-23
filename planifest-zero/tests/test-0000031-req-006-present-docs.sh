@@ -18,7 +18,7 @@ assert_equals "0" "$(grep -ci "cursor" "$ZERO_DIR/tests/README.md" || true)" "te
 assert_equals "0" "$(grep -c "plan/{feature-id}/" "$REPO/plan/feature-structure.md" 2>/dev/null || true)" "feature-structure has no per-feature folder layout"
 assert_equals "no" "$([ -f "$REPO/plan/library-standards-plan.md" ] && echo yes || echo no)" "spent plan doc deleted"
 for pat in ".cursor/" ".gemini/" ".windsurf/" ".clinerules/" "GEMINI.md"; do
-  assert_equals "0" "$(grep -cF "$pat" "$ZERO_DIR/.gitignore" || true)" "framework .gitignore free of $pat"
+  assert_equals "0" "$(grep -cF "$pat" "$ZERO_DIR/.gitignore" || true)" "pack .gitignore free of $pat"
   assert_equals "0" "$(grep -cF "$pat" "$REPO/.gitignore" || true)" "root .gitignore free of $pat"
 done
 

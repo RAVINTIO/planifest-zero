@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Tests for feature 0000006-build-assessment-phase
 # Covers: req-001 through req-008
-# Amended for the 0000030 framework cut-down: build assessment folded into
+# Amended for the 0000030 cut-down: build assessment folded into
 # skills/planifest-ship/SKILL.md Step 5, P8 removed, phase agents retired.
 
 set -uo pipefail

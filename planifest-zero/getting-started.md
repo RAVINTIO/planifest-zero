@@ -15,7 +15,7 @@
 
 ## New Project
 
-### 1. Add the framework
+### 1. Add the pack
 
 Copy the `planifest-zero/` folder into your repository root. This folder is all you need. It contains the skills, templates, standards, hooks, and setup scripts.
 

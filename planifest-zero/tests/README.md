@@ -1,6 +1,6 @@
 # Planifest Tests
 
-This directory holds the framework's own test suite. Bash suites run on macOS,
+This directory holds the pack's own test suite. Bash suites run on macOS,
 Linux, and WSL. PowerShell suites run on Windows PowerShell 5.1 and
 PowerShell 7. All suites cover the Claude Code target only.
 

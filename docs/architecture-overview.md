@@ -4,9 +4,9 @@ Last updated: 0000041-setup-cleanup-and-park-hardening
 
 ## What this repo is
 
-This repo is the Planifest framework itself. It holds one component, `planifest-zero`, which other projects install into their working tree.
+This repo is Planifest Zero itself. It holds one component, `planifest-zero`, which other projects install into their working tree.
 
-The framework is not a service. It has no runtime of its own. It ships four things:
+Planifest Zero is not a service. It has no runtime of its own. It ships four things:
 
 1. **Skills.** Markdown instructions that Claude Code auto-discovers from `.claude/skills/`. Twelve skills drive the five-phase pipeline.
 2. **Hooks.** Node `.mjs` scripts that Claude Code invokes synchronously at tool-call boundaries. Enforcement hooks block or annotate. Git hooks guard commits and pushes. No hook makes an outbound network call.

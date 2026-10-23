@@ -16,7 +16,7 @@ updated: "22 Oct 2026"
 
 ## What this is
 
-Planifest Zero is a specification-first framework for Claude Code. The
+Planifest Zero is a specification-first pipeline for Claude Code. The
 repository holds one component, `planifest-zero`. It is a component pack of
 standards, skills, hooks, templates, schemas, and setup scripts.
 
@@ -24,5 +24,5 @@ The pipeline runs five phases: discovery, plan, implement, validate and
 accept, and ship. Twelve skills drive it. Every change is a feature change
 and runs the same pipeline. A small change is a small run.
 
-The framework ships no telemetry and makes no outbound network calls.
+Planifest Zero ships no telemetry and makes no outbound network calls.
 Observability belongs to the tool that runs the session.

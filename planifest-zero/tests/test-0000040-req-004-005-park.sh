@@ -15,7 +15,7 @@ PARK_TPL="$ROOT/templates/park.template.md"
 ENTRY_TPL="$ROOT/templates/backlog-entry.template.md"
 S=$(cat "$ORCH")
 PARK_SEC=$(printf '%s\n' "$S" | sed -n '/^## Park Command/,/^## Context Hygiene/p')
-RESUME_SEC=$(printf '%s\n' "$S" | sed -n '/^## Resume Detection/,/^## Framework Index/p')
+RESUME_SEC=$(printf '%s\n' "$S" | sed -n '/^## Resume Detection/,/^## Pack Index/p')
 STEP10=$(printf '%s\n' "$S" | sed -n '/^10\. \*\*Backlog pickup\*\*/,/^11\. /p')
 
 echo "=== req-004: the skill has a Park Command section after Pause Command ==="
@@ -58,7 +58,7 @@ for field in 'phase:' 'last_artifact:' 'head_commit:' 'reason:'; do
 done
 assert_equals "" "$(grep -n '—' "$PARK_TPL" 2>/dev/null)" "req-004: park.template.md has no em dash"
 assert_contains '| A park record | `planifest-zero/templates/park.template.md` |' "$S" \
-  "req-004: the Framework Index names the park template"
+  "req-004: the Pack Index names the park template"
 BUNDLE=$(grep '^bundle_templates:' "$ORCH")
 assert_contains 'park.template.md' "$BUNDLE" "req-004: bundle_templates lists park.template.md"
 

@@ -1,6 +1,6 @@
-# Planifest - Mandatory Framework Rules
+# Planifest Zero - Mandatory Pipeline Rules
 
-This project uses the confirmed design framework. These rules are non-negotiable and apply to every session.
+This project uses Planifest Zero, a confirmed-design pipeline. These rules are non-negotiable and apply to every session.
 
 ## Hard Limits
 
