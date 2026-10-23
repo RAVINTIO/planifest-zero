@@ -35,3 +35,4 @@ Documented assumptions from the specification are logged here with likelihood: m
 | A-001 | A failing `pre-commit` hook in a temporary repo forces the chore commit to fail. | The park test needs another way to fail the commit, such as a read-only index. | open |
 | A-002 | The PowerShell reading of 0000128 is correct, though nobody has run it. | The new test passes before the fix, so the test writer must confirm RED in CI. | open |
 | A-003 | No other repo installs Planifest Zero. | Another install breaks on the renamed identifiers and run-mode values. Mitigation: none is planned, and this repo is the only known install. | open |
+| A-004 | Tests whose file names carry old feature ids keep their names. Only names that call Planifest Zero a framework change, per ADR-004. Likelihood: medium. | A name such as `continuous-run-p1-p3` misleads a reader. Mitigation: the test header comment states the current behaviour. | open |
