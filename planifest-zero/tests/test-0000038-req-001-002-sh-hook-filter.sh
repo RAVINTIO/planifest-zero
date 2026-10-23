@@ -80,6 +80,7 @@ for line in \
   'PreToolUse|Edit|node ".claude/hooks/enforcement/ratchet-check.mjs"' \
   'PreToolUse|Write|node ".claude/hooks/enforcement/em-dash-guard.mjs"' \
   'PreToolUse|Edit|node ".claude/hooks/enforcement/em-dash-guard.mjs"' \
+  'PreToolUse|Bash|node ".claude/hooks/enforcement/merge-guard.mjs"' \
   'UserPromptSubmit|.*|node ".claude/hooks/enforcement/auto-trigger-orchestrator.mjs"' \
   'UserPromptSubmit|.*|node ".claude/hooks/enforcement/check-orchestrator-presence.mjs"' \
   'UserPromptSubmit|.*|node ".claude/hooks/enforcement/check-design.mjs"'; do
@@ -138,8 +139,8 @@ assert_exit_zero "$?" "req-001: setup.sh exits 0 with a non-array hooks value"
 assert_equals '{"matcher":"Write","hooks":"node .claude/hooks/enforcement/gate-write.mjs"}' \
   "$(node -e 'console.log(JSON.stringify(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks.PreToolUse[0]))' "$WS/.claude/settings.json")" \
   "req-001: the non-array hook entry stays first and unchanged"
-assert_equals "7" "$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks.PreToolUse.length)' "$WS/.claude/settings.json")" \
-  "req-001: the six fresh PreToolUse entries follow it"
+assert_equals "8" "$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).hooks.PreToolUse.length)' "$WS/.claude/settings.json")" \
+  "req-001: the seven fresh PreToolUse entries follow it"
 rm -rf "$WS"
 
 print_summary

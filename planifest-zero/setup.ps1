@@ -418,8 +418,8 @@ function Read-SettingsObject {
 }
 
 function Merge-EnforcementHookSettings {
-    # Merge the six enforcement hooks into settings.json: gate-write,
-    # ratchet-check, and em-dash-guard (PreToolUse), then
+    # Merge the seven enforcement hooks into settings.json: gate-write,
+    # ratchet-check, em-dash-guard, and merge-guard (PreToolUse), then
     # auto-trigger-orchestrator, check-orchestrator-presence, and check-design
     # (UserPromptSubmit). Idempotent. The entries match setup.sh in event,
     # matcher, and order (0000035 ADR-001), and a parity suite checks it.
@@ -435,7 +435,8 @@ function Merge-EnforcementHookSettings {
         (New-HookEntry 'Write' 'ratchet-check' $HooksDir),
         (New-HookEntry 'Edit' 'ratchet-check' $HooksDir),
         (New-HookEntry 'Write' 'em-dash-guard' $HooksDir),
-        (New-HookEntry 'Edit' 'em-dash-guard' $HooksDir)
+        (New-HookEntry 'Edit' 'em-dash-guard' $HooksDir),
+        (New-HookEntry 'Bash' 'merge-guard' $HooksDir)
     )
     $userPromptEntries = @(
         (New-HookEntry '.*' 'auto-trigger-orchestrator' $HooksDir),
@@ -488,7 +489,7 @@ function Merge-EnforcementHookSettings {
         }
         # Case-sensitive, and only <module>.mjs at a path boundary (0000035 S-004).
         $filtered = @(Remove-PlanifestHookCommands -Entries $existing.hooks.PreToolUse `
-            -Pattern '(^|[\s"''/\\])(gate-write|ratchet-check|em-dash-guard)\.mjs\b')
+            -Pattern '(^|[\s"''/\\])(gate-write|ratchet-check|em-dash-guard|merge-guard)\.mjs\b')
         $existing.hooks.PreToolUse = $filtered + $preToolEntries
 
         # Merge UserPromptSubmit. Remove stale commands one at a time, then

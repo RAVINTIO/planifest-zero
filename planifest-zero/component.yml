@@ -74,7 +74,7 @@ scope:
   inScope:
     - "Library standards docs for TypeScript, Python, Go, Java, databases"
     - "Formatting standards: date format, locale, verbosity"
-    - "Enforcement hooks: gate-write, check-design, ratchet-check, em-dash-guard, auto-trigger-orchestrator, check-orchestrator-presence"
+    - "Enforcement hooks: gate-write, check-design, ratchet-check, em-dash-guard, merge-guard, auto-trigger-orchestrator, check-orchestrator-presence"
     - "Git hook: commit-msg"
     - "Shared hook module: read-stdin.mjs"
     - "Orchestrator sentinel enforcement"

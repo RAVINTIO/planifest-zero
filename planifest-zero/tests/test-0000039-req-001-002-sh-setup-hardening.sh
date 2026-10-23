@@ -103,6 +103,7 @@ for line in \
   'PreToolUse|Edit|node ".claude/hooks/enforcement/ratchet-check.mjs"' \
   'PreToolUse|Write|node ".claude/hooks/enforcement/em-dash-guard.mjs"' \
   'PreToolUse|Edit|node ".claude/hooks/enforcement/em-dash-guard.mjs"' \
+  'PreToolUse|Bash|node ".claude/hooks/enforcement/merge-guard.mjs"' \
   'UserPromptSubmit|.*|node ".claude/hooks/enforcement/auto-trigger-orchestrator.mjs"' \
   'UserPromptSubmit|.*|node ".claude/hooks/enforcement/check-orchestrator-presence.mjs"' \
   'UserPromptSubmit|.*|node ".claude/hooks/enforcement/check-design.mjs"'; do

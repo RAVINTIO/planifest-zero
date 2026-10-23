@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# Tests for feature 0000043-autonomous-roadmaps, req-006: merge-guard hook.
+#
+# merge-guard.mjs blocks any gh pr merge unless the flag is --squash and the PR
+# base starts with roadmap/. It reads the base through gh pr view and fails
+# closed. A stub gh on PATH stands in for the real one.
+
+set -uo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/helpers/assert.sh"
+
+ZERO_DIR="$SCRIPT_DIR/.."
+GUARD="$ZERO_DIR/hooks/enforcement/merge-guard.mjs"
+
+TMP=$(mktemp -d -t planifest_0000043_req006_XXXXXX)
+trap 'rm -rf "$TMP"' EXIT
+mkdir -p "$TMP/bin"
+# Stub gh: prints $STUB_BASE for "pr view", exits 1 when STUB_FAIL is set.
+cat > "$TMP/bin/gh" <<'STUB'
+#!/usr/bin/env bash
+echo "$@" >> "$STUB_LOG"
+if [ -n "${STUB_FAIL:-}" ]; then exit 1; fi
+if [ "$1 $2" = "pr view" ]; then printf '{"baseRefName":"%s"}\n' "$STUB_BASE"; fi
+STUB
+chmod +x "$TMP/bin/gh"
+export STUB_LOG="$TMP/gh.log"
+
+# run_guard <stdin> [ENV=VAL ...]: sets OUT and CODE.
+run_guard() {
+  local input="$1"; shift
+  OUT=$(printf '%s' "$input" | env PATH="$TMP/bin:$PATH" "$@" node "$GUARD" 2>&1)
+  CODE=$?
+}
+payload() { node -e 'console.log(JSON.stringify({tool_name:"Bash",tool_input:{command:process.argv[1]}}))' "$1"; }
+# check <label> <expected exit> <command> <base> [fail]
+check() {
+  local label="$1" want="$2" cmd="$3" base="$4" fail="${5:-}"
+  run_guard "$(payload "$cmd")" STUB_BASE="$base" STUB_FAIL="$fail"
+  assert_equals "$want" "$CODE" "req-006: $label exits $want"
+  if [ "$want" = 2 ]; then assert_contains "[Planifest]" "$OUT" "req-006: $label prints a [Planifest] message"; fi
+}
+
+echo ""
+echo "=== req-006 (a): gh pr merge needs --squash and a roadmap/* base ==="
+if [ ! -f "$GUARD" ]; then assert_equals "exists" "missing" "req-006: merge-guard.mjs exists"; fi
+check "squash into roadmap/x" 0 "gh pr merge 12 --squash" "roadmap/x"
+check "squash into roadmap/x with branch delete" 0 "gh pr merge 12 --squash --delete-branch" "roadmap/x"
+check "chained with &&" 0 "git fetch && gh pr merge 12 --squash" "roadmap/x"
+check "squash into main" 2 "gh pr merge 12 --squash" "main"
+check "squash into roadmapx (no slash)" 2 "gh pr merge 12 --squash" "roadmapx"
+check "no flag" 2 "gh pr merge 12" "roadmap/x"
+check "--merge" 2 "gh pr merge 12 --merge" "roadmap/x"
+check "--rebase" 2 "gh pr merge 12 --rebase" "roadmap/x"
+check "--admin with --squash" 2 "gh pr merge 12 --squash --admin" "roadmap/x"
+check "--auto without --squash" 2 "gh pr merge 12 --auto" "roadmap/x"
+check "--squash and --merge" 2 "gh pr merge 12 --squash --merge" "roadmap/x"
+check "chained with ; into main" 2 "echo hi; gh pr merge 12 --squash" "main"
+check "gh pr view fails" 2 "gh pr merge 12 --squash" "roadmap/x" 1
+check "empty base" 2 "gh pr merge 12 --squash" ""
+check "current-branch merge into main" 2 "gh pr merge --squash" "main"
+
+: > "$STUB_LOG"
+run_guard "$(payload 'gh pr merge 12 --squash; rm -rf x')" STUB_BASE=roadmap/x
+assert_contains "pr view 12 --json baseRefName" "$(cat "$STUB_LOG")" "req-006: base is read with gh pr view <pr> --json baseRefName"
+assert_equals "0" "$(grep -c 'rm' "$STUB_LOG" || true)" "req-006: the command is never executed"
+
+: > "$STUB_LOG"
+run_guard "$(payload 'gh pr merge --squash')" STUB_BASE=roadmap/x
+assert_equals "pr view --json baseRefName" "$(head -1 "$STUB_LOG")" "req-006: no PR argument reads the current branch"
+
+run_guard "$(payload 'gh pr merge 12 --squash')" STUB_BASE=main
+assert_contains "main" "$OUT" "req-006: the block message names the base"
+assert_contains "human-only" "$OUT" "req-006: the block message names the rule"
+
+echo ""
+echo "=== req-006 (b): other input passes ==="
+check "non-merge Bash command" 0 "gh pr view 12" "main"
+check "git status" 0 "git status" "main"
+run_guard '{"tool_name":"Write","tool_input":{"file_path":"x","content":"gh pr merge 1"}}' STUB_BASE=main
+assert_equals "0" "$CODE" "req-006: non-Bash payload exits 0"
+run_guard 'not json {' STUB_BASE=main
+assert_equals "0" "$CODE" "req-006: malformed stdin exits 0"
+run_guard '' STUB_BASE=main
+assert_equals "0" "$CODE" "req-006: empty stdin exits 0"
+
+echo ""
+echo "=== req-006 (c): setup.sh and setup.ps1 register merge-guard ==="
+SETUP_PS1="$ZERO_DIR/setup.ps1"
+WS=$(mktemp -d -t planifest_0000043_req006_ws_XXXXXX)
+cp -r "$ZERO_DIR" "$WS/planifest-zero"
+git init "$WS" >/dev/null 2>&1
+(cd "$WS" && bash planifest-zero/setup.sh claude-code >/dev/null 2>&1)
+SH_ENTRY=$(node -e '
+  const s = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+  for (const e of s.hooks.PreToolUse || []) for (const h of e.hooks || [])
+    if (/merge-guard\.mjs/.test(h.command)) console.log("PreToolUse " + e.matcher + " merge-guard");
+' "$WS/.claude/settings.json")
+(cd "$WS" && bash planifest-zero/setup.sh claude-code >/dev/null 2>&1)
+SH_COUNT=$(grep -c merge-guard "$WS/.claude/settings.json" || true)
+SH_INSTALLED="no"; [ -f "$WS/.claude/hooks/enforcement/merge-guard.mjs" ] && SH_INSTALLED="yes"
+rm -rf "$WS"
+PS1_ENTRY=$(awk '
+  /\$preToolEntries = @\(/ { on=1; next }
+  on && /^[[:space:]]*\)[[:space:]]*$/ { on=0 }
+  on && /merge-guard/ { print }' "$SETUP_PS1" | sed -E "s/.*New-HookEntry '([^']*)' '([^']*)'.*/PreToolUse \1 \2/")
+assert_equals "PreToolUse Bash merge-guard" "$SH_ENTRY" "req-006 (c): setup.sh registers merge-guard under PreToolUse with matcher Bash"
+assert_equals "PreToolUse Bash merge-guard" "$PS1_ENTRY" "req-006 (c): setup.ps1 registers merge-guard under PreToolUse with matcher Bash"
+assert_equals "$SH_ENTRY" "$PS1_ENTRY" "req-006 (c): the two entries match"
+assert_equals "1" "$SH_COUNT" "req-006 (c): a second setup.sh run leaves one merge-guard entry"
+assert_equals "yes" "$SH_INSTALLED" "req-006 (c): setup.sh installs merge-guard.mjs"
+assert_equals "1" "$(grep -c 'gate-write|ratchet-check|em-dash-guard|merge-guard' "$SETUP_PS1")" "req-006 (c): setup.ps1 filter pattern covers merge-guard"
+
+print_summary

@@ -415,7 +415,8 @@ remove_legacy_telemetry_wiring() {
 install_enforcement_hooks() {
   # Copy enforcement hooks and wire PreToolUse/UserPromptSubmit (REQ-002, REQ-006, REQ-008).
   # Includes auto-trigger-orchestrator.mjs (REQ-002), gate-write.mjs, check-design.mjs,
-  # check-orchestrator-presence.mjs, ratchet-check.mjs, and em-dash-guard.mjs
+  # check-orchestrator-presence.mjs, ratchet-check.mjs, merge-guard.mjs (0000043 req-006),
+  # and em-dash-guard.mjs
   # (req-006, feature 0000028, ADR-003 — rejects U+2014 in scoped Planifest prose
   # paths at write time, sibling to gate-write.mjs and ratchet-check.mjs).
   # Always installed: enforcement applies to every Planifest-enabled project.
@@ -466,9 +467,10 @@ install_enforcement_hooks() {
   local trigger_cmd="node \"$hooks_dir_rel/auto-trigger-orchestrator.mjs\""
   local presence_cmd="node \"$hooks_dir_rel/check-orchestrator-presence.mjs\""
   local design_cmd="node \"$hooks_dir_rel/check-design.mjs\""
+  local merge_guard_cmd="node \"$hooks_dir_rel/merge-guard.mjs\""
 
   if command -v node >/dev/null 2>&1; then
-    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_SETTINGS="$settings" PLANIFEST_SETTINGS_REL="$settings_rel" node -e "$PLANIFEST_WRITE_SETTINGS_JS$PLANIFEST_SETTINGS_SHAPE_JS"'
+    PLANIFEST_GATE="$gate_cmd" PLANIFEST_RATCHET="$ratchet_cmd" PLANIFEST_EM_DASH="$em_dash_cmd" PLANIFEST_TRIGGER="$trigger_cmd" PLANIFEST_PRESENCE="$presence_cmd" PLANIFEST_DESIGN="$design_cmd" PLANIFEST_MERGE_GUARD="$merge_guard_cmd" PLANIFEST_SETTINGS="$settings" PLANIFEST_SETTINGS_REL="$settings_rel" node -e "$PLANIFEST_WRITE_SETTINGS_JS$PLANIFEST_SETTINGS_SHAPE_JS"'
       const fs = require("fs"), path = require("path");
       const gate     = process.env.PLANIFEST_GATE;
       const ratchet  = process.env.PLANIFEST_RATCHET;
@@ -476,6 +478,7 @@ install_enforcement_hooks() {
       const trigger  = process.env.PLANIFEST_TRIGGER;
       const presence = process.env.PLANIFEST_PRESENCE;
       const design   = process.env.PLANIFEST_DESIGN;
+      const mergeGuard = process.env.PLANIFEST_MERGE_GUARD;
       const sf       = process.env.PLANIFEST_SETTINGS;
       let s = {};
       // On invalid JSON, print one fixed line that names the file, write
@@ -534,10 +537,11 @@ install_enforcement_hooks() {
         }
         return kept;
       };
-      // PreToolUse: gate-write + ratchet-check + em-dash-guard for Write and Edit
+      // PreToolUse: gate-write + ratchet-check + em-dash-guard for Write and Edit,
+      // then merge-guard for Bash (0000043 req-006)
       // (idempotent: remove then re-add). Remove the three modules on any
       // matcher, so an old Write|Edit entry goes too (0000037 ADR-003).
-      const preToolModule = /(^|[\s"\x27\/\\])(gate-write|ratchet-check|em-dash-guard)\.mjs\b/;
+      const preToolModule = /(^|[\s"\x27\/\\])(gate-write|ratchet-check|em-dash-guard|merge-guard)\.mjs\b/;
       s.hooks.PreToolUse = keepUserCommands(s.hooks.PreToolUse || [], preToolModule);
       s.hooks.PreToolUse.push(
         {matcher:"Write", hooks:[{type:"command",command:gate}]},
@@ -545,7 +549,8 @@ install_enforcement_hooks() {
         {matcher:"Write", hooks:[{type:"command",command:ratchet}]},
         {matcher:"Edit",  hooks:[{type:"command",command:ratchet}]},
         {matcher:"Write", hooks:[{type:"command",command:emDash}]},
-        {matcher:"Edit",  hooks:[{type:"command",command:emDash}]}
+        {matcher:"Edit",  hooks:[{type:"command",command:emDash}]},
+        {matcher:"Bash",  hooks:[{type:"command",command:mergeGuard}]}
       );
       // UserPromptSubmit: auto-trigger first, then presence check, then check-design
       // (REQ-002, REQ-008, idempotent). The same path-boundary match as
@@ -563,7 +568,7 @@ install_enforcement_hooks() {
     echo "  ~ $settings_rel (enforcement hooks wired)"
   else
     echo "  ! Warning: node not found — skipping settings.json enforcement hook wiring"
-    echo "  ! Manually add gate-write, ratchet-check, em-dash-guard (Write/Edit PreToolUse), auto-trigger-orchestrator, check-orchestrator-presence and check-design (UserPromptSubmit) to $settings_rel"
+    echo "  ! Manually add gate-write, ratchet-check, em-dash-guard (Write/Edit PreToolUse), merge-guard (Bash PreToolUse), auto-trigger-orchestrator, check-orchestrator-presence and check-design (UserPromptSubmit) to $settings_rel"
   fi
 }
 

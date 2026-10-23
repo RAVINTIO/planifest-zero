@@ -7,6 +7,7 @@ PreToolUse|Write|node ".claude/hooks/enforcement/ratchet-check.mjs"
 PreToolUse|Edit|node ".claude/hooks/enforcement/ratchet-check.mjs"
 PreToolUse|Write|node ".claude/hooks/enforcement/em-dash-guard.mjs"
 PreToolUse|Edit|node ".claude/hooks/enforcement/em-dash-guard.mjs"
+PreToolUse|Bash|node ".claude/hooks/enforcement/merge-guard.mjs"
 UserPromptSubmit|.*|node ./tools/notify.sh
 UserPromptSubmit|.*|node ./tools/my-check-design-helper.sh
 UserPromptSubmit|.*|node ./tools/Check-Design.mjs
