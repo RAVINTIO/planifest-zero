@@ -78,6 +78,18 @@ Run executes one roadmap step from `position`. Ship owns the merge that ends it 
 
 All messages use the `R-C Run:` prefix.
 
+## Merge carve-out
+
+Merging into `main` is human-only in every run mode. The agent never commits to `main`.
+
+The agent may run `gh pr merge --squash` only when all of these hold:
+
+- The PR base matches `roadmap/*`.
+- The PR is for the agent's own feature branch.
+- The step had a clean P3 and has green CI.
+
+The roadmap PR to `main` stays human-only. The agent never merges it. The `merge-guard` hook enforces this rule. Other skills and instructions point here for the full wording.
+
 ## Ship stages
 
 These stages apply only when `plan/current-roadmap/roadmap.md` has `status: active`. Check the file before Step 6. Outside a roadmap, ignore this section. A normal run keeps the order in the ship skill: tag at Step 7, PR at Step 8, and no merge by the agent.

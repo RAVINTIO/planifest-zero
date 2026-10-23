@@ -404,7 +404,7 @@ Conventions for every downstream phase:
 
 **After P4:** apply the Context Hygiene reset so the next session starts cold.
 
-**Merge is human-only.** In every run mode, never merge a pull request and never commit to `main`.
+**Merge is human-only.** Merging into `main` stays human-only in every run mode, and the agent never commits to `main`. The one exception is `gh pr merge --squash` for the agent's own feature PR into `roadmap/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `planifest-zero/standards/roadmap-standards.md`.
 
 ---
 

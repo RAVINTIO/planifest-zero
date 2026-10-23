@@ -80,7 +80,7 @@ assert_equals "no" "$(has 'The final gate always stops.' "$SHIP_CONTENT")" \
   "req-002 (b): ship no longer says the final gate always stops"
 assert_equals "no" "$(has "without the human's awareness" "$SHIP_CONTENT")" \
   "req-002 (b): ship no longer bars a PR without the human's awareness"
-assert_contains 'Never merge a PR and never commit to `main`, in any run mode.' "$SHIP_LIMITS" \
+assert_contains 'Merging into `main` stays human-only in every run mode, and the agent never commits to `main`.' "$SHIP_LIMITS" \
   "req-002 (b): ship never merges and never commits to main"
 assert_equals "no" "$(has 'SHIP:' "$SHIP_CONTENT")" \
   "req-002 (b): ship uses the P4 Ship: prefix"
