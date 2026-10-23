@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000041-setup-cleanup-and-park-hardening
+Last updated: 0000042-autonomous-mode-and-prefixes
 
 ## What this repo is
 
@@ -19,7 +19,7 @@ The repo runs its own pipeline on the `planifest-zero/` it ships. Git reads its 
 
 ## Pipeline
 
-The pipeline runs five phases. There is one route: every change is a feature change, and a small change is a small run. Each agent response carries its phase prefix.
+The pipeline runs five phases, numbered P0 to P4. There is one route: every change is a feature change, and a small change is a small run. Each agent message starts with its phase prefix, then a status and a one-liner, as in `P1 Plan: Complete: 4 requirements, 2 ADRs`.
 
 | Phase | Prefix | Owning skill |
 |-------|--------|--------------|
@@ -28,6 +28,26 @@ The pipeline runs five phases. There is one route: every change is a feature cha
 | Implement | `P2 Implement:` | planifest-implement |
 | Validate and accept | `P3 Validate:` | planifest-validate-and-accept |
 | Ship | `P4 Ship:` | planifest-ship |
+
+### Run modes
+
+At the end of P0, the orchestrator asks how to run P1 to P4. It writes the answer, `gated` or `autonomous`, to `plan/.run-mode` and logs it. No other value is valid.
+
+- **Gated.** The run stops for the human at the P1, P2, P3, and P4 gates. The P4 gate comes before the PR.
+- **Autonomous.** The run stops at none of those gates. P3 writes its evidence to `plan/current/acceptance-evidence.md`. P4 copies it into the PR body and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
+
+On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the question again and name the value it found.
+
+**Exception stops.** Both modes stop and print `{prefix} Blocked: {action needed}` in these cases:
+
+- A requirement or check still fails after 5 attempts.
+- P2 needs a schema change.
+- The P3 security review finds an unmitigated critical or high issue.
+- A push or `gh pr create` fails.
+
+No mode merges a PR or commits to `main`. The human merges every PR.
+
+### Release sizing
 
 Discovery sizes each release against a budget. The optional `releaseSize` field in `product.yml` sets it to `small`, `medium`, or `large`, and the default is `medium`. Discovery gives each candidate requirement a size class from the files it touches, then recommends a fill up to the budget.
 
@@ -126,6 +146,8 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 ---
 
 ## Tests
+
+A wording test greps every tracked file outside history for the retired word that once described Planifest Zero. It passes only lines that match an allowlist of generic uses. A phase guard test fails on a phase number outside P0 to P4 or on a retired letter prefix.
 
 `planifest-zero/tests/run-tests.sh` runs every Bash and PowerShell suite. Before any suite runs, it checks every file under `tests/`. A file that is neither a suite nor on its known list fails the run, and the runner names it. Without `pwsh`, it prints how many PowerShell suites it skipped.
 
