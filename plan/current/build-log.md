@@ -102,3 +102,5 @@ P3 gate: skipped under continuous run (0.8.0 rule).
 | MCP calls | `0` |
 | Parallel task batches | `pending` |
 | Notes | Chat prefix `P3 Validate:` maps to this log block. |
+P4 checks: CI on draft PR #20 green (validate-branch, self-description-check, bash-suites, windows-powershell on 5.1 and 7). Local suite 82 feature and 19 regression passed. Verification: 26 verified, 0 failed, 9 not-verifiable (live agent behaviour). Security: medium overall, 0 critical, 0 high, 4 medium, 3 low, 2 informational.
+P4 self-correction 1: F-007 (loop-runner retired prefixes) and F-009 (feature-pipeline Blocked wording). RED 3 failures in req-005 test, fixed, suite green. Setup rerun to refresh `.claude/`.
