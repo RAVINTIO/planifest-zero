@@ -1,10 +1,10 @@
 ---
-title: "Requirement: req-003 - product-name-planifest-zero"
+title: "Requirement: req-007 - product-name-planifest-zero"
 summary: "product.yml and component.yml name the product Planifest Zero, so no manifest reads as Planifest Framework."
 status: "active"
 version: "0.1.0"
 ---
-# Requirement: req-003 - product-name-planifest-zero
+# Requirement: req-007 - product-name-planifest-zero
 
 **Skill:** [plan](../skills/planifest-plan/SKILL.md)
 **Feature:** 0000042-autonomous-mode-and-prefixes
@@ -21,9 +21,9 @@ As a reader of `product.yml`, `component.yml`, or the README, I see the name Pla
 - Both `id` fields stay `planifest-zero`. The `components[].id` entry in `product.yml` also stays `planifest-zero`.
 - No other manifest field changes in this requirement.
 - Planifest Framework is a separate product (repo `planifest/planifest-framework`). Any reference to it by that name stays.
-- The README names no product "Planifest Framework". Its title and description wording belong to req-004.
+- The README names no product "Planifest Framework". Its title and description wording belong to req-008.
   - Current state: `README.md` has no "Planifest Framework" string. The title is `# Planifest`.
-  - If req-004 or a later edit adds that string as a name for this product, that edit fails this requirement.
+  - If req-008 or a later edit adds that string as a name for this product, that edit fails this requirement.
 
 ### Impact check
 
@@ -53,14 +53,10 @@ Neither template hard-codes the name. Both use placeholders, so neither changes.
   - It asserts `README.md` holds no "Planifest Framework" string.
 
 ## Acceptance Criteria
-- [ ] (a) `product.yml` holds `name: "Planifest Zero"` and `id: "planifest-zero"`.
-- [ ] (b) `planifest-zero/component.yml` holds `name: "Planifest Zero"` and `id: "planifest-zero"`.
-- [ ] (c) `grep -rn "Planifest Framework" product.yml planifest-zero/component.yml README.md` returns no match.
-- [ ] (d) `node planifest-zero/scripts/product-version.mjs` still derives the same version as before the change.
-- [ ] (e) `product.template.yml` and `component.template.yml` are unchanged.
-- [ ] (f) The test from this requirement fails before the change and passes after it.
-- [ ] (g) References to Planifest Framework as a separate product remain in place.
+- [ ] (a) `product.yml` and `planifest-zero/component.yml` each hold `name: "Planifest Zero"` and `id: "planifest-zero"`. `node planifest-zero/scripts/product-version.mjs` derives the same version as before, and both template files are unchanged.
+- [ ] (b) `grep -rn "Planifest Framework" product.yml planifest-zero/component.yml README.md` returns no match. References to Planifest Framework as a separate product remain in place.
+- [ ] (c) The one test from this requirement asserts the name and id values and the README check. It fails before the change and passes after it.
 
 ## Dependencies
-- req-004 (wording) owns the README title and description. This requirement only bars the name "Planifest Framework" there.
+- req-008 (wording) owns the README title and description. This requirement only bars the name "Planifest Framework" there.
 - The `id` stays `planifest-zero`, so archive attribution (0000033 ADR-003) and `gate-write` component matching stand.
