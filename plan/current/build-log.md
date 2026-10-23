@@ -41,3 +41,4 @@ P0 exchange (pre-flight): Q: Merge PR #20 before branching? / A: Merged. Branch 
 P0 exchange (roadmap plan): Q: Does the feature store a roadmap plan that sequences backlog items? / A: It must. Each step is one feature run built from one or more backlog entries, in a fixed order.
 P0 exchange (roadmap folder): Q: One roadmap or many? / A: As many as needed under plan/roadmap/, one folder per plan, in the same format as backlog entries.
 P0 exchange (roadmap state): Q: Where does the active roadmap live? / A: plan/current-roadmap/ holds the active roadmap and its state. Each feature runs as usual in plan/current/ within it.
+P0 exchange (roadmap versions): Q: How does each step version? / A: The roadmap stores a bump per step: major, minor, or patch. Most steps are minor.
