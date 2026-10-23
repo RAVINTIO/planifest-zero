@@ -47,7 +47,7 @@ Twelve skills drive the pipeline.
 | `planifest-orchestrator` | Owns discovery and routing. Coordinates the run end to end |
 | `planifest-plan` | Plan phase: requirements, scope, risk register, glossary, ADRs |
 | `planifest-implement` | Implement phase: dispatches the TDD trio per requirement and writes the documentation |
-| `planifest-validate-and-accept` | Validate-and-accept phase: CI checks, security review, human acceptance gate |
+| `planifest-validate-and-accept` | Validate-and-accept phase: CI checks, security review, acceptance gate or PR evidence |
 | `planifest-ship` | Ship phase: changelog, archive, build assessment, tag, PR |
 | `planifest-test-writer` | TDD red: writes one failing test per requirement and confirms RED |
 | `planifest-implementer` | TDD green: writes the minimum code to make that test pass |
@@ -63,22 +63,28 @@ The TDD trio (`planifest-test-writer`, `planifest-implementer`, `planifest-refac
 
 ## Phase Confirmation Gates
 
-At the end of each phase, the orchestrator **stops and presents a summary** before proceeding. Before the pipeline begins (end of discovery), you are asked:
+At the end of discovery, the orchestrator asks:
 
 ```
-Do you want to review and confirm after each phase completes, or authorise a
-continuous run for this session?
+How should the agent run P1 to P4?
 
-  [1] Check after each phase
-  [2] Continuous run: proceed without phase confirmations
+  [1] Gated: the agent stops for you at the end of each phase
+  [2] Autonomous: the agent runs to a raised PR and stops only for escalations
 ```
 
-The orchestrator may skip a stop only when **both** conditions are true:
+It writes `gated` or `autonomous` to `plan/.run-mode` and logs the choice in the build log.
 
-- You chose continuous run, AND
-- There is genuinely nothing to check (for example, validate and accept with every check passing on the first attempt and zero security findings)
+- **Gated**: the orchestrator stops and presents a summary at the plan, implement, acceptance, and ship gates. The ship gate comes before the PR.
+- **Autonomous**: the orchestrator stops at none of those gates. Validate and accept puts its evidence in the PR description. Ship raises the PR and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
 
-**Ship always stops before the PR.** Raising a PR is an external action. It is never auto-confirmed, even in continuous run mode.
+Both modes stop with a `Blocked:` message on four escalations:
+
+- A requirement or check still fails after 5 attempts.
+- Implement needs a schema change.
+- The security review finds an unmitigated critical or high issue.
+- A push or `gh pr create` fails.
+
+The phase skills are the single source for gate behaviour. Merging the PR is human-only in every mode.
 
 ---
 
@@ -88,7 +94,7 @@ Ship is the terminal phase. It runs three steps in order.
 
 1. **Archive.** The changelog entry is written to `plan/changelog/{feature-id}-{YYYY-MM-DD}.md`, then `plan/current/` is archived to `plan/_archive/{feature-id}-{date}/` and cleared. The orchestrator sentinel is deleted last, after the archive is confirmed complete.
 2. **Build assessment.** An assessment sub-agent reads the archived `build-log.md` and produces a structured efficiency report at `plan/_archive/{feature-id}-{date}/build-report.md`.
-3. **Tag and PR.** The agent reads the version from `component.yml`, creates a local git tag (`v{version}`), then asks the human whether to push and raise the PR or output a PR description for manual use. If `local-git-only` is active in `planifest-overrides/instructions/`, the agent skips the prompt and outputs a PR description directly.
+3. **Tag and PR.** The agent reads the version from `component.yml`, creates a local git tag (`v{version}`), then raises the PR. In a gated run, it first asks the human whether to push and raise the PR or output a PR description for manual use. If `local-git-only` is active in `planifest-overrides/instructions/`, the agent skips the prompt and outputs a PR description directly.
 
 ### Build Log
 
