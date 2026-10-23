@@ -40,3 +40,4 @@ P1 exchange (run modes): Q: What replaces the run-mode question? / A: Two modes,
 P1 exchange (run modes, correction): Q: none / A: Human corrected the first mode name from `gates` to `gated`. The modes are `gated` and `autonomous`.
 P1 exchange (prefix): Q: Which message prefix format? / A: Phase number plus name, then status: `P0 Discovery:`, `P1 Plan:`, `P2 Implement:`, `P3 Validate:`, `P4 Ship:`. Messages use `P3 Validate:`. The build log and skills keep the full name "Validate and Accept".
 P1 exchange (product name): Q: Rename the product in this release? / A: Yes. Set `name: "Planifest Zero"` in `product.yml` and `planifest-zero/component.yml`. Rewrite `README.md` so it never calls Planifest Zero a framework, since that now reads as Planifest Framework.
+P1 exchange (framework wording reach): Q: Fix README and about.md now and backlog the rest? / A: No. Remove "framework" as a description of Planifest Zero in every file in this release.
