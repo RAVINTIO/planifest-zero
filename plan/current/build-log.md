@@ -52,3 +52,9 @@ P0 exchange (R-A Chart): Q: Confirm the filing and Chart split? / A: Yes, just l
 P0 exchange (backlog model): Q: Roadmap drafts follow the backlog model for filing, pickup, pull-in, and malformed entries? / A: Confirmed.
 P0 exchange (chain runner): Q: Can Claude clear its own context? / A: Checked the Claude Code docs and CLI help. No tool, skill, or hook clears or compacts a session on the model's request. /loop and ScheduleWakeup keep the same context. A fresh session per step needs an outer script calling claude -p.
 P0 exchange (chain runner): Q: Driver script, and which permission mode? / A: Driver script, with --permission-mode auto.
+P0 exchange (driver launch): Q: Does R-B Activate offer to start the driver in the background? / A: Yes.
+Scope Lock (happy path): Chart a four-step roadmap from main, activate it, and the driver runs each step in its own session to a squash merge and tag, ending in one roadmap PR to main. [source: draft-accepted]
+Scope Lock (first-run path): With no roadmap folder or draft, Chart writes a new plan from the template with the next shared id. It stops on a missing backlog entry, and Activate refuses without a remote or gh access. [source: draft-accepted]
+Scope Lock (error path): An exception stop in a step logs Blocked, pushes, and exits. The driver stops when position does not move, leaves the roadmap active, and resumes that step on the next run. Red or pending CI at Advance is the same stop. [source: draft-accepted]
+Scope Lock (cross-session continuity): All state lives in git. The next run resumes a step through normal resume detection, or starts the step at position. The roadmap update rides in the step's squash commit. [source: draft-accepted]
+Scope Lock complete. All four scenario paths captured.
