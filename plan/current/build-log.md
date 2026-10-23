@@ -34,3 +34,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 P1 exchange (scope): Q: What is in the backlog? / A: Human reviewed seven entries, then asked for this release: rebrand continuous run as autonomous with a "confirm each phase" alternative, and clarify the phase prefix shown on messages.
 P1 exchange (naming): Q: none / A: Human clarified this repo is Planifest Zero, distinct from Planifest Framework. Multi-release autonomy (0000098, 0000099) is out of scope.
+P1 exchange (phase numbering): Q: List all human stops / A: Human asked to renumber the phases P0 to P4, matching Planifest Framework, which starts at P0. Framework prefixes are `P0:` to `P9:`, and it offers interactive, continuous, and autonomous run modes.
