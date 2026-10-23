@@ -1,6 +1,6 @@
 # Planifest Component Manifest
 id: "planifest-zero"
-name: "Planifest Framework"
+name: "Planifest Zero"
 feature: "0000041-setup-cleanup-and-park-hardening"
 version: "0.8.0"
 status: "active"
