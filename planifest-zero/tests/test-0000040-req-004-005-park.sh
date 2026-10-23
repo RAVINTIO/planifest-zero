@@ -42,8 +42,8 @@ assert_contains 'Check out `main`' "$(step 5)" "req-004: step 5 checks out main"
 assert_contains 'scripts/park.mjs' "$PARK_SEC" "req-004: the section calls park.mjs"
 
 echo "=== req-004: the park rules ==="
-assert_contains 'If `plan/current/design.md` does not exist, the phase reached is P1' "$PARK_SEC" \
-  "req-004: the P1 rule for a park before design.md"
+assert_contains 'If `plan/current/design.md` does not exist, the phase reached is P0' "$PARK_SEC" \
+  "req-004: the P0 rule for a park before design.md"
 assert_contains 'exact error' "$PARK_SEC" "req-004: park reports the exact error"
 assert_contains 'stays on the feature branch' "$PARK_SEC" "req-004: a failure stops on the feature branch"
 assert_contains 'never merges a pull request' "$PARK_SEC" "req-004: park never merges"

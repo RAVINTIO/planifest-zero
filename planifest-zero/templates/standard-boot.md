@@ -4,7 +4,7 @@ This project uses the confirmed design framework. These rules are non-negotiable
 
 ## Hard Limits
 
-1. **No code without a confirmed design.** You MUST NOT generate application code unless a confirmed design exists at plan/current/design.md. If none exists, load the planifest-orchestrator skill and begin the discovery phase (P1). Do NOT skip to code generation.
+1. **No code without a confirmed design.** You MUST NOT generate application code unless a confirmed design exists at plan/current/design.md. If none exists, load the planifest-orchestrator skill and begin the discovery phase (P0). Do NOT skip to code generation.
 2. **No code without documentation.** Every component MUST have a component.yml manifest and docs/ artifacts. Never produce code without its corresponding documentation.
 3. **No direct schema modification.** Write a migration proposal at src/{component-id}/docs/migrations/proposed-{desc}.md and STOP for human approval.
 4. **Destructive schema operations require human approval.** Drop column, drop table, rename - propose and stop. No exceptions.

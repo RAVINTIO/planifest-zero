@@ -10,7 +10,7 @@ reason: "{why the human parked the feature, in one sentence}"
 **Phase:** {phase-id} ({phase name})
 **Branch:** {feature branch, for example feat/{feature-id}}
 
-> If `plan/current/design.md` does not exist, the phase reached is P1.
+> If `plan/current/design.md` does not exist, the phase reached is P0.
 
 ## State at Park
 
@@ -21,7 +21,7 @@ conversation.}
 
 ## Resume Instructions
 
-A later P1 backlog pickup offers resume or discard for the parked entry. On
+A later P0 backlog pickup offers resume or discard for the parked entry. On
 resume, the orchestrator checks out the branch and merges `origin/main`. It then
 restores state from this file and opens with:
 

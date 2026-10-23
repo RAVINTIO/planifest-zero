@@ -16,7 +16,7 @@ This is not optional. Domain confusion is one of the most common sources of bugs
 
 ## Who Writes It
 
-- **The plan skill** creates it during the plan phase (P2), extracting terms from the Feature Brief and Design Requirements
+- **The plan skill** creates it during the plan phase (P1), extracting terms from the Feature Brief and Design Requirements
 - **Any agent** that introduces a new domain term must add it to the glossary before using it in code
 
 ---

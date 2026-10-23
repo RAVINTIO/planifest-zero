@@ -14,7 +14,7 @@ The Execution Plan translates the Feature Brief into **specific, testable requir
 
 ## Who Writes It
 
-The **plan skill** produces this document during the plan phase (P2). It reads the confirmed design and the original Feature Brief as input. It does not invent requirements - it derives them.
+The **plan skill** produces this document during the plan phase (P1). It reads the confirmed design and the original Feature Brief as input. It does not invent requirements - it derives them.
 
 ---
 

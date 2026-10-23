@@ -49,7 +49,7 @@ try {
     const additionalContext =
       "[Planifest] STOP — No feature brief and no orchestrator sentinel detected. " +
       "Before writing any code or plan artefacts, load the planifest-orchestrator " +
-      "skill and complete Phase 0 (Assess & Coach).";
+      "skill and complete P0 Discovery.";
     process.stdout.write(JSON.stringify({ additionalContext }));
     process.exit(0);
   }

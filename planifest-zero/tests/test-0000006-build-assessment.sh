@@ -58,12 +58,12 @@ assert_contains "Never infer or fabricate"   "$SHIP" "req-002: no-fabrication ru
 # -----------------------------------------------------------------------
 
 echo ""
-echo "=== req-003: build assessment wired into P5 Ship ==="
-echo "(0000030: P8 removed, build assessment now runs inside P5 Ship)"
+echo "=== req-003: build assessment wired into P4 Ship ==="
+echo "(0000030: P8 removed, build assessment now runs inside P4 Ship)"
 
-assert_contains "| P5 | Ship |"              "$ORCH" "req-003: orchestrator phase table lists P5 Ship"
-assert_contains "planifest-ship"             "$ORCH" "req-003: P5 owned by planifest-ship"
-assert_contains "build report"               "$ORCH" "req-003: P5 Ship gate condition mentions build report"
+assert_contains "| P4 | Ship |"              "$ORCH" "req-003: orchestrator phase table lists P4 Ship"
+assert_contains "planifest-ship"             "$ORCH" "req-003: P4 owned by planifest-ship"
+assert_contains "build report"               "$ORCH" "req-003: P4 Ship gate condition mentions build report"
 
 assert_contains "Build report:"              "$SHIP" "req-003: ship final gate output lists the build report line"
 assert_contains "build-report.md"            "$SHIP" "req-003: ship final gate confirms build-report.md"

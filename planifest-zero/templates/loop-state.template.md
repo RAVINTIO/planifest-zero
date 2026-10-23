@@ -13,9 +13,9 @@ status: "active | done | escalated"
 | Field | Value |
 |-------|-------|
 | Loop id | `{{discovery_completeness \| verify_by_execution}}` |
-| Owning phase | `{{P1–P4}}` |
+| Owning phase | `{{P0–P3}}` |
 | Toggle level | `{{report-only \| on}}` |
-| Iteration | `{{n}}` of cap `{{3 (default); the P4 self-correct loop keeps 5}}` |
+| Iteration | `{{n}}` of cap `{{3 (default); the P3 self-correct loop keeps 5}}` |
 | Last decision | `{{continue \| done \| escalate}}` |
 | Last updated | `{{ISO-8601 UTC}}` |
 

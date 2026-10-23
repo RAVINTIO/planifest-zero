@@ -23,28 +23,28 @@ fi
 CONTENT=$(cat "$SKILL")
 
 echo ""
-echo "=== req-001: P2/P3 gates honour continuous run ==="
+echo "=== req-001: P1/P2 gates honour continuous run ==="
 
 TABLE_SECTION=$(printf '%s\n' "$CONTENT" | sed -n '/## Phase Invocation/,/^## Mid-Pipeline/p')
 
-P2_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P2 Plan |')
-assert_contains "STOP for confirmation. Exception: continuous run." "$P2_ROW" \
-  "req-001: P2 Plan row has the continuous-run exception"
+P1_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P1 Plan |')
+assert_contains "STOP for confirmation. Exception: continuous run." "$P1_ROW" \
+  "req-001: P1 Plan row has the continuous-run exception"
 
-P3_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P3 Implement |')
-assert_contains "STOP for confirmation. Exception: continuous run." "$P3_ROW" \
-  "req-001: P3 Implement row has the continuous-run exception"
+P2_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P2 Implement |')
+assert_contains "STOP for confirmation. Exception: continuous run." "$P2_ROW" \
+  "req-001: P2 Implement row has the continuous-run exception"
 
 echo ""
 echo "=== req-001: acceptance and ship gates always stop ==="
 
-P4_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P4 Validate and Accept |')
-assert_contains "Acceptance ALWAYS stops. A continuous run does not bypass it." "$P4_ROW" \
-  "req-001: P4 acceptance gate always stops, continuous run does not bypass it"
+P3_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P3 Validate and Accept |')
+assert_contains "Acceptance ALWAYS stops. A continuous run does not bypass it." "$P3_ROW" \
+  "req-001: P3 acceptance gate always stops, continuous run does not bypass it"
 
-P5_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P5 Ship |')
-assert_contains "Final gate. Always stops." "$P5_ROW" \
-  "req-001: P5 ship gate always stops"
+P4_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P4 Ship |')
+assert_contains "Final gate. Always stops." "$P4_ROW" \
+  "req-001: P4 ship gate always stops"
 
 echo ""
 echo "=== req-001: no stray 'No exception' left in the Phase Invocation table ==="
