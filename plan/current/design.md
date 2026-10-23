@@ -54,6 +54,9 @@
   - The P3 security review finds an unmitigated critical or high issue.
   - A push or `gh pr create` fails.
 - On resume, a missing or unknown `plan/.run-mode` makes the agent ask the run-mode question and name the value it found. It writes the answer and logs it. The fresh-start stale check stays as it is.
+- Each exception stop prints `{prefix} Blocked: {action needed}`, such as `P3 Validate: Blocked: ...`, so the message still starts with its phase prefix.
+- In `autonomous`, P3 writes its evidence to `plan/current/acceptance-evidence.md`, because the PR doesn't exist yet. P4 copies it into an `## Acceptance evidence` section of the PR body.
+- The implement skill prints the same `Blocked:` messages for the schema stop and the 5-attempt stop.
 - `pipeline-reference.md` loses the rule that let continuous skip a clean acceptance gate. The skills are the single source.
 
 ### Phase numbers and prefixes (US-003)
