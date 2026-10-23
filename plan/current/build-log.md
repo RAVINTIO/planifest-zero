@@ -42,3 +42,4 @@ P1 exchange (prefix): Q: Which message prefix format? / A: Phase number plus nam
 P1 exchange (product name): Q: Rename the product in this release? / A: Yes. Set `name: "Planifest Zero"` in `product.yml` and `planifest-zero/component.yml`. Rewrite `README.md` so it never calls Planifest Zero a framework, since that now reads as Planifest Framework.
 P1 exchange (framework wording reach): Q: Fix README and about.md now and backlog the rest? / A: No. Remove "framework" as a description of Planifest Zero in every file in this release.
 P1 exchange (framework wording kinds): Q: Prose only, or prose and identifiers? / A: Prose and identifiers that refer to Planifest Zero. Leave generic uses such as `test-frameworks.md` and "meta-framework".
+P1 exchange (install compatibility): Q: none / A: Only this repo installs Planifest Zero. Identifier renames and run-mode or phase-number changes need no migration or backward compatibility for other installs.
