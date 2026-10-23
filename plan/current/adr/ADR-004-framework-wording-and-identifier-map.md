@@ -13,11 +13,11 @@ version: "0.1.0"
 
 ## Context
 
-Planifest Zero is the cut-down pack that 0000030 split from Planifest Framework. Planifest Framework is a separate product in the repo `planifest/planifest-framework`. REQ-003 fixes the product name. Many files still call Planifest Zero a framework, and a reader can confuse the two products.
+Planifest Zero is the cut-down pack that 0000030 split from Planifest Framework. Planifest Framework is a separate product in the repo `planifest/planifest-framework`. REQ-007 fixes the product name. Many files still call Planifest Zero a framework, and a reader can confuse the two products.
 
 A search on 2026-10-23 found 618 lines with "framework" in 150 tracked files outside the archive, the changelog, and `plan/current/`. About 50 lines are prose. About 350 lines are identifiers. About 220 lines are generic uses.
 
-The human rejected a prose-only fix. They want the identifiers to change too. REQ-004 leaves the new names to this ADR, and P2 must not start renames until it is accepted.
+The human rejected a prose-only fix. They want the identifiers to change too. REQ-008 to REQ-010 leaves the new names to this ADR, and P2 must not start renames until it is accepted.
 
 ## Decision
 
@@ -95,7 +95,7 @@ The test must fail when a scratch copy of `README.md` gains the line "Planifest 
 
 ### Out of scope
 
-The em dashes in the `setup.sh` echo strings are out of scope for this ADR. Where REQ-004 edits a line in those strings, the edit changes the wording only.
+The em dashes in the `setup.sh` echo strings are out of scope for this ADR. Where REQ-008 to REQ-010 edits a line in those strings, the edit changes the wording only.
 
 ### No migration
 
@@ -130,7 +130,7 @@ This repo is the only install of Planifest Zero, so no migration file is written
 
 **Risks:**
 - A missed reference to a renamed file breaks a test or a link. `run-tests.sh` and the link check run before acceptance.
-- Another install breaks on the renamed identifiers. REQ-004 records this as an assumption.
+- Another install breaks on the renamed identifiers. REQ-008 to REQ-010 records this as an assumption.
 - The exclusion of `plan/current/` hides a stray old word until ship. The archive step moves those files, and they quote old words by design.
 
 ## Related ADRs

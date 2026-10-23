@@ -15,7 +15,7 @@ version: "0.1.0"
 
 Planifest Zero has two run modes today, `interactive` and `continuous`. Feature 0000023 set the continuous gate rules, and its tests are `test-0000023-req-001-continuous-run-p1-p3.sh` and `test-0000023-req-002-marker-commit-lifecycle.sh`. The single-route design in 0000031 ADR-003 first named continuous mode. Its archived ADR set holds no ADR for the 0000023 rules, so the tests and the skills are the record.
 
-Continuous run skips the plan and implement gates. It still stops at acceptance and ship, so no mode reaches a pull request without stopping. The phases also run P1 to P5, while Planifest Framework starts at P0. REQ-002 renumbers them P0 Discovery, P1 Plan, P2 Implement, P3 Validate and Accept, and P4 Ship.
+Continuous run skips the plan and implement gates. It still stops at acceptance and ship, so no mode reaches a pull request without stopping. The phases also run P1 to P5, while Planifest Framework starts at P0. REQ-004 to REQ-006 renumbers them P0 Discovery, P1 Plan, P2 Implement, P3 Validate and Accept, and P4 Ship.
 
 The human chose this split: P0 stays interactive, and P1 to P4 run fully autonomous until the PR is ready for review. Continuous leaves a gap between the two modes. It stops at P3 and P4, so it is neither gated nor autonomous.
 
