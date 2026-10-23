@@ -37,3 +37,4 @@ P1 exchange (naming): Q: none / A: Human clarified this repo is Planifest Zero, 
 P1 exchange (phase numbering): Q: List all human stops / A: Human asked to renumber the phases P0 to P4, matching Planifest Framework, which starts at P0. Framework prefixes are `P0:` to `P9:`, and it offers interactive, continuous, and autonomous run modes.
 P1 exchange (autonomous scope): Q: Which stops should Autonomous skip? / A: P0 stays interactive. Autonomous runs P1 to P4 without stopping, through to a raised PR for human review. The P3 acceptance and P4 final gates no longer stop. Merge, 5-attempt escalations, and schema proposals still stop.
 P1 exchange (run modes): Q: What replaces the run-mode question? / A: Two modes, `gates` and `autonomous`. `gates` stops for confirmation at the end of each phase. Continuous is removed.
+P1 exchange (run modes, correction): Q: none / A: Human corrected the first mode name from `gates` to `gated`. The modes are `gated` and `autonomous`.
