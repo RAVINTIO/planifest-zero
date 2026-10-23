@@ -38,3 +38,5 @@ P0 exchange (test repo): Q: How to test without touching this repo's main? / A: 
 P0 exchange (merge path): Q: gh only, or also a local-git merge path? / A: gh only.
 P0 exchange (acceptance plan): Q: What does the P3 test run? / A: Two normal features that build a basic CRUD app, then a roadmap of four features.
 P0 exchange (pre-flight): Q: Merge PR #20 before branching? / A: Merged. Branch cut from synced main.
+P0 exchange (roadmap plan): Q: Does the feature store a roadmap plan that sequences backlog items? / A: It must. Each step is one feature run built from one or more backlog entries, in a fixed order.
+P0 exchange (roadmap folder): Q: One roadmap or many? / A: As many as needed under plan/roadmap/, one folder per plan, in the same format as backlog entries.
