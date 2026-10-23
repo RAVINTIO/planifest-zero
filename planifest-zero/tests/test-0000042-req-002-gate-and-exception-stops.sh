@@ -14,10 +14,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-ORCH="$FRAMEWORK/skills/planifest-orchestrator/SKILL.md"
-VAL="$FRAMEWORK/skills/planifest-validate-and-accept/SKILL.md"
-SHIP="$FRAMEWORK/skills/planifest-ship/SKILL.md"
+ZERO_DIR="$SCRIPT_DIR/.."
+ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+VAL="$ZERO_DIR/skills/planifest-validate-and-accept/SKILL.md"
+SHIP="$ZERO_DIR/skills/planifest-ship/SKILL.md"
 
 ORCH_CONTENT="$(cat "$ORCH")"
 VAL_CONTENT="$(cat "$VAL")"

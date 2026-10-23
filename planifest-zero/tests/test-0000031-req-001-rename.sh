@@ -3,15 +3,15 @@
 # every live reference updated. Historical records exempt.
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO="$(cd "$FRAMEWORK/.." && pwd)"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO="$(cd "$ZERO_DIR/.." && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 # Concatenated so repo-wide renames never rewrite this test's target string.
 OLD_NAME="planifest""-framework"
 
 echo "=== (a) folder is named planifest-zero ==="
-assert_equals "planifest-zero" "$(basename "$FRAMEWORK")" "framework folder basename"
+assert_equals "planifest-zero" "$(basename "$ZERO_DIR")" "framework folder basename"
 assert_equals "no" "$([ -d "$REPO/$OLD_NAME" ] && echo yes || echo no)" "old folder absent"
 
 echo "=== (b) zero live references to the old name ==="
@@ -50,6 +50,6 @@ else
 fi
 
 echo "=== (e) .gitattributes has no dead skill-sync line ==="
-assert_equals "0" "$(grep -c "skill-sync" "$FRAMEWORK/.gitattributes" || true)" "skill-sync attribute gone"
+assert_equals "0" "$(grep -c "skill-sync" "$ZERO_DIR/.gitattributes" || true)" "skill-sync attribute gone"
 
 print_summary

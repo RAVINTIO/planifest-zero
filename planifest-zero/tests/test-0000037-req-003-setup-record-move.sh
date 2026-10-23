@@ -13,8 +13,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_ROOT="$(cd "$FRAMEWORK/.." && pwd)"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
 RECORD="plan/state/claude-code.md"
 OLD_DIR="planifest-overrides/setup-config"
 RETIRED_FLAGS=(--structured-telemetry-mcp --backend-url --context-mode-mcp --include-full-skill-library)
@@ -81,7 +81,7 @@ REAL_RECORD_BEFORE="$(cat "$RECORD" 2>/dev/null)"
 REAL_HOOKS_BEFORE="$(git config --get core.hooksPath 2>/dev/null)"
 
 WS=$(mktemp -d -t planifest_0000037_req003_test_XXXXXX)
-cp -r "$FRAMEWORK" "$WS/planifest-zero"
+cp -r "$ZERO_DIR" "$WS/planifest-zero"
 mkdir -p "$WS/plan/state"
 [ -f "$RECORD" ] && cp "$RECORD" "$WS/$RECORD"
 [ -d planifest-overrides ] && cp -r planifest-overrides "$WS/planifest-overrides"

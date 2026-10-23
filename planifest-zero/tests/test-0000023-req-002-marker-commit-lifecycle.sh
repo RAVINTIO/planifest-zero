@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests for feature 0000023-framework-pipeline-fixes, req-002:
+# Tests for feature 0000023-pipeline-fixes, req-002:
 # marker commit lifecycle.
 #
 # Covers: session markers (plan/.orchestrator-active, plan/.orchestrator-ack,

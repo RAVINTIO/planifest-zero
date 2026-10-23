@@ -11,8 +11,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-SHIP_SKILL="$FRAMEWORK/skills/planifest-ship/SKILL.md"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SHIP_SKILL="$ZERO_DIR/skills/planifest-ship/SKILL.md"
 
 SHIP_CONTENT=$(cat "$SHIP_SKILL")
 

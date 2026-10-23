@@ -13,14 +13,14 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/../.."
+ZERO_DIR="$SCRIPT_DIR/../.."
 RETIRED_FLAGS=(--structured-telemetry-mcp --backend-url --context-mode-mcp --include-full-skill-library)
 SECRET_URL="http://retired-backend.invalid:9999/path"
 
 make_workspace() {
   local dir
   dir=$(mktemp -d -t planifest_0000034_req001_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$dir/planifest-zero"
+  cp -r "$ZERO_DIR" "$dir/planifest-zero"
   git init "$dir" >/dev/null 2>&1
   echo "$dir"
 }
@@ -125,7 +125,7 @@ cd /; rm -rf "$WS"
 echo ""
 echo "=== req-001 (d): setup.ps1 holds the same retired flags and value rule ==="
 
-PS1="$FRAMEWORK/setup.ps1"
+PS1="$ZERO_DIR/setup.ps1"
 for flag in "${RETIRED_FLAGS[@]}"; do
   assert_equals "yes" "$(grep -q -- "'$flag'" "$PS1" && echo yes || echo no)" \
     "req-001 (d): setup.ps1 names $flag as retired"

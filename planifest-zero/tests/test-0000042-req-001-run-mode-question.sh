@@ -12,8 +12,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-ORCH="$FRAMEWORK/skills/planifest-orchestrator/SKILL.md"
+ZERO_DIR="$SCRIPT_DIR/.."
+ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 ORCH_CONTENT="$(cat "$ORCH")"
 
 QUESTION='How should the agent run P1 to P4?
@@ -56,7 +56,7 @@ IN_REACH=(
 for rel in "${IN_REACH[@]}"; do
   # The 0000023 file name keeps its old id (plan assumption A-004), so a
   # self-reference to it is not a run-mode value.
-  hits="$(grep -niE 'continuous|interactive' "$FRAMEWORK/$rel" \
+  hits="$(grep -niE 'continuous|interactive' "$ZERO_DIR/$rel" \
     | grep -v 'test-0000023-req-001-continuous-run-p1-p3' || true)"
   assert_equals "" "$hits" "req-001 (b): $rel names no retired run mode"
 done
@@ -64,7 +64,7 @@ done
 echo ""
 echo "=== req-001 (b): the 0000023 suite asserts the new values ==="
 
-T23="$(cat "$FRAMEWORK/tests/test-0000023-req-001-continuous-run-p1-p3.sh")"
+T23="$(cat "$ZERO_DIR/tests/test-0000023-req-001-continuous-run-p1-p3.sh")"
 assert_contains 'gated' "$T23" "req-001 (b): test-0000023-req-001 asserts gated"
 assert_contains 'autonomous' "$T23" "req-001 (b): test-0000023-req-001 asserts autonomous"
 

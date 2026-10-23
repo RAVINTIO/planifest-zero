@@ -2,7 +2,7 @@
 name: planifest-orchestrator
 description: Owns discovery and routing for the five-phase Planifest pipeline. Coaches a human from feature brief to confirmed design, then invokes the plan, implement, validate-and-accept, and ship phase skills in sequence.
 bundle_templates: [feature-brief.template.md, design.template.md, discovery.template.md, build-log.template.md, backlog-entry.template.md, pause.template.md, park.template.md]
-bundle_standards: [stack-summary.md, monorepo-standards.md, api-design-standards.md, observability-standards.md, agent-dispatch-standards.md, framework-update-policy.md]
+bundle_standards: [stack-summary.md, monorepo-standards.md, api-design-standards.md, observability-standards.md, agent-dispatch-standards.md, pack-update-policy.md]
 ---
 
 # Planifest Orchestrator
@@ -70,7 +70,7 @@ Status messages use one form: `{prefix} {Status}: {one-liner}`. The status is St
 On every session start, before any action:
 
 1. **Pending migrations first.** Check `planifest-zero/migrations/` for `.md` files not in `_done/`. If found, invoke `planifest-migrator` for each before any other phase work.
-2. **Framework dependency update.** Detect per `planifest-zero/standards/framework-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a framework update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
+2. **Framework dependency update.** Detect per `planifest-zero/standards/pack-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a framework update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
 3. **Scan `plan/current/`** for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
 4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
 5. **`.feature-id` staleness.** If present and its contents differ from the current work, flag it for human review before proceeding.

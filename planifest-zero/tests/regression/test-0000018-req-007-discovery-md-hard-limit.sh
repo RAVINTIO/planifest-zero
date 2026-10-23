@@ -7,8 +7,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/../.." && pwd)"
-ORCHESTRATOR="$FRAMEWORK/skills/planifest-orchestrator/SKILL.md"
+ZERO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ORCHESTRATOR="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 
 grep_has() { grep -q "$1" "$2" 2>/dev/null && echo "yes" || echo "no"; }
 

@@ -14,10 +14,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-REPO_ROOT="$(cd "$FRAMEWORK/.." && pwd)"
-ORCH="$FRAMEWORK/skills/planifest-orchestrator/SKILL.md"
-REF="$FRAMEWORK/pipeline-reference.md"
+ZERO_DIR="$SCRIPT_DIR/.."
+REPO_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
+ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+REF="$ZERO_DIR/pipeline-reference.md"
 REF_CONTENT="$(cat "$REF")"
 
 # The numbered Resume Detection item whose bold label is $1.

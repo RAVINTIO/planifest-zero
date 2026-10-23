@@ -18,10 +18,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-STANDARDS="$FRAMEWORK/standards/agent-dispatch-standards.md"
-VALIDATE_SKILL="$FRAMEWORK/skills/planifest-validate-and-accept/SKILL.md"
+STANDARDS="$ZERO_DIR/standards/agent-dispatch-standards.md"
+VALIDATE_SKILL="$ZERO_DIR/skills/planifest-validate-and-accept/SKILL.md"
 
 grep_has() { grep -q "$1" "$2" 2>/dev/null && echo "yes" || echo "no"; }
 

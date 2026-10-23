@@ -10,7 +10,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 WARNING="node not found, skipping the telemetry cleanup of"
 
 # Runs only remove_legacy_telemetry_wiring from setup.sh, with a PATH that
@@ -18,7 +18,7 @@ WARNING="node not found, skipping the telemetry cleanup of"
 run_cleanup() {
   local root="$1" path="$2"
   local fn
-  fn="$(sed -n '/^remove_legacy_telemetry_wiring() {/,/^}/p' "$FRAMEWORK/setup.sh")"
+  fn="$(sed -n '/^remove_legacy_telemetry_wiring() {/,/^}/p' "$ZERO_DIR/setup.sh")"
   PATH="$path" PROJECT_ROOT="$root" /bin/bash -c "
     TELEMETRY_HOOK_MODULES='emit-event'
     TELEMETRY_MCP_MATCHER='mcp__structured-telemetry-mcp__emit_event'

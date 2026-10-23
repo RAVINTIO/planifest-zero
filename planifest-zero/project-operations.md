@@ -77,7 +77,7 @@ The tracked record of setup flags per tool lives at `plan/state/{tool}.md`, not 
 
 ---
 
-## Updating the Framework
+## Updating the pack
 
 After pulling new files into `planifest-zero/`, re-run the setup script to propagate changes. Pass the same flags used during initial setup. Re-running is idempotent, and it prunes skills the new version has retired.
 
@@ -93,7 +93,7 @@ After pulling new files into `planifest-zero/`, re-run the setup script to propa
 
 After updating, check `planifest-zero/migrations/` for any pending `.md` files. The orchestrator handles them automatically at next session start via the `planifest-migrator` skill.
 
-→ [Full update protocol and migration handling](pipeline-reference.md#updating-the-framework)
+→ [Full update protocol and migration handling](pipeline-reference.md#updating-the-pack)
 
 ---
 

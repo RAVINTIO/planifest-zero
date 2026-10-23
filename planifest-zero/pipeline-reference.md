@@ -293,7 +293,7 @@ In retrofit mode, discovery includes a codebase scan before coaching. The orches
 
 ---
 
-## Updating the Framework
+## Updating the pack
 
 "Updating the framework" means pulling new files into `planifest-zero/` (via git pull, a submodule update, or copying from the source repo) and then re-running the setup script to propagate the changes.
 

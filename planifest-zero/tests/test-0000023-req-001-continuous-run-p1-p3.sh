@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests for feature 0000023-framework-pipeline-fixes, req-001, as revised by
+# Tests for feature 0000023-pipeline-fixes, req-001, as revised by
 # 0000042 req-001 and req-002: run modes at the ordinary phase gates.
 #
 # Covers: the orchestrator's Phase Invocation table and the run-mode question.

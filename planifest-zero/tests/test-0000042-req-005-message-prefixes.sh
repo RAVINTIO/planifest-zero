@@ -12,10 +12,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-REPO_ROOT="$FRAMEWORK/.."
-ORCH="$FRAMEWORK/skills/planifest-orchestrator/SKILL.md"
-REF="$FRAMEWORK/pipeline-reference.md"
+ZERO_DIR="$SCRIPT_DIR/.."
+REPO_ROOT="$ZERO_DIR/.."
+ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+REF="$ZERO_DIR/pipeline-reference.md"
 
 # The section from a heading to the next "---" rule.
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^---$/ {exit} on {print}' "$2"; }
@@ -59,7 +59,7 @@ assert_contains "| P3 | Validate and Accept |" "$ORCH_SEC" \
 echo ""
 echo "=== req-005: no retired letter prefix in user-facing docs ==="
 for f in "$REPO_ROOT/README.md" "$REPO_ROOT/docs/architecture-overview.md" \
-         "$FRAMEWORK/getting-started.md" "$ORCH" "$REF"; do
+         "$ZERO_DIR/getting-started.md" "$ORCH" "$REF"; do
   rel="${f#"$REPO_ROOT/"}"
   hits="$(grep -nE -- "$LETTERS" "$f" || true)"
   assert_equals "" "$hits" "req-005: $rel uses no retired letter prefix"

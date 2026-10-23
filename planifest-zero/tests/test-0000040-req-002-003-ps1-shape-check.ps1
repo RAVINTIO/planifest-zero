@@ -67,7 +67,7 @@ function Assert-ShapeRejected {
 
 # Loads Test-JsonText from setup.ps1 without running the script. The parser
 # finds the function, and its text is dot-sourced into this scope.
-$setupPath = Join-Path $global:FrameworkDir 'setup.ps1'
+$setupPath = Join-Path $global:ZeroDir 'setup.ps1'
 $parseTokens = $null
 $parseErrors = $null
 $setupAst = [System.Management.Automation.Language.Parser]::ParseFile($setupPath, [ref]$parseTokens, [ref]$parseErrors)

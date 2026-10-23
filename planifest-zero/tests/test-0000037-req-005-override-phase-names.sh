@@ -11,10 +11,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-REPO_ROOT="$FRAMEWORK/.."
+ZERO_DIR="$SCRIPT_DIR/.."
+REPO_ROOT="$ZERO_DIR/.."
 OVERRIDE="$REPO_ROOT/planifest-overrides/instructions/custom-004-ship-push-and-raise-pr.md"
-SHIP_SKILL="$FRAMEWORK/skills/planifest-ship/SKILL.md"
+SHIP_SKILL="$ZERO_DIR/skills/planifest-ship/SKILL.md"
 
 if [ ! -f "$OVERRIDE" ]; then
   echo "SKIP: req-005: override file not found at $OVERRIDE"

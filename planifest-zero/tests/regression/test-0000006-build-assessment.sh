@@ -9,9 +9,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SKILLS="$FRAMEWORK/skills"
-TEMPLATES="$FRAMEWORK/templates"
+ZERO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SKILLS="$ZERO_DIR/skills"
+TEMPLATES="$ZERO_DIR/templates"
 
 # -----------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ echo ""
 echo "=== req-004: model routing rules ==="
 echo "(0000022: Model Tier Decision Table relocated to standards/agent-dispatch-standards.md, ADR-001 - orchestrator now points to it)"
 
-DISPATCH_STD=$(cat "$FRAMEWORK/standards/agent-dispatch-standards.md")
+DISPATCH_STD=$(cat "$ZERO_DIR/standards/agent-dispatch-standards.md")
 assert_contains "agent-dispatch-standards.md" "$ORCH" "req-004: orchestrator points to agent-dispatch-standards.md"
 assert_contains "Model Tier"                 "$DISPATCH_STD" "req-004: standards file has Model Tier section"
 assert_contains "Primary"                    "$DISPATCH_STD" "req-004: Primary tier defined"

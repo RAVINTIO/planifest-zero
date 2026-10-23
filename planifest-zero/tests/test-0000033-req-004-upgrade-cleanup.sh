@@ -14,7 +14,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 
 file_exists() { [ -f "$1" ] && echo "yes" || echo "no"; }
 dir_exists() { [ -d "$1" ] && echo "yes" || echo "no"; }
@@ -97,7 +97,7 @@ count_telemetry_lines() {
 make_workspace() {
   local dir
   dir=$(mktemp -d -t planifest_0000033_req004_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$dir/planifest-zero"
+  cp -r "$ZERO_DIR" "$dir/planifest-zero"
   git init "$dir" >/dev/null 2>&1
   git config --global --add safe.directory "$dir" >/dev/null 2>&1 || true
   echo "$dir"
@@ -309,7 +309,7 @@ rm -rf "$WS"
 echo ""
 echo "=== req-004 (f): setup.ps1 defines and calls the mirror cleanup function ==="
 
-PS1="$FRAMEWORK/setup.ps1"
+PS1="$ZERO_DIR/setup.ps1"
 
 assert_equals "1" "$(grep -c "^function Remove-LegacyTelemetryWiring" "$PS1" || true)" \
   "req-004 (f): setup.ps1 defines Remove-LegacyTelemetryWiring once"
@@ -339,8 +339,8 @@ assert_equals "before" "$PS1_ORDER" \
 
 # The bash side must use the same order, so the enforcement install is the last
 # writer of settings.json on every run.
-SH_CALL_LINE="$(grep -n "remove_legacy_telemetry_wiring \"" "$FRAMEWORK/setup.sh" | head -1 | cut -d: -f1)"
-SH_INSTALL_LINE="$(grep -n "install_enforcement_hooks \"hooks/enforcement\"" "$FRAMEWORK/setup.sh" | head -1 | cut -d: -f1)"
+SH_CALL_LINE="$(grep -n "remove_legacy_telemetry_wiring \"" "$ZERO_DIR/setup.sh" | head -1 | cut -d: -f1)"
+SH_INSTALL_LINE="$(grep -n "install_enforcement_hooks \"hooks/enforcement\"" "$ZERO_DIR/setup.sh" | head -1 | cut -d: -f1)"
 
 if [ -n "$SH_CALL_LINE" ] && [ -n "$SH_INSTALL_LINE" ] && [ "$SH_CALL_LINE" -lt "$SH_INSTALL_LINE" ]; then
   SH_ORDER="before"

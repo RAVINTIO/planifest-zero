@@ -7,9 +7,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_ROOT="$(cd "$FRAMEWORK/.." && pwd)"
-CHECK="$FRAMEWORK/scripts/self-description-check.mjs"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
+CHECK="$ZERO_DIR/scripts/self-description-check.mjs"
 
 echo ""
 echo "=== req-005: passes clean against the actual, fixed repository ==="
@@ -31,13 +31,13 @@ cat > "$SCRATCH_A/README.md" << 'EOF'
 
 ```
 repo/
-├── planifest-zero/   ← The framework
+├── planifest-zero/   ← The pack
 │   └── skills/            ← Agent instructions
 │
 └── nonexistent-folder/    ← This path does not exist
 ```
 
-## The framework
+## The pack
 
 | Folder | Contents |
 |--------|----------|
@@ -64,11 +64,11 @@ cat > "$SCRATCH_B/README.md" << 'EOF'
 
 ```
 repo/
-└── planifest-zero/   ← The framework
+└── planifest-zero/   ← The pack
     └── skills/            ← Agent instructions
 ```
 
-## The framework
+## The pack
 
 | Folder | Contents |
 |--------|----------|
@@ -94,11 +94,11 @@ cat > "$SCRATCH_C/README.md" << 'EOF'
 
 ```
 repo/
-└── planifest-zero/   ← The framework
+└── planifest-zero/   ← The pack
     └── skills/            ← Agent instructions
 ```
 
-## The framework
+## The pack
 
 | Folder | Contents |
 |--------|----------|

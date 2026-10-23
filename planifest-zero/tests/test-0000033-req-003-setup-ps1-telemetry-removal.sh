@@ -17,9 +17,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-SETUP_PS1="$FRAMEWORK/setup.ps1"
-TOOL_PS1="$FRAMEWORK/setup/claude-code.ps1"
+ZERO_DIR="$SCRIPT_DIR/.."
+SETUP_PS1="$ZERO_DIR/setup.ps1"
+TOOL_PS1="$ZERO_DIR/setup/claude-code.ps1"
 
 # Extracts one function body: from its `function` line up to the next
 # top-level `function` line. Scoping matters here because a neighbouring

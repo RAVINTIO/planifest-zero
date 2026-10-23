@@ -17,11 +17,11 @@
       "filePath": "tests/regression/test-0000016-pipeline-governance.sh"
     },
     {
-      "name": "test-0000005-framework-governance.sh",
+      "name": "test-0000005-pack-governance.sh",
       "sourceFeature": "0000005-framework-governance",
       "promotionDate": "2026-08-01",
       "promotedBy": "agent",
-      "filePath": "tests/regression/test-0000005-framework-governance.sh"
+      "filePath": "tests/regression/test-0000005-pack-governance.sh"
     },
     {
       "name": "test-0000006-build-assessment.sh",

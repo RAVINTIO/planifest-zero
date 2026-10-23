@@ -109,7 +109,7 @@ One optional flag:
 
 ---
 
-## The framework
+## The pack
 
 | Folder | Contents |
 |--------|----------|

@@ -7,19 +7,19 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/../.."
-SETUP_SH="$FRAMEWORK/setup.sh"
-SETUP_PS1="$FRAMEWORK/setup.ps1"
-ORCHESTRATOR="$FRAMEWORK/skills/planifest-orchestrator/SKILL.md"
-SHIP_AGENT="$FRAMEWORK/skills/planifest-ship/SKILL.md"
-GATE_WRITE="$FRAMEWORK/hooks/enforcement/gate-write.mjs"
-AUTO_TRIGGER="$FRAMEWORK/hooks/enforcement/auto-trigger-orchestrator.mjs"
-PRESENCE_CHECK="$FRAMEWORK/hooks/enforcement/check-orchestrator-presence.mjs"
-DESIGN_TPL="$FRAMEWORK/templates/design.template.md"
-PAUSE_TPL="$FRAMEWORK/templates/pause.template.md"
-STANDARD_BOOT="$FRAMEWORK/templates/standard-boot.md"
-GETTING_STARTED="$FRAMEWORK/getting-started.md"
-PIPELINE_REFERENCE="$FRAMEWORK/pipeline-reference.md"
+ZERO_DIR="$SCRIPT_DIR/../.."
+SETUP_SH="$ZERO_DIR/setup.sh"
+SETUP_PS1="$ZERO_DIR/setup.ps1"
+ORCHESTRATOR="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+SHIP_AGENT="$ZERO_DIR/skills/planifest-ship/SKILL.md"
+GATE_WRITE="$ZERO_DIR/hooks/enforcement/gate-write.mjs"
+AUTO_TRIGGER="$ZERO_DIR/hooks/enforcement/auto-trigger-orchestrator.mjs"
+PRESENCE_CHECK="$ZERO_DIR/hooks/enforcement/check-orchestrator-presence.mjs"
+DESIGN_TPL="$ZERO_DIR/templates/design.template.md"
+PAUSE_TPL="$ZERO_DIR/templates/pause.template.md"
+STANDARD_BOOT="$ZERO_DIR/templates/standard-boot.md"
+GETTING_STARTED="$ZERO_DIR/getting-started.md"
+PIPELINE_REFERENCE="$ZERO_DIR/pipeline-reference.md"
 
 file_exists() { [ -f "$1" ] && echo "yes" || echo "no"; }
 grep_has()    { grep -q "$1" "$2" 2>/dev/null && echo "yes" || echo "no"; }
@@ -142,7 +142,7 @@ assert_equals "yes" "$(grep_has "cwdPrefix" "$GATE_WRITE")" \
 assert_equals "no" "$(grep_has "cwdWithSep" "$GATE_WRITE")" \
   "REQ-012: gate-write.mjs does not use old cwdWithSep"
 
-assert_equals "yes" "$(file_exists "$FRAMEWORK/tests/test-gate-write-windows.mjs")" \
+assert_equals "yes" "$(file_exists "$ZERO_DIR/tests/test-gate-write-windows.mjs")" \
   "REQ-012: Node.js regression test exists"
 
 # ── REQ-008 (mid-pipeline): orchestrator-presence-check hook ─────────────────

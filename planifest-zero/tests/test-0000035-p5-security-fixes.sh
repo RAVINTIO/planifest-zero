@@ -8,8 +8,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-SETUP_PS1="$FRAMEWORK/setup.ps1"
+ZERO_DIR="$SCRIPT_DIR/.."
+SETUP_PS1="$ZERO_DIR/setup.ps1"
 
 extract_function_body() {
   awk -v name="function $1" '
@@ -62,9 +62,9 @@ echo "=== S-005: hook commands quote the path, as setup.sh does ==="
 
 assert_contains 'command = "node `"$HooksDir/$Module.mjs`""' "$(extract_function_body 'New-HookEntry')" \
   "S-005: New-HookEntry quotes the module path"
-assert_contains 'node \"$hooks_dir_rel/gate-write.mjs\"' "$(cat "$FRAMEWORK/setup.sh")" \
+assert_contains 'node \"$hooks_dir_rel/gate-write.mjs\"' "$(cat "$ZERO_DIR/setup.sh")" \
   "S-005: setup.sh quotes the same path"
-assert_contains "EnforcementHooksDir = '.claude/hooks/enforcement'" "$(cat "$FRAMEWORK/setup/claude-code.ps1")" \
+assert_contains "EnforcementHooksDir = '.claude/hooks/enforcement'" "$(cat "$ZERO_DIR/setup/claude-code.ps1")" \
   "S-005: setup.ps1 uses the same hooks folder as setup.sh"
 
 echo ""
@@ -78,7 +78,7 @@ assert_contains 'return' "$ALLOWED" "S-006: a file that isn't a JSON object is l
 echo ""
 echo "=== S-007, S-008: no PowerShell 6 escape, exact tool name ==="
 
-assert_equals "0" "$(cat "$SETUP_PS1" "$FRAMEWORK"/setup/*.ps1 | grep -c '`u{' || true)" \
+assert_equals "0" "$(cat "$SETUP_PS1" "$ZERO_DIR"/setup/*.ps1 | grep -c '`u{' || true)" \
   "S-007: no \`u{} escape, which PowerShell 5.1 lacks"
 assert_equals "0" "$(grep -c 'ToLower()' "$SETUP_PS1" || true)" "S-008: the tool name is not lower-cased"
 assert_equals "1" "$(grep -c '\$ValidTools -ccontains \$Tool' "$SETUP_PS1" || true)" \

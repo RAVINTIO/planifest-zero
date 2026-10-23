@@ -13,7 +13,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 
 file_exists() { [ -f "$1" ] && echo "yes" || echo "no"; }
 dir_exists() { [ -d "$1" ] && echo "yes" || echo "no"; }
@@ -21,7 +21,7 @@ dir_exists() { [ -d "$1" ] && echo "yes" || echo "no"; }
 make_workspace() {
   local dir
   dir=$(mktemp -d -t planifest_0000032_req003_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$dir/planifest-zero"
+  cp -r "$ZERO_DIR" "$dir/planifest-zero"
   git init "$dir" >/dev/null 2>&1
   git config --global --add safe.directory "$dir" >/dev/null 2>&1 || true
   echo "$dir"
@@ -156,7 +156,7 @@ fi
 echo ""
 echo "=== req-003 (f): static check — setup.ps1 references removal of the legacy path ==="
 
-PS1_CONTENT="$(cat "$FRAMEWORK/setup.ps1")"
+PS1_CONTENT="$(cat "$ZERO_DIR/setup.ps1")"
 
 assert_contains 'planifest-overrides\setup-config' "$PS1_CONTENT" \
   "req-003 (f): setup.ps1 references the legacy planifest-overrides\\setup-config path"

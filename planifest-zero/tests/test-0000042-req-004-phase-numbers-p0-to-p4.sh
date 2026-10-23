@@ -11,12 +11,12 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-ORCH="$FRAMEWORK/skills/planifest-orchestrator/SKILL.md"
-BUILD_LOG="$FRAMEWORK/templates/build-log.template.md"
-BACKLOG="$FRAMEWORK/templates/backlog-entry.template.md"
-CHECK_DESIGN="$FRAMEWORK/hooks/enforcement/check-design.mjs"
-GATE_WRITE="$FRAMEWORK/hooks/enforcement/gate-write.mjs"
+ZERO_DIR="$SCRIPT_DIR/.."
+ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+BUILD_LOG="$ZERO_DIR/templates/build-log.template.md"
+BACKLOG="$ZERO_DIR/templates/backlog-entry.template.md"
+CHECK_DESIGN="$ZERO_DIR/hooks/enforcement/check-design.mjs"
+GATE_WRITE="$ZERO_DIR/hooks/enforcement/gate-write.mjs"
 
 has() { grep -qF -- "$1" "$2" && echo yes || echo no; }
 has_re() { grep -qE -- "$1" "$2" && echo yes || echo no; }

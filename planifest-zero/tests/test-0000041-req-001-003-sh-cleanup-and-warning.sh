@@ -16,7 +16,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 PLANTED="PLANTED-SECRET"
 SHAPE_LINE="! Error: .claude/settings.json is valid JSON but not a settings object setup can read. Fix it and rerun setup."
 INVALID_LINE="! Error: .claude/settings.json is not valid JSON. Fix it and rerun setup."
@@ -26,7 +26,7 @@ TELEMETRY_SETTINGS='{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"nod
 
 # One copy of the framework serves every case. Each case gets a fresh project.
 TEMPLATE="$(mktemp -d -t planifest_0000041_req001_tpl_XXXXXX)"
-cp -r "$FRAMEWORK" "$TEMPLATE/planifest-zero"
+cp -r "$ZERO_DIR" "$TEMPLATE/planifest-zero"
 
 new_workspace() {
   local ws
@@ -176,8 +176,8 @@ SH_TEXT="$(node -e '
     .replace(/"\s*\+\s*ev\s*\+\s*"/g, "{event}")
     .replace(/"\s*\+\s*process\.env\.PLANIFEST_SETTINGS_REL\s*\+\s*"/g, "{file}");
   console.log(/^"[^"]*\\n"$/.test(text) ? text.slice(1, -3) : "unparsed: " + text);
-' "$FRAMEWORK/setup.sh")"
-PS_TEXT="$(grep -F 'is not an array. Setup replaced' "$FRAMEWORK/setup.ps1" | head -1 | node -e '
+' "$ZERO_DIR/setup.sh")"
+PS_TEXT="$(grep -F 'is not an array. Setup replaced' "$ZERO_DIR/setup.ps1" | head -1 | node -e '
   const line = require("fs").readFileSync(0, "utf8");
   const m = /WriteLine\("(.*)"\)/.exec(line);
   if (!m) { console.log("unparsed"); process.exit(0); }

@@ -99,7 +99,7 @@ Every change takes this route. A small change is a small run, not a different pi
 | Git guardrails and how enforcement works | [project-operations.md](project-operations.md#git-guardrails) |
 | Orchestrator sentinel and strict mode | [project-operations.md](project-operations.md#orchestrator-sentinel) |
 | Customising with planifest-overrides | [project-operations.md](project-operations.md#customising-with-planifest-overrides) |
-| Updating the framework | [project-operations.md](project-operations.md#updating-the-framework) |
+| Updating the pack | [project-operations.md](project-operations.md#updating-the-pack) |
 | What to commit | [project-operations.md](project-operations.md#what-to-commit) |
 | Retrofit an existing project | [project-operations.md](project-operations.md#retrofit-an-existing-project) |
 | Phase mechanics and confirmation gates | [pipeline-reference.md](pipeline-reference.md) |

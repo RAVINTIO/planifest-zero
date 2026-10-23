@@ -12,7 +12,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 
 file_exists() { [ -f "$1" ] && echo "yes" || echo "no"; }
 dir_exists() { [ -d "$1" ] && echo "yes" || echo "no"; }
@@ -56,7 +56,7 @@ settings_has_command() {
 make_workspace() {
   local dir
   dir=$(mktemp -d -t planifest_0000033_req002_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$dir/planifest-zero"
+  cp -r "$ZERO_DIR" "$dir/planifest-zero"
   git init "$dir" >/dev/null 2>&1
   git config --global --add safe.directory "$dir" >/dev/null 2>&1 || true
   echo "$dir"
@@ -82,7 +82,7 @@ SH_OUTSIDE_ALLOWED="$(awk '
   in_block && /^}/ { in_block = 0; next }
   in_flags && /^done/ { in_flags = 0; next }
   !in_block && !in_flags { print }
-' "$FRAMEWORK/setup.sh")"
+' "$ZERO_DIR/setup.sh")"
 OUTSIDE_CLEANUP="$(printf '%s\n' "$SH_OUTSIDE_ALLOWED" | grep -i "telemetry" | grep -vc "remove_legacy_telemetry_wiring" || true)"
 assert_equals "0" "$OUTSIDE_CLEANUP" \
   "req-002 (a): setup.sh has no telemetry string outside the legacy-cleanup block except references to it"
@@ -96,15 +96,15 @@ assert_equals "0" "$(printf '%s\n' "$SH_OUTSIDE_ALLOWED" | grep -cE '^\s*--backe
 
 # No telemetry install path survives.
 for FORBIDDEN in "install_telemetry_hooks" "merge_telemetry_hook_settings" "verify_telemetry_hooks_installed" "STRUCTURED_TELEMETRY_MCP"; do
-  assert_equals "0" "$(grep -c -- "$FORBIDDEN" "$FRAMEWORK/setup.sh" || true)" \
+  assert_equals "0" "$(grep -c -- "$FORBIDDEN" "$ZERO_DIR/setup.sh" || true)" \
     "req-002 (a): setup.sh declares no $FORBIDDEN"
 done
 
 # The sentinel is only ever removed, never written.
-assert_equals "0" "$(grep -c 'touch .*telemetry-enabled\|> .*telemetry-enabled' "$FRAMEWORK/setup.sh" || true)" \
+assert_equals "0" "$(grep -c 'touch .*telemetry-enabled\|> .*telemetry-enabled' "$ZERO_DIR/setup.sh" || true)" \
   "req-002 (a): setup.sh never writes the telemetry-enabled sentinel"
 
-TOOL_HITS="$(grep -c -i "telemetry" "$FRAMEWORK/setup/claude-code.sh")"
+TOOL_HITS="$(grep -c -i "telemetry" "$ZERO_DIR/setup/claude-code.sh")"
 assert_equals "0" "$TOOL_HITS" \
   "req-002 (a): setup/claude-code.sh contains no telemetry string"
 
@@ -112,10 +112,10 @@ BACKEND_HITS="$(printf '%s\n' "$SH_OUTSIDE_ALLOWED" | grep -c -i "backend.url\|b
 assert_equals "0" "$BACKEND_HITS" \
   "req-002 (a): setup.sh contains no backend-url string outside the retired-flag block"
 
-SYNTAX_OUTPUT="$(bash -n "$FRAMEWORK/setup.sh" 2>&1)"
+SYNTAX_OUTPUT="$(bash -n "$ZERO_DIR/setup.sh" 2>&1)"
 assert_exit_zero $? "req-002 (a): setup.sh still parses as valid bash"
 
-TOOL_SYNTAX="$(bash -n "$FRAMEWORK/setup/claude-code.sh" 2>&1)"
+TOOL_SYNTAX="$(bash -n "$ZERO_DIR/setup/claude-code.sh" 2>&1)"
 assert_exit_zero $? "req-002 (a): setup/claude-code.sh still parses as valid bash"
 
 # ── (b): the removed flag is now an unknown argument ────────────────────────
