@@ -98,11 +98,41 @@ P3 gate: skipped under continuous run (0.8.0 rule).
 | Start | `2026-10-23T08:33:13Z` |
 | Model tier | primary (security review), cheaper (checks) |
 | Skills loaded | planifest-validate-and-accept |
-| Agents spawned | `pending` |
+| Agents spawned | `2` |
 | MCP calls | `0` |
-| Parallel task batches | `pending` |
+| Parallel task batches | `1` |
 | Notes | Chat prefix `P3 Validate:` maps to this log block. |
 P4 checks: CI on draft PR #20 green (validate-branch, self-description-check, bash-suites, windows-powershell on 5.1 and 7). Local suite 82 feature and 19 regression passed. Verification: 26 verified, 0 failed, 9 not-verifiable (live agent behaviour). Security: medium overall, 0 critical, 0 high, 4 medium, 3 low, 2 informational.
 P4 self-correction 1: F-007 (loop-runner retired prefixes) and F-009 (feature-pipeline Blocked wording). RED 3 failures in req-005 test, fixed, suite green. Setup rerun to refresh `.claude/`.
 P4 human decision: fix F-002, F-003, and F-004 in this release. F-001 accepted as the confirmed resume behaviour.
 P4 self-correction 2: REQ-011 added for F-002 to F-004. RED 13 of 13 (5bf2f37), then GREEN 13 of 13 (44fff34). Two REQ-002 assertions failed on reworded stop prose. The skill wording was restored and the tests left unchanged. Setup rerun to refresh `.claude/`.
+P4 gate: accepted by the human on 2026-10-23. F-001 accepted as the confirmed resume behaviour. F-005, F-006, and F-008 stay open as advisory. Framework backlog 0000192 written on human request, uncommitted in that repo.
+
+---
+
+### P5: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-23T10:05:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Chat prefix `P4 Ship:` maps to this log block. CI run `40010838474` green on all four jobs before ship. |
+
+---
+
+## Summary (filled at ship, P5)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `19` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` |
+| Primary tier agent calls | `not recorded per agent` |
+| Cheaper tier agent calls | `not recorded per agent` |
+| Self-corrections | `3` (P2 consistency split, P4 F-007 and F-009, P4 F-002 to F-004) |
+| Phases skipped | `none` (P2 and P3 gates passed under the 0.8.0 continuous rule) |
