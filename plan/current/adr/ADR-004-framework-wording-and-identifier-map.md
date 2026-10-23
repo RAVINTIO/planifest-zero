@@ -82,7 +82,7 @@ A new test in `planifest-zero/tests/` enforces the rule.
 
 The allowlist entries cover:
 
-- Lines in the 22 `test-frameworks.md` standards, and links to them.
+- Lines in the 21 `test-frameworks.md` standards, and links to them.
 - The two stack evaluation standards and the web framework tables in the `prefer-avoid.md` files.
 - "meta-framework", "test framework", "testing framework", and "language or framework in use".
 - The three `stack.framework`, `stack.frontend`, and `stack.testing` lines in `component-guide.md` and the `framework:` line in `component.template.yml`.
@@ -145,3 +145,26 @@ This repo is the only install of Planifest Zero, so no migration file is written
 ## Superseded By
 
 - None
+
+## Implementation notes (P2)
+
+The build followed the map, with these additions:
+
+- The standards hold 21 `test-frameworks.md` files, not 22.
+- The allowlist also covers lines that are generic on reading:
+  - the `stack-summary.md` table header
+  - two lines in `code-quality-standards.md`
+  - "framework internals" in `testing-standards.md`
+  - "Framework-specific terms" in `domain-glossary-guide.md`
+  - the stack table in `feature-brief.template.md`
+  - `framework: "none"` in `planifest-zero/component.yml`
+- The allowlist covers the old `planifest-framework/` folder name in any file, not only `docs/decisions-index.md`.
+- Names outside the map follow its convention:
+  - `## Pack Index (JIT Loading)`
+  - "Pack dependency update"
+  - "Pack Update Policy"
+  - `# Planifest Zero - Mandatory Pipeline Rules` in `standard-boot.md`
+- `docs/decisions-index.md` now titles 0000033's telemetry ADR "Telemetry is not a pack concern". The archived ADR keeps its original title.
+- `README.md` names the separate product by its repo, `planifest/planifest-framework`, so the REQ-007 test's ban on the product name holds.
+- `test-0000031-req-001` ignores lines that link to `planifest/<old name>`.
+- No automated check confirms that the archive and changelog stay unchanged, because ship moves files into the archive. A manual `git diff` confirmed it at P2.

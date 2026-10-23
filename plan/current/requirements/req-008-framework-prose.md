@@ -21,7 +21,7 @@ As a reader of any Planifest Zero file, I never see Planifest Zero described as 
   - New wording uses "Planifest Zero", "the pack", or "the pipeline", whichever reads best.
   - The README states that Planifest Zero is distinct from Planifest Framework.
 - Generic uses stay unchanged:
-  - The 22 `test-frameworks.md` standards.
+  - The 21 `test-frameworks.md` standards.
   - The terms "meta-framework" and "test framework".
   - Web, API, and HTTP frameworks in the stack evaluation and `prefer-avoid.md` standards.
   - The `stack.framework` field, which names a web framework in the user's stack.
@@ -54,7 +54,7 @@ Counts come from `git ls-files | grep -v '^plan/_archive/' | grep -v '^plan/chan
 
 ### Generic uses (kept)
 
-- 22 `test-frameworks.md` files under `planifest-zero/standards/library-standards/`, plus the lines that link to them.
+- 21 `test-frameworks.md` files under `planifest-zero/standards/library-standards/`, plus the lines that link to them.
 - `planifest-zero/standards/reference/backend-stack-evaluation.md` (51 lines) and `frontend-stack-evaluation.md` (47 lines).
 - Web framework tables in the `prefer-avoid.md` files for `go`, `java`, `nodejs`, `react`, and `python`.
 - "meta-framework" in the React `prefer-avoid.md`, "testing framework" in `planifest-validate-and-accept`, and "language or framework in use" in `formatting-standards.md`.
@@ -64,7 +64,7 @@ Counts come from `git ls-files | grep -v '^plan/_archive/' | grep -v '^plan/chan
 ## Acceptance Criteria
 - [ ] (a) `README.md` and `docs/about.md` contain no line that describes or names Planifest Zero as a framework. The README states that Planifest Zero is distinct from Planifest Framework.
 - [ ] (b) Every other prose line in the files listed above that describes Planifest Zero as a framework now says "Planifest Zero", "the pack", or "the pipeline".
-- [ ] (c) The 22 `test-frameworks.md` files, the stack evaluation standards, and references to Planifest Framework are unchanged apart from link updates.
+- [ ] (c) The 21 `test-frameworks.md` files, the stack evaluation standards, and references to Planifest Framework are unchanged apart from link updates.
 
 ## Dependencies
 - Run modes (REQ-001 to REQ-003) edit some of the same files. They land before this requirement.

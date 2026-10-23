@@ -26,7 +26,7 @@ As a maintainer of Planifest Zero, I want a test that fails when the old wording
 - A matching line passes if it matches an allowlist entry. Any other line fails the test, and the test prints the file and line number.
 - The allowlist lives in the test file. Each entry carries a comment that names the generic use it covers.
 - The allowlist entries cover:
-  - Lines in the 22 `test-frameworks.md` standards, and links to them.
+  - Lines in the 21 `test-frameworks.md` standards, and links to them.
   - The two stack evaluation standards and the web framework tables in the `prefer-avoid.md` files.
   - "meta-framework", "test framework", "testing framework", and "language or framework in use".
   - The `stack.framework`, `stack.frontend`, and `stack.testing` lines in `component-guide.md` and the `framework:` line in `component.template.yml`.
