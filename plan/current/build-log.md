@@ -104,3 +104,5 @@ P3 gate: skipped under continuous run (0.8.0 rule).
 | Notes | Chat prefix `P3 Validate:` maps to this log block. |
 P4 checks: CI on draft PR #20 green (validate-branch, self-description-check, bash-suites, windows-powershell on 5.1 and 7). Local suite 82 feature and 19 regression passed. Verification: 26 verified, 0 failed, 9 not-verifiable (live agent behaviour). Security: medium overall, 0 critical, 0 high, 4 medium, 3 low, 2 informational.
 P4 self-correction 1: F-007 (loop-runner retired prefixes) and F-009 (feature-pipeline Blocked wording). RED 3 failures in req-005 test, fixed, suite green. Setup rerun to refresh `.claude/`.
+P4 human decision: fix F-002, F-003, and F-004 in this release. F-001 accepted as the confirmed resume behaviour.
+P4 self-correction 2: REQ-011 added for F-002 to F-004. RED 13 of 13 (5bf2f37), then GREEN 13 of 13 (44fff34). Two REQ-002 assertions failed on reworded stop prose. The skill wording was restored and the tests left unchanged. Setup rerun to refresh `.claude/`.
