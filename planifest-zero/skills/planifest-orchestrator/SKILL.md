@@ -1,7 +1,7 @@
 ---
 name: planifest-orchestrator
 description: Owns discovery and routing for the five-phase Planifest pipeline. Coaches a human from feature brief to confirmed design, then invokes the plan, implement, validate-and-accept, and ship phase skills in sequence.
-bundle_templates: [feature-brief.template.md, design.template.md, discovery.template.md, build-log.template.md, backlog-entry.template.md, pause.template.md, park.template.md]
+bundle_templates: [feature-brief.template.md, design.template.md, discovery.template.md, build-log.template.md, backlog-entry.template.md, roadmap-entry.template.md, pause.template.md, park.template.md]
 bundle_standards: [stack-summary.md, monorepo-standards.md, api-design-standards.md, observability-standards.md, agent-dispatch-standards.md, pack-update-policy.md]
 ---
 
@@ -94,6 +94,7 @@ Never assume you know a template's format. Read the relevant file immediately be
 | The build log | `planifest-zero/templates/build-log.template.md` |
 | `plan/current/design.md` | `planifest-zero/templates/design.template.md` |
 | A backlog entry | `planifest-zero/templates/backlog-entry.template.md` |
+| A roadmap draft or plan | `planifest-zero/templates/roadmap-entry.template.md` |
 | A pause record | `planifest-zero/templates/pause.template.md` |
 | A park record | `planifest-zero/templates/park.template.md` |
 | Any loop (before entering it) | Load the `planifest-loop-runner` skill |
@@ -140,6 +141,19 @@ Rules:
 ## Context Hygiene
 
 Clear context at two bookends: discovery start (fresh runs only) and after ship completes. Issue `/clear` or the host tool's equivalent. If the tool has none, ask the human to clear manually and confirm before continuing. Mid-run, if context accumulates material that no longer serves the active phase, offer compaction. Advisory only: never block on it.
+
+## Roadmaps
+
+A roadmap is a chain of feature steps that the human approves once. Read `planifest-zero/templates/roadmap-entry.template.md` before you write one.
+
+### Filing a draft
+
+- A draft lives at `plan/roadmap/{id}-{slug}/roadmap.md`, one folder per draft.
+- Roadmap ids share the backlog's seven-digit sequence. The next id is the highest ever allocated plus one.
+- The high-water mark covers `plan/backlog/`, `plan/_archive/`, `plan/changelog/`, and `plan/roadmap/`.
+- Filing a draft has no prefix. It works on any branch and in any phase, as filing a backlog entry does.
+- You may suggest a draft and help the human structure it. Write the draft only after the human confirms.
+- The draft reaches `main` with the PR of the branch that holds it.
 
 ---
 
