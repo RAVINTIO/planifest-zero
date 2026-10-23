@@ -65,11 +65,22 @@ function parseArgs(argv) {
   return resolve(root);
 }
 
-// Reads "name: value" or "- **name:** value" lines. Returns the first match.
+// Reads "name: value" or "- **name:** value" lines. The body wins over the frontmatter,
+// because the agent updates the body fields. Falls back to the frontmatter.
+// Strips a trailing " # comment" and one matching pair of surrounding quotes.
 function field(text, name) {
+  const fm = text.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/);
+  const head = fm ? fm[0] : '';
+  const body = text.slice(head.length);
+  return fieldIn(body, name) || fieldIn(head, name);
+}
+
+function fieldIn(text, name) {
   const re = new RegExp(`^\\s*(?:[-*]\\s+)?\\**${name}\\**\\s*:\\s*\\**\\s*\`?([^\`\\n]*?)\`?\\s*$`, 'mi');
   const m = text.match(re);
-  return m ? m[1].trim() : '';
+  if (!m) return '';
+  const v = m[1].replace(/\s+#.*$/, '').trim();
+  return /^(["']).*\1$/.test(v) ? v.slice(1, -1).trim() : v;
 }
 
 function readRoadmap(root) {

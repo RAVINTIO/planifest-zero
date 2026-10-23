@@ -11,6 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 DRIVER="$SCRIPT_DIR/../scripts/roadmap-run.mjs"
+TPL="$SCRIPT_DIR/../templates/roadmap-entry.template.md"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
@@ -20,7 +21,8 @@ cat > "$WORK/bin/claude" <<'STUB'
 # Stub claude. STUB_MODE: ok (default), block, stall, fail.
 printf '%s\n' "$*" >> "$STUB_LOG"
 RM=plan/current-roadmap/roadmap.md
-pos="$(sed -n 's/^position: *//p' "$RM")"
+POSRE='^((\*\*)?[Pp]osition:?(\*\*)? *:? *)'
+pos="$(sed -nE "s/${POSRE}//p" "$RM")"
 case "${STUB_MODE:-ok}" in
   fail) exit 3 ;;
   stall) exit 0 ;;
@@ -33,7 +35,7 @@ if [ "$pos" = 2 ]; then
   mkdir -p plan/_archive
   mv plan/current-roadmap "plan/_archive/0000050-demo-roadmap-2026-10-23"
 else
-  sed -i.bak "s/^position: .*/position: $((pos + 1))/" "$RM" && rm -f "$RM.bak"
+  sed -i.bak -E "s/${POSRE}.*/\\1$((pos + 1))/" "$RM" && rm -f "$RM.bak"
 fi
 STUB
 chmod +x "$WORK/bin/claude"
@@ -84,6 +86,39 @@ assert_contains "R-C Run:" "$OUT" "req-007 (a): prints R-C Run: lines"
 assert_contains "R-D Advance:" "$OUT" "req-007 (a): prints R-D Advance: lines"
 assert_contains "R-E Delivery:" "$OUT" "req-007 (a): prints an R-E Delivery: line"
 assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-007 (a): lock released"
+
+# make_template_fixture <name> <frontmatter status> <body status>: a roadmap filled in from the
+# real template, quotes kept. Prints the fixture root.
+make_template_fixture() {
+  local d="$WORK/$1"
+  mkdir -p "$d/plan/current-roadmap" "$d/plan/current"
+  sed -e "s/^status: \"draft\"/status: $2/" \
+      -e 's/^\*\*Status:\*\* .*/**Status:** '"$3"'/' \
+      -e 's/^\*\*Position:\*\* .*/**Position:** 1/' \
+      -e 's/{{id}}/0000050/g; s/{{slug}}/demo/g; s/{{short-title}}/demo/g' \
+      -e 's/^| 1 | {{feature id}} .*/| 1 | 0000051-a | 0000011 | minor | | pending |\
+| 2 | 0000052-b | 0000012 | minor | | pending |/' \
+      "$TPL" > "$d/plan/current-roadmap/roadmap.md"
+  : > "$d/plan/current/build-log.md"
+  printf '%s' "$d"
+}
+
+echo ""
+echo "=== req-007 (a): a roadmap built from the real template ==="
+R="$(make_template_fixture t-quoted '"active"' active)"
+run_driver "$R" ok
+assert_equals "0" "$CODE" "req-007 (a): quoted frontmatter status runs to delivery"
+assert_equals "2" "$(wc -l < "$R/stub.log" | tr -d ' ')" "req-007 (a): template roadmap ran two steps"
+R="$(make_template_fixture t-single "'active'" active)"
+run_driver "$R" ok
+assert_equals "0" "$CODE" "req-007 (a): single-quoted frontmatter status runs"
+R="$(make_template_fixture t-body-wins '"draft"' active)"
+run_driver "$R" ok
+assert_equals "0" "$CODE" "req-007 (a): the body Status field wins over the frontmatter"
+R="$(make_template_fixture t-body-draft '"active"' draft)"
+run_driver "$R" ok
+[ "$CODE" -ne 0 ] && r=yes || r=no
+assert_equals "yes" "$r" "req-007 (a): a draft body Status stops the driver"
 
 echo ""
 echo "=== req-007 (b): refuses to start ==="
