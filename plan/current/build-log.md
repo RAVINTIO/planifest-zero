@@ -44,3 +44,4 @@ P1 exchange (framework wording reach): Q: Fix README and about.md now and backlo
 P1 exchange (framework wording kinds): Q: Prose only, or prose and identifiers? / A: Prose and identifiers that refer to Planifest Zero. Leave generic uses such as `test-frameworks.md` and "meta-framework".
 P1 exchange (install compatibility): Q: none / A: Only this repo installs Planifest Zero. Identifier renames and run-mode or phase-number changes need no migration or backward compatibility for other installs.
 P1 exchange (release size): Q: Split 13 points into two releases? / A: No. One large release (budget 14) covers all four requirements.
+P1 exchange (version): Q: 0.9.0 or 1.0.0? / A: 0.9.0 confirmed by human.
