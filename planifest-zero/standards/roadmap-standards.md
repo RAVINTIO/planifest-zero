@@ -139,6 +139,19 @@ Step 9 runs before the PR because the squash would otherwise carry `plan/.orches
 
 Consumer CI must trigger on pull requests to `roadmap/**`. The pack's workflow template `planifest-zero/hooks/planifest.yml` includes that branch pattern. A project with its own workflow adds it.
 
+6. Hand off to the next session.
+   1. Check out the roadmap branch and run `git pull --ff-only origin roadmap/{id}-{slug}`.
+   2. Delete the local feature branch with `git branch -D`. It is redundant once squash-merged.
+   3. If a step with Status `pending` remains, end the session with the line below. The driver starts the next session.
+
+      ```
+      R-D Advance: Complete: {feature-id} merged as v{version}, step {next} of {n} next
+      ```
+
+   4. If no pending step remains, run R-E Delivery in the same session.
+
+After the last step, `position` is one past the last step number. If a session ends in that state with `plan/current/` empty, the orchestrator's resume rule runs R-E Delivery.
+
 The tag comes after the merge because a squash creates a new commit. A tag on the feature branch tip, or on the fetched branch tip, could point at the wrong commit. The merge commit is the exact commit the PR created. If a push or merge fails, stop and report the exact error. Do not retry with force.
 
 ### R-E Delivery

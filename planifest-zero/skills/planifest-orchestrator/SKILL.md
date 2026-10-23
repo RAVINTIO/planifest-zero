@@ -88,6 +88,7 @@ On every session start, before any action:
 2. **Pack dependency update.** Detect per `planifest-zero/standards/pack-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a pack update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
 3. **Check the roadmap, then scan `plan/current/`.** Check `plan/current-roadmap/` first.
    - If a roadmap is `active` and `plan/current/` holds artifacts, resume that step through the rest of this list.
+   - If a roadmap is `active`, `plan/current/` is empty, and `position` is past the last step, run R-E Delivery.
    - If a roadmap is `active` and `plan/current/` is empty, start the step at `position` and open with `R-C Run: Starting: {step}`.
    - If no roadmap is `active`, scan `plan/current/` for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
 4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.

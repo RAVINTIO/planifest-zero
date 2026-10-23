@@ -26,6 +26,7 @@ assert_equals "yes" "$([ -n "$IDX_R" ] && [ -n "$IDX_C" ] && [ "$IDX_R" -le "$ID
   "req-009 (a): roadmap is checked before plan/current/"
 assert_contains 'holds artifacts, resume that step' "$RES" "req-009 (a): artifacts resume that step"
 assert_contains 'is empty, start the step at `position`' "$RES" "req-009 (a): empty starts at position"
+assert_contains '`position` is past the last step, run R-E Delivery' "$RES" "req-009 (a): finished roadmap resumes at R-E Delivery"
 
 echo ""
 echo "=== req-009 (b): prefix tables ==="
