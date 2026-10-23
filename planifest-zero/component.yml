@@ -30,6 +30,7 @@ responsibilities:
   - "Suggest and confirm the version number at discovery"
   - "Run the Scope Lock Challenge before design confirmation, drafted inline"
   - "Enforce one question at a time across all phase skills"
+  - "Run an approved roadmap as a chain of feature steps, with the merge-guard hook limiting agent merges to squash merges into roadmap branches"
 
 exceptions:
   - "Does not generate application code. That is the implement phase's job in consumer projects."
@@ -76,6 +77,7 @@ scope:
     - "Formatting standards: date format, locale, verbosity"
     - "Enforcement hooks: gate-write, check-design, ratchet-check, em-dash-guard, merge-guard, auto-trigger-orchestrator, check-orchestrator-presence"
     - "Git hook: commit-msg"
+    - "Roadmap standard and entry template: standards/roadmap-standards.md, templates/roadmap-entry.template.md"
     - "Shared hook module: read-stdin.mjs"
     - "Orchestrator sentinel enforcement"
     - "Capability skill intake via planifest-overrides/capability-skills/"
@@ -83,7 +85,7 @@ scope:
     - "setup.sh and setup.ps1 for Claude Code registration"
     - "The 12 pipeline skills across the five phases"
     - "Templates, schemas, and standards bundled into each skill at install time"
-    - "scripts/: consistency-check.mjs, product-version.mjs, self-description-check.mjs, promote-to-regression.sh, refresh-delete-boot-files"
+    - "scripts/: consistency-check.mjs, product-version.mjs, roadmap-run.mjs, self-description-check.mjs, promote-to-regression.sh, refresh-delete-boot-files"
     - "tests/ and tests/regression/ for the pack's own behaviour"
   outOfScope:
     - "Application-level code generation (handled by the implement phase in consumer projects)"
