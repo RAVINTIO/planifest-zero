@@ -46,3 +46,5 @@ P1 exchange (install compatibility): Q: none / A: Only this repo installs Planif
 P1 exchange (release size): Q: Split 13 points into two releases? / A: No. One large release (budget 14) covers all four requirements.
 P1 exchange (version): Q: 0.9.0 or 1.0.0? / A: 0.9.0 confirmed by human.
 Scope Lock (happy path): The P0 briefing names Planifest Zero 0.9.0 and the phases P0 Discovery to P4 Ship. Autonomous runs P1 to P4 to a raised PR, gated stops after each phase, every message carries its prefix, and the human merges. [source: draft-edited]
+P1 exchange (leftover run mode): Q: What happens to a leftover `continuous` or `interactive`? / A: On resume, a missing or unknown `plan/.run-mode` makes the agent ask the run-mode question, say why it asked, write the answer, and log it. The fresh-start stale check stays as it is.
+Scope Lock (first-run path): With no `plan/.run-mode`, P0 asks gated or autonomous and writes the answer. A resume that finds no file or an unknown value asks again, names the value it found, writes the answer, and logs it. [source: draft-edited]
