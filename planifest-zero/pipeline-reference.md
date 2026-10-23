@@ -77,12 +77,15 @@ It writes `gated` or `autonomous` to `plan/.run-mode` and logs the choice in the
 - **Gated**: the orchestrator stops and presents a summary at the plan, implement, acceptance, and ship gates. The ship gate comes before the PR.
 - **Autonomous**: the orchestrator stops at none of those gates. Validate and accept puts its evidence in the PR description. Ship raises the PR and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
 
-Both modes stop with a `Blocked:` message on four escalations:
+Both modes stop with a `Blocked:` message on five escalations:
 
 - A requirement or check still fails after 5 attempts.
 - Implement needs a schema change.
 - The security review finds an unmitigated critical or high issue.
 - A push or `gh pr create` fails.
+- A possible credential appears in a file the run will commit, or in the PR body.
+
+Each stop adds a `Blocked:` line to the build log, and the human's answer adds a `Resolved:` line. A resumed run does not pass an unresolved stop.
 
 The phase skills are the single source for gate behaviour. Merging the PR is human-only in every mode.
 

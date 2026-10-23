@@ -44,6 +44,9 @@ On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the 
 - P2 needs a schema change.
 - The P3 security review finds an unmitigated critical or high issue.
 - A push or `gh pr create` fails.
+- A possible credential appears in a file the run will commit, or in the PR body.
+
+Each stop adds a `Blocked:` line to the build log. A resumed run does not pass it until a `Resolved:` line follows.
 
 No mode merges a PR or commits to `main`. The human merges every PR.
 

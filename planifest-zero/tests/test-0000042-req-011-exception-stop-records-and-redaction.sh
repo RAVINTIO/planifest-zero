@@ -36,7 +36,7 @@ CRED_MSG='Blocked: possible credential in {path}. Remove it or confirm it is not
 echo ""
 echo "=== req-011 (a): exception stops leave a build-log record ==="
 
-assert_contains 'append `Blocked: {exception} ({ISO-8601 timestamp})` to the build log' "$STOPS" \
+assert_contains 'Append `Blocked: {exception} ({ISO-8601 timestamp})` to the build log' "$STOPS" \
   "req-011 (a): each stop appends a Blocked: line to the build log"
 assert_contains 'append `Resolved: {exception} ({ISO-8601 timestamp}, {decision})`' "$STOPS" \
   "req-011 (a): the human's answer appends a Resolved: line"

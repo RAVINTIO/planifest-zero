@@ -97,7 +97,7 @@ Read `plan/.run-mode`. The evidence is the same in both modes:
 
 In `gated`, this gate stops for the human. Present the evidence. The human accepts, requests changes, or rejects.
 
-In `autonomous`, do not stop. Write the evidence to `plan/current/acceptance-evidence.md` and commit it. The ship phase copies it into the PR description under `## Acceptance evidence`. The human reviews it there before merging.
+In `autonomous`, do not stop. Write the evidence to `plan/current/acceptance-evidence.md` and commit it. The PR may be public. The evidence holds results, counts, and `file:line` cites, and never raw command output, environment values, or file contents. The ship phase copies it into the PR description under `## Acceptance evidence`. The human reviews it there before merging.
 
 Rollbacks are human-initiated, never automatic.
 

@@ -90,12 +90,13 @@ the answer in `plan/.run-mode` and logs it in the build log.
   raised PR and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
 
 Both modes stop for escalations. Each stop prints `{prefix} Blocked:` and names
-the action the human needs to take. The four escalations are:
+the action the human needs to take. The five escalations are:
 
 - A check still fails after 5 attempts.
 - Implement needs a schema change.
 - The security review finds an unmitigated critical or high issue.
 - A push or `gh pr create` fails.
+- A possible credential appears in a file the run will commit, or in the PR body.
 
 Design confirmation always involves the human, because the run mode is chosen
 in that conversation. Merging the PR is human-only in every mode.

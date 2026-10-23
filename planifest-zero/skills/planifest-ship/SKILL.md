@@ -94,7 +94,15 @@ Should I raise the PR, or will you?
 
 In `autonomous`, take option [1] without asking.
 
-Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution. For option 1, capture the PR number and URL, and update the changelog's `**PR:**` field.
+Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution.
+
+Before `gh pr create`, scan the PR body for credential patterns, such as `ghp_`, `github_pat_`, `AKIA`, `sk-`, `xox`, and `-----BEGIN` private-key headers. If one matches, stop in both run modes, and never print the value:
+
+```
+P4 Ship: Blocked: possible credential in {path}. Remove it or confirm it is not a secret.
+```
+
+Use `the PR body` as `{path}`. For option 1, capture the PR number and URL, and update the changelog's `**PR:**` field.
 
 If a push or `gh pr create` fails, stop in both run modes. Report the exact error and do not retry with force:
 

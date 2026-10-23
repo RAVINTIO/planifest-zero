@@ -20,7 +20,7 @@ Non-negotiable. They apply in every session, every phase.
 3. **No direct schema modification.** Write a migration proposal and stop for human approval.
 4. **Destructive schema operations require human approval.** Drop column, drop table, rename: propose and stop. No exceptions.
 5. **Data is owned by one component.** Never write to data owned by another component.
-6. **Credentials are never in your context.** If one appears in a prompt, file, or environment, do not use it. Flag it.
+6. **Credentials are never in your context.** If one appears in a prompt, file, or environment, do not use it. Flag it. If it is in a file the run will commit, it is an exception stop in both run modes.
 7. **Documentation is updated after any deviation.** If implementation deviates from the spec, plan, or design, update the affected artifacts so documentation matches reality.
 8. **Commit after every meaningful artifact write.** Never batch work waiting for a phase gate. Each artifact is a commit on its own.
 9. **Write a build-log phase block before any phase work.** Create `plan/current/build-log.md` at discovery if absent. A missing block is a pipeline error: stop and fix it before proceeding.
@@ -77,7 +77,7 @@ On every session start, before any action:
 6. **Skips.** If `plan/current/.skips` exists, acknowledge the skipped phases at the top of your response.
 7. **Pause restore.** If `plan/current/pause.md` exists, open with `{prefix}: Resuming: {active_task}`, restore state from the file, delete it, and continue from the pause point.
 8. **Park restore.** If you are still on the feature branch and `plan/current/park.md` exists, park did not finish. Run `gh pr list --head chore/park-{feature-id} --state all`. If it returns nothing, finish the chore PR step of park (Park Command steps 3 to 5) with `node scripts/park.mjs finish-pr`. If a push or `gh` call fails, report the exact error and stop, as in the Park Command.
-9. **Run-mode restore.** Read `plan/.run-mode` and the build log first. If it holds `gated` or `autonomous`, restore that mode without asking. In `gated`, if the last phase ended at a gate with no `Gate accepted` line, show that gate again. If `plan/.run-mode` is missing or holds any value other than `gated` or `autonomous`, ask the run-mode question from Design Confirmation. Before the question, name what you found: `` `plan/.run-mode` is missing. `` or `` `plan/.run-mode` holds `{value}`, which is not a valid run mode. `` Write the answer to `plan/.run-mode`, append `Run mode: {gated | autonomous} ({ISO-8601 timestamp}, asked on resume)` to the build log, and commit both. This check applies on resume only. A fresh start uses the stale run-mode check in Discovery Start Actions.
+9. **Run-mode restore.** Read `plan/.run-mode` and the build log first. If it holds `gated` or `autonomous`, restore that mode without asking. In `gated`, if the last phase ended at a gate with no `Gate accepted` line, show that gate again. If `plan/.run-mode` is missing or holds any value other than `gated` or `autonomous`, ask the run-mode question from Design Confirmation. Before the question, name what you found: `` `plan/.run-mode` is missing. `` or `` `plan/.run-mode` holds `{value}`, which is not a valid run mode. `` Write the answer to `plan/.run-mode`, append `Run mode: {gated | autonomous} ({ISO-8601 timestamp}, asked on resume)` to the build log, and commit both. If the build log holds a `Blocked:` line with no later `Resolved:` line, print that stop's message again and wait. Do not move on in either mode. This check applies on resume only. A fresh start uses the stale run-mode check in Discovery Start Actions.
 10. **`discovery.md` trust-or-regenerate.** If present and complete for the confirmed adoption mode, trust it as-is. If missing or incomplete mid-run, regenerate it fresh. Never patch a partial file.
 11. **Open.** Artifacts found: find the last phase in the build log and open with that phase's prefix, as `{prefix} Resuming: {one-liner}`, with no re-coaching. No artifacts: open with `P0 Discovery: Starting` and begin discovery.
 
@@ -386,7 +386,15 @@ Conventions for every downstream phase:
 
 ## Exception Stops
 
-Both run modes stop on these exceptions. Commit all work and push it before the stop, where a push is authorised. Print the message for the exception, then wait. After the human acts, the run resumes in the same mode from `plan/.run-mode`.
+Both run modes stop on these exceptions. Commit all work and push it before the stop, where a push is authorised. The credential stop is the exception. It leaves the flagged file uncommitted and pushes nothing.
+
+At each stop, follow these steps:
+
+1. Append `Blocked: {exception} ({ISO-8601 timestamp})` to the build log under the current phase block, and commit it.
+2. Print the message for the exception, then wait.
+3. When the human acts, append `Resolved: {exception} ({ISO-8601 timestamp}, {decision})` to the build log, and commit it.
+
+After the human acts, the run resumes in the same mode from `plan/.run-mode`.
 
 | Exception | Message |
 |-----------|---------|
@@ -394,6 +402,7 @@ Both run modes stop on these exceptions. Commit all work and push it before the 
 | P2 needs a schema change | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
 | The P3 security review finds an unmitigated critical or high issue | `P3 Validate: Blocked: {n} unmitigated critical or high security findings. Approve a mitigation or accept the risk.` |
 | A push or `gh pr create` fails | `P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.` (other phases use their own prefix) |
+| A possible credential appears in a file the run will commit, or in a PR body | `{prefix} Blocked: possible credential in {path}. Remove it or confirm it is not a secret.` Stop before the commit and before any push. Never print the value. |
 
 The status `Blocked:` follows the phase prefix, as in every status message. Never work round an exception stop. Do not force-push, merge, or skip the failing check.
 
