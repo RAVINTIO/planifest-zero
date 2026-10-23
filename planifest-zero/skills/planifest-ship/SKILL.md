@@ -1,6 +1,6 @@
 ---
 name: planifest-ship
-description: Archive, build assessment, changelog, version, tag, and PR behind the final human gate.
+description: Archive, build assessment, changelog, version, tag, and PR, behind the final gate in a gated run.
 bundle_templates: []
 bundle_standards: []
 ---
@@ -11,12 +11,13 @@ bundle_standards: []
 
 ## Hard Limits
 
-1. Every response begins with `SHIP:`. No exceptions.
+1. Every response begins with `P4 Ship:`. No exceptions.
 2. Do not modify application code or framework files during this phase.
 3. Never skip the archive step. A populated `plan/current/` breaks resume detection for the next feature.
-4. Never create a tag or raise a PR without the human's awareness. The final gate always stops.
-5. Credentials are never in your context.
-6. One question at a time.
+4. Read `plan/.run-mode` before Step 8. In `gated`, the final gate stops before the PR. In `autonomous`, raise the PR without a stop. The PR is where the human reviews the run.
+5. Never merge a PR and never commit to `main`, in any run mode.
+6. Credentials are never in your context.
+7. One question at a time.
 
 ## Sequence
 
@@ -80,16 +81,26 @@ Local only. Do not push the tag.
 
 ### Step 8: PR
 
-If a local-git-only override is active in `planifest-overrides/instructions/`, skip the question and output the description block. Otherwise ask the human:
+If a local-git-only override is active in `planifest-overrides/instructions/`, skip the question and output the description block. Otherwise, follow the run mode.
+
+In `gated`, ask the human:
 
 ```
-SHIP: Git tag v{version} created locally.
+P4 Ship: Git tag v{version} created locally.
 Should I raise the PR, or will you?
   [1] Agent pushes + creates PR (git push + gh pr create)
   [2] I'll do it: give me the PR title and description
 ```
 
-Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. PR bodies carry no AI attribution. For option 1, capture the PR URL and update the changelog's `**PR:**` field.
+In `autonomous`, take option [1] without asking.
+
+Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution. For option 1, capture the PR number and URL, and update the changelog's `**PR:**` field.
+
+If a push or `gh pr create` fails, stop in both run modes. Report the exact error and do not retry with force:
+
+```
+P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.
+```
 
 ### Step 9: Clear sentinels
 
@@ -97,8 +108,10 @@ Delete `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mod
 
 ### Step 10: Final gate
 
+In `gated`, this gate stops. Print:
+
 ```
-SHIP: Complete.
+P4 Ship: Complete: {feature-id} shipped.
 
 Archive: plan/_archive/{feature-id}-{YYYY-MM-DD}/
 Changelog: plan/changelog/{feature-id}-{YYYY-MM-DD}.md
@@ -107,4 +120,10 @@ Tag: v{version}
 PR: {URL, or "see description above"}
 ```
 
-This gate always stops. Merging the PR is human-only, no exception.
+In `autonomous`, print the same summary, then end the run with this line:
+
+```
+P4 Ship: Complete: PR #{n} ready for your review
+```
+
+Use the run mode read before Step 8, because Step 9 deletes `plan/.run-mode`. Merging the PR is human-only in every mode, no exception.

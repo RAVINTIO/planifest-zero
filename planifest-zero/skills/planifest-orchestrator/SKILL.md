@@ -365,19 +365,37 @@ Conventions for every downstream phase:
 - **Build log first:** append a `### P<n>: {Phase Name}` block before any phase work (Hard Limit 9).
 - **Load the phase skill before acting.** Read it in full first.
 - **Commit** all new artifacts before presenting the gate summary.
-- **Push cadence:** after each gate commit, if remote push is authorised by a standing override in `planifest-overrides/instructions/` or a per-session grant in the build log, push the feature branch. A failed push is reported once and never blocks the pipeline.
+- **Push cadence:** after each gate commit, if remote push is authorised by a standing override in `planifest-overrides/instructions/` or a per-session grant in the build log, push the feature branch. A failed push is an exception stop (see Exception Stops).
 - **Skills inbox:** re-check at each transition.
+- **Run mode:** read `plan/.run-mode` at each transition and apply that phase's STOP rule below.
 
 | Phase | Invoke | Gate condition | STOP rule |
 |-------|--------|----------------|-----------|
 | P1 Plan | planifest-plan | Artifact set complete (requirements, ADRs, OpenAPI where applicable) | Gated: STOP for confirmation. Autonomous: no stop. |
 | P2 Implement | planifest-implement | Implementation matches the spec, and docs land with code | Gated: STOP for confirmation. Autonomous: no stop. |
-| P3 Validate and Accept | planifest-validate-and-accept | CI green plus human acceptance | Acceptance ALWAYS stops. |
-| P4 Ship | planifest-ship | Archive, build report, changelog, tag, and PR (or PR description) confirmed | Final gate. Always stops. |
+| P3 Validate and Accept | planifest-validate-and-accept | CI green plus acceptance evidence | Gated: STOP for acceptance. Autonomous: no stop. The evidence goes in the PR description. |
+| P4 Ship | planifest-ship | Archive, build report, changelog, tag, and PR (or PR description) | Gated: STOP before the PR. Autonomous: no stop. Raise the PR, then end the run. |
 
 **Before P2:** check the declared stack against installed capability skills and recommend loading relevant ones. Then apply subagent decomposition for every requirement: consult `## Skill Map` in `design.md` for the best-fit skill, select the model tier, and dispatch per the dispatch standards below.
 
 **After P4:** apply the Context Hygiene reset so the next session starts cold.
+
+**Merge is human-only.** In every run mode, never merge a pull request and never commit to `main`.
+
+---
+
+## Exception Stops
+
+Both run modes stop on these exceptions. Commit all work and push it before the stop, where a push is authorised. Print the message for the exception, then wait. After the human acts, the run resumes in the same mode from `plan/.run-mode`.
+
+| Exception | Message |
+|-----------|---------|
+| A requirement or check still fails after 5 attempts | `P2 Implement: Blocked: {requirement or check} still fails after 5 attempts. Review the escalation and choose the next step.` (P3 uses `P3 Validate:`) |
+| P2 needs a schema change | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
+| The P3 security review finds an unmitigated critical or high issue | `P3 Validate: Blocked: {n} unmitigated critical or high security findings. Approve a mitigation or accept the risk.` |
+| A push or `gh pr create` fails | `P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.` (other phases use their own prefix) |
+
+The status `Blocked:` follows the phase prefix, as in every status message. Never work round an exception stop. Do not force-push, merge, or skip the failing check.
 
 ---
 

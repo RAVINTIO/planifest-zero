@@ -3,9 +3,9 @@
 # 0000042 req-001 and req-002: run modes at the ordinary phase gates.
 #
 # Covers: the orchestrator's Phase Invocation table and the run-mode question.
-# The plan (P1) and implement (P2) gates stop in gated mode and do not stop in
-# autonomous mode. The run-mode question offers Gated and Autonomous, and the
-# answer is written to plan/.run-mode.
+# The plan (P1), implement (P2), acceptance (P3), and ship (P4) gates stop in
+# gated mode and do not stop in autonomous mode. The run-mode question offers
+# Gated and Autonomous, and the answer is written to plan/.run-mode.
 
 set -uo pipefail
 
@@ -36,15 +36,15 @@ assert_contains "Gated: STOP for confirmation. Autonomous: no stop." "$P2_ROW" \
   "req-001: P2 Implement row stops in gated mode only"
 
 echo ""
-echo "=== req-001: acceptance and ship gates always stop ==="
+echo "=== req-001: acceptance and ship gates stop in gated mode only ==="
 
 P3_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P3 Validate and Accept |')
-assert_contains "Acceptance ALWAYS stops." "$P3_ROW" \
-  "req-001: P3 acceptance gate stops"
+assert_contains "Gated: STOP for acceptance. Autonomous: no stop." "$P3_ROW" \
+  "req-001: P3 acceptance gate stops in gated mode only"
 
 P4_ROW=$(printf '%s\n' "$TABLE_SECTION" | grep '| P4 Ship |')
-assert_contains "Final gate. Always stops." "$P4_ROW" \
-  "req-001: P4 ship gate always stops"
+assert_contains "Gated: STOP before the PR. Autonomous: no stop." "$P4_ROW" \
+  "req-001: P4 ship gate stops in gated mode only"
 
 echo ""
 echo "=== req-001: no stray 'No exception' left in the Phase Invocation table ==="
