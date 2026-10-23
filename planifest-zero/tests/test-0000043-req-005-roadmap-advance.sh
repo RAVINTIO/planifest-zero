@@ -72,6 +72,16 @@ assert_contains 'Blocked: CI failed on PR #{n}' "$ADV" "req-005 (d): Blocked onl
 assert_equals "0" "$(printf '%s\n' "$ADV" | grep -c 'CI is {red|pending}')" "req-005 (d): pending is no longer a stop"
 
 echo ""
+echo "=== req-005 (e): Step 9 runs and is pushed before the PR ==="
+assert_contains 'Step 9' "$SEC" "req-005 (e): section names Step 9"
+assert_contains '.run-mode' "$SEC" "req-005 (e): section names the sentinels"
+assert_contains 'before the PR is raised' "$SEC" "req-005 (e): Step 9 precedes the PR"
+assert_contains 'stale feature id' "$SEC" "req-005 (e): states the stale id risk"
+step9="$(printf '%s\n' "$ADV" | grep -n 'Step 9' | head -1 | cut -d: -f1)"
+pr="$(printf '%s\n' "$ADV" | grep -n 'gh pr create' | head -1 | cut -d: -f1)"
+assert_equals "yes" "$([ -n "$step9" ] && [ -n "$pr" ] && [ "$step9" -lt "$pr" ] && echo yes || echo no)" "req-005 (e): Step 9 appears before gh pr create in R-D Advance"
+
+echo ""
 echo "=== req-005: pipeline reference records both tag orders ==="
 SHIPREF="$(section '## Ship Phase' "$REF")"
 assert_contains 'roadmap' "$SHIPREF" "req-005: pipeline reference Ship Phase mentions roadmap steps"
