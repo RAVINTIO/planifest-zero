@@ -79,10 +79,12 @@ P2 gate: skipped under continuous run (0.8.0 rule). Artifacts: 10 requirements, 
 | Start | `2026-10-23T07:22:14Z` |
 | Model tier | primary (code generation) |
 | Skills loaded | planifest-implement |
-| Agents spawned | `pending` |
+| Agents spawned | `5` |
 | MCP calls | `0` |
-| Parallel task batches | `pending` |
+| Parallel task batches | `4` |
 | Notes | Chat prefix `P2 Implement:` maps to this log block. Order: REQ-004 to REQ-006, then REQ-001 to REQ-003 with REQ-007, then REQ-008 to REQ-010. |
 P3 batch 1 (REQ-004 to REQ-006): GREEN. Commits af6ed11, 22f2d2e, 4ff8e0c. Suite 75 feature and 18 regression passed, 7 PowerShell skipped (no pwsh). Deviations: the guard skips all of `plan/backlog/` (REQ-006 updated). Root `CLAUDE.md` is gitignored, so the source `templates/standard-boot.md` carries the change.
 P3 batch 2 (REQ-001 to REQ-003, REQ-007 in parallel): GREEN. Commits e74d8d1, 874e2b4, 3f4ff86, 6002132. Suite 79 feature and 18 regression passed, 7 PowerShell skipped. Deviations recorded in design.md: `{prefix} Blocked:` form, `plan/current/acceptance-evidence.md` in autonomous P3, `Blocked:` messages in the implement skill, ship skill `SHIP:` prefix replaced by `P4 Ship:`. Backlog 0000144 filed (ship sentinel commit lands after the PR push). Orchestrator fixed the workflow phase headings to P0 to P4 (b68053f).
 P3 batch 3 (REQ-008 to REQ-010): GREEN. Commits 981f204, 4612336, 3496939. Suite 82 feature and 19 regression passed, 7 PowerShell skipped. Deviations recorded in ADR-004 "Implementation notes (P2)". Requirement counts corrected to 21 test-frameworks.md files.
+P3 docs: living docs updated (0730166). Decisions index adds 0000042 ADR-001 to ADR-004 and two superseded rows.
+P3 gate: skipped under continuous run (0.8.0 rule).
