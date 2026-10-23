@@ -135,3 +135,58 @@ P4 Ship: Complete: PR #{n} ready for your review
 ```
 
 Use the run mode read before Step 8, because Step 9 deletes `plan/.run-mode`. Merging the PR is human-only in every mode, no exception.
+
+## Roadmap steps
+
+This section applies only when `plan/current-roadmap/roadmap.md` has `status: active`. Check the file before Step 6. Outside a roadmap, ignore this section. A normal run keeps the order above: tag at Step 7, PR at Step 8, and no merge by the agent.
+
+In a roadmap step, Steps 1 to 5 and Step 9 run as written. Steps 7 and 8 give way to the two stages below. The step's `Bump` column in `roadmap.md` sets the version for Step 6, and the downgrade check still applies. The merge carve-out is governed by the merge rule and the merge-guard hook, which allows `gh pr merge --squash` only for a `roadmap/*` base.
+
+### R-D Advance
+
+Every message in this stage begins with `R-D Advance:` after the `P4 Ship:` prefix.
+
+1. Update `plan/current-roadmap/roadmap.md` on the feature branch. Set the step's Status to `merged`, fill its Version with the released version, and move `position` to the next step.
+2. Raise the PR against the roadmap branch. The roadmap update ships in the same PR, so the squash commit carries it.
+
+   ```bash
+   gh pr create --base roadmap/{id}-{slug}
+   ```
+
+3. Wait for CI with `gh pr checks`. If any check is red or pending, stop. Push the branch, then print the line below and exit:
+
+   ```
+   R-D Advance: Blocked: CI is {red|pending} on PR #{n}. Fix the failing check, then tell me to retry.
+   ```
+
+4. If every check is green, squash-merge the PR.
+
+   ```bash
+   gh pr merge --squash
+   ```
+
+5. Fetch the roadmap branch, then tag the squash commit with the step's version and push the tag.
+
+   ```bash
+   git fetch origin roadmap/{id}-{slug}
+   git tag v{version} -m "{feature-id}" origin/roadmap/{id}-{slug}
+   git push origin v{version}
+   ```
+
+The tag comes after the merge because a squash creates a new commit. A tag on the feature branch tip would point at a commit the roadmap branch never holds. If a push or merge fails, stop and report the exact error. Do not retry with force.
+
+### R-E Delivery
+
+Run this stage after the last step merges. Every message begins with `R-E Delivery:` after the `P4 Ship:` prefix. Work on the roadmap branch.
+
+1. Move `plan/current-roadmap/` to `plan/_archive/{id}-{slug}-roadmap-{date}/` and set the roadmap `status: done`. Update links that point at the old path. Commit the move on the roadmap branch.
+2. Raise one PR from the roadmap branch to `main`.
+
+   ```bash
+   gh pr create --base main --head roadmap/{id}-{slug}
+   ```
+
+3. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag. Scan the body for credential patterns before you raise the PR, as in Step 8.
+4. Report the PR URL and end the run.
+
+The agent never merges the roadmap PR and never commits to `main`. The human reviews and merges it.
