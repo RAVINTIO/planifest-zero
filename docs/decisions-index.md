@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000041-setup-cleanup-and-park-hardening
+Last updated: 0000042-autonomous-mode-and-prefixes
 
 ---
 
@@ -44,7 +44,7 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
-| ADR-001 | Telemetry is not a framework concern | accepted | Removes the telemetry system from `planifest-zero` with no replacement and no extension seam. Drops `backendUrl` from the setup-config record, narrowing 0000032 ADR-001. |
+| ADR-001 | Telemetry is not a pack concern | accepted | Removes the telemetry system from `planifest-zero` with no replacement and no extension seam. Drops `backendUrl` from the setup-config record, narrowing 0000032 ADR-001. |
 | ADR-002 | Setup cleans up telemetry wiring on every run | accepted | Every setup run removes legacy telemetry hook entries, the opt-in sentinel, and the marker directories. One line per removal, a warning without failing. |
 | ADR-003 | The phase vocabulary lives in prose, not in a module | accepted | Deletes `phase-enum.mjs` and states the five phase names in `pipeline-reference.md`. The `product.yml` id and its hard stop stay, for versioning. |
 
@@ -61,6 +61,8 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | 0000032 ADR-001 (record shape only, narrowed) | 0000033 ADR-001 | The record drops `backendUrl` and holds `tool`, `flags`, and `writtenAt`. Its location and tracked status stand. |
 | 0000036 ADR-003 (Bash suites out of CI only, narrowed) | 0000037 ADR-002 | The `bash-suites` job runs the Bash suites in CI. The Windows job stands. |
 | 0000037 ADR-003 (decision item 4 only, narrowed) | 0000041 ADR-003 | The non-array warning no longer prints the old value. Warn, replace, and exit 0 stand. |
+| 0000031 ADR-001 (phase numbers and prefixes only, superseded in part) | 0000042 ADR-003 | Phases take the numbers P0 to P4 and number-plus-name prefixes. The five-phase contract and skill consolidation stand. |
+| 0000023 run-mode gate rules (in skills and tests, no ADR) | 0000042 ADR-002 | The two earlier run modes become `gated` and `autonomous`. |
 
 ### Feature 0000034: setup-hardening
 
@@ -129,3 +131,12 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | ADR-001 | The stack stays as it is | accepted | No new language, runtime, or dependency. |
 | ADR-002 | The telemetry cleanup skips unreadable settings | accepted | Both cleanups skip in silence on a parse or shape failure. The hook install step reports the fault once. Extends 0000033 ADR-002. |
 | ADR-003 | The non-array warning drops the old value | accepted | Both scripts name the event and the file only. Supersedes decision item 4 of 0000037 ADR-003. |
+
+### Feature 0000042: autonomous-mode-and-prefixes
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as it is | accepted | No new language, runtime, or dependency. |
+| ADR-002 | Gated and autonomous run modes | accepted | Replaces the two earlier run modes with `gated` and `autonomous`. Autonomous runs to a raised PR. Five exception stops apply to both modes. |
+| ADR-003 | Phase numbers P0 to P4 and number-plus-name prefixes | accepted | Phases run P0 Discovery to P4 Ship. Messages start with `P0 Discovery:` to `P4 Ship:`. A guard test blocks stale cites. Supersedes 0000031 ADR-001 in part. |
+| ADR-004 | Pack wording and identifier map | accepted | No tracked file outside history describes Planifest Zero with the retired word. Identifiers follow one map, and an allowlist test enforces the rule. |

@@ -17,8 +17,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-SETUP_PS1="$FRAMEWORK/setup.ps1"
+ZERO_DIR="$SCRIPT_DIR/.."
+SETUP_PS1="$ZERO_DIR/setup.ps1"
 
 # Extracts the body of Write-SetupConfigOverride: from its `function` line up
 # to the next top-level `function` line.

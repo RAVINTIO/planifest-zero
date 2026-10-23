@@ -7,9 +7,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SCRIPTS="$FRAMEWORK/scripts"
-REGRESSION_DIR="$FRAMEWORK/tests/regression"
+ZERO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SCRIPTS="$ZERO_DIR/scripts"
+REGRESSION_DIR="$ZERO_DIR/tests/regression"
 MANIFEST="$REGRESSION_DIR/regression-manifest.json"
 PROMOTE_SCRIPT="$SCRIPTS/promote-to-regression.sh"
 PROMOTED_TEST="$REGRESSION_DIR/test-0000016-pipeline-governance.sh"
@@ -68,7 +68,7 @@ echo "=== req-001: promoted assertions count preserved ==="
 # -----------------------------------------------------------------------
 
 # Count assertions in the original feature test
-FEATURE_TEST="$FRAMEWORK/tests/test-0000016-pipeline-governance.sh"
+FEATURE_TEST="$ZERO_DIR/tests/test-0000016-pipeline-governance.sh"
 FEATURE_COUNT=$(grep -c 'assert_' "$FEATURE_TEST" 2>/dev/null || echo "0")
 
 # Count assertions in the promoted regression test

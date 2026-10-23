@@ -2,7 +2,7 @@
 # Tests for feature 0000037-self-host-on-planifest-zero, req-001 (ADR-002).
 #
 # The validate-telemetry-schema CI job goes. The workflow then reads no
-# secret and names no old framework folder. The other jobs stay.
+# secret and names no old folder. The other jobs stay.
 
 set -uo pipefail
 
@@ -27,7 +27,7 @@ count() {
 assert_equals "0" "$(count '^  validate-telemetry-schema:')" "req-001: the workflow has no validate-telemetry-schema job"
 assert_equals "0" "$(count 'PLANIFEST_TELEMETRY_URL')" "req-001: the workflow has no PLANIFEST_TELEMETRY_URL"
 assert_equals "0" "$(count 'secrets\.')" "req-001: the workflow has no secrets reference"
-assert_equals "0" "$(count "$OLD_FOLDER")" "req-001: the workflow names no old framework folder"
+assert_equals "0" "$(count "$OLD_FOLDER")" "req-001: the workflow names no old folder"
 
 for job in validate-branch self-description-check windows-powershell; do
   assert_equals "1" "$(count "^  $job:")" "req-001: the $job job still exists"

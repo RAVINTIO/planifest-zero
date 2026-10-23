@@ -4,7 +4,7 @@ summary: "Raw discovery-pass findings: what the orchestrator knew before coachin
 ---
 # Discovery - {{feature-id}}
 
-> Created at the start of discovery (P1), before the first coaching question, in every adoption mode.
+> Created at the start of discovery (P0), before the first coaching question, in every adoption mode.
 > Raw findings only. Decisions belong in `design.md`, the Q&A audit trail in `build-log.md`.
 > Unreadable signal: say so, and coaching proceeds.
 

@@ -17,11 +17,11 @@
       "filePath": "tests/regression/test-0000016-pipeline-governance.sh"
     },
     {
-      "name": "test-0000005-framework-governance.sh",
+      "name": "test-0000005-pack-governance.sh",
       "sourceFeature": "0000005-framework-governance",
       "promotionDate": "2026-08-01",
       "promotedBy": "agent",
-      "filePath": "tests/regression/test-0000005-framework-governance.sh"
+      "filePath": "tests/regression/test-0000005-pack-governance.sh"
     },
     {
       "name": "test-0000006-build-assessment.sh",
@@ -134,6 +134,13 @@
       "promotionDate": "2026-10-17",
       "promotedBy": "human",
       "filePath": "tests/regression/test-0000037-req-008-non-array-hook-events.sh"
+    },
+    {
+      "name": "test-0000042-req-010-pack-wording-allowlist.sh",
+      "sourceFeature": "0000042-autonomous-mode-and-prefixes",
+      "promotionDate": "2026-10-23",
+      "promotedBy": "agent",
+      "filePath": "tests/regression/test-0000042-req-010-pack-wording-allowlist.sh"
     }
   ]
 }

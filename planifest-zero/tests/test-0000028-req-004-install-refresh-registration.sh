@@ -15,11 +15,11 @@
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-FRAMEWORK_DIR="$REPO_ROOT/planifest-zero"
+ZERO_DIR="$REPO_ROOT/planifest-zero"
 
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-SETUP_SH="$FRAMEWORK_DIR/setup.sh"
+SETUP_SH="$ZERO_DIR/setup.sh"
 setup_content=$(cat "$SETUP_SH")
 
 echo "=== req-004: setup.sh retracts legacy telemetry wiring ==="

@@ -16,8 +16,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-REPO_ROOT="$(cd "$FRAMEWORK/.." && pwd)"
+ZERO_DIR="$SCRIPT_DIR/.."
+REPO_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
 
 file_exists() { [ -f "$1" ] && echo "yes" || echo "no"; }
 grep_has() { grep -q "$1" "$2" 2>/dev/null && echo "yes" || echo "no"; }
@@ -30,7 +30,7 @@ fn_has() {
 make_workspace() {
   local dir
   dir=$(mktemp -d -t planifest_0000029_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$dir/planifest-zero"
+  cp -r "$ZERO_DIR" "$dir/planifest-zero"
   git init "$dir" >/dev/null 2>&1
   git config --global --add safe.directory "$dir" >/dev/null 2>&1 || true
   echo "$dir"
@@ -74,9 +74,9 @@ assert_equals "yes" "$(grep_has "OVERRIDE-MARKER-0000029" "CLAUDE.md")" \
 echo ""
 echo "=== (d) req-001: Write-PlanifestBootFile has no skip-if-exists branch ==="
 
-assert_equals "no" "$(fn_has "^function Write-PlanifestBootFile" "skipped" "$FRAMEWORK/setup.ps1")" \
+assert_equals "no" "$(fn_has "^function Write-PlanifestBootFile" "skipped" "$ZERO_DIR/setup.ps1")" \
   "(d): Write-PlanifestBootFile no longer has a skip branch (function-scoped check)"
-assert_equals "no" "$(fn_has "^write_boot_file()" "skipped" "$FRAMEWORK/setup.sh")" \
+assert_equals "no" "$(fn_has "^write_boot_file()" "skipped" "$ZERO_DIR/setup.sh")" \
   "(d): write_boot_file no longer has a skip branch (function-scoped check)"
 
 # ── (e) req-002: standard-boot.md carries no retired-MCP reference ─────────
@@ -84,7 +84,7 @@ assert_equals "no" "$(fn_has "^write_boot_file()" "skipped" "$FRAMEWORK/setup.sh
 echo ""
 echo "=== (e) req-002: templates/standard-boot.md is free of the retired MCP ==="
 
-BOOT_TEMPLATE="$FRAMEWORK/templates/standard-boot.md"
+BOOT_TEMPLATE="$ZERO_DIR/templates/standard-boot.md"
 RETIRED_MCP="context""-mode"
 assert_equals "0" "$(grep_count "$RETIRED_MCP" "$BOOT_TEMPLATE")" \
   "(e): zero retired-MCP occurrences in standard-boot.md"

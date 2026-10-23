@@ -11,9 +11,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-REPO_ROOT="$(cd "$FRAMEWORK/.." && pwd)"
-TEMPLATE="$FRAMEWORK/templates/backlog-entry.template.md"
+ZERO_DIR="$SCRIPT_DIR/.."
+REPO_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
+TEMPLATE="$ZERO_DIR/templates/backlog-entry.template.md"
 
 echo ""
 echo "=== req-005: no stray root .feature-id ==="

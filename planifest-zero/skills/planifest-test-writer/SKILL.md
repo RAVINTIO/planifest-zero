@@ -44,7 +44,7 @@ The test file:
 
 ## Regression Tagging
 
-If this test covers core framework behaviour that should be protected long-term (not just for this feature), add a comment at the top of the test file:
+If this test covers core behaviour that should be protected long-term (not just for this feature), add a comment at the top of the test file:
 
 ```bash
 # REGRESSION-CANDIDATE: covers {what behaviour}, tagged for human review

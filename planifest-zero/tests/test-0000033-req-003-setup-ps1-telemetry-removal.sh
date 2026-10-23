@@ -2,7 +2,7 @@
 # Tests for feature 0000033-remove-telemetry-mcp, req-003:
 # setup-ps1-telemetry-removal.
 #
-# Covers ADR-001 (telemetry is not a framework concern): setup.ps1 carries no
+# Covers ADR-001 (telemetry is not a pack concern): setup.ps1 carries no
 # telemetry flag, no telemetry function, and no telemetry hook entry, while the
 # surviving enforcement hooks and the 0000032 setup-config record still install.
 # ADR-001 decision 6 drops the backendUrl field from the record and the marker.
@@ -17,9 +17,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-SETUP_PS1="$FRAMEWORK/setup.ps1"
-TOOL_PS1="$FRAMEWORK/setup/claude-code.ps1"
+ZERO_DIR="$SCRIPT_DIR/.."
+SETUP_PS1="$ZERO_DIR/setup.ps1"
+TOOL_PS1="$ZERO_DIR/setup/claude-code.ps1"
 
 # Extracts one function body: from its `function` line up to the next
 # top-level `function` line. Scoping matters here because a neighbouring

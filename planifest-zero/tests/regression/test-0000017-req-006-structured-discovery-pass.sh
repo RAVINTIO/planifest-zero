@@ -7,10 +7,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/../.." && pwd)"
-ORCHESTRATOR="$FRAMEWORK/skills/planifest-orchestrator/SKILL.md"
-DISCOVERY_TPL="$FRAMEWORK/templates/discovery.template.md"
-DESIGN_TPL="$FRAMEWORK/templates/design.template.md"
+ZERO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ORCHESTRATOR="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+DISCOVERY_TPL="$ZERO_DIR/templates/discovery.template.md"
+DESIGN_TPL="$ZERO_DIR/templates/design.template.md"
 
 file_exists() { [ -f "$1" ] && echo "yes" || echo "no"; }
 grep_has()    { grep -q "$1" "$2" 2>/dev/null && echo "yes" || echo "no"; }

@@ -16,7 +16,7 @@ All three sections must be present. If nothing is deferred, state "Nothing defer
 
 ## Who Writes It
 
-The **plan skill** produces this during the plan phase (P2), derived from the Feature Brief's scope boundaries. The human seeds the scope in the brief, and the plan skill formalises it.
+The **plan skill** produces this during the plan phase (P1), derived from the Feature Brief's scope boundaries. The human seeds the scope in the brief, and the plan skill formalises it.
 
 ---
 

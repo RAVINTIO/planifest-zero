@@ -19,8 +19,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-HOOKS="$FRAMEWORK/hooks/enforcement"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+HOOKS="$ZERO_DIR/hooks/enforcement"
 GUARD="$HOOKS/em-dash-guard.mjs"
 
 TMP="$(mktemp -d)"

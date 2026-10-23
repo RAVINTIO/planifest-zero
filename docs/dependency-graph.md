@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000041-setup-cleanup-and-park-hardening
+Last updated: 0000042-autonomous-mode-and-prefixes
 
 ## Component dependency diagram
 
@@ -54,7 +54,7 @@ graph TD
 
 **Setup wires six hooks into `.claude/settings.json`.** `gate-write`, `ratchet-check`, and `em-dash-guard` run on `PreToolUse` for Write and Edit. `auto-trigger-orchestrator`, `check-orchestrator-presence`, and `check-design` run on `UserPromptSubmit`, in that order. Setup finds its own entries by module name on any matcher, and replaces a non-array event value with a warning.
 
-**Nothing leaves the machine.** No hook or script makes an outbound network call. The framework has no external integration besides `node`.
+**Nothing leaves the machine.** No hook or script makes an outbound network call. Planifest Zero has no external integration besides `node`.
 
 **`product-version.mjs` reads `components[].id` and each component's `version`.** It derives the product version under `versionPolicy: max-component-version`. No code reads the top-level `id` in `product.yml`. The orchestrator's discovery hard stop requires it.
 

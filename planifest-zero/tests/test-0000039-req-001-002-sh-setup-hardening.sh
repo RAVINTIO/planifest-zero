@@ -12,7 +12,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 FIXTURES="$SCRIPT_DIR/fixtures/0000039-setup-hardening"
 PLANTED="PLANTED-0000039-secret-value"
 ERROR_LINE="! Error: .claude/settings.json is not valid JSON. Fix it and rerun setup."
@@ -20,7 +20,7 @@ ERROR_LINE="! Error: .claude/settings.json is not valid JSON. Fix it and rerun s
 new_workspace() {
   local ws
   ws=$(mktemp -d -t planifest_0000039_req001_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$ws/planifest-zero"
+  cp -r "$ZERO_DIR" "$ws/planifest-zero"
   git init "$ws" >/dev/null 2>&1
   mkdir -p "$ws/.claude"
   printf '%s\n' "$ws"

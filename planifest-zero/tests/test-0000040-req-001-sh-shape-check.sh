@@ -11,14 +11,14 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 PLANTED="PLANTED-0000040-secret"
 SHAPE_LINE="! Error: .claude/settings.json is valid JSON but not a settings object setup can read. Fix it and rerun setup."
 INVALID_LINE="! Error: .claude/settings.json is not valid JSON. Fix it and rerun setup."
 
-# One copy of the framework serves every case. Each case gets a fresh project.
+# One copy of the pack serves every case. Each case gets a fresh project.
 TEMPLATE="$(mktemp -d -t planifest_0000040_req001_tpl_XXXXXX)"
-cp -r "$FRAMEWORK" "$TEMPLATE/planifest-zero"
+cp -r "$ZERO_DIR" "$TEMPLATE/planifest-zero"
 
 new_workspace() {
   local ws

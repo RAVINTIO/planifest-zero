@@ -26,8 +26,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK_SRC="$(cd "$SCRIPT_DIR/.." && pwd)"
-HOOKS="$FRAMEWORK_SRC/hooks"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+HOOKS="$ZERO_DIR/hooks"
 ENF="$HOOKS/enforcement"
 
 # The six enforcement hooks that import the shared readStdin. Every other
@@ -50,7 +50,7 @@ count_defs() {
 make_workspace() {
   local dir
   dir=$(mktemp -d -t planifest_0000028_req002_XXXXXX)
-  cp -r "$FRAMEWORK_SRC" "$dir/planifest-zero"
+  cp -r "$ZERO_DIR" "$dir/planifest-zero"
   git init "$dir" >/dev/null 2>&1
   git config --global --add safe.directory "$dir" >/dev/null 2>&1 || true
   printf 'components: []\n' > "$dir/product.yml"
@@ -281,7 +281,7 @@ cd /; rm -rf "$WS"
 
 # setup.ps1 parity: the enforcement install uses the same *.mjs glob, so the
 # shared module ships on Windows too.
-PS1_CONTENT="$(cat "$FRAMEWORK_SRC/setup.ps1")"
+PS1_CONTENT="$(cat "$ZERO_DIR/setup.ps1")"
 assert_contains "Get-ChildItem -Path \$src -Filter '*.mjs'" "$PS1_CONTENT" \
   "req-002: setup.ps1 copies enforcement hooks with the same *.mjs glob"
 

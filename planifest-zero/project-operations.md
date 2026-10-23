@@ -69,7 +69,7 @@ This writes `plan/.orchestrator-strict`. When present, the hook injects a **hard
 |-----------|---------|
 | `instructions/` | Project-specific instructions appended to the `CLAUDE.md` boot file on every setup run. Files sorted alphabetically and injected between HTML comment markers. |
 | `capability-skills/` | Permanent agent skills installed alongside built-in Planifest skills on every setup run. Each skill is a directory containing a `SKILL.md`. |
-| `library-standards/` | Override framework library preferences per language. Agents check here before the framework defaults. Structure mirrors `planifest-zero/standards/library-standards/`. |
+| `library-standards/` | Override the pack's library preferences per language. Agents check here before the pack defaults. Structure mirrors `planifest-zero/standards/library-standards/`. |
 
 The tracked record of setup flags per tool lives at `plan/state/{tool}.md`, not under `planifest-overrides/`. The setup script writes it, and the `planifest-refresh-setup` skill reads it.
 
@@ -77,7 +77,7 @@ The tracked record of setup flags per tool lives at `plan/state/{tool}.md`, not 
 
 ---
 
-## Updating the Framework
+## Updating the pack
 
 After pulling new files into `planifest-zero/`, re-run the setup script to propagate changes. Pass the same flags used during initial setup. Re-running is idempotent, and it prunes skills the new version has retired.
 
@@ -93,7 +93,7 @@ After pulling new files into `planifest-zero/`, re-run the setup script to propa
 
 After updating, check `planifest-zero/migrations/` for any pending `.md` files. The orchestrator handles them automatically at next session start via the `planifest-migrator` skill.
 
-→ [Full update protocol and migration handling](pipeline-reference.md#updating-the-framework)
+→ [Full update protocol and migration handling](pipeline-reference.md#updating-the-pack)
 
 ---
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# test-0000010-framework-quality-improvements.sh
+# test-0000010-pack-quality-improvements.sh
 # Acceptance tests for feature 0000010
-# Run from repo root: bash planifest-zero/tests/test-0000010-framework-quality-improvements.sh
+# Run from repo root: bash planifest-zero/tests/test-0000010-pack-quality-improvements.sh
 
 set -euo pipefail
 

@@ -12,8 +12,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-SHIP_SKILL="$FRAMEWORK/skills/planifest-ship/SKILL.md"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SHIP_SKILL="$ZERO_DIR/skills/planifest-ship/SKILL.md"
 
 # Isolate the archive step (from its heading to the next "### " heading).
 ARCHIVE_STEP=$(sed -n '/^### Step 4: Archive/,/^### Step 5/p' "$SHIP_SKILL")

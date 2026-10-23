@@ -12,8 +12,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-SETUP_PS1="$FRAMEWORK/setup.ps1"
+ZERO_DIR="$SCRIPT_DIR/.."
+SETUP_PS1="$ZERO_DIR/setup.ps1"
 
 extract_function_body() {
   awk -v name="function $1" '
@@ -39,7 +39,7 @@ assert_contains "continue" "$(printf '%s\n' "$CLEANUP" | sed -n "${SKIP_LINE:-1}
 echo ""
 echo "=== req-003: setup.ps1 runs on Windows PowerShell 5.1 ==="
 
-assert_equals "0" "$(cat "$SETUP_PS1" "$FRAMEWORK"/setup/*.ps1 | grep -c -- '-AsHashtable' || true)" \
+assert_equals "0" "$(cat "$SETUP_PS1" "$ZERO_DIR"/setup/*.ps1 | grep -c -- '-AsHashtable' || true)" \
   "req-003: setup.ps1 and setup/*.ps1 use no -AsHashtable"
 ALLOWED="$(extract_function_body 'Merge-AllowedTools')"
 assert_contains "Write-SettingsAtomic" "$ALLOWED" \

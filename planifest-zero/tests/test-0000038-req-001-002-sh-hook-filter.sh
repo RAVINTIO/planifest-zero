@@ -13,13 +13,13 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 FIXTURES="$SCRIPT_DIR/fixtures/0000038-hook-filter"
 
 new_workspace() {
   local ws
   ws=$(mktemp -d -t planifest_0000038_req001_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$ws/planifest-zero"
+  cp -r "$ZERO_DIR" "$ws/planifest-zero"
   git init "$ws" >/dev/null 2>&1
   mkdir -p "$ws/.claude"
   printf '%s\n' "$ws"
@@ -105,7 +105,7 @@ echo ""
 echo "=== req-002 (b): no substring match is left in setup.sh ==="
 
 for module in check-design auto-trigger-orchestrator check-orchestrator-presence; do
-  assert_equals "0" "$(grep -c -F "includes(\"$module\")" "$FRAMEWORK/setup.sh" || true)" \
+  assert_equals "0" "$(grep -c -F "includes(\"$module\")" "$ZERO_DIR/setup.sh" || true)" \
     "req-002 (b): setup.sh has no bare includes(\"$module\")"
 done
 assert_equals "0" "$(printf '%s\n' "$RENDER" | grep -c '^UserPromptSubmit|.*|node \.claude/hooks/' || true)" \

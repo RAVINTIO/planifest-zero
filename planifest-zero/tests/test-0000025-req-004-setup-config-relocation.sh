@@ -24,8 +24,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-SETUP_PS1="$FRAMEWORK/setup.ps1"
+ZERO_DIR="$SCRIPT_DIR/.."
+SETUP_PS1="$ZERO_DIR/setup.ps1"
 
 file_exists() { [ -f "$1" ] && echo "yes" || echo "no"; }
 dir_exists() { [ -d "$1" ] && echo "yes" || echo "no"; }
@@ -78,7 +78,7 @@ config_has_key() {
 make_workspace() {
   local dir
   dir=$(mktemp -d -t planifest_0000025_req004_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$dir/planifest-zero"
+  cp -r "$ZERO_DIR" "$dir/planifest-zero"
   git init "$dir" >/dev/null 2>&1
   git config --global --add safe.directory "$dir" >/dev/null 2>&1 || true
   echo "$dir"

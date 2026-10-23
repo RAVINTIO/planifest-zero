@@ -14,7 +14,7 @@ The Data Contract is the authoritative schema definition for a component's data.
 
 ## Who Writes It
 
-The **implement skill** creates it during the implement phase (P3) when building data-owning components. It's updated exclusively through **migration proposals** - never by directly editing the schema.
+The **implement skill** creates it during the implement phase (P2) when building data-owning components. It's updated exclusively through **migration proposals** - never by directly editing the schema.
 
 ---
 

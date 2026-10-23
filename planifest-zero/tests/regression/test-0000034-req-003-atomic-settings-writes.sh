@@ -12,8 +12,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/../.."
-REPO_ROOT="$(cd "$FRAMEWORK/.." && pwd)"
+ZERO_DIR="$SCRIPT_DIR/../.."
+REPO_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
 
 make_workspace() {
   local dir
@@ -28,7 +28,7 @@ make_workspace() {
 echo ""
 echo "=== req-003 (a): a failed settings.json write keeps the original ==="
 
-WS=$(make_workspace "$FRAMEWORK")
+WS=$(make_workspace "$ZERO_DIR")
 cd "$WS"
 mkdir -p .claude
 cat > .claude/settings.json << 'JSON'
@@ -50,7 +50,7 @@ cd /; chmod -R u+w "$WS" 2>/dev/null; rm -rf "$WS"
 echo ""
 echo "=== req-003 (b): a current-flags run writes the same settings.json ==="
 
-WS=$(make_workspace "$FRAMEWORK")
+WS=$(make_workspace "$ZERO_DIR")
 cd "$WS"
 mkdir -p .claude
 echo "leftover" > .claude/settings.json.planifest-tmp
@@ -84,7 +84,7 @@ fi
 echo ""
 echo "=== req-003 (d): symlinks, mode, and read-only targets ==="
 
-WS=$(make_workspace "$FRAMEWORK")
+WS=$(make_workspace "$ZERO_DIR")
 cd "$WS"
 mkdir -p .claude
 echo '{"allowedTools":["Agent"]}' > .claude/settings.json
@@ -102,7 +102,7 @@ assert_equals "600" "$MODE" "req-003 (d): settings.json keeps its 600 mode"
 rm -f ../victim-$$.txt
 cd /; rm -rf "$WS"
 
-WS=$(make_workspace "$FRAMEWORK")
+WS=$(make_workspace "$ZERO_DIR")
 cd "$WS"
 mkdir -p .claude dotfiles
 echo '{}' > dotfiles/settings.json
@@ -114,7 +114,7 @@ assert_contains "gate-write" "$(cat dotfiles/settings.json)" \
   "req-003 (d): setup writes through the symlink to its real file"
 cd /; rm -rf "$WS"
 
-WS=$(make_workspace "$FRAMEWORK")
+WS=$(make_workspace "$ZERO_DIR")
 cd "$WS"
 mkdir -p .claude
 echo '{"allowedTools":["Agent"]}' > .claude/settings.json
@@ -130,8 +130,8 @@ cd /; chmod -R u+w "$WS" 2>/dev/null; rm -rf "$WS"
 echo ""
 echo "=== req-003 (c): every settings.json write uses the temporary file ==="
 
-SH="$FRAMEWORK/setup.sh"
-PS1="$FRAMEWORK/setup.ps1"
+SH="$ZERO_DIR/setup.sh"
+PS1="$ZERO_DIR/setup.ps1"
 assert_equals "0" "$(grep -c 'writeFileSync(sf' "$SH" || true)" \
   "req-003 (c): setup.sh has no direct writeFileSync to settings.json"
 assert_equals "yes" "$(grep -q 'renameSync' "$SH" && echo yes || echo no)" \

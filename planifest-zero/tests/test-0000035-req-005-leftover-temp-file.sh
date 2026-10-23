@@ -11,14 +11,14 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 LEFTOVER=".claude/settings.json.planifest-tmp"
 
 # Runs only remove_leftover_settings_tmp from setup.sh, with the given PATH.
 run_removal() {
   local root="$1" path="$2"
   local fn
-  fn="$(sed -n '/^remove_leftover_settings_tmp() {/,/^}/p' "$FRAMEWORK/setup.sh")"
+  fn="$(sed -n '/^remove_leftover_settings_tmp() {/,/^}/p' "$ZERO_DIR/setup.sh")"
   PATH="$path" PROJECT_ROOT="$root" /bin/bash -c "
     $fn
     remove_leftover_settings_tmp .claude/settings.json
@@ -34,7 +34,7 @@ echo ""
 echo "=== req-005 (a): a setup.sh run removes a planted leftover ==="
 
 WS=$(mktemp -d -t planifest_0000035_req005_test_XXXXXX)
-cp -r "$FRAMEWORK" "$WS/planifest-zero"
+cp -r "$ZERO_DIR" "$WS/planifest-zero"
 git init "$WS" >/dev/null 2>&1
 mkdir -p "$WS/.claude"
 echo 'partial' > "$WS/$LEFTOVER"
@@ -80,15 +80,15 @@ rm -rf "$NO_NODE_PATH"
 echo ""
 echo "=== req-005 (d): setup.ps1 removes the leftover before its first settings write ==="
 
-SETUP_BODY="$(awk '/^function Invoke-PlanifestSetup/{f=1} f && /^function / && !/Invoke-PlanifestSetup/{exit} f{print}' "$FRAMEWORK/setup.ps1")"
+SETUP_BODY="$(awk '/^function Invoke-PlanifestSetup/{f=1} f && /^function / && !/Invoke-PlanifestSetup/{exit} f{print}' "$ZERO_DIR/setup.ps1")"
 REMOVE_LINE="$(printf '%s\n' "$SETUP_BODY" | grep -n 'Remove-LeftoverSettingsTmp -SettingsRel' | head -1 | cut -d: -f1)"
 CLEANUP_LINE="$(printf '%s\n' "$SETUP_BODY" | grep -n 'Remove-LegacyTelemetryWiring -SettingsRel' | head -1 | cut -d: -f1)"
 assert_equals "yes" "$([ -n "$REMOVE_LINE" ] && [ -n "$CLEANUP_LINE" ] && [ "$REMOVE_LINE" -lt "$CLEANUP_LINE" ] && echo yes || echo no)" \
   "req-005 (d): Remove-LeftoverSettingsTmp runs before the first settings writer"
 # The removal itself lives in Remove-SettingsTmpEntry, shared with
 # Write-SettingsAtomic (P5 S-002, S-003).
-REMOVER="$(awk '/^function Remove-LeftoverSettingsTmp/{f=1} f && /^}/{print; exit} f{print}' "$FRAMEWORK/setup.ps1")"
-HELPER="$(awk '/^function Remove-SettingsTmpEntry/{f=1} f && /^}/{print; exit} f{print}' "$FRAMEWORK/setup.ps1")"
+REMOVER="$(awk '/^function Remove-LeftoverSettingsTmp/{f=1} f && /^}/{print; exit} f{print}' "$ZERO_DIR/setup.ps1")"
+HELPER="$(awk '/^function Remove-SettingsTmpEntry/{f=1} f && /^}/{print; exit} f{print}' "$ZERO_DIR/setup.ps1")"
 assert_contains "Remove-SettingsTmpEntry" "$REMOVER" "req-005 (d): setup.ps1 removes the leftover through the shared helper"
 assert_contains "elseif (-not \$isFolder)" "$HELPER" "req-005 (d): setup.ps1 leaves a folder alone"
 assert_contains "ReparsePoint" "$HELPER" "req-005 (d): setup.ps1 removes a link without following it"

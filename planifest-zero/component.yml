@@ -1,8 +1,8 @@
 # Planifest Component Manifest
 id: "planifest-zero"
-name: "Planifest Framework"
+name: "Planifest Zero"
 feature: "0000041-setup-cleanup-and-park-hardening"
-version: "0.8.0"
+version: "0.9.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
@@ -84,7 +84,7 @@ scope:
     - "The 12 pipeline skills across the five phases"
     - "Templates, schemas, and standards bundled into each skill at install time"
     - "scripts/: consistency-check.mjs, product-version.mjs, self-description-check.mjs, promote-to-regression.sh, refresh-delete-boot-files"
-    - "tests/ and tests/regression/ for the framework's own behaviour"
+    - "tests/ and tests/regression/ for the pack's own behaviour"
   outOfScope:
     - "Application-level code generation (handled by the implement phase in consumer projects)"
     - "CI pipeline configuration for consumer projects"

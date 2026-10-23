@@ -6,7 +6,7 @@ version: "0.1.0"
 ---
 # Iteration Log - {{feature-id}}
 
-> **Audience:** The ship phase's build assessment (P5) and post-run technical review. This is NOT the PR changelog: the PR changelog (written at the start of ship) is the human-readable audit trail for PR reviewers.
+> **Audience:** The ship phase's build assessment (P4) and post-run technical review. This is NOT the PR changelog: the PR changelog (written at the start of ship) is the human-readable audit trail for PR reviewers.
 
 **Skill:** [implement](../skills/planifest-implement/SKILL.md) (or whichever agent completes the final documentation step)
 **Date:** {{ISO-8601}}
@@ -16,11 +16,11 @@ version: "0.1.0"
 
 | Phase | Status | Gate Result | Notes |
 |-------|--------|-------------|-------|
-| P1 - Discovery | {{pass/skip}} | Design confirmed: {{yes/no}} | {{coaching rounds count}} |
-| P2 - Plan | {{pass/fail/skip}} | All artifacts produced: {{yes/no}} | {{n}} ADRs |
-| P3 - Implement | {{pass/fail/skip}} | Implementation complete: {{yes/no}} | {{deviations count}} |
-| P4 - Validate and Accept | {{pass/fail/blocked}} | CI clean and accepted: {{yes/no}} | {{self-correct cycles}} cycles |
-| P5 - Ship | {{pass/fail/skip}} | Archived and PR raised: {{yes/no}} | |
+| P0 - Discovery | {{pass/skip}} | Design confirmed: {{yes/no}} | {{coaching rounds count}} |
+| P1 - Plan | {{pass/fail/skip}} | All artifacts produced: {{yes/no}} | {{n}} ADRs |
+| P2 - Implement | {{pass/fail/skip}} | Implementation complete: {{yes/no}} | {{deviations count}} |
+| P3 - Validate and Accept | {{pass/fail/blocked}} | CI clean and accepted: {{yes/no}} | {{self-correct cycles}} cycles |
+| P4 - Ship | {{pass/fail/skip}} | Archived and PR raised: {{yes/no}} | |
 
 ## Requirement Changes During Run
 

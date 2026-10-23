@@ -9,8 +9,8 @@
 # only needs editing when a component is added or removed.
 
 id: "planifest-zero"
-name: "Planifest Framework"
-version: "0.8.0"
+name: "Planifest Zero"
+version: "0.9.0"
 feature: "0000041-setup-cleanup-and-park-hardening"
 
 versionPolicy: "max-component-version"

@@ -14,8 +14,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-SETUP_PS1="$FRAMEWORK/setup.ps1"
+ZERO_DIR="$SCRIPT_DIR/.."
+SETUP_PS1="$ZERO_DIR/setup.ps1"
 
 extract_function_body() {
   awk -v name="function $1" '
@@ -57,7 +57,7 @@ echo ""
 echo "=== req-001 (a): setup.ps1 declares the same entries a setup.sh run writes ==="
 
 WS=$(mktemp -d -t planifest_0000035_req001_test_XXXXXX)
-cp -r "$FRAMEWORK" "$WS/planifest-zero"
+cp -r "$ZERO_DIR" "$WS/planifest-zero"
 git init "$WS" >/dev/null 2>&1
 (cd "$WS" && bash planifest-zero/setup.sh claude-code >/dev/null 2>&1)
 SH_LIST="$(sh_entries "$WS/.claude/settings.json")"

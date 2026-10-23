@@ -30,8 +30,8 @@ try {
   const cwd = input?.cwd ?? process.cwd();
 
   // Check 1 — is this a planifest project?
-  const frameworkPath = join(cwd, "planifest-zero");
-  if (!existsSync(frameworkPath)) process.exit(0);
+  const zeroDir = join(cwd, "planifest-zero");
+  if (!existsSync(zeroDir)) process.exit(0);
 
   // Check 2 — is the orchestrator already active?
   const sentinelPath = join(cwd, "plan", ".orchestrator-active");

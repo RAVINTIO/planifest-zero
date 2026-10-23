@@ -18,9 +18,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-PRE_PUSH="$FRAMEWORK/hooks/pre-push"
-PRE_COMMIT="$FRAMEWORK/hooks/pre-commit"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PRE_PUSH="$ZERO_DIR/hooks/pre-push"
+PRE_COMMIT="$ZERO_DIR/hooks/pre-commit"
 
 RUN_ID="$$-$(date +%s%N 2>/dev/null || date +%s)"
 
@@ -141,7 +141,7 @@ rm -rf "$BASE_FAIL"
 echo ""
 echo "=== req-002: no live component.json reference remains ==="
 
-for f in "$PRE_PUSH" "$PRE_COMMIT" "$FRAMEWORK/hooks/planifest.yml"; do
+for f in "$PRE_PUSH" "$PRE_COMMIT" "$ZERO_DIR/hooks/planifest.yml"; do
   name="$(basename "$f")"
   assert_equals "no" "$(grep -qF "component.json" "$f" && echo yes || echo no)" \
     "$name: no plain-text component.json reference"

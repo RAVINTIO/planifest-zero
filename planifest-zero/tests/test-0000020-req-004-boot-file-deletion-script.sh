@@ -11,9 +11,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-DELETE_SCRIPT="$FRAMEWORK/scripts/refresh-delete-boot-files.sh"
-DELETE_SCRIPT_PS1="$FRAMEWORK/scripts/refresh-delete-boot-files.ps1"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+DELETE_SCRIPT="$ZERO_DIR/scripts/refresh-delete-boot-files.sh"
+DELETE_SCRIPT_PS1="$ZERO_DIR/scripts/refresh-delete-boot-files.ps1"
 
 file_exists() { [ -f "$1" ] && echo "yes" || echo "no"; }
 

@@ -7,10 +7,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-SKILLS="$FRAMEWORK/skills"
-TEMPLATES="$FRAMEWORK/templates"
-STANDARDS="$FRAMEWORK/standards"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SKILLS="$ZERO_DIR/skills"
+TEMPLATES="$ZERO_DIR/templates"
+STANDARDS="$ZERO_DIR/standards"
 
 assert_not_contains() {
   local needle="$1"
@@ -188,11 +188,11 @@ DOCS=$(cat "$SKILLS/planifest-implement/SKILL.md")
 assert_contains "iteration-log.template.md" "$DOCS" "req-007: implement references iteration-log.template.md"
 assert_not_contains "# Iteration Log" "$DOCS" "req-007: implement has no inline iteration log template block"
 
-SETUP_SH=$(cat "$FRAMEWORK/setup.sh")
+SETUP_SH=$(cat "$ZERO_DIR/setup.sh")
 assert_contains ".planifest-manifest" "$SETUP_SH" "req-007: setup.sh writes .planifest-manifest"
 assert_contains "Re-run detected"     "$SETUP_SH" "req-007: setup.sh handles re-run manifest cleanup"
 
-SETUP_PS1=$(cat "$FRAMEWORK/setup.ps1")
+SETUP_PS1=$(cat "$ZERO_DIR/setup.ps1")
 assert_contains ".planifest-manifest" "$SETUP_PS1" "req-007: setup.ps1 writes .planifest-manifest"
 assert_contains "Re-run detected"     "$SETUP_PS1" "req-007: setup.ps1 handles re-run manifest cleanup"
 

@@ -2,7 +2,7 @@
 name: planifest-orchestrator
 description: Owns discovery and routing for the five-phase Planifest pipeline. Coaches a human from feature brief to confirmed design, then invokes the plan, implement, validate-and-accept, and ship phase skills in sequence.
 bundle_templates: [feature-brief.template.md, design.template.md, discovery.template.md, build-log.template.md, backlog-entry.template.md, pause.template.md, park.template.md]
-bundle_standards: [stack-summary.md, monorepo-standards.md, api-design-standards.md, observability-standards.md, agent-dispatch-standards.md, framework-update-policy.md]
+bundle_standards: [stack-summary.md, monorepo-standards.md, api-design-standards.md, observability-standards.md, agent-dispatch-standards.md, pack-update-policy.md]
 ---
 
 # Planifest Orchestrator
@@ -20,11 +20,11 @@ Non-negotiable. They apply in every session, every phase.
 3. **No direct schema modification.** Write a migration proposal and stop for human approval.
 4. **Destructive schema operations require human approval.** Drop column, drop table, rename: propose and stop. No exceptions.
 5. **Data is owned by one component.** Never write to data owned by another component.
-6. **Credentials are never in your context.** If one appears in a prompt, file, or environment, do not use it. Flag it.
+6. **Credentials are never in your context.** If one appears in a prompt, file, or environment, do not use it. Flag it. If it is in a file the run will commit, it is an exception stop in both run modes.
 7. **Documentation is updated after any deviation.** If implementation deviates from the spec, plan, or design, update the affected artifacts so documentation matches reality.
 8. **Commit after every meaningful artifact write.** Never batch work waiting for a phase gate. Each artifact is a commit on its own.
 9. **Write a build-log phase block before any phase work.** Create `plan/current/build-log.md` at discovery if absent. A missing block is a pipeline error: stop and fix it before proceeding.
-10. **The pipeline has exactly five phases, P1 to P5.** Build-log phase headings MUST use the form `### P<n>: {Phase Name}` with n from 1 to 5. A hook parses this form. Never cite a phase number outside P1 to P5.
+10. **The pipeline has exactly five phases, P0 to P4.** Build-log phase headings MUST use the form `### P<n>: {Phase Name}` with n from 0 to 4. Never cite a phase number outside P0 to P4.
 11. **Every run archives `plan/current/`.** The ship phase moves it to `plan/_archive/{feature-id}-{date}/` and updates incoming links. Never leave a permanent working folder behind.
 12. **`discovery.md` exists and is complete before the first coaching question.** A missing or incomplete `plan/current/discovery.md` at that point is a pipeline error: stop and write it.
 
@@ -32,22 +32,22 @@ Non-negotiable. They apply in every session, every phase.
 
 ## Phases and Response Prefixes
 
-Every request is a feature change. It runs one route: the five-phase pipeline. Every response begins with the phase prefix.
+Every request is a feature change. It runs one route: the five-phase pipeline. Every response begins with the phase prefix. Messages shorten P3 to "Validate". Skills and the build log keep "Validate and Accept".
 
 | N | Phase | Prefix | Owner |
 |---|-------|--------|-------|
-| P1 | Discovery | `D:` | this skill |
-| P2 | Plan | `PL:` | planifest-plan |
-| P3 | Implement | `IM:` | planifest-implement |
-| P4 | Validate and Accept | `VA:` | planifest-validate-and-accept |
-| P5 | Ship | `SH:` | planifest-ship |
+| P0 | Discovery | `P0 Discovery:` | this skill |
+| P1 | Plan | `P1 Plan:` | planifest-plan |
+| P2 | Implement | `P2 Implement:` | planifest-implement |
+| P3 | Validate and Accept | `P3 Validate:` | planifest-validate-and-accept |
+| P4 | Ship | `P4 Ship:` | planifest-ship |
 
-Standard formats:
-- Entering a phase: `D: Starting: {one-liner}`
-- Resuming: `IM: Resuming: {what was in progress, what is next}`
-- Completing: `PL: Complete: {summary}`
-- Blocking: `D: Blocked: {specific gap}`
-- Skipping: `VA: Skipped: {reason}`
+Status messages use one form: `{prefix} {Status}: {one-liner}`. The status is Starting, Resuming, Complete, Blocked, or Skipped.
+- Entering a phase: `P0 Discovery: Starting: {one-liner}`
+- Resuming: `P2 Implement: Resuming: {what was in progress, what is next}`
+- Completing: `P1 Plan: Complete: {summary}`
+- Blocking: `P0 Discovery: Blocked: {specific gap}`
+- Skipping: `P3 Validate: Skipped: {reason}`
 
 ---
 
@@ -70,20 +70,20 @@ Standard formats:
 On every session start, before any action:
 
 1. **Pending migrations first.** Check `planifest-zero/migrations/` for `.md` files not in `_done/`. If found, invoke `planifest-migrator` for each before any other phase work.
-2. **Framework dependency update.** Detect per `planifest-zero/standards/framework-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a framework update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
+2. **Pack dependency update.** Detect per `planifest-zero/standards/pack-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a pack update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
 3. **Scan `plan/current/`** for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
-4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `D: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
+4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
 5. **`.feature-id` staleness.** If present and its contents differ from the current work, flag it for human review before proceeding.
 6. **Skips.** If `plan/current/.skips` exists, acknowledge the skipped phases at the top of your response.
 7. **Pause restore.** If `plan/current/pause.md` exists, open with `{prefix}: Resuming: {active_task}`, restore state from the file, delete it, and continue from the pause point.
 8. **Park restore.** If you are still on the feature branch and `plan/current/park.md` exists, park did not finish. Run `gh pr list --head chore/park-{feature-id} --state all`. If it returns nothing, finish the chore PR step of park (Park Command steps 3 to 5) with `node scripts/park.mjs finish-pr`. If a push or `gh` call fails, report the exact error and stop, as in the Park Command.
-9. **Run-mode restore.** Read `plan/.run-mode` if present and restore `continuous` or `interactive` without re-asking. Any other value, or an absent file, defaults to `interactive`.
+9. **Run-mode restore.** Read `plan/.run-mode` and the build log first. If it holds `gated` or `autonomous`, restore that mode without asking. In `gated`, if the last phase ended at a gate with no `Gate accepted` line, show that gate again. If `plan/.run-mode` is missing or holds any value other than `gated` or `autonomous`, ask the run-mode question from Design Confirmation. Before the question, name what you found: `` `plan/.run-mode` is missing. `` or `` `plan/.run-mode` holds `{value}`, which is not a valid run mode. `` Write the answer to `plan/.run-mode`, append `Run mode: {gated | autonomous} ({ISO-8601 timestamp}, asked on resume)` to the build log, and commit both. If the build log holds a `Blocked:` line with no later `Resolved:` line, print that stop's message again and wait. Do not move on in either mode. This check applies on resume only. A fresh start uses the stale run-mode check in Discovery Start Actions.
 10. **`discovery.md` trust-or-regenerate.** If present and complete for the confirmed adoption mode, trust it as-is. If missing or incomplete mid-run, regenerate it fresh. Never patch a partial file.
-11. **Open.** Artifacts found: open with `{prefix}: Resuming` and no re-coaching. No artifacts: open with `D:` and begin discovery.
+11. **Open.** Artifacts found: find the last phase in the build log and open with that phase's prefix, as `{prefix} Resuming: {one-liner}`, with no re-coaching. No artifacts: open with `P0 Discovery: Starting` and begin discovery.
 
 ---
 
-## Framework Index (JIT Loading)
+## Pack Index (JIT Loading)
 
 Never assume you know a template's format. Read the relevant file immediately before generating that output.
 
@@ -129,7 +129,7 @@ When the human says "park" or similar, shelve the feature on its branch and retu
 
 Rules:
 
-- If `plan/current/design.md` does not exist, the phase reached is P1.
+- If `plan/current/design.md` does not exist, the phase reached is P0.
 - The sentinels in `plan/` live on the feature branch only. Park removes nothing from `main`.
 - The parked entry reaches `main` only when the human merges the chore PR. Until then, a session on `main` does not see it.
 - If any push or `gh` call fails, report the exact error and stop. The working tree stays on the feature branch, and `park.md` stays committed locally.
@@ -143,16 +143,16 @@ Clear context at two bookends: discovery start (fresh runs only) and after ship 
 
 ---
 
-## P1: Discovery
+## P0: Discovery
 
 ### Opening Briefing
 
 On a fresh start (no resume detected), open with:
 
 ```
-D: Starting
+P0 Discovery: Starting
 
-Pipeline: P1 Discovery -> P2 Plan -> P3 Implement -> P4 Validate and Accept -> P5 Ship
+Pipeline: P0 Discovery -> P1 Plan -> P2 Implement -> P3 Validate and Accept -> P4 Ship
 
 Tool detected: {tool name or "unknown"}
 Hooks status:
@@ -172,7 +172,7 @@ Detect the tool from `CLAUDE_CODE_*` env vars or a `.claude/` directory. Check h
 
 **One question at a time.** Find the most foundational gap, ask about it, wait, reassess. Never present a list of everything missing.
 
-**Recommend, then confirm.** For every decision, lead with a specific recommendation: `D: [Observation]. I recommend [X] because [one-line reason]. Confirm? ([X] / [alternative])`. This pattern applies in every phase, one decision per message.
+**Recommend, then confirm.** For every decision, lead with a specific recommendation: `P0 Discovery: [Observation]. I recommend [X] because [one-line reason]. Confirm? ([X] / [alternative])`. This pattern applies in every phase, one decision per message.
 
 **Priority order:**
 
@@ -222,11 +222,11 @@ Perform in order, before coaching begins:
 2. **Pre-flight** (fresh starts only): run `git branch --show-current` and report it. Ask whether previous PRs are merged and main is up to date. Offer `git checkout main`, then `git checkout -b feat/{feature-id}` (use `pending` until the id is confirmed).
 3. **Stale run-mode** (fresh starts only): if `plan/.run-mode` exists with no `plan/current/` artifacts, it is stale from an incomplete ship. Warn, delete it, continue.
 4. **Write the sentinel**: `plan/.orchestrator-active` containing the feature-id (or `pending`). Update once confirmed. Include in the discovery commit.
-5. **Create the build log** from `planifest-zero/templates/build-log.template.md`. Fill the header. On resume, append rather than overwrite. Append a `### P1: Discovery` block before any discovery work (Hard Limit 9). At ship, the summary table is completed.
+5. **Create the build log** from `planifest-zero/templates/build-log.template.md`. Fill the header. On resume, append rather than overwrite. Append a `### P0: Discovery` block before any discovery work (Hard Limit 9). At ship, the summary table is completed.
 6. **Load repo instructions**: read all `.md` files in `planifest-overrides/instructions/` (if present). Write their contents into `design.md` under `## Repo Instructions` once it exists, or `## Repo Instructions: None`.
 7. **Detect adoption mode** per the table below. Apply the highest-priority signal only. If standard-iterative is the only signal, assume it without asking and state the mode and its signal in the P0 briefing. Source in `src/` beside an archive is the normal iterative case. Recommend-then-confirm in every other case. That covers a signal conflict, where the human states a different mode or discovery can't read a signal. It also covers External Anchor, Retrofit, and Greenfield. Record the assumed or confirmed mode and its signal in `discovery.md`, `design.md`, and the build log.
 8. **Read the version**: `docs/about.md` frontmatter, cross-checked against the most recent archive entry. If `product.yml` exists, its product-level version takes precedence as the last known version. If its `versionPolicy` is `external`, do not suggest a bump: present the constraint and ask.
-9. **Product id check**: `product.yml` must exist at the project root with a non-empty `id`. If not, hard-stop and ask: `D: No declared product id found (product.yml is missing or has no id field). The id gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. What should the product id be? (kebab-case, stable across releases)`. Write or update only the `id` field, then resume.
+9. **Product id check**: `product.yml` must exist at the project root with a non-empty `id`. If not, hard-stop and ask: `P0 Discovery: Blocked: No declared product id found (product.yml is missing or has no id field). The id gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. What should the product id be? (kebab-case, stable across releases)`. Write or update only the `id` field, then resume.
 10. **Backlog pickup**: scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids. Check `plan/_archive/` and `plan/changelog/` for the high-water mark. Read `releaseSize` from `product.yml` to set the release budget (see Decomposition).
     - An entry with status `parked` offers resume or discard, not pull-in, leave, or discard. Resume runs these steps in order. `node scripts/park.mjs resume {branch}` does steps 1 and 2.
       1. Check out the branch the entry names.
@@ -236,7 +236,7 @@ Perform in order, before coaching begins:
     - Discard deletes the branch locally and on `origin`. It runs only after the human confirms. Run `node scripts/park.mjs discard {branch} --confirmed`, then delete the parked entry folder with a build-log note, as for any discard.
     - Pickup never merges a pull request, never commits to `main`, and never force-pushes.
 11. **Write `discovery.md`** (Hard Limit 12): copy `planifest-zero/templates/discovery.template.md` to `plan/current/discovery.md` and populate it with the findings from steps 2 to 10 plus a `planifest-zero/skills-inbox/` scan. Commit it on its own before coaching begins. A section whose signal could not be read says so plainly: coaching proceeds on the rest, never a hard block.
-12. **Suggest a version bump**: a feature run defaults to a minor bump (x.Y.0). A breaking change is major. Recommend-then-confirm. **Hard block on downgrade**: if the human proposes a version lower than the last known one, refuse: `D: Blocked: {proposed} is lower than the last known version ({current}). Provide a version >= {current}.` Record the confirmed version in `design.md` and the build log.
+12. **Suggest a version bump**: a feature run defaults to a minor bump (x.Y.0). A breaking change is major. Recommend-then-confirm. **Hard block on downgrade**: if the human proposes a version lower than the last known one, refuse: `P0 Discovery: Blocked: {proposed} is lower than the last known version ({current}). Provide a version >= {current}.` Record the confirmed version in `design.md` and the build log.
 13. **Strict-mode ack**: if `plan/.orchestrator-strict` exists, write `plan/.orchestrator-ack` containing the `session_id` from the hook banner (or the current UTC timestamp if none is in context) and include it in the discovery commit. This silences the strict-mode banner for the session.
 14. **Check the skills inbox**: process any `SKILL.md` in `planifest-zero/skills-inbox/` per Capability Skills below. Repeat this check at every phase transition.
 
@@ -284,7 +284,7 @@ Read `plan/current/feature-brief.md`. If `## Scenario Paths` is filled in, use t
 
 **Confirmation is human-only, per item.** Only the human's explicit accept, edit, or reject for each individual item counts as scope confirmation. Silence is never approval. The conversation moving on is never approval. A blanket "looks fine" across the batch is never approval for any single item. Your own draft is never confirmation, no matter how confident it reads.
 
-**Record immediately.** The moment the human confirms one item, append to the build log under the P1 block, before handling the next item:
+**Record immediately.** The moment the human confirms one item, append to the build log under the P0 block, before handling the next item:
 
 ```
 Scope Lock ({path type}): {one-sentence summary} [source: human | draft-accepted | draft-edited]
@@ -294,10 +294,10 @@ If an answer reveals a scope gap, ask one clarifying question, capture the answe
 
 ### Discovery Audit Trail
 
-For every coaching question asked and answered, immediately append to the build log under the P1 block:
+For every coaching question asked and answered, immediately append to the build log under the P0 block:
 
 ```
-P1 exchange ({topic}): Q: {question} / A: {human answer, summarised}
+P0 exchange ({topic}): Q: {question} / A: {human answer, summarised}
 ```
 
 One entry per exchange, never batched, so an interrupted session still holds everything that occurred.
@@ -326,7 +326,7 @@ Before presenting the design for confirmation, verify:
 - [ ] `discovery.md` exists and is complete (Hard Limit 12)
 - [ ] Feature id follows `{0000000}-{kebab-case-name}`
 
-Coach the human on any unchecked item before proceeding. Completeness loop (toggle `discovery_completeness`, default off): when enabled, this checklist is the loop's pass condition per `planifest-loop-runner`. If the same item fails after 2 rounds, emit `D: Blocked: {item}` with escalation context.
+Coach the human on any unchecked item before proceeding. Completeness loop (toggle `discovery_completeness`, default off): when enabled, this checklist is the loop's pass condition per `planifest-loop-runner`. If the same item fails after 2 rounds, emit `P0 Discovery: Blocked: {item}` with escalation context.
 
 ### Design Confirmation (the discovery gate)
 
@@ -335,14 +335,13 @@ Read `planifest-zero/templates/design.template.md`, then write `plan/current/des
 Before asking for confirmation, ask the run-mode question:
 
 ```
-Do you want to review and confirm after each phase completes, or authorise a
-continuous run for this session?
+How should the agent run P1 to P4?
 
-  [1] Check after each phase
-  [2] Continuous run: proceed without phase confirmations
+  [1] Gated: the agent stops for you at the end of each phase
+  [2] Autonomous: the agent runs to a raised PR and stops only for escalations
 ```
 
-Record the answer and write `plan/.run-mode` (`continuous` or `interactive`). Include it in the discovery commit. In interactive mode, append `Gate accepted: P{N} ({ISO-8601 timestamp})` to the build log at each confirmed gate.
+Record the answer and write `plan/.run-mode` (`gated` or `autonomous`). No other value is valid. Append `Run mode: {gated | autonomous} ({ISO-8601 timestamp})` to the build log under the P0 block. Include it in the discovery commit. Only this skill writes `plan/.run-mode`. Phase skills read it and never write it. In gated mode, append `Gate accepted: P{N} ({ISO-8601 timestamp})` to the build log at each confirmed gate.
 
 **Do not proceed to plan until the human has confirmed the design.** This is the hard gate. Present it, revise on request, and once confirmed, commit `design.md` and `feature-brief.md`. The pipeline then begins.
 
@@ -359,38 +358,65 @@ Capability skills encode craft knowledge. Planifest skills encode discipline. Tw
 
 ---
 
-## Phase Invocation (P2 to P5)
+## Phase Invocation (P1 to P4)
 
 Conventions for every downstream phase:
 
 - **Build log first:** append a `### P<n>: {Phase Name}` block before any phase work (Hard Limit 9).
 - **Load the phase skill before acting.** Read it in full first.
 - **Commit** all new artifacts before presenting the gate summary.
-- **Push cadence:** after each gate commit, if remote push is authorised by a standing override in `planifest-overrides/instructions/` or a per-session grant in the build log, push the feature branch. A failed push is reported once and never blocks the pipeline.
+- **Push cadence:** after each gate commit, if remote push is authorised by a standing override in `planifest-overrides/instructions/` or a per-session grant in the build log, push the feature branch. A failed push is an exception stop (see Exception Stops).
 - **Skills inbox:** re-check at each transition.
+- **Run mode:** read `plan/.run-mode` at each transition and apply that phase's STOP rule below.
 
 | Phase | Invoke | Gate condition | STOP rule |
 |-------|--------|----------------|-----------|
-| P2 Plan | planifest-plan | Artifact set complete (requirements, ADRs, OpenAPI where applicable) | STOP for confirmation. Exception: continuous run. |
-| P3 Implement | planifest-implement | Implementation matches the spec, and docs land with code | STOP for confirmation. Exception: continuous run. |
-| P4 Validate and Accept | planifest-validate-and-accept | CI green plus human acceptance | Acceptance ALWAYS stops. A continuous run does not bypass it. |
-| P5 Ship | planifest-ship | Archive, build report, changelog, tag, and PR (or PR description) confirmed | Final gate. Always stops. |
+| P1 Plan | planifest-plan | Artifact set complete (requirements, ADRs, OpenAPI where applicable) | Gated: STOP for confirmation. Autonomous: no stop. |
+| P2 Implement | planifest-implement | Implementation matches the spec, and docs land with code | Gated: STOP for confirmation. Autonomous: no stop. |
+| P3 Validate and Accept | planifest-validate-and-accept | CI green plus acceptance evidence | Gated: STOP for acceptance. Autonomous: no stop. The evidence goes in the PR description. |
+| P4 Ship | planifest-ship | Archive, build report, changelog, tag, and PR (or PR description) | Gated: STOP before the PR. Autonomous: no stop. Raise the PR, then end the run. |
 
-**Before P3:** check the declared stack against installed capability skills and recommend loading relevant ones. Then apply subagent decomposition for every requirement: consult `## Skill Map` in `design.md` for the best-fit skill, select the model tier, and dispatch per the dispatch standards below.
+**Before P2:** check the declared stack against installed capability skills and recommend loading relevant ones. Then apply subagent decomposition for every requirement: consult `## Skill Map` in `design.md` for the best-fit skill, select the model tier, and dispatch per the dispatch standards below.
 
-**After P5:** apply the Context Hygiene reset so the next session starts cold.
+**After P4:** apply the Context Hygiene reset so the next session starts cold.
+
+**Merge is human-only.** In every run mode, never merge a pull request and never commit to `main`.
+
+---
+
+## Exception Stops
+
+Both run modes stop on these exceptions. Commit all work and push it before the stop, where a push is authorised. The credential stop is the exception. It leaves the flagged file uncommitted and pushes nothing.
+
+At each stop, follow these steps:
+
+1. Append `Blocked: {exception} ({ISO-8601 timestamp})` to the build log under the current phase block, and commit it.
+2. Print the message for the exception, then wait.
+3. When the human acts, append `Resolved: {exception} ({ISO-8601 timestamp}, {decision})` to the build log, and commit it.
+
+After the human acts, the run resumes in the same mode from `plan/.run-mode`.
+
+| Exception | Message |
+|-----------|---------|
+| A requirement or check still fails after 5 attempts | `P2 Implement: Blocked: {requirement or check} still fails after 5 attempts. Review the escalation and choose the next step.` (P3 uses `P3 Validate:`) |
+| P2 needs a schema change | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
+| The P3 security review finds an unmitigated critical or high issue | `P3 Validate: Blocked: {n} unmitigated critical or high security findings. Approve a mitigation or accept the risk.` |
+| A push or `gh pr create` fails | `P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.` (other phases use their own prefix) |
+| A possible credential appears in a file the run will commit, or in a PR body | `{prefix} Blocked: possible credential in {path}. Remove it or confirm it is not a secret.` Stop before the commit and before any push. Never print the value. |
+
+The status `Blocked:` follows the phase prefix, as in every status message. Never work round an exception stop. Do not force-push, merge, or skip the failing check.
 
 ---
 
 ## Mid-Pipeline Requirement Changes
 
-If the human changes requirements while P2 to P4 is in progress:
+If the human changes requirements while P1 to P3 is in progress:
 
 1. **Assess the change:**
    - Cosmetic (naming, wording, formatting): fix in place, continue.
    - Additive (new user story, new endpoint): update the plan artifacts, re-run from the earliest affected phase.
-   - Contradictory (reverses a prior decision): halt, update the confirmed design, write an ADR for the reversal, re-run from P2.
-2. **Re-run rules:** re-running P2 invalidates P3 and P4 output, so delete stale artifacts first. Re-running P3 requires re-running P4 at minimum. Never patch generated code to match a spec change: regenerate from the updated spec.
+   - Contradictory (reverses a prior decision): halt, update the confirmed design, write an ADR for the reversal, re-run from P1.
+2. **Re-run rules:** re-running P1 invalidates P2 and P3 output, so delete stale artifacts first. Re-running P2 requires re-running P3 at minimum. Never patch generated code to match a spec change: regenerate from the updated spec.
 3. **Record it:** add a "Requirement Change" entry to the build log noting what changed, the active phase, and what was re-run.
 
 If the change would alter the feature fundamentally (different problem, users, or domain), recommend a new feature instead.

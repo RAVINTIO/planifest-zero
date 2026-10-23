@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Content-pinning tests for the doc/workflow-only requirements of feature
-# 0000027 that survive the five-phase framework cut-down: req-003 (subagent
-# backlog filing), req-005 (framework update policy), req-007 (skill-scope
+# 0000027 that survive the five-phase cut-down: req-003 (subagent
+# backlog filing), req-005 (pack update policy), req-007 (skill-scope
 # test), req-008 (minimal plan-phase artifact set). Asserts the required
 # content exists in its current homes rather than executing prose.
 
@@ -10,12 +10,12 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 echo ""
 echo "=== req-003: subagent out-of-scope discoveries file to plan/backlog/ ==="
 
-DISPATCH_STANDARDS="$FRAMEWORK_DIR/standards/agent-dispatch-standards.md"
+DISPATCH_STANDARDS="$ZERO_DIR/standards/agent-dispatch-standards.md"
 content=$(cat "$DISPATCH_STANDARDS")
 assert_contains "plan/backlog/{id}-{slug}/entry.md" "$content" \
   "req-003: dispatch template instructs filing to plan/backlog/"
@@ -25,27 +25,27 @@ assert_contains "Subagent self-lookup" "$content" \
   "req-003: subagent self-lookup explicitly rejected"
 
 for skill in planifest-orchestrator planifest-plan planifest-implement planifest-validate-and-accept; do
-  skill_content=$(cat "$FRAMEWORK_DIR/skills/$skill/SKILL.md")
+  skill_content=$(cat "$ZERO_DIR/skills/$skill/SKILL.md")
   assert_contains "backlog" "$skill_content" "req-003: $skill references backlog guidance"
 done
 
 echo ""
 echo "=== req-005: explicit discovery flow for a planifest-zero/ dependency update ==="
 
-ORCHESTRATOR_SKILL="$FRAMEWORK_DIR/skills/planifest-orchestrator/SKILL.md"
+ORCHESTRATOR_SKILL="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 orch_content=$(cat "$ORCHESTRATOR_SKILL")
-assert_contains "Framework dependency update" "$orch_content" \
-  "req-005: orchestrator has a distinct resume-detection step for framework updates"
-assert_contains "framework-update-policy.md" "$orch_content" \
-  "req-005: orchestrator points to the Framework Update Policy doc"
+assert_contains "Pack dependency update" "$orch_content" \
+  "req-005: orchestrator has a distinct resume-detection step for pack updates"
+assert_contains "pack-update-policy.md" "$orch_content" \
+  "req-005: orchestrator points to the Pack Update Policy doc"
 
-assert_equals "yes" "$([ -f "$FRAMEWORK_DIR/standards/framework-update-policy.md" ] && echo yes || echo no)" \
-  "req-005: standards/framework-update-policy.md exists"
+assert_equals "yes" "$([ -f "$ZERO_DIR/standards/pack-update-policy.md" ] && echo yes || echo no)" \
+  "req-005: standards/pack-update-policy.md exists"
 
-if [ -f "$FRAMEWORK_DIR/standards/framework-update-policy.md" ]; then
-  policy_content=$(cat "$FRAMEWORK_DIR/standards/framework-update-policy.md")
+if [ -f "$ZERO_DIR/standards/pack-update-policy.md" ]; then
+  policy_content=$(cat "$ZERO_DIR/standards/pack-update-policy.md")
   assert_contains "provenance" "$policy_content" \
-    "req-005: Framework Update Policy requires provenance confirmation"
+    "req-005: Pack Update Policy requires provenance confirmation"
 fi
 assert_contains "provenance" "$orch_content" \
   "req-005: orchestrator requires provenance confirmation before accepting the update"
@@ -61,12 +61,12 @@ assert_contains "governance or traceability the host tool cannot provide" "$orch
 echo ""
 echo "=== req-008: minimal plan-phase artifact set agrees between workflow and plan skill ==="
 
-PIPELINE_WORKFLOW="$FRAMEWORK_DIR/workflows/feature-pipeline.md"
+PIPELINE_WORKFLOW="$ZERO_DIR/workflows/feature-pipeline.md"
 pipeline_content=$(cat "$PIPELINE_WORKFLOW")
 assert_contains "one artifact set: the execution plan, functional" "$pipeline_content" \
   "req-008: feature-pipeline.md's always-produced list starts with execution plan + requirements"
 
-plan_content=$(cat "$FRAMEWORK_DIR/skills/planifest-plan/SKILL.md")
+plan_content=$(cat "$ZERO_DIR/skills/planifest-plan/SKILL.md")
 assert_contains "produced only when its trigger holds" "$plan_content" \
   "req-008: planifest-plan gates conditional artifacts on a trigger"
 assert_contains "The feature builds or modifies an API" "$plan_content" \

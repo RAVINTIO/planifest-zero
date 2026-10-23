@@ -14,7 +14,7 @@ An ADR captures a single architectural decision - the context that demanded it, 
 
 ## Who Writes It
 
-The **plan skill** produces ADRs during the plan phase (P2). It reads the Execution Plan and OpenAPI Specification (if applicable) as input. Each significant decision gets its own ADR.
+The **plan skill** produces ADRs during the plan phase (P1). It reads the Execution Plan and OpenAPI Specification (if applicable) as input. Each significant decision gets its own ADR.
 
 ---
 

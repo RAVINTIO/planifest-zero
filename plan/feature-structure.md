@@ -6,7 +6,7 @@
 
 ```
 repo/
-+-- planifest-zero/          <- The framework: skills, templates, schemas,
++-- planifest-zero/          <- The pack: skills, templates, schemas,
 |                               standards, hooks, setup scripts.
 |
 +-- plan/                    <- The specifications and records.
@@ -68,5 +68,5 @@ src/
     +-- {source}
 ```
 
-This repository's single component is the framework itself, so its manifest
+This repository's single component is the pack itself, so its manifest
 lives at `planifest-zero/component.yml` and `src/` holds only the scaffold.

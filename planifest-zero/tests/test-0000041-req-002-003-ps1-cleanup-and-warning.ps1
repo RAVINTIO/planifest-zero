@@ -185,7 +185,7 @@ foreach ($case in @('absent', 'null')) {
 Write-Host ""
 Write-Host "=== req-003 (c): setup.ps1 holds no old-value text ==="
 
-$setupText = [System.IO.File]::ReadAllText((Join-Path $global:FrameworkDir 'setup.ps1'))
+$setupText = [System.IO.File]::ReadAllText((Join-Path $global:ZeroDir 'setup.ps1'))
 Assert-True (-not $setupText.Contains('Old value')) "req-003 (c): setup.ps1 never prints Old value"
 Assert-True ($setupText.Contains('"  ! Warning: hooks.$eventName in $SettingsRel is not an array. Setup replaced it with the Planifest entries."')) "req-003 (c): setup.ps1 holds the exact warning line"
 

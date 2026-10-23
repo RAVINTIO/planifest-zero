@@ -1,7 +1,7 @@
 # loop-toggles.yml: per-loop enablement
 #
 # COPY THIS FILE to planifest-overrides/loop-toggles.yml to enable loops.
-# planifest-overrides/ is user-owned: the framework and its agents never write
+# planifest-overrides/ is user-owned: the pipeline and its agents never write
 # there, so enabling a loop is always a deliberate human act.
 #
 # Absent file = all loops off. Absent key = that loop off. Invalid value = off

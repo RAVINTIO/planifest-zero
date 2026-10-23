@@ -11,13 +11,13 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
-REPO_ROOT="$FRAMEWORK/.."
+ZERO_DIR="$SCRIPT_DIR/.."
+REPO_ROOT="$ZERO_DIR/.."
 
 PLAN_README="$REPO_ROOT/plan/README.md"
 FEATURE_STRUCTURE="$REPO_ROOT/plan/feature-structure.md"
-PIPELINE_REFERENCE="$FRAMEWORK/pipeline-reference.md"
-PROJECT_OPERATIONS="$FRAMEWORK/project-operations.md"
+PIPELINE_REFERENCE="$ZERO_DIR/pipeline-reference.md"
+PROJECT_OPERATIONS="$ZERO_DIR/project-operations.md"
 
 echo ""
 echo "=== req-005: plan/README.md folder table ==="

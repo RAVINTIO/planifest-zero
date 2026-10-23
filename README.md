@@ -1,8 +1,10 @@
 # Planifest
 
-Planifest is a specification-first framework for Claude Code. It requires the agent to produce a complete, reviewable execution plan, validated against templates and schemas, before it generates code.
+Planifest Zero is a specification-first pipeline for Claude Code. It requires the agent to produce a complete, reviewable execution plan, validated against templates and schemas, before it generates code.
 
-It treats the human as product owner and architect. The agent is the implementer, working within constraints the human sets.
+Planifest Zero is distinct from the product in the [`planifest/planifest-framework`](https://github.com/planifest/planifest-framework) repository. Planifest Zero began as a cut-down copy of that product.
+
+Planifest Zero treats the human as product owner and architect. The agent is the implementer, working within constraints the human sets.
 
 Version `0.5.0` targets Claude Code alone and follows the [Agent Skills specification](https://agentskills.io/specification).
 
@@ -35,7 +37,7 @@ The pipeline runs five phases. Every change, however small, takes the same route
 5. **Validate and accept.** CI checks and a security review run, then the human accepts.
 6. **Ship.** The plan is archived, the run is assessed, and the pull request is raised.
 
-Every agent response carries a phase prefix (`D:`, `PL:`, `IM:`, `VA:`, `SH:`), so you always know where you are. Every artifact follows a template, so output stays consistent across sessions and models.
+Every agent response carries a phase prefix, from `P0 Discovery:` to `P4 Ship:`, so you always know where you are. Every artifact follows a template, so output stays consistent across sessions and models.
 
 ---
 
@@ -43,7 +45,7 @@ Every agent response carries a phase prefix (`D:`, `PL:`, `IM:`, `VA:`, `SH:`), 
 
 ```
 repo/
-├── planifest-zero/   ← The framework. Drop in, don't modify per-project.
+├── planifest-zero/   ← The pack. Drop in, don't modify per-project.
 │   ├── skills/            ← Agent instructions: the 12 pipeline skills
 │   ├── templates/         ← File format templates for every artifact
 │   ├── schemas/           ← JSON Schema validation definitions
@@ -51,7 +53,7 @@ repo/
 │   ├── hooks/             ← Enforcement hooks, git hooks, CI workflow
 │   ├── workflows/         ← The feature pipeline route definition
 │   ├── scripts/           ← Deterministic tooling
-│   └── tests/             ← The framework's own test suite
+│   └── tests/             ← The pack's own test suite
 │
 ├── plan/                  ← Feature briefs, execution plans, ADRs, risk registers,
 │                            and scope docs. Everything describing WHAT to build
@@ -109,7 +111,7 @@ One optional flag:
 
 ---
 
-## The framework
+## The pack
 
 | Folder | Contents |
 |--------|----------|
@@ -122,7 +124,7 @@ One optional flag:
 | [workflows/](planifest-zero/workflows/) | The feature pipeline route definition |
 | [scripts/](planifest-zero/scripts/) | Consistency checks, version derivation, regression promotion |
 | [tests/](planifest-zero/tests/) | Per-feature test scripts plus the promoted regression pack |
-| [migrations/](planifest-zero/migrations/) | Pending and completed framework migrations, applied by the `planifest-migrator` skill |
+| [migrations/](planifest-zero/migrations/) | Pending and completed pack migrations, applied by the `planifest-migrator` skill |
 | [skills-inbox/](planifest-zero/skills-inbox/) | Drop-in intake for a new capability skill, processed at the next discovery |
 
 ---
@@ -147,7 +149,7 @@ Planifest trades upfront ceremony for traceability. That trade is not always wor
 - **Overhead is real.** The pipeline scales down for small changes, but never to zero. Prototypes and exploratory work may not repay it.
 - **It depends on review discipline.** The PR gate is only a backstop if humans read the plans and the diffs. Planifest structures the review. It cannot perform it.
 - **Plans do not prevent all bad output.** A complete specification reduces assumption-driven errors. It does not guarantee correct code.
-- **No comparative benchmarks exist.** Nothing here measures outcomes with and without the framework. Claims about quality rest on design rationale and our own use.
+- **No comparative benchmarks exist.** Nothing here measures outcomes with and without Planifest Zero. Claims about quality rest on design rationale and our own use.
 - **It is not a project management method.** Planifest structures agent sessions, not teams.
 - **The plan and docs parity check is a presence check.** CI confirms that some file under `plan/`, `docs/`, or a `component.yml` changed alongside `src/`. It does not verify that the file's content corresponds to the code change. Reviewers check that themselves.
 
@@ -176,7 +178,7 @@ Issues and pull requests are welcome. Agent skills and templates are the areas m
 | [Pipeline](https://github.com/planifest/planifest-docs/blob/main/planifest-docs/p015-planifest-pipeline.md) | Pipeline phase descriptions |
 | [Roadmap](https://github.com/planifest/planifest-docs/blob/main/planifest-docs/p014-planifest-roadmap.md) | Deferred items and future features |
 
-These documents describe an older, multi-tool design of the framework and do not yet match the current version.
+These documents describe an older, multi-tool design of Planifest and do not yet match Planifest Zero.
 
 ---
 

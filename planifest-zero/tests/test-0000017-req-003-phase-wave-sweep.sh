@@ -8,9 +8,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_ROOT="$(cd "$FRAMEWORK/.." && pwd)"
-TEMPLATES="$FRAMEWORK/templates"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
+TEMPLATES="$ZERO_DIR/templates"
 REPORT="$PROJECT_ROOT/plan/current/req-003-phase-wave-sweep-report.md"
 
 grep_has() { grep -q "$1" "$2" 2>/dev/null && echo "yes" || echo "no"; }
@@ -32,18 +32,18 @@ assert_equals "yes" "$(grep_has 'Wave 1 ships before Wave 2 begins' "$TEMPLATES/
 assert_equals "yes" "$(grep_has 'deferred to Wave 2' "$TEMPLATES/scope-guide.md")" \
   "req-003: scope-guide.md deferred example uses Wave"
 
-# no decomposition-sense stragglers anywhere in Planifest-authored framework files
-STRAYS=$(grep -rl -i "if phased\|phase-{n}\|phase-2\.md\|phased feature" "$FRAMEWORK" --include="*.md" 2>/dev/null | grep -v external-skills || true)
+# no decomposition-sense stragglers anywhere in Planifest Zero files
+STRAYS=$(grep -rl -i "if phased\|phase-{n}\|phase-2\.md\|phased feature" "$ZERO_DIR" --include="*.md" 2>/dev/null | grep -v external-skills || true)
 assert_equals "" "$STRAYS" \
-  "req-003: no decomposition-sense 'phased' wording remains in framework files"
+  "req-003: no decomposition-sense 'phased' wording remains in pack files"
 
 # ── AC: pipeline-phase sense untouched ───────────────────────────────────────
 
 echo ""
 echo "=== req-003: pipeline-phase sense (P0-P9) preserved ==="
 
-assert_equals "yes" "$(grep_has '## P1: Discovery' "$FRAMEWORK/skills/planifest-orchestrator/SKILL.md")" \
-  "req-003: orchestrator P1 pipeline-phase heading present"
+assert_equals "yes" "$(grep_has '## P0: Discovery' "$ZERO_DIR/skills/planifest-orchestrator/SKILL.md")" \
+  "req-003: orchestrator P0 pipeline-phase heading present"
 
 # ── AC: report lists every reviewed instance with disposition ────────────────
 

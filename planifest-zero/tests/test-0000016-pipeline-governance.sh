@@ -9,12 +9,12 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-TEMPLATES="$FRAMEWORK/templates"
-SCRIPTS="$FRAMEWORK/scripts"
-HOOKS="$FRAMEWORK/hooks/enforcement"
-SKILLS="$FRAMEWORK/skills"
-STANDARDS="$FRAMEWORK/standards"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+TEMPLATES="$ZERO_DIR/templates"
+SCRIPTS="$ZERO_DIR/scripts"
+HOOKS="$ZERO_DIR/hooks/enforcement"
+SKILLS="$ZERO_DIR/skills"
+STANDARDS="$ZERO_DIR/standards"
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT

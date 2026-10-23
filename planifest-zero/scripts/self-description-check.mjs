@@ -14,7 +14,7 @@
  *   1. Every path named in the README's repository-structure diagram
  *      (## Repository structure fenced block) exists on disk.
  *   2. Every top-level directory under planifest-zero/ has a
- *      corresponding row in the framework table (## The framework).
+ *      corresponding row in the pack table (## The pack).
  *
  * Counts nothing (README's Count column was removed in req-001) — only
  * existence and coverage, which is what keeps this check stable.
@@ -85,32 +85,32 @@ function checkPath(relPath) {
 
 // ---- 2: every planifest-zero/ folder has a table row -----------------
 
-function extractFrameworkTable(text) {
-  const headingIdx = text.search(/^##\s+The framework\s*$/m);
+function extractPackTable(text) {
+  const headingIdx = text.search(/^##\s+The pack\s*$/m);
   if (headingIdx === -1) return null;
   const rest = text.slice(headingIdx);
   const next = rest.slice(1).search(/^##\s+/m);
   return next === -1 ? rest : rest.slice(0, next + 1);
 }
 
-const tableSection = extractFrameworkTable(readme);
+const tableSection = extractPackTable(readme);
 if (tableSection === null) {
-  findings.push('"## The framework" table not found — cannot verify folder coverage');
+  findings.push('"## The pack" table not found — cannot verify folder coverage');
 } else {
   const documented = new Set(
     [...tableSection.matchAll(/\[([\w-]+)\/\]\(planifest-zero\/([\w-]+)\/\)/g)].map((m) => m[2]),
   );
 
-  const frameworkDir = join(repoRoot, "planifest-zero");
-  const actualDirs = existsSync(frameworkDir)
-    ? readdirSync(frameworkDir, { withFileTypes: true })
+  const zeroDir = join(repoRoot, "planifest-zero");
+  const actualDirs = existsSync(zeroDir)
+    ? readdirSync(zeroDir, { withFileTypes: true })
         .filter((e) => e.isDirectory())
         .map((e) => e.name)
     : [];
 
   for (const dir of actualDirs) {
     if (!documented.has(dir)) {
-      findings.push(`planifest-zero/${dir}/ exists but has no row in the "## The framework" table`);
+      findings.push(`planifest-zero/${dir}/ exists but has no row in the "## The pack" table`);
     }
   }
 }

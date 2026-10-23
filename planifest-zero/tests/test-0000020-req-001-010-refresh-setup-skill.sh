@@ -14,8 +14,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-SKILL="$FRAMEWORK/skills/planifest-refresh-setup/SKILL.md"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SKILL="$ZERO_DIR/skills/planifest-refresh-setup/SKILL.md"
 
 assert_equals "yes" "$([ -f "$SKILL" ] && echo yes || echo no)" \
   "planifest-refresh-setup/SKILL.md exists"

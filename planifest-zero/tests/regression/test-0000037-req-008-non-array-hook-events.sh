@@ -14,12 +14,12 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/../.."
+ZERO_DIR="$SCRIPT_DIR/../.."
 
 new_workspace() {
   local ws
   ws=$(mktemp -d -t planifest_0000037_req008_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$ws/planifest-zero"
+  cp -r "$ZERO_DIR" "$ws/planifest-zero"
   git init "$ws" >/dev/null 2>&1
   mkdir -p "$ws/.claude"
   printf '%s\n' "$ws"

@@ -10,12 +10,12 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$SCRIPT_DIR/.."
+ZERO_DIR="$SCRIPT_DIR/.."
 
 make_workspace() {
   local dir
   dir=$(mktemp -d -t planifest_0000034_req002_test_XXXXXX)
-  cp -r "$FRAMEWORK" "$dir/planifest-zero"
+  cp -r "$ZERO_DIR" "$dir/planifest-zero"
   git init "$dir" >/dev/null 2>&1
   echo "$dir"
 }
@@ -47,7 +47,7 @@ done
 echo ""
 echo "=== req-002 (c): the grep -w check is gone ==="
 
-assert_equals "no" "$(grep -q 'grep -qw "\$TOOL"' "$FRAMEWORK/setup.sh" && echo yes || echo no)" \
+assert_equals "no" "$(grep -q 'grep -qw "\$TOOL"' "$ZERO_DIR/setup.sh" && echo yes || echo no)" \
   "req-002 (c): setup.sh no longer uses grep -qw on the tool name"
 
 print_summary

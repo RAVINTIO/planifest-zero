@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Tests for feature 0000005-framework-governance
+# Tests for feature 0000005-pack-governance
 # Covers: req-001 through req-016
-# Amended for the 0000030 framework cut-down. Retired agent skills
+# Amended for the 0000030 cut-down. Retired agent skills
 # (codegen-agent, validate-agent, change-agent) are gone, so the wiring
 # assertions now point at the surviving phase skills that carry the
 # same rules (planifest-plan, planifest-implement,
@@ -12,10 +12,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-STANDARDS="$FRAMEWORK/standards"
-SKILLS="$FRAMEWORK/skills"
-MIGRATIONS="$FRAMEWORK/migrations"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+STANDARDS="$ZERO_DIR/standards"
+SKILLS="$ZERO_DIR/skills"
+MIGRATIONS="$ZERO_DIR/migrations"
 
 # -----------------------------------------------------------------------
 
@@ -105,11 +105,11 @@ assert_contains "library-standards/_version-policy.md" "$IMPLEMENT" "req-006: _v
 echo ""
 echo "=== req-007: orchestrator sentinel ==="
 
-GATE=$(cat "$FRAMEWORK/hooks/enforcement/gate-write.mjs")
+GATE=$(cat "$ZERO_DIR/hooks/enforcement/gate-write.mjs")
 assert_contains "orchestrator-active"           "$GATE" "req-007: sentinel path in gate-write"
 assert_contains "plan/current/"                 "$GATE" "req-007: plan/current guard present"
 
-CHECK=$(cat "$FRAMEWORK/hooks/enforcement/check-design.mjs")
+CHECK=$(cat "$ZERO_DIR/hooks/enforcement/check-design.mjs")
 assert_contains "orchestrator-active"           "$CHECK" "req-007: sentinel path in check-design"
 assert_contains "feature-brief"                 "$CHECK" "req-007: feature-brief check present"
 
@@ -128,23 +128,23 @@ echo "=== req-010: capability skill intake ==="
 
 assert_contains "skills-inbox"                  "$ORCH" "req-010: skills-inbox referenced in orchestrator"
 assert_contains "capability-skills"             "$ORCH" "req-010: capability-skills referenced"
-assert_file_exists "$FRAMEWORK/skills-inbox/.gitkeep" "req-010: skills-inbox directory exists"
+assert_file_exists "$ZERO_DIR/skills-inbox/.gitkeep" "req-010: skills-inbox directory exists"
 
 # -----------------------------------------------------------------------
 
 echo ""
 echo "=== req-011: skill registries ==="
 
-assert_file_exists "$FRAMEWORK/../planifest-overrides/capability-skills/.gitkeep" "req-011: planifest-overrides/capability-skills/ exists"
-assert_contains "Copy-CapabilitySkills"          "$(cat "$FRAMEWORK/setup.ps1")" "req-011: setup.ps1 has Copy-CapabilitySkills"
-assert_contains "capability-skills"              "$(cat "$FRAMEWORK/setup.ps1")" "req-011: setup.ps1 copies from capability-skills"
+assert_file_exists "$ZERO_DIR/../planifest-overrides/capability-skills/.gitkeep" "req-011: planifest-overrides/capability-skills/ exists"
+assert_contains "Copy-CapabilitySkills"          "$(cat "$ZERO_DIR/setup.ps1")" "req-011: setup.ps1 has Copy-CapabilitySkills"
+assert_contains "capability-skills"              "$(cat "$ZERO_DIR/setup.ps1")" "req-011: setup.ps1 copies from capability-skills"
 
 # -----------------------------------------------------------------------
 
 echo ""
 echo "=== req-012: Active Skills in execution-plan template ==="
 
-EXEC_TPL=$(cat "$FRAMEWORK/templates/execution-plan.template.md")
+EXEC_TPL=$(cat "$ZERO_DIR/templates/execution-plan.template.md")
 assert_contains "Active Skills"                 "$EXEC_TPL" "req-012: execution-plan template has Active Skills section"
 
 # -----------------------------------------------------------------------
@@ -189,15 +189,15 @@ echo ""
 echo "=== req-016: planifest-overrides directory ==="
 
 # setup.sh must not contain mkdir/cp commands targeting planifest-overrides/
-UNSAFE_WRITES=$(grep -E "(mkdir|cp )[^#]*planifest-overrides" "$FRAMEWORK/setup.sh" || true)
+UNSAFE_WRITES=$(grep -E "(mkdir|cp )[^#]*planifest-overrides" "$ZERO_DIR/setup.sh" || true)
 if [ -z "$UNSAFE_WRITES" ]; then
   assert_equals "0" "0" "req-016: setup.sh does not write to planifest-overrides/"
 else
   assert_equals "no writes" "$UNSAFE_WRITES" "req-016: setup.sh does not write to planifest-overrides/"
 fi
 
-assert_contains "planifest-overrides"           "$(cat "$FRAMEWORK/setup.ps1")" "req-016: setup.ps1 reads planifest-overrides"
-assert_file_exists "$FRAMEWORK/../planifest-overrides/library-standards/.gitkeep" "req-016: planifest-overrides scaffolded"
+assert_contains "planifest-overrides"           "$(cat "$ZERO_DIR/setup.ps1")" "req-016: setup.ps1 reads planifest-overrides"
+assert_file_exists "$ZERO_DIR/../planifest-overrides/library-standards/.gitkeep" "req-016: planifest-overrides scaffolded"
 
 # -----------------------------------------------------------------------
 

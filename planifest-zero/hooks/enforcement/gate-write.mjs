@@ -105,7 +105,7 @@ try {
     if (!existsSync(sentinelPath)) {
       process.stdout.write(
         "[Planifest] No orchestrator sentinel at plan/.orchestrator-active. " +
-        "Load the planifest-orchestrator skill and complete Phase 0 before " +
+        "Load the planifest-orchestrator skill and complete P0 Discovery before " +
         "writing plan artefacts.\n"
       );
       process.exit(2);
@@ -120,7 +120,7 @@ try {
   if (!existsSync(designPath)) {
     process.stdout.write(
       "[Planifest] No confirmed design at plan/current/design.md. " +
-      "Complete Phase 0 first.\n"
+      "Complete P0 Discovery first.\n"
     );
     process.exit(2);
   }

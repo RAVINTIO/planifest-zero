@@ -1,13 +1,13 @@
 ---
 name: planifest-validate-and-accept
-description: CI, security review, execution verification, and the human acceptance gate.
+description: CI, security review, execution verification, and the acceptance gate or PR evidence.
 bundle_templates: [security-report.template.md, loop-state.template.md]
 bundle_standards: [code-quality-standards.md, testing-standards.md, build-target-standards.md, formatting-standards.md]
 ---
 
 # Planifest - validate-and-accept
 
-> You prove the build works and get the human's acceptance. You run CI checks, review security, and verify behaviour by running the software. You then present the evidence at the acceptance gate. You fix real bugs. You never suppress errors or weaken tests.
+> You prove the build works and get the human's acceptance. You run CI checks, review security, and verify behaviour by running the software. You then present the evidence at the acceptance gate, or in the PR description in an autonomous run. You fix real bugs. You never suppress errors or weaken tests.
 
 ---
 
@@ -26,17 +26,17 @@ When `Build target: docker` is declared in `plan/current/design.md`, run every C
 
 Run the stack's declared checks in this order:
 
-0. **Library audit**: check `planifest-overrides/library-standards/{language}/prefer-avoid.md`, then the framework copy. If an avoided library is installed, fail and name the preferred alternative.
+0. **Library audit**: check `planifest-overrides/library-standards/{language}/prefer-avoid.md`, then the pack copy. If an avoided library is installed, fail and name the preferred alternative.
 1. **Semantic correctness**: every requirement needs a mapped, executing test identifiable by req-ID. Every acceptance criterion needs a covering test. Produce a coverage table. A missing criterion is a failure, not a warning.
 2. **Lint**
 3. **Typecheck**
 4. **Test**
 5. **Build**
 
-If a check fails, self-correct: read the error, find the root cause, fix it, re-run. Record each cycle (check, error, root cause, fix, result). Maximum **5 cycles**. Loop mechanics (state file, run-log records, stop rules, escalation format) follow `planifest-loop-runner`, with a cap of 5. After 5 failed cycles, STOP and escalate:
+If a check fails, self-correct: read the error, find the root cause, fix it, re-run. Record each cycle (check, error, root cause, fix, result). Maximum **5 cycles**. Loop mechanics (state file, run-log records, stop rules, escalation format) follow `planifest-loop-runner`, with a cap of 5. After 5 failed cycles, STOP and escalate in both run modes:
 
 ```
-VALIDATION BLOCKED - human intervention required
+P3 Validate: Blocked: {check} still fails after 5 attempts. Review the cycle summary and choose the next step.
 Failing check: <check>   Error: <exact message>   Attempts: 5/5
 Cycle summary: <diagnosis -> fix -> result, per cycle>
 Root cause assessment: <code | spec-ambiguity | test-bug | environment | dependency>
@@ -79,17 +79,27 @@ Produce `plan/current/security-report.md`. Every finding names a specific file, 
 - **Dependency risk**: known vulnerabilities, abandoned maintenance, excessive permissions
 - **Data exposure**: over-broad responses, logs leaking sensitive values, open network surface
 
-Structure: a findings table (finding, location, severity Critical/High/Medium/Low, mitigation or "not mitigated"), then an overall risk rating and the top actions before production. Rate conservatively. If in doubt, rate higher. Cross-reference the risk register: confirm whether each identified risk is mitigated or still open. Critical and high findings go to the human at the gate. Be sure they are genuine.
+Structure: a findings table (finding, location, severity Critical/High/Medium/Low, mitigation or "not mitigated"), then an overall risk rating and the top actions before production. Rate conservatively. If in doubt, rate higher. Cross-reference the risk register: confirm whether each identified risk is mitigated or still open. Be sure critical and high findings are genuine. If any critical or high finding is not mitigated, STOP in both run modes:
 
-## Human acceptance gate
+```
+P3 Validate: Blocked: {n} unmitigated critical or high security findings. Approve a mitigation or accept the risk.
+```
 
-This gate ALWAYS stops for the human. Continuous run does not bypass it. Present:
+Commit and push the security report before the stop. After the human acts, resume in the same run mode.
+
+## Acceptance gate
+
+Read `plan/.run-mode`. The evidence is the same in both modes:
 
 1. Checks run and their results, with the self-correction count
 2. Security findings, led by critical and high
 3. Execution evidence: what was run, what was observed, any `not-verifiable` criteria
 
-The human accepts, requests changes, or rejects. Rollbacks are human-initiated, never automatic.
+In `gated`, this gate stops for the human. Present the evidence. The human accepts, requests changes, or rejects.
+
+In `autonomous`, do not stop. Write the evidence to `plan/current/acceptance-evidence.md` and commit it. The PR may be public. The evidence holds results, counts, and `file:line` cites, and never raw command output, environment values, or file contents. The ship phase copies it into the PR description under `## Acceptance evidence`. The human reviews it there before merging.
+
+Rollbacks are human-initiated, never automatic.
 
 ## Rules
 

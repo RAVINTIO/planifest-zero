@@ -1,10 +1,10 @@
 ---
-title: "Framework Update Policy"
+title: "Pack Update Policy"
 version: "1.0.0"
 ---
-# Framework Update Policy
+# Pack Update Policy
 
-Canonical definition of how a `planifest-zero/` dependency update is detected, confirmed, and trusted. This is the document backlog entries mean when they reference "the Framework Update Policy".
+Canonical definition of how a `planifest-zero/` dependency update is detected, confirmed, and trusted. This is the document backlog entries mean when they reference "the Pack Update Policy".
 
 ---
 
@@ -23,9 +23,9 @@ At the orchestrator's Resume Detection step (`planifest-orchestrator/SKILL.md`),
 A candidate `planifest-zero/` dependency update is detected when either of the following is true:
 
 1. **Version mismatch**: the version declared in the installed `planifest-zero/component.yml` differs from the previously recorded value (the version last read from `docs/about.md`, or from the most recent archived feature's `design.md`/`about.md`).
-2. **Newer framework files present**: files under `planifest-zero/` declare a version newer than the version this repo last ran a pipeline against.
+2. **Newer pack files present**: files under `planifest-zero/` declare a version newer than the version this repo last ran a pipeline against.
 
-Detection keys on new or changed files under `planifest-zero/` since the last recorded pipeline run, not solely the version string in isolation: a repo that manually edited `component.yml`'s version field without an actual framework update is a known false-positive risk (ADR-002, Risks), and file-level change detection avoids it.
+Detection keys on new or changed files under `planifest-zero/` since the last recorded pipeline run, not solely the version string in isolation: a repo that manually edited `component.yml`'s version field without an actual pack update is a known false-positive risk (ADR-002, Risks), and file-level change detection avoids it.
 
 ## Human confirmation gate
 

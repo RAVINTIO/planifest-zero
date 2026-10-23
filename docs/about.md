@@ -1,5 +1,5 @@
 ---
-version: "0.8.0"
+version: "0.9.0"
 feature: "0000041-setup-cleanup-and-park-hardening"
 updated: "22 Oct 2026"
 ---
@@ -10,13 +10,13 @@ updated: "22 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.8.0` |
-| Last feature | `0000041-setup-cleanup-and-park-hardening` |
-| Updated | `22 Oct 2026` |
+| Version | `0.9.0` |
+| Last feature | `0000042-autonomous-mode-and-prefixes` |
+| Updated | `23 Oct 2026` |
 
 ## What this is
 
-Planifest Zero is a specification-first framework for Claude Code. The
+Planifest Zero is a specification-first pipeline for Claude Code. The
 repository holds one component, `planifest-zero`. It is a component pack of
 standards, skills, hooks, templates, schemas, and setup scripts.
 
@@ -24,5 +24,5 @@ The pipeline runs five phases: discovery, plan, implement, validate and
 accept, and ship. Twelve skills drive it. Every change is a feature change
 and runs the same pipeline. A small change is a small run.
 
-The framework ships no telemetry and makes no outbound network calls.
+Planifest Zero ships no telemetry and makes no outbound network calls.
 Observability belongs to the tool that runs the session.

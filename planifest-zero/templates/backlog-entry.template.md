@@ -30,7 +30,7 @@ status: "open"  # open | parked
 > field out.
 
 **Source feature:** {{feature-id that discovered this | none (human request)}}
-**Source phase:** {{P1–P5 phase active when discovered | none (human request)}}
+**Source phase:** {{P0–P4 phase active when discovered | none (human request)}}
 **Deferral source:** {{discovered mid-flight | deliberate scope decision | tech debt | human request}}
 **Date filed:** {{ISO-8601 date}}
 **Parked branch:** {{feature branch, for a parked entry only | omit for an open entry}}

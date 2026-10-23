@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Tests for feature 0000006-build-assessment-phase
 # Covers: req-001 through req-008
-# Amended for the 0000030 framework cut-down: build assessment folded into
+# Amended for the 0000030 cut-down: build assessment folded into
 # skills/planifest-ship/SKILL.md Step 5, P8 removed, phase agents retired.
 
 set -uo pipefail
@@ -9,9 +9,9 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-SKILLS="$FRAMEWORK/skills"
-TEMPLATES="$FRAMEWORK/templates"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SKILLS="$ZERO_DIR/skills"
+TEMPLATES="$ZERO_DIR/templates"
 
 # -----------------------------------------------------------------------
 
@@ -58,12 +58,12 @@ assert_contains "Never infer or fabricate"   "$SHIP" "req-002: no-fabrication ru
 # -----------------------------------------------------------------------
 
 echo ""
-echo "=== req-003: build assessment wired into P5 Ship ==="
-echo "(0000030: P8 removed, build assessment now runs inside P5 Ship)"
+echo "=== req-003: build assessment wired into P4 Ship ==="
+echo "(0000030: P8 removed, build assessment now runs inside P4 Ship)"
 
-assert_contains "| P5 | Ship |"              "$ORCH" "req-003: orchestrator phase table lists P5 Ship"
-assert_contains "planifest-ship"             "$ORCH" "req-003: P5 owned by planifest-ship"
-assert_contains "build report"               "$ORCH" "req-003: P5 Ship gate condition mentions build report"
+assert_contains "| P4 | Ship |"              "$ORCH" "req-003: orchestrator phase table lists P4 Ship"
+assert_contains "planifest-ship"             "$ORCH" "req-003: P4 owned by planifest-ship"
+assert_contains "build report"               "$ORCH" "req-003: P4 Ship gate condition mentions build report"
 
 assert_contains "Build report:"              "$SHIP" "req-003: ship final gate output lists the build report line"
 assert_contains "build-report.md"            "$SHIP" "req-003: ship final gate confirms build-report.md"
@@ -74,7 +74,7 @@ echo ""
 echo "=== req-004: model routing rules ==="
 echo "(0000022: Model Tier Decision Table relocated to standards/agent-dispatch-standards.md, ADR-001 - orchestrator now points to it)"
 
-DISPATCH_STD=$(cat "$FRAMEWORK/standards/agent-dispatch-standards.md")
+DISPATCH_STD=$(cat "$ZERO_DIR/standards/agent-dispatch-standards.md")
 assert_contains "agent-dispatch-standards.md" "$ORCH" "req-004: orchestrator points to agent-dispatch-standards.md"
 assert_contains "Model Tier"                 "$DISPATCH_STD" "req-004: standards file has Model Tier section"
 assert_contains "Primary"                    "$DISPATCH_STD" "req-004: Primary tier defined"

@@ -1,6 +1,6 @@
 ---
 name: planifest-refresh-setup
-description: Refreshes a Planifest install by detecting the target tool, reading the tracked `plan/state/{tool}.md` record first, falling back to the flags-used marker file and then installed hook wiring, confirming with the human on the loop, and re-invoking setup.sh/setup.ps1 with those flags. Invoke on request ("refresh the framework setup", "re-run setup with current settings", "refresh setup for {tool}").
+description: Refreshes a Planifest install by detecting the target tool, reading the tracked `plan/state/{tool}.md` record first, falling back to the flags-used marker file and then installed hook wiring, confirming with the human on the loop, and re-invoking setup.sh/setup.ps1 with those flags. Invoke on request ("refresh the Planifest setup", "re-run setup with current settings", "refresh setup for {tool}").
 ---
 
 # Planifest - refresh-setup

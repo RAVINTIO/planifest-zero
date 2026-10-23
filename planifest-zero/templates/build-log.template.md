@@ -4,7 +4,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 ---
 # Build Log - {{feature-id}}
 
-> Created at discovery (P1). Appended by the orchestrator at each phase boundary. Survives session changes.
+> Created at discovery (P0). Appended by the orchestrator at each phase boundary. Survives session changes.
 
 ## Header
 
@@ -20,7 +20,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 ## Phase Log
 
-### P1: Discovery
+### P0: Discovery
 
 | Field | Value |
 |-------|-------|
@@ -35,8 +35,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 ---
 
 <!-- Copy and fill in this block at each phase boundary. Headings use the form
-     "### P<n>: {Phase Name}" with n from 2 to 5 and the phase names
-     P2: Plan, P3: Implement, P4: Validate and Accept, P5: Ship.
+     "### P<n>: {Phase Name}" with n from 1 to 4 and the phase names
+     P1: Plan, P2: Implement, P3: Validate and Accept, P4: Ship.
 
 ### P<n>: {Phase Name}
 
@@ -54,7 +54,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 ---
 
-## Summary (filled at ship, P5)
+## Summary (filled at ship, P4)
 
 | Metric | Value |
 |--------|-------|

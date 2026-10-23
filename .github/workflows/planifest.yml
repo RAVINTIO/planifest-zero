@@ -35,7 +35,7 @@ jobs:
   # deliberately NOT mirrored into planifest-zero/hooks/planifest.yml
   # (the copy setup.sh ships to consumer repos) — a consuming repo's README
   # doesn't have this repository's "## Repository structure" / "## The
-  # framework" sections to validate against. See ADR-001 (feature 0000019).
+  # pack" sections to validate against. See ADR-001 (feature 0000019).
   self-description-check:
     runs-on: ubuntu-latest
     steps:

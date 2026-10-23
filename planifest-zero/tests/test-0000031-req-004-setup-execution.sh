@@ -3,8 +3,8 @@
 # prunes retired skills, honours overrides. Replaces the never-run test_setup pair.
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-FRAMEWORK="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO="$(cd "$FRAMEWORK/.." && pwd)"
+ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO="$(cd "$ZERO_DIR/.." && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 OLD_NAME="planifest""-framework"
@@ -14,7 +14,7 @@ trap 'rm -rf "$WS"' EXIT
 
 echo "=== (a) fresh install ==="
 mkdir -p "$WS/clone"
-cp -R "$FRAMEWORK" "$WS/clone/planifest-zero"
+cp -R "$ZERO_DIR" "$WS/clone/planifest-zero"
 mkdir -p "$WS/clone/planifest-overrides/instructions"
 ( cd "$WS/clone" && git init -q . && bash planifest-zero/setup.sh claude-code >/dev/null 2>&1 )
 assert_equals "0" "$?" "setup.sh exits 0"
@@ -33,7 +33,7 @@ assert_equals "12" "$SKILLS2" "still exactly 12 skills after re-run"
 
 echo "=== (c) install installs enforcement hooks only ==="
 mkdir -p "$WS/clone2"
-cp -R "$FRAMEWORK" "$WS/clone2/planifest-zero"
+cp -R "$ZERO_DIR" "$WS/clone2/planifest-zero"
 ( cd "$WS/clone2" && git init -q . && bash planifest-zero/setup.sh claude-code >/dev/null 2>&1 )
 assert_equals "0" "$?" "setup.sh exits 0"
 assert_equals "yes" "$([ -d "$WS/clone2/.claude/hooks/enforcement" ] && echo yes || echo no)" "enforcement hooks installed"
@@ -41,7 +41,7 @@ assert_equals "no" "$([ -d "$WS/clone2/.claude/hooks/telemetry" ] && echo yes ||
 
 echo "=== (c2) retired telemetry flags are rejected ==="
 mkdir -p "$WS/clone3"
-cp -R "$FRAMEWORK" "$WS/clone3/planifest-zero"
+cp -R "$ZERO_DIR" "$WS/clone3/planifest-zero"
 # 0000034 ADR-001: the retired flag now warns and is skipped, so setup exits 0.
 ( cd "$WS/clone3" && git init -q . && bash planifest-zero/setup.sh claude-code --structured-telemetry-mcp >/dev/null 2>&1 )
 assert_equals "0" "$?" "setup.sh exits 0 and skips the retired --structured-telemetry-mcp"

@@ -5,7 +5,7 @@ version: "1.0.0"
 ---
 # Language Quirks: en-GB
 
-This file documents deliberate exceptions: cases where a different convention is used, and why. Agents and humans consult this file before writing or correcting framework content.
+This file documents deliberate exceptions: cases where a different convention is used, and why. Agents and humans consult this file before writing or correcting Planifest Zero content.
 
 ---
 
@@ -60,7 +60,7 @@ Always uppercase in running prose, regardless of surrounding text:
 
 ## Category 6: Countability
 
-`data` and `metadata` are uncountable in this framework.
+`data` and `metadata` are uncountable in Planifest Zero.
 
 - ✓ "the data is stored"
 - ✗ "the data are stored"
@@ -69,7 +69,7 @@ Always uppercase in running prose, regardless of surrounding text:
 
 ## Category 7: Prohibited punctuation
 
-**Em dashes (U+2014) must not be used** in any framework prose, headings, or documentation unless the syntax of the output format strictly requires one. They carry no meaning that a colon, comma, or full stop cannot convey more cleanly, and are strongly associated with AI-generated text. Enforced at write time by `em-dash-guard.mjs`; see `formatting-standards.md` Section 4.
+**Em dashes (U+2014) must not be used** in any Planifest Zero prose, headings, or documentation unless the syntax of the output format strictly requires one. They carry no meaning that a colon, comma, or full stop cannot convey more cleanly, and are strongly associated with AI-generated text. Enforced at write time by `em-dash-guard.mjs`; see `formatting-standards.md` Section 4.
 
 - ✓ "Build Assessment: results and findings"
 - ✗ "Build Assessment" joined to "results and findings" by U+2014

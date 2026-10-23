@@ -15,7 +15,7 @@
 
 ## New Project
 
-### 1. Add the framework
+### 1. Add the pack
 
 Copy the `planifest-zero/` folder into your repository root. This folder is all you need. It contains the skills, templates, standards, hooks, and setup scripts.
 
@@ -75,7 +75,7 @@ cp planifest-zero/templates/feature-brief.template.md plan/current/feature-brief
 
 Fill it in. The [feature brief guide](templates/feature-brief-guide.md) walks you through each section.
 
-Every agent response begins with a phase prefix (`D:`, `PL:`, `IM:`, `VA:`, `SH:`), so you always know where you are in the pipeline. See [pipeline-reference.md, Phase indicators](pipeline-reference.md#phase-indicators) for the full table.
+Every agent response begins with a phase prefix, from `P0 Discovery:` to `P4 Ship:`, so you always know where you are in the pipeline. See [pipeline-reference.md, Phase indicators](pipeline-reference.md#phase-indicators) for the full table.
 
 ### 5. Start the orchestrator
 
@@ -86,7 +86,7 @@ Run the Planifest pipeline.
 Feature brief: plan/current/feature-brief.md
 ```
 
-The orchestrator runs discovery: it assesses your brief, coaches you through any gaps, and produces a confirmed design. It then asks whether you want per-phase confirmation or a continuous run before executing the rest of the pipeline.
+The orchestrator runs discovery: it assesses your brief, coaches you through any gaps, and produces a confirmed design. It then asks how the agent should run P1 to P4. Gated stops for you at the end of each phase. Autonomous runs to a raised PR and stops only for escalations.
 
 Every change takes this route. A small change is a small run, not a different pipeline.
 
@@ -99,7 +99,7 @@ Every change takes this route. A small change is a small run, not a different pi
 | Git guardrails and how enforcement works | [project-operations.md](project-operations.md#git-guardrails) |
 | Orchestrator sentinel and strict mode | [project-operations.md](project-operations.md#orchestrator-sentinel) |
 | Customising with planifest-overrides | [project-operations.md](project-operations.md#customising-with-planifest-overrides) |
-| Updating the framework | [project-operations.md](project-operations.md#updating-the-framework) |
+| Updating the pack | [project-operations.md](project-operations.md#updating-the-pack) |
 | What to commit | [project-operations.md](project-operations.md#what-to-commit) |
 | Retrofit an existing project | [project-operations.md](project-operations.md#retrofit-an-existing-project) |
 | Phase mechanics and confirmation gates | [pipeline-reference.md](pipeline-reference.md) |

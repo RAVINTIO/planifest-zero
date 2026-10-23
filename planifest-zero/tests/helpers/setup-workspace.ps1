@@ -4,7 +4,7 @@
 # checkout. Keep this file ASCII: Windows PowerShell 5.1 reads a file with no
 # BOM as ANSI.
 
-$global:FrameworkDir = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$global:ZeroDir = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $global:HostExe = (Get-Process -Id $PID).Path
 
 # The nine entries setup.sh writes, in order (0000035 ADR-001).
@@ -30,7 +30,7 @@ $global:Workspaces = @()
 function New-SetupWorkspace {
     $ws = Join-Path ([System.IO.Path]::GetTempPath()) ("planifest_0000036_" + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $ws | Out-Null
-    Copy-Item -Path $global:FrameworkDir -Destination (Join-Path $ws 'planifest-zero') -Recurse
+    Copy-Item -Path $global:ZeroDir -Destination (Join-Path $ws 'planifest-zero') -Recurse
     New-Item -ItemType Directory -Path (Join-Path $ws '.claude') | Out-Null
     & git -C $ws init -q 2>&1 | Out-Null
     # Without its own repo, setup's git config would reach a parent repo

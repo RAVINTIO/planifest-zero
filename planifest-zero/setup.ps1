@@ -766,7 +766,7 @@ function Initialize-PlanifestRepo {
         }
     }
     else {
-        Write-Host "  ! Warning: .gitignore not found in framework directory ($gitignoreSrc)"
+        Write-Host "  ! Warning: .gitignore not found in the planifest-zero directory ($gitignoreSrc)"
     }
 
     $srcDir = Join-Path $ProjectRoot "src"
@@ -818,7 +818,7 @@ See [plan/feature-structure.md](feature-structure.md) for the canonical layout.
 
 ```
 repo/
-+-- planifest-zero/        <- The framework (skills, templates, schemas, standards)
++-- planifest-zero/        <- The pack (skills, templates, schemas, standards)
 |                                  Drop this in. Don't modify it per-project.
 |
 +-- plan/                       <- The specifications (organized by feature)
@@ -832,9 +832,9 @@ repo/
 
 ---
 
-## `planifest-zero/` - The Framework
+## `planifest-zero/` - The pack
 
-This folder is the Planifest framework itself. It is the same across every project. You do not modify it per-feature - you update it when the framework evolves.
+This folder is Planifest Zero itself. It is the same across every project. You do not modify it per-feature - you update it when Planifest Zero evolves.
 
 ```
 planifest-zero/
@@ -1311,5 +1311,5 @@ else {
 Write-Host ""
 Write-Host "Setup complete."
 Write-Host "  Source of truth: planifest-zero/"
-Write-Host "  Re-run after updating framework files."
+Write-Host "  Re-run after you update the pack."
 
