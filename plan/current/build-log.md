@@ -45,3 +45,4 @@ P1 exchange (framework wording kinds): Q: Prose only, or prose and identifiers? 
 P1 exchange (install compatibility): Q: none / A: Only this repo installs Planifest Zero. Identifier renames and run-mode or phase-number changes need no migration or backward compatibility for other installs.
 P1 exchange (release size): Q: Split 13 points into two releases? / A: No. One large release (budget 14) covers all four requirements.
 P1 exchange (version): Q: 0.9.0 or 1.0.0? / A: 0.9.0 confirmed by human.
+Scope Lock (happy path): The P0 briefing names Planifest Zero 0.9.0 and the phases P0 Discovery to P4 Ship. Autonomous runs P1 to P4 to a raised PR, gated stops after each phase, every message carries its prefix, and the human merges. [source: draft-edited]
