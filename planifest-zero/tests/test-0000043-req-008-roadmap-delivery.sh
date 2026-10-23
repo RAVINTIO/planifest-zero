@@ -13,10 +13,11 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 ZERO_DIR="$SCRIPT_DIR/.."
 SHIP="$ZERO_DIR/skills/planifest-ship/SKILL.md"
 REF="$ZERO_DIR/pipeline-reference.md"
+STD="$ZERO_DIR/standards/roadmap-standards.md"
 
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^##? / {exit} on {print}' "$2"; }
 
-SEC="$(section '## Roadmap steps' "$SHIP")"
+SEC="$(section '## Ship stages' "$STD")"
 DEL="$(printf '%s\n' "$SEC" | awk '/^### R-E Delivery/ {on=1; next} on && /^### / {exit} on {print}')"
 
 echo ""

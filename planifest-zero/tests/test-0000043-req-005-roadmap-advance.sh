@@ -13,12 +13,13 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 ZERO_DIR="$SCRIPT_DIR/.."
 SHIP="$ZERO_DIR/skills/planifest-ship/SKILL.md"
 REF="$ZERO_DIR/pipeline-reference.md"
+STD="$ZERO_DIR/standards/roadmap-standards.md"
 
 # The section from a heading to the next heading of the same or higher level.
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^##? / {exit} on {print}' "$2"; }
 
 ALL="$(cat "$SHIP")"
-SEC="$(section '## Roadmap steps' "$SHIP")"
+SEC="$(section '## Ship stages' "$STD")"
 ADV="$(printf '%s\n' "$SEC" | awk '/^### R-D Advance/ {on=1; next} on && /^### / {exit} on {print}')"
 
 echo ""
@@ -38,6 +39,7 @@ assert_contains 'gh pr checks' "$ADV" "req-005 (b): waits with gh pr checks"
 assert_contains 'gh pr merge --squash' "$ADV" "req-005 (b): squash merges"
 assert_contains 'Blocked:' "$ADV" "req-005 (b): red or pending CI is a Blocked stop"
 assert_contains 'pending' "$ADV" "req-005 (b): pending CI is named"
+assert_contains '--json mergeCommit -q .mergeCommit.oid' "$ADV" "req-005 (b): reads the PR merge commit"
 assert_contains 'git fetch' "$ADV" "req-005 (b): fetches after the merge"
 assert_contains 'git tag v{version}' "$ADV" "req-005 (b): tags the squash commit"
 assert_contains 'git push origin v{version}' "$ADV" "req-005 (b): pushes the tag"

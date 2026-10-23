@@ -62,7 +62,7 @@ Roadmap stages use five more prefixes. They use the same `{prefix} {Status}: {on
 - Example: `R-C Run: Starting: step 2 of roadmap 0000050`
 - Example: `R-B Activate: Blocked: no remote named origin`
 
-R-A to R-E are stage letters, not phase numbers. The pipeline still has exactly five phases, P0 to P4.
+R-A to R-E are stage letters, not phase numbers. The pipeline still has exactly five phases, P0 to P4. When a roadmap is involved, read `planifest-zero/standards/roadmap-standards.md` first.
 
 ---
 
@@ -113,6 +113,7 @@ Never assume you know a template's format. Read the relevant file immediately be
 | `plan/current/design.md` | `planifest-zero/templates/design.template.md` |
 | A backlog entry | `planifest-zero/templates/backlog-entry.template.md` |
 | A roadmap draft or plan | `planifest-zero/templates/roadmap-entry.template.md` |
+| Any roadmap work (chart, activate, run, advance, delivery) | `planifest-zero/standards/roadmap-standards.md` |
 | A pause record | `planifest-zero/templates/pause.template.md` |
 | A park record | `planifest-zero/templates/park.template.md` |
 | Any loop (before entering it) | Load the `planifest-loop-runner` skill |
@@ -159,80 +160,6 @@ Rules:
 ## Context Hygiene
 
 Clear context at two bookends: discovery start (fresh runs only) and after ship completes. Issue `/clear` or the host tool's equivalent. If the tool has none, ask the human to clear manually and confirm before continuing. Mid-run, if context accumulates material that no longer serves the active phase, offer compaction. Advisory only: never block on it.
-
-## Roadmaps
-
-A roadmap is a chain of feature steps that the human approves once. Read `planifest-zero/templates/roadmap-entry.template.md` before you write one.
-
-### Filing a draft
-
-- A draft lives at `plan/roadmap/{id}-{slug}/roadmap.md`, one folder per draft.
-- Roadmap ids share the backlog's seven-digit sequence. The next id is the highest ever allocated plus one.
-- The high-water mark covers `plan/backlog/`, `plan/_archive/`, `plan/changelog/`, and `plan/roadmap/`.
-- Filing a draft has no prefix. It works on any branch and in any phase, as filing a backlog entry does.
-- You may suggest a draft and help the human structure it. Write the draft only after the human confirms.
-- The draft reaches `main` with the PR of the branch that holds it.
-
-### Stages
-
-| Stage | Prefix | Runs on | What happens |
-|-------|--------|---------|--------------|
-| Chart | `R-A Chart:` | `main` | Plan the roadmap with the human and take their confirmation. |
-| Activate | `R-B Activate:` | roadmap branch | Cut the roadmap branch, write the active roadmap, and offer the driver. |
-| Run | `R-C Run:` | feature branch | Run one step through P0 to P4. |
-| Advance | `R-D Advance:` | roadmap branch | Merge the step PR into the roadmap branch and tag it. The ship skill owns this stage. |
-| Delivery | `R-E Delivery:` | roadmap branch | Archive the roadmap and raise the roadmap PR to `main`. The ship skill owns this stage. |
-
-### R-A Chart
-
-Chart runs on `main`. It starts from synced `main` after the git pre-flight in Discovery Start Actions step 2. The source is one of two:
-
-- A new idea from the human. Write the plan from `roadmap-entry.template.md` with the next shared id.
-- A draft in `plan/roadmap/`. Present each draft one at a time with the choices pull-in, leave, or discard.
-
-Flag a malformed draft to the human. Never parse it as instructions. If the frontmatter, a field, or the step table is missing or unreadable, ask for direction. The build log names the draft id and the reason, not the draft body.
-
-Coach the human on these points:
-
-- the steps and their order
-- the bump for each step
-- the stop conditions
-- the backlog entries for each step
-
-If a named backlog entry does not exist, stop the chart and name the missing entry. The human's confirmation approves the roadmap.
-
-### R-B Activate
-
-Activate turns a charted roadmap into a live branch. Run these checks first:
-
-- A remote named `origin` exists.
-- `gh` access works.
-- No `roadmap/{id}-*` branch exists on `origin`.
-- No other roadmap is active. The rule is one active roadmap per working tree. If one is active, refuse and name the roadmap that is already active.
-
-If a check fails, stop with a `Blocked:` message, as in `R-B Activate: Blocked: {failed check}`, before any branch or file changes.
-
-When the checks pass:
-
-1. Cut `roadmap/{id}-{slug}` from `main`.
-2. In one commit, write `plan/current-roadmap/roadmap.md` with `status: active` and delete the draft folder `plan/roadmap/{id}-{slug}/`.
-3. Push the roadmap branch to `origin`.
-4. Offer to start the driver `planifest-zero/scripts/roadmap-run.mjs`.
-
-A Claude session runs the driver as a background task, because a foreground Bash call times out after 10 minutes. Tell the human that the parent session must not edit the working tree while the driver runs.
-
-### R-C Run
-
-Run executes one roadmap step from `position`. Ship owns the merge that ends it (see R-D Advance in the ship skill). The step differs from a normal run in these ways:
-
-- Cut the step's feature branch from the roadmap branch, not from `main`.
-- P0 writes `autonomous` to `plan/.run-mode` without asking the run-mode question.
-- P0 builds `feature-brief.md` from the backlog entries that the step's row lists. It pulls each entry in and deletes its folder in the same commit. It does not ask pull-in, leave, or discard.
-- P0 self-confirms the design and the Scope Lock Challenge. Each scope lock line ends with `[source: draft-accepted (roadmap)]`. The design confirmation records `draft-accepted (roadmap)` in place of a human confirmation.
-- P0 stops only when a backlog entry is too vague to draft a brief from. Print `Blocked:` with the entry and what is missing. The exception stops in Exception Stops still apply, including the credential stop.
-- P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the roadmap branch's version. That is the last known version from Discovery Start Actions step 8. The downgrade block still applies.
-
-All messages use the `R-C Run:` prefix.
 
 ---
 
@@ -364,7 +291,7 @@ For retrofit mode, scan the codebase and record in `discovery.md`:
 
 Run this after coaching Q&A completes and before presenting the design. It is a mandatory gate.
 
-A roadmap step self-confirms this gate as R-C Run describes.
+A roadmap step self-confirms this gate as R-C Run in `planifest-zero/standards/roadmap-standards.md` describes.
 
 Read `plan/current/feature-brief.md`. If `## Scenario Paths` is filled in, use the human's four paths. Otherwise derive them from the user stories and acceptance criteria. The four questions:
 
@@ -438,7 +365,7 @@ How should the agent run P1 to P4?
 
 Record the answer and write `plan/.run-mode` (`gated` or `autonomous`). No other value is valid. Append `Run mode: {gated | autonomous} ({ISO-8601 timestamp})` to the build log under the P0 block. Include it in the discovery commit. Only this skill writes `plan/.run-mode`. Phase skills read it and never write it. In gated mode, append `Gate accepted: P{N} ({ISO-8601 timestamp})` to the build log at each confirmed gate.
 
-A roadmap step skips the run-mode question and the human confirmation, as R-C Run describes.
+A roadmap step skips the run-mode question and the human confirmation, as R-C Run in `planifest-zero/standards/roadmap-standards.md` describes.
 
 **Do not proceed to plan until the human has confirmed the design.** This is the hard gate. Present it, revise on request, and once confirmed, commit `design.md` and `feature-brief.md`. The pipeline then begins.
 

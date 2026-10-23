@@ -10,10 +10,11 @@ ZERO_DIR="$SCRIPT_DIR/.."
 ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 REF="$ZERO_DIR/pipeline-reference.md"
 TPL="$ZERO_DIR/templates/roadmap-entry.template.md"
+STD="$ZERO_DIR/standards/roadmap-standards.md"
 
 # The section from a heading to the next "---" rule.
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^---$/ {exit} on {print}' "$2"; }
-RM="$(section '## Roadmaps' "$ORCH")"
+RM="$(awk '$0 == "### Filing a draft" {on=1; next} on && /^#/ {exit} on {print}' "$STD")"
 
 echo "=== req-001 (a): template exists with the required fields ==="
 assert_equals "yes" "$([ -f "$TPL" ] && echo yes || echo no)" "req-001 (a): roadmap-entry.template.md exists"

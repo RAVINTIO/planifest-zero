@@ -10,11 +10,12 @@ ZERO_DIR="$SCRIPT_DIR/.."
 ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 REF="$ZERO_DIR/pipeline-reference.md"
 TPL="$ZERO_DIR/templates/roadmap-entry.template.md"
+STD="$ZERO_DIR/standards/roadmap-standards.md"
 
 # The section from a heading to the next "---" rule.
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^---$/ {exit} on {print}' "$2"; }
-RM="$(section '## Roadmaps' "$ORCH")"
-AC="$(awk '$0 == "### R-B Activate" {on=1; next} on && /^#/ {exit} on {print}' "$ORCH")"
+RM="$(cat "$STD")"
+AC="$(awk '$0 == "### R-B Activate" {on=1; next} on && /^#/ {exit} on {print}' "$STD")"
 
 echo "=== req-003 (a): preflight checks and refusal ==="
 assert_contains 'remote named `origin`' "$AC" "req-003 (a): origin check"

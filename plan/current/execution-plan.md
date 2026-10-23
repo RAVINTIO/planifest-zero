@@ -143,6 +143,10 @@ The acceptance run proves NFR-001 to NFR-003 and the last acceptance criterion i
 
 Cleanup: the `gh` token lacks `delete_repo`. Before cleanup, the human runs `gh auth refresh -h github.com -s delete_repo`, or deletes the repo by hand. The agent does not delete the repo.
 
+## Deviations
+
+- 2026-10-24: The roadmap detail moved from the orchestrator and ship skills to `planifest-zero/standards/roadmap-standards.md`. The skills kept pointers. The reason is the 0000031 context-cost NFR, which caps skill text at 1447 lines. The 0000043 tests for req-001 to req-005, req-008, and req-009 now grep the standard.
+
 ## Assumptions
 
 Each is a risk item with likelihood: medium.

@@ -10,11 +10,12 @@ ZERO_DIR="$SCRIPT_DIR/.."
 ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 REF="$ZERO_DIR/pipeline-reference.md"
 TPL="$ZERO_DIR/templates/roadmap-entry.template.md"
+STD="$ZERO_DIR/standards/roadmap-standards.md"
 
 # The section from a heading to the next "---" rule.
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^---$/ {exit} on {print}' "$2"; }
-RM="$(section '## Roadmaps' "$ORCH")"
-RC="$(awk '$0 == "### R-C Run" {on=1; next} on && /^#/ {exit} on {print}' "$ORCH")"
+RM="$(cat "$STD")"
+RC="$(awk '$0 == "### R-C Run" {on=1; next} on && /^#/ {exit} on {print}' "$STD")"
 SL="$(section '### Scope Lock Challenge' "$ORCH")"
 DC="$(awk '$0 == "### Design Confirmation (the discovery gate)" {on=1; next} on && /^---$/ {exit} on {print}' "$ORCH")"
 DSA="$(awk '$0 == "### Discovery Start Actions" {on=1; next} on && /^### Adoption/ {exit} on {print}' "$ORCH")"

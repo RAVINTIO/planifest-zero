@@ -10,10 +10,10 @@ ZERO_DIR="$SCRIPT_DIR/.."
 ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 REF="$ZERO_DIR/pipeline-reference.md"
 TPL="$ZERO_DIR/templates/roadmap-entry.template.md"
+STD="$ZERO_DIR/standards/roadmap-standards.md"
 
 # The section from a heading to the next "---" rule.
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^---$/ {exit} on {print}' "$2"; }
-RM="$(section '## Roadmaps' "$ORCH")"
 RES="$(section '## Resume Detection' "$ORCH")"
 ORCH_SEC="$(section '## Phases and Response Prefixes' "$ORCH")"
 REF_SEC="$(section '## Phase Indicators' "$REF")"
