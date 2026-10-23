@@ -58,9 +58,9 @@ Caps and budgets are enforced by orchestrator control flow reading the state fil
 
 ## Escalation Format
 
-On `escalate`, populate the state file's Escalation Context section (stop rule hit, outstanding finding, attempts summary, recommended next step) and emit, using the owning phase's prefix (D, PL, IM, VA, or SH):
+On `escalate`, populate the state file's Escalation Context section (stop rule hit, outstanding finding, attempts summary, recommended next step) and emit, using the owning phase's prefix, such as `P3 Validate:`:
 
 ```
-{phase-prefix}: Blocked ({loop-id}): {one-line outstanding finding}
+{phase-prefix} Blocked ({loop-id}): {one-line outstanding finding}
 Escalation context: plan/current/loop-state-{loop-id}.md
 ```

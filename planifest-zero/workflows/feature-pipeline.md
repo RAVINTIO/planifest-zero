@@ -89,7 +89,7 @@ the answer in `plan/.run-mode` and logs it in the build log.
 - **Autonomous**: the pipeline stops at none of those gates. It runs to a
   raised PR and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
 
-Both modes stop for escalations. Each stop starts with `Blocked:` and names
+Both modes stop for escalations. Each stop prints `{prefix} Blocked:` and names
 the action the human needs to take. The four escalations are:
 
 - A check still fails after 5 attempts.

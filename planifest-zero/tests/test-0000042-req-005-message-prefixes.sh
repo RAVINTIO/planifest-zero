@@ -65,4 +65,15 @@ for f in "$REPO_ROOT/README.md" "$REPO_ROOT/docs/architecture-overview.md" \
   assert_equals "" "$hits" "req-005: $rel uses no retired letter prefix"
 done
 
+echo ""
+echo "=== req-005: escalation messages keep the phase prefix first ==="
+LOOP="$ZERO_DIR/skills/planifest-loop-runner/SKILL.md"
+FLOW="$ZERO_DIR/workflows/feature-pipeline.md"
+assert_equals "" "$(grep -nE '\(D, PL, IM, VA, or SH\)' "$LOOP" || true)" \
+  "req-005: loop-runner names no retired letter prefix"
+assert_contains '{phase-prefix} Blocked ({loop-id}):' "$(cat "$LOOP")" \
+  "req-005: loop-runner escalation puts Blocked after the phase prefix"
+assert_equals "" "$(grep -n 'Each stop starts with `Blocked:`' "$FLOW" || true)" \
+  "req-005: feature-pipeline puts the phase prefix before Blocked"
+
 print_summary
