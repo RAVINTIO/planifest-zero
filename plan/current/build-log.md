@@ -51,3 +51,4 @@ Scope Lock (first-run path): With no `plan/.run-mode`, P0 asks gated or autonomo
 Scope Lock (error path): In both modes, 5 failed attempts, a schema change, an unmitigated critical or high security finding, or a failed push or PR stops the run with a `Blocked:` message naming the action needed. Work stays committed and pushed, and the run resumes in the same mode. [source: draft-accepted]
 Scope Lock (cross-session continuity): Run mode and phase position live in committed files. A new session reads `plan/.run-mode` and the build log first, restores whichever mode the file holds without asking, and resumes at the last phase with its prefix. A gated run re-shows its pending gate. Pause and park keep working with the new phase numbers. [source: draft-edited]
 Scope Lock complete. All four scenario paths captured.
+P1 exchange (design): Q: Confirm the design? / A: Confirmed by human.
