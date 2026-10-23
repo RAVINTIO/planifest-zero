@@ -51,3 +51,4 @@ P0 exchange (R-A Chart): Q: What is R-A Chart? / A: Picking up a roadmap plan an
 P0 exchange (R-A Chart): Q: Confirm the filing and Chart split? / A: Yes, just like backlog items. Drafts are filed on any branch. Chart picks them up with pull-in, leave, or discard.
 P0 exchange (backlog model): Q: Roadmap drafts follow the backlog model for filing, pickup, pull-in, and malformed entries? / A: Confirmed.
 P0 exchange (chain runner): Q: Can Claude clear its own context? / A: Checked the Claude Code docs and CLI help. No tool, skill, or hook clears or compacts a session on the model's request. /loop and ScheduleWakeup keep the same context. A fresh session per step needs an outer script calling claude -p.
+P0 exchange (chain runner): Q: Driver script, and which permission mode? / A: Driver script, with --permission-mode auto.
