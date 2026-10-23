@@ -128,4 +128,21 @@ run_driver "$R" fail
 assert_equals "yes" "$r" "req-007 (c): non-zero exit when claude fails"
 assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-007 (c): lock released after a failure"
 
+echo ""
+echo "=== req-007 (d): runner lock is excluded from git ==="
+R="$(make_fixture d-git active)"
+git -C "$R" init -q
+run_driver "$R" ok
+assert_equals "0" "$CODE" "req-007 (d): driver exits 0 in a git work tree"
+assert_equals "1" "$(grep -cxF 'plan/.roadmap-runner.lock' "$R/.git/info/exclude")" "req-007 (d): lock path added to info/exclude"
+R="$(make_fixture d-git-rerun active)"
+git -C "$R" init -q
+run_driver "$R" ok
+run_driver "$R" ok
+assert_equals "1" "$(grep -cxF 'plan/.roadmap-runner.lock' "$R/.git/info/exclude")" "req-007 (d): a second run does not duplicate the entry"
+R="$(make_fixture d-nogit active)"
+run_driver "$R" ok
+assert_equals "0" "$CODE" "req-007 (d): driver exits 0 outside a git work tree"
+assert_equals "no" "$([ -e "$R/.git" ] && echo yes || echo no)" "req-007 (d): no git directory created outside a work tree"
+
 print_summary

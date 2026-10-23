@@ -39,8 +39,8 @@
 // The driver never edits the working tree. The steps it launches do that.
 // It has no dependencies beyond Node.
 
-import { spawn } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
+import { spawn, spawnSync } from 'node:child_process';
+import { appendFileSync, existsSync, readFileSync, readdirSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const ROADMAP = 'plan/current-roadmap/roadmap.md';
@@ -84,6 +84,20 @@ function readRoadmap(root) {
   const b = branch.match(BRANCH);
   if (!b) throw new Stop('R-C Run: Blocked: roadmap branch is missing or invalid');
   return { status, position, id: b[1], slug: b[2] };
+}
+
+// Adds the lock path to .git/info/exclude so a step session's "stage everything"
+// never commits the lock. Skips quietly outside a git work tree.
+function excludeLock(root) {
+  const git = (...args) => spawnSync('git', args, { cwd: root, encoding: 'utf8' });
+  const inside = git('rev-parse', '--is-inside-work-tree');
+  if (inside.error || inside.status !== 0 || inside.stdout.trim() !== 'true') return;
+  const p = git('rev-parse', '--git-path', 'info/exclude');
+  if (p.status !== 0) return;
+  const file = resolve(root, p.stdout.trim());
+  const text = existsSync(file) ? readFileSync(file, 'utf8') : '';
+  if (text.split(/\r?\n/).includes(LOCK)) return;
+  appendFileSync(file, (text === '' || text.endsWith('\n') ? '' : '\n') + LOCK + '\n');
 }
 
 // Returns the last Blocked: line when no Resolved: line follows it, else null.
@@ -149,6 +163,7 @@ async function main() {
   const { id, slug } = rm;
 
   const lock = join(root, LOCK);
+  excludeLock(root);
   try {
     writeFileSync(lock, `${process.pid}\n`, { flag: 'wx' });
   } catch (e) {
