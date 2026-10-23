@@ -59,3 +59,17 @@ Scope Lock (error path): An exception stop in a step logs Blocked, pushes, and e
 Scope Lock (cross-session continuity): All state lives in git. The next run resumes a step through normal resume detection, or starts the step at position. The roadmap update rides in the step's squash commit. [source: draft-accepted]
 Scope Lock complete. All four scenario paths captured.
 Run mode: autonomous (2026-10-23T22:45:55Z)
+Backlog pull-in: 0000098 and 0000099 folded into the feature brief and deleted.
+Design confirmed by human (2026-10-23T22:47:00Z).
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-23T22:47:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-plan |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | none |
