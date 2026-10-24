@@ -141,4 +141,4 @@ The helpers changed after the first pass, so REQ-005 ran again end to end on 202
 | Workflow | The pack variable became `RAVINTIO_REQUIRE_PWSH`. The consumer secret `PLANIFEST_DEPLOY_TOKEN` stayed unchanged. |
 | Git | `.ravintio-backup/` was in `.git/info/exclude`. Git staged the workflow as a rename and the old pack as removed. |
 
-REQ-005 criteria (a), (b), and (c) stay verified for Bash. CI run the PowerShell helper test on Windows PowerShell 5.1, PowerShell 7 on Windows, and PowerShell 7 on Linux.
+REQ-005 criteria (a), (b), and (c) stay verified for Bash. CI runs the PowerShell helper test on Windows PowerShell 5.1, PowerShell 7 on Windows, and PowerShell 7 on Linux.
