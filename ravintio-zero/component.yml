@@ -20,7 +20,7 @@ responsibilities:
   - "Direct model tier selection for all spawned subagents"
   - "Enforce parallelism directives across all phase skills"
   - "Track installed skill directories via .ravintio-manifest for safe re-runs"
-  - "Record the active setup flags in plan/state/{tool}.md, tracked, and retract any legacy setup-config record or telemetry wiring on the next run"
+  - "Record the active setup flags in plan/state/{tool}.md, tracked, and retract any legacy setup-config record on the next run"
   - "Accept retired setup flags with one warning each, so a refresh of an older install completes"
   - "Write settings.json through a same-folder temporary file and a rename, so a failed write never truncates it"
   - "Wire the same six enforcement hooks from setup.sh and setup.ps1, and check the match with a parity suite"

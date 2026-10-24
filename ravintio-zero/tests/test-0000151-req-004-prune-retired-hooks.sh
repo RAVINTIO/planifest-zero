@@ -74,7 +74,7 @@ assert_equals 0 "$count" "second run prints no removal line"
 
 echo ""
 echo "=== req-004: the retired list holds phase-enum ==="
-assert_contains "phase-enum" "$(grep '^TELEMETRY_HOOK_MODULES=' "$ZERO_DIR/setup.sh")" "setup.sh list has phase-enum"
+assert_contains "phase-enum" "$(grep '^RETIRED_HOOK_NAMES=' "$ZERO_DIR/setup.sh")" "setup.sh list has phase-enum"
 assert_contains "'phase-enum'" "$(cat "$ZERO_DIR/setup.ps1")" "setup.ps1 list has phase-enum"
 
 rm -rf "$WS"

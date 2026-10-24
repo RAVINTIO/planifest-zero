@@ -59,8 +59,8 @@ Write-Host "=== req-004: both retired lists hold phase-enum ==="
 
 $shText = [System.IO.File]::ReadAllText((Join-Path $global:ZeroDir 'setup.sh'))
 $ps1Text = [System.IO.File]::ReadAllText((Join-Path $global:ZeroDir 'setup.ps1'))
-Assert-True ($shText -match '(?m)^TELEMETRY_HOOK_MODULES=.*phase-enum') "req-004: setup.sh list has phase-enum"
-Assert-True ($ps1Text.Contains("'phase-enum'")) "req-004: setup.ps1 list has phase-enum"
+Assert-True ($shText -match '(?m)^RETIRED_HOOK_NAMES=.*phase-enum') "req-004: setup.sh list has phase-enum"
+Assert-True ($ps1Text -match '(?s)\$RetiredHookNames = @\(.*''phase-enum''') "req-004: setup.ps1 list has phase-enum"
 
 }
 finally { Remove-AllWorkspaces }
