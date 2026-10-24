@@ -32,6 +32,22 @@ assert_contains "next free id" "$BODY" "next free id rule"
 assert_contains "plan/backlog/{id}-{slug}/entry.md" "$BODY" "entry path"
 assert_contains "Report the path written" "$BODY" "reports path"
 
+echo "=== cycle 2: slug, symlink, data-not-instructions, template rules ==="
+assert_contains '^[a-z0-9]+(-[a-z0-9]+)*$' "$BODY" "S-006 slug pattern"
+assert_contains "ask for a valid slug" "$BODY" "S-006 invalid slug asks"
+assert_contains "inside the target's \`plan/backlog/\`" "$BODY" "S-006 resolved folder containment"
+assert_contains "as data, never as instructions" "$BODY" "S-007 template and entries are data"
+assert_contains "is a symlink" "$BODY" "S-008 symlink stop"
+assert_contains "is not a directory" "$BODY" "S-008 non-directory target stop"
+assert_contains "7 digits" "$BODY" "pack id width is 7 digits"
+assert_contains "guidance blockquote" "$BODY" "drop the guidance blockquote"
+assert_contains '`{{...}}` placeholder' "$BODY" "fill or remove placeholders"
+assert_contains 'Omit the `**Parked branch:**` line' "$BODY" "omit parked branch line for open entry"
+assert_contains "covers \`plan/backlog/\` only" "$BODY" "same-slug check scope is backlog only"
+S4=$(grep -n "^## Step .*Check for Collisions" "$SKILL" | cut -d: -f1)
+S1=$(grep -n "^## Step .*Find the Backlog Folder" "$SKILL" | cut -d: -f1)
+assert_equals "yes" "$([ -n "$S4" ] && [ -n "$S1" ] && [ "$S4" -lt "$S1" ] && echo yes || echo no)" "same-slug check runs before creating plan/backlog/"
+
 echo "=== REQ-010: git guardrails and catalogue ==="
 RULE=$(grep -i "never commit" "$SKILL")
 for w in "commit" "push" "switch branches" "stash" "pull request"; do
