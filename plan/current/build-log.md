@@ -100,3 +100,5 @@ P1: Plan: Complete: 15 requirements, 8 ADRs, scope, risk register, glossary, exe
 - Done: Track A REQ-004 REQ-005 TDD (2026-10-24T14:40:33Z). Commits 1db6d4b, dfaaea3. Bash GREEN. Two new .ps1 tests unrun (pwsh absent).
 - Done: Track B REQ-003 TDD (2026-10-24T14:40:40Z). Commit 8eb3a45.
 - Done: Track F REQ-007 REQ-010 REQ-008 TDD (2026-10-24T14:44:49Z). Quiet full run prints 3,002 bytes. assert.ps1, run-tests.ps1, and the req-008 .ps1 test unrun (pwsh absent).
+Batch 1 fix-up: two older suites (0000033 req-003, 0000035) broke on the setup.ps1 changes. The orchestrator moved the retired list alias into the legacy block and pinned the atomic write through Write-SettingsOrExit. Commit 450261a.
+- In progress: Batch 2 REQ-014 REQ-009 REQ-011 TDD (2026-10-24T14:46:05Z)
