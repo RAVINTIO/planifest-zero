@@ -10,7 +10,7 @@ ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
 PI=$(sed -n '/^## Phase Invocation/,/^## Exception Stops/p' "$ORCH")
-DC=$(sed -n '/^### Design Confirmation/,/^## Capability Skills/p' "$ORCH")
+DC=$(sed -n '/^### Design Confirmation/,/^## Phase Invocation/p' "$ORCH")
 
 echo "=== (a) context size at gates ==="
 assert_contains '150,000' "$PI" "names the 150,000 token threshold"

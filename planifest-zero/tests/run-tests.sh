@@ -43,6 +43,7 @@ KNOWN_NON_SUITES=(
   "fixtures/0000039-setup-hardening/invalid-settings.json"    # invalid JSON with a planted value (0000039 req-001)
   "fixtures/0000039-setup-hardening/single-object-hooks.json" # single-object hooks values (0000039 req-002)
   "fixtures/0000039-setup-hardening/deep-settings.json"       # a value nested 15 levels deep (0000039 req-003)
+  "fixtures/0000151-orchestrator-skill-base.md"               # orchestrator SKILL.md at the base commit (0000151 req-011)
 )
 
 is_known_file() {

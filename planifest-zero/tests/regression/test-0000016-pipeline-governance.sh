@@ -318,7 +318,7 @@ echo ""
 echo "=== skill text: edited skills carry the new directives ==="
 # -----------------------------------------------------------------------
 
-ORCH=$(cat "$SKILLS/planifest-orchestrator/SKILL.md" 2>/dev/null || echo "")
+ORCH=$(cat "$(orch_combined "$SKILLS/planifest-orchestrator")" 2>/dev/null || echo "")
 assert_contains "plan/backlog/" "$ORCH" "req-001/002: orchestrator documents backlog convention + pickup"
 assert_contains "product.yml" "$ORCH" "req-005: orchestrator reads product.yml at discovery"
 assert_contains "every meaningful artifact write" "$ORCH" "req-007: Hard Limit 7 strengthened"

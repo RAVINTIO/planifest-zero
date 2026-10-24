@@ -32,7 +32,7 @@ done
 echo ""
 echo "=== req-005: explicit discovery flow for a planifest-zero/ dependency update ==="
 
-ORCHESTRATOR_SKILL="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+ORCHESTRATOR_SKILL="$(orch_combined "$ZERO_DIR/skills/planifest-orchestrator")"
 orch_content=$(cat "$ORCHESTRATOR_SKILL")
 assert_contains "Pack dependency update" "$orch_content" \
   "req-005: orchestrator has a distinct resume-detection step for pack updates"

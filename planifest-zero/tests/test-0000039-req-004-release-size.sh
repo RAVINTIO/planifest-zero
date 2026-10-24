@@ -7,10 +7,10 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-ORCH="$ROOT/skills/planifest-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ROOT/skills/planifest-orchestrator")"
 S=$(cat "$ORCH")
-DECOMP=$(printf '%s\n' "$S" | sed -n '/^### Decomposition/,/^### Discovery Start Actions/p')
-START=$(printf '%s\n' "$S" | sed -n '/^### Discovery Start Actions/,/^### Adoption Modes/p')
+DECOMP=$(printf '%s\n' "$S" | sed -n '/^### Decomposition/,/^# Orchestrator reference:/p')
+START=$(printf '%s\n' "$S" | sed -n '/^### Discovery Start Actions/,/^### Discovery Gate Checklist/p')
 
 echo "=== req-004: the orchestrator defines releaseSize and its budgets ==="
 assert_contains '`releaseSize`' "$DECOMP" \

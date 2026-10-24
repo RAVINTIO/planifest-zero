@@ -4,7 +4,7 @@
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
-ORCH="$(cd "$SCRIPT_DIR/.." && pwd)/skills/planifest-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$(cd "$SCRIPT_DIR/.." && pwd)/skills/planifest-orchestrator")"
 S=$(cat "$ORCH")
 
 STEP7=$(printf '%s\n' "$S" | grep -E '^7\. \*\*Detect adoption mode\*\*')

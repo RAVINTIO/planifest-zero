@@ -1,0 +1,30 @@
+---
+title: "Orchestrator reference: Skills catalogue"
+summary: "Standalone and subagent skills, and the capability skill intake."
+status: "active"
+version: "1.0.0"
+---
+# Orchestrator reference: Skills catalogue
+
+> Moved verbatim from `SKILL.md`. Read this file before you act on the topic. The Pack Index in `SKILL.md` lists the trigger.
+
+## Standalone and Subagent Skills
+
+| Skill | Trigger | Relationship |
+|-------|---------|--------------|
+| planifest-test-writer | TDD red phase for one requirement | Subagent of implement. Never invoke independently. |
+| planifest-implementer | TDD green phase | Subagent of implement. Never invoke independently. |
+| planifest-refactor | TDD refactor phase | Subagent of implement. Never invoke independently. |
+| planifest-loop-runner | Entering any loop | Loaded by any phase agent before loop work begins. |
+| planifest-migrator | Pending migration found at session start | Standalone. Runs before any phase work. |
+| planifest-optimise-agent | Human asks to optimise or trim a skill | Standalone. Invoke any time. |
+| planifest-refresh-setup | Human asks to refresh the setup | Standalone. Invoke any time. |
+
+## Capability Skills
+
+Capability skills encode craft knowledge. Planifest skills encode discipline. Two triggers share one intake:
+
+- **Arrival:** a `SKILL.md` appears in `planifest-zero/skills-inbox/`, checked at discovery start action 14 and every phase transition.
+- **Proposal:** after the gate checklist passes and before design confirmation, assess the declared stack against known capability skills. If relevant ones are not installed, ask once, without pressure.
+
+**Intake:** read the skill's frontmatter and summarise it in one sentence. Ask: `Use for this plan only, or add permanently? (plan / permanent)`. Plan: move to `plan/current/capability-skills/{name}/`. Permanent: move to `planifest-overrides/capability-skills/{name}/` and re-run setup. Clear the inbox if that was the trigger, update `## Active Skills` in `design.md`, report the result. Declines proceed silently. A deferred arrival re-presents at the next transition. Before adding any skill, apply the skill-scope test: does it provide governance or traceability the host tool cannot provide on its own.

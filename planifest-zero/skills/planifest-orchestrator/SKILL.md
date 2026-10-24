@@ -66,20 +66,6 @@ R-A to R-E are stage letters, not phase numbers. The pipeline still has exactly 
 
 ---
 
-## Standalone and Subagent Skills
-
-| Skill | Trigger | Relationship |
-|-------|---------|--------------|
-| planifest-test-writer | TDD red phase for one requirement | Subagent of implement. Never invoke independently. |
-| planifest-implementer | TDD green phase | Subagent of implement. Never invoke independently. |
-| planifest-refactor | TDD refactor phase | Subagent of implement. Never invoke independently. |
-| planifest-loop-runner | Entering any loop | Loaded by any phase agent before loop work begins. |
-| planifest-migrator | Pending migration found at session start | Standalone. Runs before any phase work. |
-| planifest-optimise-agent | Human asks to optimise or trim a skill | Standalone. Invoke any time. |
-| planifest-refresh-setup | Human asks to refresh the setup | Standalone. Invoke any time. |
-
----
-
 ## Resume Detection
 
 On every session start, before any action:
@@ -120,44 +106,21 @@ Never assume you know a template's format. Read the relevant file immediately be
 | A park record | `planifest-zero/templates/park.template.md` |
 | Any loop (before entering it) | Load the `planifest-loop-runner` skill |
 
+Read these reference files before you act on their topic. Each holds rules moved from this file, so none is optional.
+
+| Before you act on… | Read first |
+|--------------------|------------|
+| Opening a fresh P0, or sizing and splitting a release | `references/orchestrator-discovery-coaching.md` |
+| Detecting or confirming an adoption mode, or a retrofit scan | `references/orchestrator-adoption-modes.md` |
+| The Scope Lock Challenge | `references/orchestrator-scope-lock.md` |
+| Logging a coaching exchange, or writing the Skill Map | `references/orchestrator-discovery-records.md` |
+| A request to skip a phase, pause, or park | `references/orchestrator-session-commands.md` |
+| A standalone skill, or a capability skill arriving or proposed | `references/orchestrator-skills-catalogue.md` |
+| A requirement change during P1 to P3 | `references/orchestrator-mid-pipeline-changes.md` |
+
 ---
 
-## Phase Skip Protocol
-
-When the human explicitly asks to skip a phase:
-
-1. Acknowledge immediately. Do not argue or ask for justification.
-2. Append to `plan/current/.skips` in the same turn: `{phase}: skipped by human on {ISO-8601 date} ({reason, or "no reason given"})`
-3. Continue to the next phase. The ship phase reads `.skips` into the changelog.
-
-## Pause Command
-
-When the human says "pause" or similar:
-
-1. Note the active phase, the task in progress, and the last artifact written.
-2. Read `planifest-zero/templates/pause.template.md` and write `plan/current/pause.md` with state sufficient for exact-point resume.
-3. Confirm: `{prefix}: Paused: {active_task}. Pause record written. Resume by loading planifest-orchestrator in a new session.`
-4. Stop all pipeline work.
-
-## Park Command
-
-When the human says "park" or similar, shelve the feature on its branch and return the working tree to `main`. The git and `gh` steps live in `scripts/park.mjs` beside this skill. Its header documents the arguments.
-
-1. Read `planifest-zero/templates/park.template.md` and write `plan/current/park.md` on the feature branch. Fill all four fields: phase reached, last artifact, head commit, and reason.
-2. Commit `park.md`, then push the feature branch. Run `node scripts/park.mjs park --entry {entry file} --backlog-id {next backlog id}` to do steps 2 to 5.
-3. Cut `chore/park-{feature-id}` from `main`. Add a backlog entry from `planifest-zero/templates/backlog-entry.template.md` with status `parked` and a `**Parked branch:**` field that names the feature branch. Write the entry outside the working tree and pass its path as `--entry`.
-4. Push the chore branch and run `gh pr create`.
-5. Check out `main`. Confirm: `{prefix}: Parked: {feature-id} on {branch}. Chore PR raised. Merge it to file the parked entry.`
-
-Rules:
-
-- If `plan/current/design.md` does not exist, the phase reached is P0.
-- The sentinels in `plan/` live on the feature branch only. Park removes nothing from `main`.
-- The parked entry reaches `main` only when the human merges the chore PR. Until then, a session on `main` does not see it.
-- If any push or `gh` call fails, report the exact error and stop. The working tree stays on the feature branch, and `park.md` stays committed locally.
-- Park never merges a pull request, never commits to `main`, and never force-pushes.
-- `park.mjs` refuses `main`, an option or full ref name as a branch, a backlog id that is not seven digits, and a slug that is not kebab-case. If it refuses, report the error and stop.
-- Allow one park per working tree. If another feature's `chore/park-*` branch exists, do not open a second park. Ask the human to finish that one first.
+Phase Skip Protocol, Pause Command, and Park Command are in the Pack Index row for `orchestrator-session-commands.md`.
 
 ## Context Hygiene
 
@@ -167,28 +130,7 @@ Clear context at two bookends: discovery start (fresh runs only) and after ship 
 
 ## P0: Discovery
 
-### Opening Briefing
-
-On a fresh start (no resume detected), open with:
-
-```
-P0 Discovery: Starting
-
-Pipeline: P0 Discovery -> P1 Plan -> P2 Implement -> P3 Validate and Accept -> P4 Ship
-
-Tool detected: {tool name or "unknown"}
-Hooks status:
-  - gate-write (PreToolUse): {registered / not registered / unknown}
-  - check-design (UserPromptSubmit): {registered / not registered / unknown}
-
-{If any hook is not registered:}
-  Enforcement hooks not detected. Run: ./planifest-zero/setup.sh {tool}
-  Until hooks are registered, scope enforcement is instruction-based only.
-
-Reading feature brief…
-```
-
-Detect the tool from `CLAUDE_CODE_*` env vars or a `.claude/` directory. Check hook registration by looking for `gate-write` in `.claude/settings.json`. Read `plan/current/feature-brief.md` before coaching begins.
+Opening Briefing, Decomposition, Adoption Modes (the table that step 7 uses), Scope Lock Challenge, Discovery Audit Trail, and Skill Map are in the reference files that the Pack Index lists. Read each file before you act on its topic.
 
 ### How You Coach
 
@@ -213,28 +155,6 @@ Detect the tool from `CLAUDE_CODE_*` env vars or a `.claude/` directory. Check h
 **Deferred decisions:** record them as explicitly deferred in the scope document, note what is blocked, move on.
 
 **A complete brief:** confirm it and proceed. Do not coach for the sake of coaching.
-
-### Decomposition
-
-Size each release against a point budget. The budget comes from the optional `releaseSize` field in `product.yml`. If `releaseSize` is absent, use `medium`.
-
-| `releaseSize` | Budget (points) |
-|---------------|-----------------|
-| `small` | 4 |
-| `medium` (default) | 8 |
-| `large` | 14 |
-
-Estimate a size class for each candidate requirement from the files it is likely to touch.
-
-| Class | Files touched | Points |
-|-------|---------------|--------|
-| S | 1 to 2 | 1 |
-| M | 3 to 6 | 2 |
-| L | 7 or more | 4 |
-
-Recommend a fill from the backlog up to the budget. The human confirms the fill. If the candidates exceed the budget, recommend a split. If `releaseSize` holds an unknown value, note it in `discovery.md`, use the `medium` budget, and ask the human to fix the field.
-
-With more than 5 or 6 features, group them into waves. Each wave is a separate pipeline run that reads the prior wave's manifests rather than its code. For multi-component work in one repository, follow `planifest-zero/standards/monorepo-standards.md`. When two components need the same data, one owns it and the other consumes it through a defined interface. Shared writes are a Hard Limit violation: coach a redesign.
 
 ### Discovery Start Actions
 
@@ -261,74 +181,6 @@ Perform in order, before coaching begins:
 12. **Suggest a version bump** (a roadmap step applies its row's `Bump`, per R-C Run): a feature run defaults to a minor bump (x.Y.0). A breaking change is major. Recommend-then-confirm. **Hard block on downgrade**: if the human proposes a version lower than the last known one, refuse: `P0 Discovery: Blocked: {proposed} is lower than the last known version ({current}). Provide a version >= {current}.` Record the confirmed version in `design.md` and the build log.
 13. **Strict-mode ack**: if `plan/.orchestrator-strict` exists, write `plan/.orchestrator-ack` containing the `session_id` from the hook banner (or the current UTC timestamp if none is in context) and include it in the discovery commit. This silences the strict-mode banner for the session.
 14. **Check the skills inbox**: process any `SKILL.md` in `planifest-zero/skills-inbox/` per Capability Skills below. Repeat this check at every phase transition.
-
-### Adoption Modes
-
-The coaching conversation and the pipeline are the same in every mode. Only the starting point and version logic differ.
-
-| Mode | Signal (priority order, highest first) | Version | Coaching start |
-|------|----------------------------------------|---------|----------------|
-| External Anchor | 1: `planifest-overrides/instructions/external-versioning.md` exists | Ask the human per the external constraint. Never suggest from run type alone. | Merge the constraint into coaching as additional rules. |
-| Standard Iterative | 2: `plan/_archive/` has a feature dir, or `docs/about.md` exists | Minor bump by default | Prior decisions are constraints unless an ADR supersedes them. |
-| Retrofit | 3: source exists in `src/` with no archive or overrides | Suggest from project markers, human confirms | Run the retrofit scan below first. |
-| Greenfield | 4: none of the above | Start at `0.1.0` | Coach from the feature brief directly. |
-
-Never combine signals. If the human states a mode that conflicts with the detected signal, warn once with the consequence, proceed if they confirm, and record the confirmed mode in the build log.
-
-`discovery.md` is fresh every run and archived at ship. Its shared header covers the adoption-mode result with its signal, the git pre-flight findings, and the skills-inbox scan. Prior runs' discovery is read from `plan/_archive/` and `docs/`, never from a leftover file.
-
-#### Retrofit Scan
-
-For retrofit mode, scan the codebase and record in `discovery.md`:
-
-- Version markers: `package.json`, `go.mod`, git tags, README
-- Entry points and how the system starts
-- Components and their boundaries
-- Data ownership: which code writes which data
-- API contracts, explicit or implied
-- Established patterns and conventions
-- Visible tech debt
-
-### Scope Lock Challenge
-
-Run this after coaching Q&A completes and before presenting the design. It is a mandatory gate.
-
-A roadmap step self-confirms this gate as R-C Run in `planifest-zero/standards/roadmap-standards.md` describes.
-
-Read `plan/current/feature-brief.md`. If `## Scenario Paths` is filled in, use the human's four paths. Otherwise derive them from the user stories and acceptance criteria. The four questions:
-
-1. **Happy path:** the end-to-end flow when everything works. First action, and what success looks like.
-2. **First-run path:** the very first use, before any prior data or state exists.
-3. **Error path:** the most likely failure mode and what should happen.
-4. **Cross-session continuity:** what state is at risk if the session is interrupted, and how it is recovered.
-
-**Draft inline.** Draft all four suggested answers yourself, in this context. Do not dispatch a subagent. Drafting rules: frame from usage, describe outcome not implementation, write an honest "not applicable" where true, and check each draft against decisions the human has already confirmed. Surface any contradiction alongside the draft rather than resolving it silently.
-
-**Present as a batch.** Show all four questions with their labelled drafts in a single turn. Label every draft as a draft, never as a decided answer.
-
-**Confirmation is human-only, per item.** Only the human's explicit accept, edit, or reject for each individual item counts as scope confirmation. Silence is never approval. The conversation moving on is never approval. A blanket "looks fine" across the batch is never approval for any single item. Your own draft is never confirmation, no matter how confident it reads.
-
-**Record immediately.** The moment the human confirms one item, append to the build log under the P0 block, before handling the next item:
-
-```
-Scope Lock ({path type}): {one-sentence summary} [source: human | draft-accepted | draft-edited]
-```
-
-If an answer reveals a scope gap, ask one clarifying question, capture the answer in the same format, then return to the batch. If the human defers an item: `Scope Lock, deferred: {description} (blocked until {dependency})`. When all four are captured, confirm: "Scope Lock complete. All four scenario paths captured."
-
-### Discovery Audit Trail
-
-For every coaching question asked and answered, immediately append to the build log under the P0 block:
-
-```
-P0 exchange ({topic}): Q: {question} / A: {human answer, summarised}
-```
-
-One entry per exchange, never batched, so an interrupted session still holds everything that occurred.
-
-### Skill Map
-
-After the design is drafted and before presenting it, write a `## Skill Map` section in `design.md`: one row per requirement mapping it to the best-fit skill in `planifest-zero/skills/` with a one-line rationale. Re-evaluate the map at each phase gate.
 
 ### Discovery Gate Checklist
 
@@ -375,16 +227,7 @@ In a gated run, state the context size before you ask for confirmation. See Cont
 
 ---
 
-## Capability Skills
-
-Capability skills encode craft knowledge. Planifest skills encode discipline. Two triggers share one intake:
-
-- **Arrival:** a `SKILL.md` appears in `planifest-zero/skills-inbox/`, checked at discovery start action 14 and every phase transition.
-- **Proposal:** after the gate checklist passes and before design confirmation, assess the declared stack against known capability skills. If relevant ones are not installed, ask once, without pressure.
-
-**Intake:** read the skill's frontmatter and summarise it in one sentence. Ask: `Use for this plan only, or add permanently? (plan / permanent)`. Plan: move to `plan/current/capability-skills/{name}/`. Permanent: move to `planifest-overrides/capability-skills/{name}/` and re-run setup. Clear the inbox if that was the trigger, update `## Active Skills` in `design.md`, report the result. Declines proceed silently. A deferred arrival re-presents at the next transition. Before adding any skill, apply the skill-scope test: does it provide governance or traceability the host tool cannot provide on its own.
-
----
+Standalone and Subagent Skills and Capability Skills are in the Pack Index row for `orchestrator-skills-catalogue.md`. Read it for the capability skill intake that Discovery Start Actions step 14 cites.
 
 ## Phase Invocation (P1 to P4)
 
@@ -445,20 +288,7 @@ The status `Blocked:` follows the phase prefix, as in every status message. Neve
 
 ---
 
-## Mid-Pipeline Requirement Changes
-
-If the human changes requirements while P1 to P3 is in progress:
-
-1. **Assess the change:**
-   - Cosmetic (naming, wording, formatting): fix in place, continue.
-   - Additive (new user story, new endpoint): update the plan artifacts, re-run from the earliest affected phase.
-   - Contradictory (reverses a prior decision): halt, update the confirmed design, write an ADR for the reversal, re-run from P1.
-2. **Re-run rules:** re-running P1 invalidates P2 and P3 output, so delete stale artifacts first. Re-running P2 requires re-running P3 at minimum. Never patch generated code to match a spec change: regenerate from the updated spec.
-3. **Record it:** add a "Requirement Change" entry to the build log noting what changed, the active phase, and what was re-run.
-
-If the change would alter the feature fundamentally (different problem, users, or domain), recommend a new feature instead.
-
----
+Mid-Pipeline Requirement Changes is in the Pack Index row for `orchestrator-mid-pipeline-changes.md`.
 
 ## Subagent Dispatch
 

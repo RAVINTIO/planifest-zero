@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 ZERO_DIR="$SCRIPT_DIR/.."
-ORCH="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/planifest-orchestrator")"
 BUILD_LOG="$ZERO_DIR/templates/build-log.template.md"
 BACKLOG="$ZERO_DIR/templates/backlog-entry.template.md"
 CHECK_DESIGN="$ZERO_DIR/hooks/enforcement/check-design.mjs"

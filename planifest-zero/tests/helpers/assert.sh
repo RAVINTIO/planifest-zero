@@ -120,6 +120,18 @@ assert_exit_zero() {
   fi
 }
 
+# 0000151 req-011: the orchestrator SKILL.md keeps its core sections and moves
+# rarely used ones to references/orchestrator-*.md. This prints the path of a
+# temp file that holds SKILL.md followed by those files, so a test can keep
+# every assertion about a moved string and read it from one text.
+# Usage: ORCH="$(orch_combined "$ZERO_DIR/skills/planifest-orchestrator")"
+orch_combined() {
+  local dir="$1" out
+  out="$(mktemp "${TMPDIR:-/tmp}/orch-combined.XXXXXX")"
+  cat "$dir/SKILL.md" "$dir"/references/orchestrator-*.md > "$out" 2>/dev/null
+  echo "$out"
+}
+
 print_summary() {
   echo ""
   if [ "$FAIL" -eq 0 ]; then
