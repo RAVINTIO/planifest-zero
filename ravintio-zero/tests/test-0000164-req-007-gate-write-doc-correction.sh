@@ -15,6 +15,10 @@ FILES=(
 
 for f in "${FILES[@]}"; do
   p="$ROOT/$f"
+  # CLAUDE.md is gitignored, so a fresh clone such as CI has none to check.
+  if [ "$f" = "CLAUDE.md" ] && [ ! -f "$p" ]; then
+    echo "  SKIP: REQ-007 $f is absent (gitignored)"; continue
+  fi
   gate="$(grep -i 'gate-write' "$p")"
   # The wrong wording is gone from lines that describe gate-write
   if printf '%s\n' "$gate" | grep -q 'Blocks writes to `src/`'; then
