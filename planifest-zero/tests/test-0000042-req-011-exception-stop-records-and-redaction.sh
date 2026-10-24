@@ -30,7 +30,7 @@ section() {
 STOPS="$(section '## Exception Stops' "$ORCH")"
 RESUME="$(section '## Resume Detection' "$ORCH")"
 GATE="$(section '## Acceptance gate' "$VAL")"
-PR_STEP="$(section '### Step 8: PR' "$SHIP")"
+PR_STEP="$(section '### Step 9: PR' "$SHIP")"
 CRED_MSG='Blocked: possible credential in {path}. Remove it or confirm it is not a secret.'
 
 echo ""

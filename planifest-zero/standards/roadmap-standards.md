@@ -131,16 +131,16 @@ The roadmap PR to `main` stays human-only. The agent never merges it. The `merge
 
 ## Ship stages
 
-These stages apply only when `plan/current-roadmap/roadmap.md` has `status: active`. Check the file before Step 6. Outside a roadmap, ignore this section. A normal run keeps the order in the ship skill: tag at Step 7, PR at Step 8, and no merge by the agent.
+These stages apply only when `plan/current-roadmap/roadmap.md` has `status: active`. Check the file before Step 6. Outside a roadmap, ignore this section. A normal run keeps the order in the ship skill: tag at Step 7, clear sentinels at Step 8, PR at Step 9, and no merge by the agent.
 
-In a roadmap step, Steps 1 to 5 run as written. Steps 7 and 8 give way to the two stages below. Step 9 (clear the sentinels) runs and its commit is pushed before the PR is raised, so the squash does not carry the sentinels onto the roadmap branch and the next step's P0 does not see a stale feature id. The step's `Bump` column in `roadmap.md` sets the version for Step 6, and the downgrade check still applies. The merge carve-out is governed by the merge rule and the merge-guard hook, which allows `gh pr merge --squash` only for a `roadmap/*` base.
+In a roadmap step, Steps 1 to 5 run as written. Steps 7 and 9 give way to the two stages below. Step 8 (clear the sentinels) runs and its commit is pushed before the PR is raised, so the squash does not carry the sentinels onto the roadmap branch and the next step's P0 does not see a stale feature id. The step's `Bump` column in `roadmap.md` sets the version for Step 6, and the downgrade check still applies. The merge carve-out is governed by the merge rule and the merge-guard hook, which allows `gh pr merge --squash` only for a `roadmap/*` base.
 
 ### R-D Advance
 
 Every message in this stage begins with `R-D Advance:` after the `P4 Ship:` prefix.
 
 1. Update `plan/current-roadmap/roadmap.md` on the feature branch. Set the step's Status to `merged`, fill its Version with the released version, and move `position` to the next step.
-2. Run ship Step 9 now, then push the branch so the sentinel commit is on the remote. Raise the PR against the roadmap branch only after that push. The roadmap update ships in the same PR, so the squash commit carries it.
+2. Run ship Step 8 now, then push the branch so the sentinel commit is on the remote. Raise the PR against the roadmap branch only after that push. The roadmap update ships in the same PR, so the squash commit carries it.
 
    ```bash
    gh pr create --base roadmap/{id}-{slug}
@@ -174,7 +174,7 @@ Every message in this stage begins with `R-D Advance:` after the `P4 Ship:` pref
    git push origin v{version}
    ```
 
-Step 9 runs before the PR because the squash would otherwise carry `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mode` onto the roadmap branch. The next step's P0 would then see a stale feature id.
+Step 8 runs before the PR because the squash would otherwise carry `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mode` onto the roadmap branch. The next step's P0 would then see a stale feature id.
 
 Consumer CI must trigger on pull requests to `roadmap/**`. The pack's workflow template `planifest-zero/hooks/planifest.yml` includes that branch pattern. A project with its own workflow adds it.
 
@@ -204,7 +204,7 @@ Run this stage after the last step merges. Every message begins with `R-E Delive
    gh pr create --base main --head roadmap/{id}-{slug}
    ```
 
-3. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag. Scan the body for credential patterns before you raise the PR, as in Step 8.
+3. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag. Scan the body for credential patterns before you raise the PR, as in Step 9.
 4. Report the PR URL and end the run.
 
 The agent never merges the roadmap PR and never commits to `main`. The human reviews and merges it.

@@ -17,7 +17,7 @@ SHIP_SKILL="$ZERO_DIR/skills/planifest-ship/SKILL.md"
 SHIP_CONTENT=$(cat "$SHIP_SKILL")
 
 # Isolate the PR step (from its heading to the next "### " heading).
-PR_STEP=$(printf '%s\n' "$SHIP_CONTENT" | sed -n '/^### Step 8: PR/,/^### Step 9/p')
+PR_STEP=$(printf '%s\n' "$SHIP_CONTENT" | sed -n '/^### Step 9: PR/,/^### Step 10/p')
 
 echo ""
 echo "=== req-001: the PR step exists and offers both delivery paths ==="

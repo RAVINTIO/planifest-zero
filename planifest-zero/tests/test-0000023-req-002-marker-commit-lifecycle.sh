@@ -50,7 +50,7 @@ assert_contains '`gated` or `autonomous`' "$ORCH_CONTENT" \
 echo ""
 echo "=== req-002: deletion-side clearing (ship phase) ==="
 
-SENTINEL_STEP=$(printf '%s\n' "$SHIP_CONTENT" | sed -n '/^### Step 9: Clear sentinels/,/^### Step 10/p')
+SENTINEL_STEP=$(printf '%s\n' "$SHIP_CONTENT" | sed -n '/^### Step 8: Clear sentinels/,/^### Step 9/p')
 
 assert_contains 'Delete `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mode`' \
   "$SENTINEL_STEP" "req-002: ship clears all three markers"

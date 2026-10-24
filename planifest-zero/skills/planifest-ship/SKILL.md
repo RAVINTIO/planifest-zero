@@ -32,7 +32,7 @@ Write `plan/changelog/{feature-id}-{YYYY-MM-DD}.md`. Audience: PR reviewers, the
 
 **Feature:** {feature name from brief}
 **Version:** {version}
-**PR:** {pending, updated at Step 8}
+**PR:** {pending, updated at Step 9}
 
 ## What changed
 ## Why
@@ -77,9 +77,15 @@ Derive the current product version with `node planifest-zero/scripts/product-ver
 git tag v{version} -m "{feature-id}"
 ```
 
-Local only. Do not push the tag.
+Create the tag locally. The PR choice in Step 9 decides who pushes it. In option [1], Step 9 pushes the tag with the branch. In option [2], the human pushes the tag. For a roadmap step: Local only. Do not push the tag.
 
-### Step 8: PR
+### Step 8: Clear sentinels
+
+Read `plan/.run-mode` first and keep the value for Step 10. Delete `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mode` if present. Stage the deletions and commit. Confirm with `git ls-files` that none remain tracked.
+
+Do this before any push, in every run mode and for both PR options, so no PR carries the sentinels.
+
+### Step 9: PR
 
 If a local-git-only override is active in `planifest-overrides/instructions/`, skip the question and output the description block. Otherwise, follow the run mode.
 
@@ -93,6 +99,16 @@ Should I raise the PR, or will you?
 ```
 
 In `autonomous`, take option [1] without asking.
+
+The sentinel commit from Step 8 comes first. In option [1], push the branch and the tag, then raise the PR:
+
+```bash
+git push origin {branch}
+git push origin v{version}
+gh pr create
+```
+
+In option [2], print the PR title and description. The human pushes the branch and the tag later.
 
 Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution.
 
@@ -109,10 +125,6 @@ If a push or `gh pr create` fails, stop in both run modes. Report the exact erro
 ```
 P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.
 ```
-
-### Step 9: Clear sentinels
-
-Delete `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mode` if present. Stage the deletions and commit. Confirm with `git ls-files` that none remain tracked.
 
 ### Step 10: Final gate
 
@@ -134,8 +146,8 @@ In `autonomous`, print the same summary, then end the run with this line:
 P4 Ship: Complete: PR #{n} ready for your review
 ```
 
-Use the run mode read before Step 8, because Step 9 deletes `plan/.run-mode`. Merging the PR is human-only in every mode, no exception.
+Use the run mode read in Step 8, because Step 8 deletes `plan/.run-mode`. Merging the PR is human-only in every mode, no exception.
 
 ## Roadmap steps
 
-When `plan/current-roadmap/roadmap.md` has `status: active`, read `planifest-zero/standards/roadmap-standards.md` first. Steps 7 and 8 give way to its R-D Advance stage, and R-E Delivery follows the last step. Outside a roadmap, ignore this section.
+When `plan/current-roadmap/roadmap.md` has `status: active`, read `planifest-zero/standards/roadmap-standards.md` first. Steps 7 and 9 give way to its R-D Advance stage, and R-E Delivery follows the last step. Outside a roadmap, ignore this section.
