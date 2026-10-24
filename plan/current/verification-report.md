@@ -43,6 +43,9 @@ Each `planifest-zero/tests/test-0000043-req-001` to `req-010` script ran alone. 
 | 011 | (a) data-contract survey, `## Schema changes` table, approve, edit, or strike rows, confirmation approves rows left | `test-0000043-req-011-chart-time-schema-approval.sh`, "req-011 (a)" | yes |
 | 011 | (b) opt-in fallback with default `stop`, template table and fallback field | same, "req-011 (b)" | yes |
 | 011 | (c) proposal still written, `approved (roadmap chart)` on a match, normal stop otherwise, destructive always stops, implement pointer | same, "req-011 (c)" | yes |
+| 012 | (a) `In progress:` and `Done:` lines and their commits in the dispatch standard, skill pointers, template | `test-0000043-req-012-progress-markers-and-resume.sh`, "req-012 (a)" | yes |
+| 012 | (b) unmatched `In progress:` marks an interrupted unit, named stash, rerun from start, `Resumed after interruption:` line, Resume Detection step before Open | same, "req-012 (b)" | yes |
+| 012 | (c) an unmatched `In progress:` line does not stop the driver | same, "req-012 (c)" | yes |
 
 ## Gaps
 

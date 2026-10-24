@@ -18,6 +18,7 @@ Planifest Zero can now run a chain of feature steps from one human approval. The
 - req-008: R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit.
 - req-009: a restarted driver resumes the same step. Stage prefixes `R-A Chart:` to `R-E Delivery:` sit beside P0 to P4.
 - req-010: the merge carve-out text in the orchestrator, ship skill, and overrides allows the roadmap squash merge. Merging into `main` stays human-only.
+- req-012: each dispatched unit logs `In progress:` before it starts and `Done:` with its work. A resumed session stashes left-over changes and reruns an interrupted unit from its start.
 
 New files: `planifest-zero/standards/roadmap-standards.md`, `planifest-zero/templates/roadmap-entry.template.md`, `planifest-zero/scripts/roadmap-run.mjs`, and `planifest-zero/hooks/enforcement/merge-guard.mjs`. Setup wires `merge-guard` on Bash `PreToolUse`, which brings the hook count to seven.
 
@@ -33,6 +34,7 @@ Decisions:
 - ADR-004: a Node driver runs each step in a fresh session.
 - ADR-005: a roadmap step tags the squash commit after the merge.
 - ADR-006: roadmap steps self-confirm, and stage prefixes R-A to R-E are added.
+- ADR-007: progress markers name the unit in flight, and resume reruns an interrupted unit.
 
 ## Deviations
 

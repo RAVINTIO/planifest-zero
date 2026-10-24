@@ -117,7 +117,7 @@ Ship is the terminal phase. It runs three steps in order.
 
 ### Build Log
 
-From discovery onwards, the orchestrator maintains `plan/current/build-log.md`, a working file tracking per-phase build metrics. It is created from `planifest-zero/templates/build-log.template.md` at discovery and appended at each phase boundary. If a session is interrupted and resumed, the orchestrator appends rather than overwrites.
+From discovery onwards, the orchestrator maintains `plan/current/build-log.md`, a working file tracking per-phase build metrics. It is created from `planifest-zero/templates/build-log.template.md` at discovery and appended at each phase boundary. If a session is interrupted and resumed, the orchestrator appends rather than overwrites. Each dispatched unit also logs `In progress:` and `Done:` lines, so a resumed session reruns an interrupted unit. See "Progress Markers and Interrupted Units" in `planifest-zero/standards/agent-dispatch-standards.md`.
 
 The build log records per phase: model tier used, skills loaded, agents spawned, MCP tool calls, parallel task batch count.
 
