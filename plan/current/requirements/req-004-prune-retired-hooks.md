@@ -28,14 +28,17 @@ As a maintainer, I rerun setup and lose installed hooks that the pack retired, s
 - `.claude/hooks` is gitignored, so the change touches only the local install and no tracked file.
 
 ## Acceptance Criteria
-- [ ] (a) Given an installed `.claude/hooks/enforcement/phase-enum.mjs`, `check-telemetry-failures.mjs`, and `check-telemetry-receipts.mjs`, `setup.sh` deletes all three and prints one removal line each.
-- [ ] (b) The `setup.ps1` equivalent test deletes the same three files and prints the same lines.
-- [ ] (c) A hook file that is not on the retired list, such as `custom-local-hook.mjs`, survives both setup scripts.
-- [ ] (d) Every hook that the pack still ships is present after setup and is not named in any removal line.
-- [ ] (e) A second setup run prints no removal line.
-- [ ] (f) Given a `settings.json` entry that references `phase-enum`, after setup no entry in `settings.json` references any pruned file.
-- [ ] (g) `phase-enum` appears in the retired list of both `setup.sh` and `setup.ps1`.
-- [ ] (h) The existing hook-parity and cleanup tests (`test-0000035-req-001-hook-parity.sh`, `test-0000033-req-004-upgrade-cleanup.sh`, `test-0000041-req-002-003-ps1-cleanup-and-warning.ps1`) pass unchanged.
+- [ ] (a) Setup prunes the retired hooks. All of these hold:
+  - Given an installed `.claude/hooks/enforcement/phase-enum.mjs`, `check-telemetry-failures.mjs`, and `check-telemetry-receipts.mjs`, `setup.sh` deletes all three and prints one removal line each.
+  - The `setup.ps1` equivalent test deletes the same three files and prints the same lines.
+  - A second setup run prints no removal line.
+  - `phase-enum` appears in the retired list of both `setup.sh` and `setup.ps1`.
+- [ ] (b) Setup keeps every other hook and leaves no stale settings entry. All of these hold:
+  - A hook file that is not on the retired list, such as `custom-local-hook.mjs`, survives both setup scripts.
+  - Every hook that the pack still ships is present after setup and is not named in any removal line.
+  - Given a `settings.json` entry that references `phase-enum`, after setup no entry in `settings.json` references any pruned file.
+- [ ] (c) Existing tests still pass. All of these hold:
+  - The existing hook-parity and cleanup tests (`test-0000035-req-001-hook-parity.sh`, `test-0000033-req-004-upgrade-cleanup.sh`, `test-0000041-req-002-003-ps1-cleanup-and-warning.ps1`) pass unchanged.
 
 ## Dependencies
 - REQ-005 also edits `setup.sh` and `setup.ps1`. The two requirements touch different functions, but they share the files.

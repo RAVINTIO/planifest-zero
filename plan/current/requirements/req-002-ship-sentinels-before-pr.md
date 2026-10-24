@@ -34,13 +34,16 @@ As a maintainer, I merge a ship PR that carries no pipeline sentinels, so that `
 - The credential scan, the push-failure stop, and the merge-is-human-only rule keep their text and their position before `gh pr create`.
 
 ## Acceptance Criteria
-- [ ] (a) In `SKILL.md`, the line numbers of the headings rise in this order: Step 7, Step 8 clear sentinels, Step 9 PR, Step 10 final gate. No other `### Step` heading is renumbered.
-- [ ] (b) The Step 9 PR section mentions pushing the tag in option [1], and the Step 7 section no longer says that no tag is ever pushed outside a roadmap step.
-- [ ] (c) The Step 8 section names all three sentinel paths and the `git ls-files` check, and Step 10 still says to use the run mode read before the deletion, with the correct step number.
-- [ ] (d) A scripted run of the Step 8 commands in a temp repo that tracks the three sentinels leaves none tracked and creates one commit before a `git push` to a local bare remote. The pushed branch holds none of the sentinels.
-- [ ] (e) The R-D Advance section in `roadmap-standards.md` names the clear-sentinels step by its new number and still places it before `gh pr create`.
-- [ ] (f) Every assertion in the four pinned tests still runs after the update, and each only changes where the old and new step order differ. The tests are `test-0000023-req-002-marker-commit-lifecycle.sh`, `test-0000043-req-005-roadmap-advance.sh`, `test-0000042-req-002-gate-and-exception-stops.sh`, and `test-0000037-req-005-override-phase-names.sh`. No assertion is deleted or loosened.
-- [ ] (g) The credential-scan and push-failure text still sit in the Step 9 section, and the merge-guard hook tests still pass.
+- [ ] (a) The step order and text in `SKILL.md` and `roadmap-standards.md` are correct. All of these hold:
+  - In `SKILL.md`, the line numbers of the headings rise in this order: Step 7, Step 8 clear sentinels, Step 9 PR, Step 10 final gate. No other `### Step` heading is renumbered.
+  - The Step 9 PR section mentions pushing the tag in option [1], and the Step 7 section no longer says that no tag is ever pushed outside a roadmap step.
+  - The Step 8 section names all three sentinel paths and the `git ls-files` check, and Step 10 still says to use the run mode read before the deletion, with the correct step number.
+  - The R-D Advance section in `roadmap-standards.md` names the clear-sentinels step by its new number and still places it before `gh pr create`.
+- [ ] (b) The scripted Step 8 run behaves as specified. All of these hold:
+  - A scripted run of the Step 8 commands in a temp repo that tracks the three sentinels leaves none tracked and creates one commit before a `git push` to a local bare remote. The pushed branch holds none of the sentinels.
+- [ ] (c) Existing tests and Step 9 text stay intact. All of these hold:
+  - Every assertion in the four pinned tests still runs after the update, and each only changes where the old and new step order differ. The tests are `test-0000023-req-002-marker-commit-lifecycle.sh`, `test-0000043-req-005-roadmap-advance.sh`, `test-0000042-req-002-gate-and-exception-stops.sh`, and `test-0000037-req-005-override-phase-names.sh`. No assertion is deleted or loosened.
+  - The credential-scan and push-failure text still sit in the Step 9 section, and the merge-guard hook tests still pass.
 
 ## Dependencies
 - Backlog source 0000144 (`plan/current/backlog-sources/0000144-ship-sentinel-commit-after-pr.md`) holds the finding.

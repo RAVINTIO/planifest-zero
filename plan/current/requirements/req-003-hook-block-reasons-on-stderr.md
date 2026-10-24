@@ -28,13 +28,16 @@ As an agent blocked by a hook, I see the block reason, so that I fix the cause i
 - Each hook gets one new test that triggers a block and asserts the reason appears on stderr.
 
 ## Acceptance Criteria
-- [ ] (a) A `gate-write.mjs` block, triggered by a write to `src/` with no `plan/current/design.md`, exits 2 and writes a non-empty reason on stderr. The same reason stays on stdout.
-- [ ] (b) An `em-dash-guard.mjs` block, triggered by a write that holds an em dash, exits 2 and writes a non-empty reason on stderr. The same reason stays on stdout.
-- [ ] (c) A `ratchet-check.mjs` block, triggered by a write that removes an acceptance-criteria line while a loop is active, exits 2. Stdout still parses as the same JSON deny and stderr holds the plain reason.
-- [ ] (d) Every existing test that reads stdout from these hooks still passes unchanged, including `test-0000028-req-006-em-dash-guard.sh` and `test-0000017-req-002-ratchet-approve.sh`, which discard stderr with `2>/dev/null`.
-- [ ] (e) `test-gate-write-windows.sh`, `test-gate-write-windows.mjs`, and their copies under `planifest-zero/tests/regression/` pass. If any of them reads the hook's output streams, the requirement updates them without removing an assertion.
-- [ ] (f) No allow path writes to stderr, and no exit code changes. The tests above include one allowed write per hook that asserts empty stderr and exit 0.
-- [ ] (g) No existing test assertion is removed or weakened.
+- [ ] (a) Each hook block writes its reason to stderr and keeps its stdout and exit code. All of these hold:
+  - A `gate-write.mjs` block, triggered by a write to `src/` with no `plan/current/design.md`, exits 2 and writes a non-empty reason on stderr. The same reason stays on stdout.
+  - An `em-dash-guard.mjs` block, triggered by a write that holds an em dash, exits 2 and writes a non-empty reason on stderr. The same reason stays on stdout.
+  - A `ratchet-check.mjs` block, triggered by a write that removes an acceptance-criteria line while a loop is active, exits 2. Stdout still parses as the same JSON deny and stderr holds the plain reason.
+- [ ] (b) Existing tests that read the hook output still pass. All of these hold:
+  - Every existing test that reads stdout from these hooks still passes unchanged, including `test-0000028-req-006-em-dash-guard.sh` and `test-0000017-req-002-ratchet-approve.sh`, which discard stderr with `2>/dev/null`.
+  - `test-gate-write-windows.sh`, `test-gate-write-windows.mjs`, and their copies under `planifest-zero/tests/regression/` pass. If any of them reads the hook's output streams, the requirement updates them without removing an assertion.
+- [ ] (c) Allow paths and exit codes are unchanged and no assertion is weakened. All of these hold:
+  - No allow path writes to stderr, and no exit code changes. The tests above include one allowed write per hook that asserts empty stderr and exit 0.
+  - No existing test assertion is removed or weakened.
 
 ## Dependencies
 - None on other requirements in this feature.

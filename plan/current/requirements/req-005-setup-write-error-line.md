@@ -32,13 +32,16 @@ As a maintainer with a read-only `settings.json`, I see one fixed error line, so
 - The existing invalid-JSON line and its exit code do not change.
 
 ## Acceptance Criteria
-- [ ] (a) With a valid `.claude/settings.json` at mode `444`, `bash planifest-zero/setup.sh claude-code` exits 1. Stderr holds the fixed line with `.claude/settings.json` and no other line from node.
-- [ ] (b) In case (a), stderr and stdout hold no absolute path, no `EACCES`, and no `at ` stack frame. The file bytes are unchanged and no `.planifest-tmp` file remains.
-- [ ] (c) The same fault in a read-only `.claude/` folder, with no `settings.json` yet, produces the same fixed line and exit 1.
-- [ ] (d) A fault at the `merge_allowed_tools` write alone, reached by making the hook install write succeed first, also prints the fixed line once and exits 1.
-- [ ] (e) A telemetry cleanup run against a read-only `settings.json` still prints its one warning and does not stop setup, as the existing 0000041 tests assert.
-- [ ] (f) The matching PowerShell suite shows `setup.ps1` printing the same line text for a read-only `settings.json` and exiting 1, with no absolute path in the output.
-- [ ] (g) The invalid-JSON test cases of `test-0000039-req-001-002-sh-setup-hardening.sh` and `test-0000039-req-001-003-ps1-setup-hardening.ps1` still pass unchanged.
+- [ ] (a) A write fault prints the fixed error line and exits 1. All of these hold:
+  - With a valid `.claude/settings.json` at mode `444`, `bash planifest-zero/setup.sh claude-code` exits 1. Stderr holds the fixed line with `.claude/settings.json` and no other line from node.
+  - In case (a), stderr and stdout hold no absolute path, no `EACCES`, and no `at ` stack frame. The file bytes are unchanged and no `.planifest-tmp` file remains.
+  - The same fault in a read-only `.claude/` folder, with no `settings.json` yet, produces the same fixed line and exit 1.
+  - A fault at the `merge_allowed_tools` write alone, reached by making the hook install write succeed first, also prints the fixed line once and exits 1.
+- [ ] (b) Telemetry cleanup and PowerShell behave as specified. All of these hold:
+  - A telemetry cleanup run against a read-only `settings.json` still prints its one warning and does not stop setup, as the existing 0000041 tests assert.
+  - The matching PowerShell suite shows `setup.ps1` printing the same line text for a read-only `settings.json` and exiting 1, with no absolute path in the output.
+- [ ] (c) Existing tests still pass. All of these hold:
+  - The invalid-JSON test cases of `test-0000039-req-001-002-sh-setup-hardening.sh` and `test-0000039-req-001-003-ps1-setup-hardening.ps1` still pass unchanged.
 
 ## Dependencies
 - Backlog source 0000139 (`plan/current/backlog-sources/0000139-setup-sh-read-only-settings-stack-trace.md`) holds the finding.

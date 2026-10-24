@@ -34,13 +34,16 @@ As a maintainer, I park a feature without `park.mjs` writing or deleting files o
 - A normal park, with no symlink, behaves as before.
 
 ## Acceptance Criteria
-- [ ] (a) With a symlink committed to `origin/main` at `plan/backlog` that points to a folder outside the repo, park exits non-zero with the refusal message. The file `outside/0000900-park-demo/entry.md` keeps its bytes and still exists.
-- [ ] (b) With a real `plan/backlog` and a symlink committed at `plan/backlog/0000900-park-demo` that points outside the repo, park exits non-zero with the refusal message. The outside `entry.md` keeps its bytes and still exists.
-- [ ] (c) With a symlink committed at `plan/backlog/0000900-park-demo/entry.md`, park refuses and leaves the link target unchanged.
-- [ ] (d) In cases (a) to (c), the stub `gh` log holds no `pr create` line, `origin` gains no `chore/park-*` branch, and the working tree is on the feature branch afterwards.
-- [ ] (e) A symlink at the entry folder that points to another folder inside the repo is also refused.
-- [ ] (f) When the chore commit fails and the entry path holds a symlink, `removeEntry` does not delete through the link, and park rethrows the original commit error.
-- [ ] (g) The existing park tests `test-0000040-req-004-005-park.sh` and `test-0000041-req-004-park-commit-failure.sh` still pass unchanged, so the normal park and the commit-failure cleanup keep working.
+- [ ] (a) Park refuses every unsafe symlink and leaves its target unchanged. All of these hold:
+  - With a symlink committed to `origin/main` at `plan/backlog` that points to a folder outside the repo, park exits non-zero with the refusal message. The file `outside/0000900-park-demo/entry.md` keeps its bytes and still exists.
+  - With a real `plan/backlog` and a symlink committed at `plan/backlog/0000900-park-demo` that points outside the repo, park exits non-zero with the refusal message. The outside `entry.md` keeps its bytes and still exists.
+  - With a symlink committed at `plan/backlog/0000900-park-demo/entry.md`, park refuses and leaves the link target unchanged.
+  - In the three symlink cases above (a symlinked `plan/backlog`, a symlinked entry folder, and a symlinked `entry.md`), the stub `gh` log holds no `pr create` line, `origin` gains no `chore/park-*` branch, and the working tree is on the feature branch afterwards.
+  - A symlink at the entry folder that points to another folder inside the repo is also refused.
+- [ ] (b) Commit failure with a symlink at the entry path is handled safely. All of these hold:
+  - When the chore commit fails and the entry path holds a symlink, `removeEntry` does not delete through the link, and park rethrows the original commit error.
+- [ ] (c) Existing behaviour is unchanged. All of these hold:
+  - The existing park tests `test-0000040-req-004-005-park.sh` and `test-0000041-req-004-park-commit-failure.sh` still pass unchanged, so the normal park and the commit-failure cleanup keep working.
 
 ## Dependencies
 - Backlog source 0000142 (`plan/current/backlog-sources/0000142-park-entry-path-follows-symlinks.md`) holds the confirmed finding.
