@@ -1,6 +1,6 @@
 ---
-version: "0.11.0"
-feature: "0000151-hardening-efficiency-and-ci"
+version: "1.0.0"
+feature: "0000160-ravintio-rebrand"
 updated: "24 Oct 2026"
 ---
 # About
@@ -10,19 +10,19 @@ updated: "24 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.11.0` |
-| Last feature | `0000151-hardening-efficiency-and-ci` |
+| Version | `1.0.0` |
+| Last feature | `0000160-ravintio-rebrand` |
 | Updated | `24 Oct 2026` |
 
 ## What this is
 
-Planifest Zero is a specification-first pipeline for Claude Code. The
-repository holds one component, `planifest-zero`. It is a component pack of
+RAVINTIO Zero is a specification-first pipeline for Claude Code. The
+repository holds one component, `ravintio-zero`. It is a component pack of
 standards, skills, hooks, templates, schemas, and setup scripts.
 
 The pipeline runs five phases: discovery, plan, implement, validate and
 accept, and ship. Twelve skills drive it. Every change is a feature change
 and runs the same pipeline. A small change is a small run.
 
-Planifest Zero ships no telemetry and makes no outbound network calls.
+RAVINTIO Zero ships no telemetry and makes no outbound network calls.
 Observability belongs to the tool that runs the session.

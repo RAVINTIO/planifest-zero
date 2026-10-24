@@ -1,10 +1,10 @@
-# Planifest
+# RAVINTIO Zero
 
-Planifest Zero is a specification-first pipeline for Claude Code. It requires the agent to produce a complete, reviewable execution plan, validated against templates and schemas, before it generates code.
+RAVINTIO Zero is a specification-first pipeline for Claude Code. It requires the agent to produce a complete, reviewable execution plan, validated against templates and schemas, before it generates code.
 
-Planifest Zero is distinct from the product in the [`planifest/planifest-framework`](https://github.com/planifest/planifest-framework) repository. Planifest Zero began as a cut-down copy of that product.
+RAVINTIO Zero is distinct from RAVINTIO Framework, the product in the [`ravintio/planifest-framework`](https://github.com/ravintio/planifest-framework) repository. RAVINTIO Zero began as a cut-down copy of that product.
 
-Planifest Zero treats the human as product owner and architect. The agent is the implementer, working within constraints the human sets.
+RAVINTIO Zero treats the human as product owner and architect. The agent is the implementer, working within constraints the human sets.
 
 Version `0.5.0` targets Claude Code alone and follows the [Agent Skills specification](https://agentskills.io/specification).
 
@@ -16,9 +16,9 @@ Agile prefers iteration over heavy upfront planning. That preference is tuned to
 
 Agentic coding tools do not remove that bottleneck. They move it. Implementation is now cheap and fast, so waste shows up earlier. It arrives as plausible-but-wrong output built on unstated assumptions, rather than as a plan that aged out.
 
-Planifest applies agile's own instinct to the new bottleneck. Do not do work that will not survive contact with reality. Three mechanisms follow:
+RAVINTIO applies agile's own instinct to the new bottleneck. Do not do work that will not survive contact with reality. Three mechanisms follow:
 
-1. **The plan is the reviewable artifact.** When an agent writes the code, the prompt and plan largely determine the output. Planifest makes the plan explicit and reviewable, so architectural choices are visible before code exists.
+1. **The plan is the reviewable artifact.** When an agent writes the code, the prompt and plan largely determine the output. RAVINTIO makes the plan explicit and reviewable, so architectural choices are visible before code exists.
 2. **Context is recorded per component.** Each component keeps a manifest. Each feature keeps its execution plans and ADRs. That gives an agent or a human the context to modify a component, or the specification to rebuild it.
 3. **Gaps trigger questions, not guesses.** If the feature brief has gaps, the agent stops and asks rather than filling them with assumptions.
 
@@ -39,7 +39,7 @@ The pipeline runs five phases. Every change, however small, takes the same route
 
 Every agent response carries a phase prefix, from `P0 Discovery:` to `P4 Ship:`, so you always know where you are. Every artifact follows a template, so output stays consistent across sessions and models.
 
-To run several features from one approval, chart a roadmap. A driver script runs each step through P0 to P4, and the agent squash-merges each step into a roadmap branch. You merge the final roadmap PR. See [roadmap-standards.md](planifest-zero/standards/roadmap-standards.md).
+To run several features from one approval, chart a roadmap. A driver script runs each step through P0 to P4, and the agent squash-merges each step into a roadmap branch. You merge the final roadmap PR. See [roadmap-standards.md](ravintio-zero/standards/roadmap-standards.md).
 
 ---
 
@@ -47,7 +47,7 @@ To run several features from one approval, chart a roadmap. A driver script runs
 
 ```
 repo/
-├── planifest-zero/   ← The pack. Drop in, don't modify per-project.
+├── ravintio-zero/   ← The pack. Drop in, don't modify per-project.
 │   ├── skills/            ← Agent instructions: the 12 pipeline skills
 │   ├── templates/         ← File format templates for every artifact
 │   ├── schemas/           ← JSON Schema validation definitions
@@ -69,22 +69,22 @@ repo/
                              current by the implement phase, read by agents and humans.
 ```
 
-A typical feature produces five plan-phase artifacts by default: execution plan, requirements, scope, risk register, and domain glossary. OpenAPI spec, cost model, SLO definitions, and operational model arrive only when their trigger condition applies. See [feature-pipeline.md](planifest-zero/workflows/feature-pipeline.md).
+A typical feature produces five plan-phase artifacts by default: execution plan, requirements, scope, risk register, and domain glossary. OpenAPI spec, cost model, SLO definitions, and operational model arrive only when their trigger condition applies. See [feature-pipeline.md](ravintio-zero/workflows/feature-pipeline.md).
 
 ---
 
 ## Getting started
 
-See [getting-started.md](planifest-zero/getting-started.md) for step-by-step setup.
+See [getting-started.md](ravintio-zero/getting-started.md) for step-by-step setup.
 
 Quick start:
 
 ```bash
 # macOS or Linux
-./planifest-zero/setup.sh claude-code
+./ravintio-zero/setup.sh claude-code
 
 # Windows
-.\planifest-zero\setup.ps1 claude-code
+.\ravintio-zero\setup.ps1 claude-code
 ```
 
 The setup script copies skills into `.claude/skills/`, prunes retired skills, wires the enforcement hooks and git hooks, and writes the `CLAUDE.md` boot file.
@@ -105,7 +105,7 @@ One optional flag:
 
 **One route.** Every change is a feature change through the five-phase pipeline. There is no side door for "trivial" fixes, so every diff carries its plan and docs.
 
-**Decompose big initiatives.** Split work into features small enough for one agent session, then group features into waves. That is how Planifest manages context at scale.
+**Decompose big initiatives.** Split work into features small enough for one agent session, then group features into waves. That is how RAVINTIO manages context at scale.
 
 **Everything is traced.** Every artifact records the skill that produced it, the tool it ran in, and the model that generated it.
 
@@ -117,17 +117,17 @@ One optional flag:
 
 | Folder | Contents |
 |--------|----------|
-| [skills/](planifest-zero/skills/) | The 12 pipeline skills: the orchestrator, four phase skills, the TDD trio, and four support skills |
-| [templates/](planifest-zero/templates/) | File format templates for every pipeline artifact, each with a guide where applicable |
-| [schemas/](planifest-zero/schemas/) | Shared type definitions and the domain document envelope |
-| [standards/](planifest-zero/standards/) | Code quality, API design, database, deployment, infrastructure, monorepo, observability, and testing standards |
-| [setup/](planifest-zero/setup/) | The Claude Code tool config, as a `.sh` and `.ps1` pair |
-| [hooks/](planifest-zero/hooks/) | Enforcement hooks, git hooks, and the CI workflow |
-| [workflows/](planifest-zero/workflows/) | The feature pipeline route definition |
-| [scripts/](planifest-zero/scripts/) | Consistency checks, version derivation, regression promotion, and the roadmap driver |
-| [tests/](planifest-zero/tests/) | Per-feature test scripts plus the promoted regression pack |
-| [migrations/](planifest-zero/migrations/) | Pending and completed pack migrations, applied by the `planifest-migrator` skill |
-| [skills-inbox/](planifest-zero/skills-inbox/) | Drop-in intake for a new capability skill, processed at the next discovery |
+| [skills/](ravintio-zero/skills/) | The 12 pipeline skills: the orchestrator, four phase skills, the TDD trio, and four support skills |
+| [templates/](ravintio-zero/templates/) | File format templates for every pipeline artifact, each with a guide where applicable |
+| [schemas/](ravintio-zero/schemas/) | Shared type definitions and the domain document envelope |
+| [standards/](ravintio-zero/standards/) | Code quality, API design, database, deployment, infrastructure, monorepo, observability, and testing standards |
+| [setup/](ravintio-zero/setup/) | The Claude Code tool config, as a `.sh` and `.ps1` pair |
+| [hooks/](ravintio-zero/hooks/) | Enforcement hooks, git hooks, and the CI workflow |
+| [workflows/](ravintio-zero/workflows/) | The feature pipeline route definition |
+| [scripts/](ravintio-zero/scripts/) | Consistency checks, version derivation, regression promotion, and the roadmap driver |
+| [tests/](ravintio-zero/tests/) | Per-feature test scripts plus the promoted regression pack |
+| [migrations/](ravintio-zero/migrations/) | Pending and completed pack migrations, applied by the `ravintio-migrator` skill |
+| [skills-inbox/](ravintio-zero/skills-inbox/) | Drop-in intake for a new capability skill, processed at the next discovery |
 
 ---
 
@@ -146,20 +146,20 @@ These apply regardless of model or configuration:
 
 ## Limitations and non-goals
 
-Planifest trades upfront ceremony for traceability. That trade is not always worth making.
+RAVINTIO trades upfront ceremony for traceability. That trade is not always worth making.
 
 - **Overhead is real.** The pipeline scales down for small changes, but never to zero. Prototypes and exploratory work may not repay it.
-- **It depends on review discipline.** The PR gate is only a backstop if humans read the plans and the diffs. Planifest structures the review. It cannot perform it.
+- **It depends on review discipline.** The PR gate is only a backstop if humans read the plans and the diffs. RAVINTIO structures the review. It cannot perform it.
 - **Plans do not prevent all bad output.** A complete specification reduces assumption-driven errors. It does not guarantee correct code.
-- **No comparative benchmarks exist.** Nothing here measures outcomes with and without Planifest Zero. Claims about quality rest on design rationale and our own use.
-- **It is not a project management method.** Planifest structures agent sessions, not teams.
+- **No comparative benchmarks exist.** Nothing here measures outcomes with and without RAVINTIO Zero. Claims about quality rest on design rationale and our own use.
+- **It is not a project management method.** RAVINTIO structures agent sessions, not teams.
 - **The plan and docs parity check is a presence check.** CI confirms that some file under `plan/`, `docs/`, or a `component.yml` changed alongside `src/`. It does not verify that the file's content corresponds to the code change. Reviewers check that themselves.
 
 ---
 
 ## Status
 
-Planifest is under active development. Template and skill formats may change between versions.
+RAVINTIO is under active development. Template and skill formats may change between versions.
 
 ## Contributing
 
@@ -169,18 +169,18 @@ Issues and pull requests are welcome. Agent skills and templates are the areas m
 
 ## Documentation
 
-`planifest-docs` holds the human documentation: architecture notes, research, and the roadmap. Agents do not need these. They work from the skills and templates in `planifest-zero/`. It is available as a [git repository](https://github.com/planifest/planifest-docs) and a [GitHub Pages site](https://planifest.github.io/planifest-docs/).
+`planifest-docs` holds the human documentation: architecture notes, research, and the roadmap. Agents do not need these. They work from the skills and templates in `ravintio-zero/`. It is available as a [git repository](https://github.com/ravintio/planifest-docs) and a [GitHub Pages site](https://ravintio.github.io/planifest-docs/).
 
 | Document | Purpose |
 |----------|---------|
-| [Master Plan](https://github.com/planifest/planifest-docs/blob/main/planifest-docs/p001-planifest-master-plan.md) | Architecture overview |
-| [Product Concept](https://github.com/planifest/planifest-docs/blob/main/planifest-docs/p002-planifest-product-concept.md) | Vision and commercial model |
-| [Functional Decisions](https://github.com/planifest/planifest-docs/blob/main/planifest-docs/p003-planifest-functional-decisions.md) | Decision log with rationale |
-| [Pathway to Agentic Development](https://github.com/planifest/planifest-docs/blob/main/planifest-docs/p004-the-pathway-to-agentic-development.md) | Background and rationale |
-| [Pipeline](https://github.com/planifest/planifest-docs/blob/main/planifest-docs/p015-planifest-pipeline.md) | Pipeline phase descriptions |
-| [Roadmap](https://github.com/planifest/planifest-docs/blob/main/planifest-docs/p014-planifest-roadmap.md) | Deferred items and future features |
+| [Master Plan](https://github.com/ravintio/planifest-docs/blob/main/planifest-docs/p001-planifest-master-plan.md) | Architecture overview |
+| [Product Concept](https://github.com/ravintio/planifest-docs/blob/main/planifest-docs/p002-planifest-product-concept.md) | Vision and commercial model |
+| [Functional Decisions](https://github.com/ravintio/planifest-docs/blob/main/planifest-docs/p003-planifest-functional-decisions.md) | Decision log with rationale |
+| [Pathway to Agentic Development](https://github.com/ravintio/planifest-docs/blob/main/planifest-docs/p004-the-pathway-to-agentic-development.md) | Background and rationale |
+| [Pipeline](https://github.com/ravintio/planifest-docs/blob/main/planifest-docs/p015-planifest-pipeline.md) | Pipeline phase descriptions |
+| [Roadmap](https://github.com/ravintio/planifest-docs/blob/main/planifest-docs/p014-planifest-roadmap.md) | Deferred items and future features |
 
-These documents describe an older, multi-tool design of Planifest and do not yet match Planifest Zero.
+These documents describe an older, multi-tool design of RAVINTIO and do not yet match RAVINTIO Zero.
 
 ---
 

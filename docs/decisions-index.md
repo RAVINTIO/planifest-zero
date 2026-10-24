@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000151-hardening-efficiency-and-ci
+Last updated: 0000160-ravintio-rebrand
 
 ---
 
@@ -12,6 +12,8 @@ Last updated: 0000151-hardening-efficiency-and-ci
 Feature 0000030 emptied `plan/_archive/`, so the ADR files for features 0000001 through 0000029 no longer exist in the working tree. They remain in git history.
 
 This index restarts from 0000030. Decisions from earlier features still bind where their subject survives, but the ADR text has to be read from history.
+
+Rows for features before 0000160 use the product name and paths of their time. 0000160 renamed them.
 
 ---
 
@@ -64,6 +66,8 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | 0000031 ADR-001 (phase numbers and prefixes only, superseded in part) | 0000042 ADR-003 | Phases take the numbers P0 to P4 and number-plus-name prefixes. The five-phase contract and skill consolidation stand. |
 | 0000023 run-mode gate rules (in skills and tests, no ADR) | 0000042 ADR-002 | The two earlier run modes become `gated` and `autonomous`. |
 | 0000042 ADR-002 (merge rule only, amended) | 0000043 ADR-003 | The agent may squash-merge its own step PR into a `roadmap/*` branch after a clean P3 and green CI. Merging into `main` stays human-only. |
+| 0000031 ADR-002 (folder and product id only, superseded in part) | 0000160 ADR-001 | The pack folder is `ravintio-zero/` and the product id is `ravintio-zero`. |
+| 0000042 ADR-004 (brand word only, superseded in part) | 0000160 ADR-004 | A separate brand guard test blocks the earlier product name. The wording allowlist test for the retired word stands. |
 | 0000043 ADR-004 (driver child contract, extended) | 0000151 ADR-005 | Each roadmap child gets a model, an optional turn cap, a step log, and telemetry labels. The fresh `claude -p` session per step stands. |
 | 0000042 ADR-002 (exception stops, extended) | 0000151 ADR-004 | A sixth exception stop covers a library or service missing from the approved list. It applies to both run modes. |
 
@@ -168,3 +172,12 @@ This index restarts from 0000030. Decisions from earlier features still bind whe
 | ADR-006 | Orchestrator references split | accepted | Rarely used orchestrator sections move word for word to `references/orchestrator-*.md`. A line-preservation test proves no rule was lost. |
 | ADR-007 | Setup prunes retired hooks by list | accepted | Setup deletes an installed hook only if its name is on the retired list, which starts with `phase-enum`. |
 | ADR-008 | Park refuses symlinked entry paths | accepted | Park refuses any symlink in the entry path, checking with `lstat` and real-path containment before it creates, writes, or removes. |
+
+### Feature 0000160: ravintio-rebrand
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The RAVINTIO rename map | accepted | Prose writes RAVINTIO in block capitals. Identifiers use lowercase `ravintio` and variables use `RAVINTIO_`. History folders stay as written. Supersedes 0000031 ADR-002 in part. |
+| ADR-002 | Legacy aliases stay accepted through 1.x | accepted | Two roadmap variables and the em dash sentinel keep their earlier names as fallbacks. The new name wins. The fallbacks go at 2.0.0. |
+| ADR-003 | Consumer migration 0004 | accepted | Bash and PowerShell helpers move the overrides folder and the workflow, remove old markers, move the old pack folder to `.ravintio-backup/` instead of deleting it, and archive 0004. A migration with a false `Applies when:` condition stays pending. Setup stops while an old folder remains. |
+| ADR-004 | Brand guard test | accepted | A test fails on any tracked path or line outside history that holds the earlier product name, unless a path and line allowlist entry matches. A stale entry also fails. |

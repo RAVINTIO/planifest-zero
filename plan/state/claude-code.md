@@ -1,7 +1,7 @@
 # Setup config: claude-code
 
 > Tracked source of truth for active setup flags for **claude-code**
-> (0000032 ADR-001). The gitignored `.planifest-setup-flags` marker in
+> (0000032 ADR-001). The gitignored `.ravintio-setup-flags` marker in
 > this tool's config directory is a local completion-status cache, reconciled to
 > match this file on every `setup.sh`/`setup.ps1` run.
 

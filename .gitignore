@@ -3,11 +3,11 @@
 CLAUDE.md
 
 # Flags-used marker (0000020) - local per-tool install state, not source. Matches
-# at any depth (e.g. .claude/.planifest-setup-flags, .github/.planifest-setup-flags)
+# at any depth (e.g. .claude/.ravintio-setup-flags, .github/.ravintio-setup-flags)
 # since most tool directories above are gitignored wholesale but .github/skills/
 # and .opencode/ are narrower/absent patterns that would otherwise let this
 # specific file slip through untracked-but-not-ignored.
-.planifest-setup-flags
+.ravintio-setup-flags
 
 # Temporary local dirs
 _temp/*
