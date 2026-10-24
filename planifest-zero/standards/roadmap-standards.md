@@ -145,10 +145,10 @@ Every message in this stage begins with `R-D Advance:` after the `P4 Ship:` pref
       R-D Advance: Blocked: CI failed on PR #{n}. Fix the failing check, then tell me to retry.
       ```
 
-4. If every check is green, squash-merge the PR.
+4. If every check is green, squash-merge the PR. The `--delete-branch` flag removes the feature branch from `origin`.
 
    ```bash
-   gh pr merge --squash {n}
+   gh pr merge --squash --delete-branch {n}
    ```
 
 5. Read the PR's merge commit, fetch the roadmap branch, then tag that commit with the step's version and push the tag.
@@ -166,7 +166,7 @@ Consumer CI must trigger on pull requests to `roadmap/**`. The pack's workflow t
 
 6. Hand off to the next session.
    1. Check out the roadmap branch and run `git pull --ff-only origin roadmap/{id}-{slug}`.
-   2. Delete the local feature branch with `git branch -D`. It is redundant once squash-merged.
+   2. If the local feature branch still exists, delete it with `git branch -D`. It is redundant once squash-merged, and `gh` may already have removed it.
    3. If a step with Status `pending` remains, end the session with the line below. The driver starts the next session.
 
       ```
