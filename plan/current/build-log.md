@@ -117,9 +117,9 @@ P2: Implement: Complete: 15 of 15 requirements green (2026-10-24T15:09:29Z).
 | Start | `2026-10-24T15:09:53Z` |
 | Model tier | primary (orchestration and security review), sonnet subagents |
 | Skills loaded | planifest-validate-and-accept |
-| Agents spawned | `pending` |
+| Agents spawned | `4` (opus: security review. sonnet: execution verification, coverage audit, S-001 fix) |
 | MCP calls | `0` |
-| Parallel task batches | `pending` |
+| Parallel task batches | `2` |
 | Notes | Draft PR opened early so CI runs the PowerShell suites, which cannot run locally (pwsh absent). Ship updates that PR at Step 9. |
 
 - In progress: P3 semantic coverage and library audit (2026-10-24T15:09:53Z)
@@ -131,3 +131,6 @@ P2: Implement: Complete: 15 of 15 requirements green (2026-10-24T15:09:29Z).
 - Done: P3 security review (2026-10-24T15:15:52Z). 1 High, 1 Medium, 5 Low. Self-correct cycle 1: fixed S-001 (symlinked step logs, High) and S-003 in 8b75d94, S-002 (assert.ps1 recursion), S-004, and S-007 in fab38dd. S-005 and S-006 accepted. No unmitigated critical or high finding, so no stop.
 Self-correct cycle 2 (CI): both Windows jobs failed one assertion, req-011 (a) SKILL.md byte budget. Root cause: CRLF checkout on Windows. Fix: the .ps1 test counts bytes with LF endings.
 CI on PR #23 at 4a7821e: all five jobs pass. windows-powershell runs 5.1 and 7 in parallel, 3 min 5 s and 4 min 15 s, so the job takes 4 min 15 s against up to 7 min 15 s before. Timing lines: setup.ps1 210.1 s, workspace copy 42.1 s, pwsh start-up 25.5 s across both jobs. Start-up does not dominate, so batching stays deferred. Backlog 0000159 filed for the setup.ps1 cost.
+- Done: P3 execution verification (2026-10-24T15:38:33Z). 45 criteria: 44 verified, 0 failed, REQ-015 (c) verified in CI.
+Acceptance evidence written to plan/current/acceptance-evidence.md (autonomous run, no gate stop).
+P3: Validate and Accept: Complete: checks green locally and in CI, security risk low after fixes, 0 failed criteria (2026-10-24T15:38:33Z).
