@@ -33,13 +33,16 @@ As the person paying for runs, I see the context size at each gate and a prompt 
 - The rule leaves every existing gate check, approval question, and exception stop unchanged.
 
 ## Acceptance Criteria
-- [ ] (a) The orchestrator `SKILL.md`, or a `references/` file that it names in the Pack Index, contains the figure `150,000` and the words `/clear`.
-- [ ] (b) The text says the statement happens at each phase gate in an interactive run and names the P0 design gate.
-- [ ] (c) The text says how the agent estimates size, with the host-reported usage first and a labelled estimate second.
-- [ ] (d) The text says the statement is advisory and never blocks a gate.
-- [ ] (e) The text says a continuous run and a roadmap step do not report context size.
-- [ ] (f) A prose check test greps for (a) to (e) and passes. The test also keeps every assertion in the existing gate tests, such as `test-0000042-req-002-gate-and-exception-stops.sh`, unchanged and passing.
-- [ ] (g) No existing assertion about a gate, an approval question, or an exception stop is removed or loosened.
+- [ ] (a) Prose content. Every check below holds.
+  - The orchestrator `SKILL.md`, or a `references/` file that it names in the Pack Index, contains the figure `150,000` and the words `/clear`.
+  - The text says the statement happens at each phase gate in an interactive run and names the P0 design gate.
+  - The text says how the agent estimates size, with the host-reported usage first and a labelled estimate second.
+  - The text says the statement is advisory and never blocks a gate.
+  - The text says a continuous run and a roadmap step do not report context size.
+- [ ] (b) Prose check test. Every check below holds.
+  - A prose check test greps for every check in (a) and passes. The test also keeps every assertion in the existing gate tests, such as `test-0000042-req-002-gate-and-exception-stops.sh`, unchanged and passing.
+- [ ] (c) Existing gate assertions. Every check below holds.
+  - No existing assertion about a gate, an approval question, or an exception stop is removed or loosened.
 
 ## Dependencies
 - REQ-011 may move text out of the orchestrator `SKILL.md`. Keep this rule inline, next to the gate text, so a moved section never hides it.

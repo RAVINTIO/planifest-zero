@@ -36,14 +36,17 @@ As the person paying for runs, I want the full test suite to print only what I n
 - Without the variable, output stays as it is today.
 
 ## Acceptance Criteria
-- [ ] (a) With `PLANIFEST_TEST_QUIET=1`, a passing `assert.sh` suite and a passing `assert.ps1` suite print no `PASS:` line. Each prints its summary and exits 0.
-- [ ] (b) With `PLANIFEST_TEST_QUIET=1`, a failing assertion in a fixture suite still prints its `FAIL:` line and its expected and actual values. The output also names the failing suite before the first `FAIL:` line. A test checks this for the bash and PowerShell helpers.
-- [ ] (c) The same fixture suite exits with the same non-zero code in quiet and normal mode. A passing fixture exits 0 in both.
-- [ ] (d) A failing `Assert-Contains` prints its needle and haystack in normal and quiet mode.
-- [ ] (e) With the variable unset, the fixture output matches the output before this change, including `PASS:` lines and banners.
-- [ ] (f) The `run-tests.sh` and `run-tests.ps1` headers mention `PLANIFEST_TEST_QUIET`. A test greps for it.
-- [ ] (g) `planifest-refactor/SKILL.md`, `planifest-validate-and-accept/SKILL.md`, and every other skill that runs the full suite name `PLANIFEST_TEST_QUIET=1` in the command. A test greps each file that contains `run-tests`.
-- [ ] (h) The existing suites pass in normal and quiet mode with no assertion removed or relaxed.
+- [ ] (a) Quiet mode behaviour. Every check below holds.
+  - With `PLANIFEST_TEST_QUIET=1`, a passing `assert.sh` suite and a passing `assert.ps1` suite print no `PASS:` line. Each prints its summary and exits 0.
+  - With `PLANIFEST_TEST_QUIET=1`, a failing assertion in a fixture suite still prints its `FAIL:` line and its expected and actual values. The output also names the failing suite before the first `FAIL:` line. A test checks this for the bash and PowerShell helpers.
+  - The same fixture suite exits with the same non-zero code in quiet and normal mode. A passing fixture exits 0 in both.
+  - A failing `Assert-Contains` prints its needle and haystack in normal and quiet mode.
+- [ ] (b) Unchanged normal mode. Every check below holds.
+  - With the variable unset, the fixture output matches the output before this change, including `PASS:` lines and banners.
+- [ ] (c) Documentation and existing suites. Every check below holds.
+  - The `run-tests.sh` and `run-tests.ps1` headers mention `PLANIFEST_TEST_QUIET`. A test greps for it.
+  - `planifest-refactor/SKILL.md`, `planifest-validate-and-accept/SKILL.md`, and every other skill that runs the full suite name `PLANIFEST_TEST_QUIET=1` in the command. A test greps each file that contains `run-tests`.
+  - The existing suites pass in normal and quiet mode with no assertion removed or relaxed.
 
 ## Non-functional requirements
 - A passing full run of `PLANIFEST_TEST_QUIET=1 bash planifest-zero/tests/run-tests.sh` prints under 10 KB. The measure is `| wc -c`, and the 0000148 baseline is 208,724 bytes.

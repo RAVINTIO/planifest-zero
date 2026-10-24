@@ -34,13 +34,16 @@ As the person paying for runs, I want each headless roadmap step to run on a che
 - `planifest-zero/standards/roadmap-standards.md` documents both variables, the default, and the stop behaviour in a section on the driver environment.
 
 ## Acceptance Criteria
-- [ ] (a) With a stub `claude` and neither variable set, the stub logs `-p --permission-mode auto --model sonnet Run roadmap step 1`, with no `--max-turns`.
-- [ ] (b) With `PLANIFEST_ROADMAP_MODEL=haiku` and `PLANIFEST_ROADMAP_MAX_TURNS=40`, the stub logs `--model haiku --max-turns 40` before the prompt.
-- [ ] (c) For each of `0`, `-3`, `1.5`, `abc`, and `10 --foo` in `PLANIFEST_ROADMAP_MAX_TURNS`, the driver exits 1, prints a `R-C Run: Blocked:` line, runs no step, and creates no lock.
-- [ ] (d) For a model value with a space, a leading hyphen, or a shell metacharacter, the driver exits 1 with the same effect as (c).
-- [ ] (e) When the stub exits non-zero with a cap set, the driver prints one `R-C Run: Blocked:` line that names `PLANIFEST_ROADMAP_MAX_TURNS={n}`, releases the lock, and exits 1.
-- [ ] (f) The header comment of `roadmap-run.mjs` and `roadmap-standards.md` each contain both variable names and the word `sonnet`.
-- [ ] (g) Every earlier stop in `test-0000043-req-007-roadmap-driver.sh` and `test-0000043-req-012-progress-markers-and-resume.sh` still passes, with only their expected argument string updated for `--model sonnet`.
+- [ ] (a) Driver arguments and input validation. Every check below holds.
+  - With a stub `claude` and neither variable set, the stub logs `-p --permission-mode auto --model sonnet Run roadmap step 1`, with no `--max-turns`.
+  - With `PLANIFEST_ROADMAP_MODEL=haiku` and `PLANIFEST_ROADMAP_MAX_TURNS=40`, the stub logs `--model haiku --max-turns 40` before the prompt.
+  - For each of `0`, `-3`, `1.5`, `abc`, and `10 --foo` in `PLANIFEST_ROADMAP_MAX_TURNS`, the driver exits 1, prints a `R-C Run: Blocked:` line, runs no step, and creates no lock.
+  - For a model value with a space, a leading hyphen, or a shell metacharacter, the driver exits 1 with the same effect as (c).
+- [ ] (b) Failure handling. Every check below holds.
+  - When the stub exits non-zero with a cap set, the driver prints one `R-C Run: Blocked:` line that names `PLANIFEST_ROADMAP_MAX_TURNS={n}`, releases the lock, and exits 1.
+- [ ] (c) Documentation and existing tests. Every check below holds.
+  - The header comment of `roadmap-run.mjs` and `roadmap-standards.md` each contain both variable names and the word `sonnet`.
+  - Every earlier stop in `test-0000043-req-007-roadmap-driver.sh` and `test-0000043-req-012-progress-markers-and-resume.sh` still passes, with only their expected argument string updated for `--model sonnet`.
 
 ## Dependencies
 - Assumption: `claude -p` accepts both `--model` and `--max-turns`, and exits non-zero when the turn cap ends a session.

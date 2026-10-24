@@ -25,10 +25,13 @@ As the person paying for runs, I want large web pages read outside the main sess
 - P2 edits the source standard only, then reruns setup so the installed copies match.
 
 ## Acceptance Criteria
-- [ ] (a) The standard contains the WebFetch rule, and the rule names `sonnet` or `haiku`, a subagent, and a returned extract. A prose check greps for these terms in one section.
-- [ ] (b) The standard states that the dispatch passes `model`.
-- [ ] (c) After setup, the installed copies under `.claude/skills/*/references/agent-dispatch-standards.md` match the source.
-- [ ] (d) The existing test suite passes with no assertion removed or relaxed.
+- [ ] (a) Standard content. Every check below holds.
+  - The standard contains the WebFetch rule, and the rule names `sonnet` or `haiku`, a subagent, and a returned extract. A prose check greps for these terms in one section.
+  - The standard states that the dispatch passes `model`.
+- [ ] (b) Installed copies. Every check below holds.
+  - After setup, the installed copies under `.claude/skills/*/references/agent-dispatch-standards.md` match the source.
+- [ ] (c) Existing tests. Every check below holds.
+  - The existing test suite passes with no assertion removed or relaxed.
 
 ## Dependencies
 - REQ-007 edits other sections of the same file.

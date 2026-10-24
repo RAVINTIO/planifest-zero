@@ -33,13 +33,16 @@ As the person paying for runs, I want every subagent to run on its intended tier
 - The installed copies under `.claude/skills/*/references/` come from `setup.sh` through the `bundle_standards` frontmatter. P2 edits only the source files, then reruns setup.
 
 ## Acceptance Criteria
-- [ ] (a) `agent-dispatch-standards.md` contains no `claude-sonnet-4-6` or `claude-haiku-4-5`. Its tier table and examples use `sonnet` and `haiku`. A test greps for the absence and presence.
-- [ ] (b) The standard contains a sentence that an Agent call without `model` inherits the parent's model, and a rule that every call passes `model`. A test greps for both.
-- [ ] (c) `planifest-implement/SKILL.md` names `recommended_model` as the source of the model for the test-writer, implementer, and refactor dispatches. A test greps for it in the TDD loop section.
-- [ ] (d) `planifest-implement/SKILL.md` states that a haiku unit failing twice retries on `sonnet`, and that the five-attempt escalation is unchanged. A test greps for both.
-- [ ] (e) The build log holds one line that records whether Claude Code honours a skill-level `model` field, with the evidence.
-- [ ] (f) After rerunning setup, no file under `.claude/skills/*/references/agent-dispatch-standards.md` differs from the source. A test compares them.
-- [ ] (g) The existing test suite passes with no assertion removed or relaxed.
+- [ ] (a) Standard and skill wording. Every check below holds.
+  - `agent-dispatch-standards.md` contains no `claude-sonnet-4-6` or `claude-haiku-4-5`. Its tier table and examples use `sonnet` and `haiku`. A test greps for the absence and presence.
+  - The standard contains a sentence that an Agent call without `model` inherits the parent's model, and a rule that every call passes `model`. A test greps for both.
+  - `planifest-implement/SKILL.md` names `recommended_model` as the source of the model for the test-writer, implementer, and refactor dispatches. A test greps for it in the TDD loop section.
+  - `planifest-implement/SKILL.md` states that a haiku unit failing twice retries on `sonnet`, and that the five-attempt escalation is unchanged. A test greps for both.
+- [ ] (b) Build log and installed copies. Every check below holds.
+  - The build log holds one line that records whether Claude Code honours a skill-level `model` field, with the evidence.
+  - After rerunning setup, no file under `.claude/skills/*/references/agent-dispatch-standards.md` differs from the source. A test compares them.
+- [ ] (c) Existing tests. Every check below holds.
+  - The existing test suite passes with no assertion removed or relaxed.
 
 ## Dependencies
 - The ship, validate, and escalation rules in `planifest-implement/SKILL.md` stay as they are.
