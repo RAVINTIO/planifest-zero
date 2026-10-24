@@ -63,7 +63,7 @@ for each requirement:
 
 After 5 failed attempts on one requirement, stop in both run modes with `P2 Implement: Blocked: {requirement} still fails after 5 attempts. Review the escalation and choose the next step.` Then report: the requirement ID, the test file, what each attempt tried and why it stayed RED, your root-cause assessment, and a recommended action. Wait for human direction.
 
-Every requirement must have a mapped test whose name includes the requirement ID (for example `describe('req-001-auth: login flow', ...)`). Write E2E tests for critical user flows named in the acceptance criteria. Write to disk after each subagent. Do not accumulate work in memory across requirements.
+Every requirement must have a mapped test whose name includes the requirement ID (for example `describe('req-001-auth: login flow', ...)`). Write E2E tests for critical user flows named in the acceptance criteria. Write to disk after each subagent, and mark each one per "Progress Markers and Interrupted Units" in `planifest-zero/standards/agent-dispatch-standards.md`. Do not accumulate work in memory across requirements.
 
 ## Rules
 

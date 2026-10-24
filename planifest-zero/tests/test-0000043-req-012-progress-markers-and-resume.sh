@@ -23,9 +23,9 @@ assert_contains 'commit it before the unit starts' "$PM" "req-012 (a): the In pr
 assert_contains '- Done: {unit} ({ISO-8601 timestamp})' "$PM" "req-012 (a): standard defines the Done: line"
 assert_contains 'same commit as the unit' "$PM" "req-012 (a): the Done: line lands with the unit's work"
 assert_contains 'REQ-001 test-writer' "$PM" "req-012 (a): standard gives a unit name example"
-assert_contains 'Progress Markers and Interrupted Units' "$IMPL" "req-012 (a): implement skill points to the standard"
-assert_contains 'Progress Markers and Interrupted Units' "$VAL" "req-012 (a): validate skill points to the standard"
-assert_contains 'In progress:' "$TPL" "req-012 (a): build-log template documents the In progress: line"
+assert_contains 'Progress Markers and Interrupted Units' "$(cat "$IMPL")" "req-012 (a): implement skill points to the standard"
+assert_contains 'Progress Markers and Interrupted Units' "$(cat "$VAL")" "req-012 (a): validate skill points to the standard"
+assert_contains 'In progress:' "$(cat "$TPL")" "req-012 (a): build-log template documents the In progress: line"
 
 echo ""
 echo "=== req-012 (b): resume reruns an interrupted unit ==="

@@ -92,3 +92,50 @@ Agent({ description: "Implement REQ-002: {one-liner}", subagent_type: "general-p
 The **dispatching agent** (orchestrator or phase skill placing the `Agent()` call) pre-computes the next available backlog ID before dispatch, per the Backlog ID sequence convention (`planifest-orchestrator/SKILL.md` discovery start actions, backlog pickup step: highest ID ever allocated, including picked-up and discarded entries, plus one), and passes it explicitly in the subagent's prompt as the ID to use if a discovery needs filing. Subagent self-lookup of `plan/backlog/` at file-time is rejected: picked-up entries are deleted from `plan/backlog/` once folded into a design, so a subagent scanning only that directory would systematically undercount the true high-water mark and risk reusing a retired ID.
 
 When dispatching multiple subagents in a single parallel batch, each MUST receive a distinct pre-assigned backlog ID (or a reserved contiguous block, one per subagent); no two subagents may independently file under the same ID.
+
+---
+
+## Progress Markers and Interrupted Units
+
+A unit is one piece of dispatched work: a TDD subagent in P2, a self-correct cycle in P3, or any subagent dispatched under this standard. Progress markers let a fresh session tell which unit a stop interrupted. The build log alone then says where to restart.
+
+### Marking a unit
+
+1. Before the unit starts, append this line to `plan/current/build-log.md` and commit it before the unit starts:
+
+   ```
+   - In progress: {unit} ({ISO-8601 timestamp})
+   ```
+
+   `{unit}` names the requirement and the stage, for example `REQ-001 test-writer` or `P3 cycle 2`.
+
+2. When the unit finishes, append this line in the same commit as the unit's work:
+
+   ```
+   - Done: {unit} ({ISO-8601 timestamp})
+   ```
+
+In a parallel batch, write one `In progress:` line per unit in a single commit before the batch starts. Each unit's `Done:` line lands with that unit's work.
+
+### Resuming an interrupted unit
+
+On resume, read the build log. An `In progress:` line with no later matching `Done:` line marks an interrupted unit. For each one:
+
+1. If the working tree has uncommitted changes, stash them. Never discard them.
+
+   ```bash
+   git stash push --include-untracked -m "interrupted {unit}"
+   ```
+
+2. Rerun the unit from its start.
+3. Append this line and commit it with the rerun's first commit:
+
+   ```
+   - Resumed after interruption: {unit} rerun, uncommitted changes in stash "interrupted {unit}"
+   ```
+
+   If the tree was clean, end the line with `no uncommitted changes` instead.
+
+Never commit uncommitted files that an interrupted unit left behind without rerunning the unit. A stop can cut a file off partway through, and nothing records whether it finished. The stash keeps the files for the human to inspect.
+
+The roadmap driver reads only `Blocked:` and `Resolved:` lines. Progress markers never stop it.
