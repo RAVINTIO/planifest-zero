@@ -1,6 +1,6 @@
 ---
-version: "0.10.0"
-feature: "0000043-autonomous-roadmaps"
+version: "0.11.0"
+feature: "0000151-hardening-efficiency-and-ci"
 updated: "24 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "24 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.10.0` |
-| Last feature | `0000043-autonomous-roadmaps` |
+| Version | `0.11.0` |
+| Last feature | `0000151-hardening-efficiency-and-ci` |
 | Updated | `24 Oct 2026` |
 
 ## What this is

@@ -2,7 +2,7 @@
 id: "planifest-zero"
 name: "Planifest Zero"
 feature: "0000151-hardening-efficiency-and-ci"
-version: "0.10.0"
+version: "0.11.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
