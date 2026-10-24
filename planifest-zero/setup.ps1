@@ -568,6 +568,9 @@ function Remove-LeftoverSettingsTmp {
 # Telemetry hook module names a pre-0000033 project may still reference from
 # .claude/settings.json (0000033 req-004, ADR-002 decision 1). The modules
 # themselves are gone, so every entry naming one is a broken reference.
+# This is also the retired-hooks list: Install-EnforcementHooks deletes an
+# installed hook on it and never one absent from it (0000151 ADR-007).
+# Retiring a hook means adding its name here and in setup.sh.
 $TelemetryHookModules = @(
     'emit-phase-start',
     'emit-phase-end',
@@ -577,7 +580,8 @@ $TelemetryHookModules = @(
     'resolve-phase',
     'record-telemetry-failure',
     'check-telemetry-failures',
-    'check-telemetry-receipts'
+    'check-telemetry-receipts',
+    'phase-enum'
 )
 $TelemetryMcpMatcher = 'mcp__structured-telemetry-mcp__emit_event'
 
@@ -674,6 +678,27 @@ function Remove-LegacyTelemetryWiring {
     }
 }
 
+function Remove-RetiredHooks {
+    # Mirror of prune_retired_hooks in setup.sh (0000151 req-004, ADR-007).
+    # Deletes each installed hook whose base name is on $TelemetryHookModules,
+    # checks the whole hooks tree, and prints one line per removal.
+    param([string]$HooksRootRel)
+    $root = Join-Path $ProjectRoot $HooksRootRel
+    if (-not (Test-Path -LiteralPath $root -PathType Container)) { return }
+    foreach ($name in $TelemetryHookModules) {
+        $found = @(Get-ChildItem -LiteralPath $root -Recurse -File -Filter "$name.mjs" -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -ceq "$name.mjs" })
+        foreach ($file in $found) {
+            try {
+                Remove-Item -LiteralPath $file.FullName -Force -ErrorAction Stop
+                $rel = $file.FullName.Substring($ProjectRoot.TrimEnd('\', '/').Length + 1) -replace '\\', '/'
+                Write-Host "  - removed $rel"
+            }
+            catch { }
+        }
+    }
+}
+
 function Install-EnforcementHooks {
     # Copy the enforcement hook modules and wire all six into settings.json.
     # Always runs — no flag required.
@@ -702,6 +727,8 @@ function Install-EnforcementHooks {
         Copy-Item -Path $_.FullName -Destination $destFile -Force
         Write-Host "  + $HooksDirRel/$($_.Name)"
     }
+
+    Remove-RetiredHooks -HooksRootRel (Split-Path -Parent $HooksDirRel)
 
     Merge-EnforcementHookSettings -SettingsPath $settings -HooksDir $HooksDirRel -SettingsRel $SettingsRel
 }

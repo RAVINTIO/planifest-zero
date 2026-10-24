@@ -308,7 +308,11 @@ remove_leftover_settings_tmp() {
 # Telemetry hook module names a pre-0000033 project may still reference from
 # .claude/settings.json (0000033 req-004, ADR-002 decision 1). The modules
 # themselves are gone, so every entry naming one is a broken reference.
-TELEMETRY_HOOK_MODULES="emit-phase-start emit-phase-end emit-event-receipt emit-event context-pressure resolve-phase record-telemetry-failure check-telemetry-failures check-telemetry-receipts"
+# This is also the retired-hooks list: install_enforcement_hooks deletes an
+# installed hook on it and never one absent from it (0000151 ADR-007).
+# Retiring a hook means adding its name here and in setup.ps1.
+TELEMETRY_HOOK_MODULES="emit-phase-start emit-phase-end emit-event-receipt emit-event context-pressure resolve-phase record-telemetry-failure check-telemetry-failures check-telemetry-receipts phase-enum"
+RETIRED_HOOK_NAMES="$TELEMETRY_HOOK_MODULES"
 TELEMETRY_MCP_MATCHER="mcp__structured-telemetry-mcp__emit_event"
 
 remove_legacy_telemetry_wiring() {
@@ -412,6 +416,24 @@ remove_legacy_telemetry_wiring() {
   return 0
 }
 
+prune_retired_hooks() {
+  # Delete each installed hook whose base name is on RETIRED_HOOK_NAMES
+  # (0000151 req-004, ADR-007). Checks the whole hooks tree, enforcement/
+  # included, prints one line per removal, and prints nothing otherwise.
+  local hooks_root_rel="$1"   # e.g. .claude/hooks
+  local root="$PROJECT_ROOT/$hooks_root_rel"
+  [ -d "$root" ] || return 0
+  local name file
+  for name in $RETIRED_HOOK_NAMES; do
+    while IFS= read -r file; do
+      [ -n "$file" ] || continue
+      if rm -f "$file" 2>/dev/null; then
+        echo "  - removed ${file#"$PROJECT_ROOT"/}"
+      fi
+    done < <(find "$root" -type f -name "$name.mjs" 2>/dev/null)
+  done
+}
+
 install_enforcement_hooks() {
   # Copy enforcement hooks and wire PreToolUse/UserPromptSubmit (REQ-002, REQ-006, REQ-008).
   # Includes auto-trigger-orchestrator.mjs (REQ-002), gate-write.mjs, check-design.mjs,
@@ -444,6 +466,8 @@ install_enforcement_hooks() {
     cp "$script" "$dest/$script_name"
     echo "  + $hooks_dir_rel/$script_name"
   done
+
+  prune_retired_hooks "$(dirname "$hooks_dir_rel")"
 
   # Wire into settings.json (requires node; jq fallback not needed, node is always available)
   #
