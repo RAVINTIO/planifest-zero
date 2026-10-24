@@ -64,9 +64,9 @@ ALLOWLIST=(
   # The separate product RAVINTIO Framework.
   ".${TAB}RAVINTIO Framework"
   # The separate product's repo.
-  ".${TAB}ravintio/ravintio[-]framework"
+  ".${TAB}ravintio/planifest[-]framework"
   # The old folder of the RAVINTIO Framework copy, which 0000030 renamed and 0000037 removed.
-  ".${TAB}ravintio[-]framework/|\"ravintio-\"\"framework\"|\"ravintio\"\"-framework\""
+  ".${TAB}planifest[-]framework/|\"planifest-\"\"framework\"|\"planifest\"\"-framework\""
   # History ids of promoted tests in the regression manifest.
   "^ravintio-zero/tests/regression/regression-manifest\\.json\$${TAB}\"sourceFeature\": \"[0-9]{7}-framework-"
   # The 0000030 feature id framework-cut-down in the decisions index.

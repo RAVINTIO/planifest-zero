@@ -20,6 +20,12 @@ BASE="$SCRIPT_DIR/fixtures/0000151-orchestrator-skill-base.md"
 TMP="$(mktemp -d -t ravintio_0000151_req011_XXXXXX)"
 trap 'rm -rf "$TMP"' EXIT
 
+# The fixture predates the 0000160 rename. Compare its lines after the same
+# brand rewrite that 0000160 applied to SKILL.md.
+BASE_RENAMED="$TMP/base-renamed.md"
+sed -e "s/PLANIFEST/RAVINTIO/g" -e "s/Planifest\([A-Z]\)/Ravintio\1/g" \
+  -e "s/Planifest/RAVINTIO/g" -e "s/planifest/ravintio/g" "$BASE" > "$BASE_RENAMED"
+
 # Print every non-blank, non-heading line of $1 that no later file holds as a
 # whole line. Usage: missing_lines base file...
 missing_lines() {
@@ -42,7 +48,7 @@ echo "=== (a) no rule line was lost ==="
 REF_FILES=$(ls "$REFS"/orchestrator-*.md 2>/dev/null)
 assert_equals "yes" "$([ -n "$REF_FILES" ] && echo yes || echo no)" "reference files exist"
 # shellcheck disable=SC2086
-MISSING="$(missing_lines "$BASE" "$SKILL" $REF_FILES)"
+MISSING="$(missing_lines "$BASE_RENAMED" "$SKILL" $REF_FILES)"
 assert_equals "" "$MISSING" "every base line is in SKILL.md or a reference file"
 
 echo "=== (a) mutation: removing one moved line makes the check fail ==="
@@ -54,7 +60,7 @@ mkdir -p "$TMP/mut"
 for f in $REF_FILES; do cp "$f" "$TMP/mut/"; done
 grep -vF -- "$MUT_LINE" "$MUT_FILE" > "$TMP/mut/orchestrator-scope-lock.md"
 # shellcheck disable=SC2046
-MUT_MISSING="$(missing_lines "$BASE" "$SKILL" $(ls "$TMP"/mut/orchestrator-*.md))"
+MUT_MISSING="$(missing_lines "$BASE_RENAMED" "$SKILL" $(ls "$TMP"/mut/orchestrator-*.md))"
 assert_contains "Confirmation is human-only" "$MUT_MISSING" "the check reports the removed line"
 
 echo "=== (b) inline sections keep their original text ==="
@@ -62,12 +68,12 @@ section_lines() { # file heading: lines of the section, without the heading
   awk -v h="$2" '$0==h {on=1; next} on && /^## / {exit} on {print}' "$1"
 }
 for h in '## Hard Limits' '## Resume Detection' '## Exception Stops' '## Phase Invocation (P1 to P4)'; do
-  section_lines "$BASE" "$h" > "$TMP/sec.base"
+  section_lines "$BASE_RENAMED" "$h" > "$TMP/sec.base"
   assert_equals "yes" "$([ -s "$TMP/sec.base" ] && echo yes || echo no)" "base has $h"
   assert_equals "" "$(missing_lines "$TMP/sec.base" "$SKILL")" "$h: every base line is still in SKILL.md"
 done
 for h in '### Discovery Start Actions'; do
-  awk -v h="$h" '$0==h {on=1; next} on && /^### / {exit} on {print}' "$BASE" > "$TMP/sec.base"
+  awk -v h="$h" '$0==h {on=1; next} on && /^### / {exit} on {print}' "$BASE_RENAMED" > "$TMP/sec.base"
   assert_equals "" "$(missing_lines "$TMP/sec.base" "$SKILL")" "$h: every base line is still in SKILL.md"
 done
 for h in '## Hard Limits' '## Resume Detection' '### Discovery Start Actions' '## Exception Stops' '## Phase Invocation (P1 to P4)' '## Subagent Dispatch' '## Pack Index (JIT Loading)'; do

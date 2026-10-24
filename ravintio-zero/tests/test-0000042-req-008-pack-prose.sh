@@ -35,8 +35,8 @@ GENERIC=(
   "\\| ${CAP} \\|"                      # stack tables in templates and standards
   "${CAP}-specific terms"               # domain-glossary-guide.md
   "RAVINTIO ${CAP}"                    # the separate product
-  "ravintio/ravintio-${WORD}"           # the separate product's repo
-  "ravintio-${WORD}/"                    # the old folder that 0000030 renamed
+  "ravintio/planifest-${WORD}"           # the separate product's repo
+  "planifest-${WORD}/"                    # the old folder that 0000030 renamed
   "${WORD}-cut-down"                      # the 0000030 feature id
 )
 
@@ -97,7 +97,7 @@ echo "=== req-008 (a): README.md and docs/about.md ==="
 
 assert_equals "" "$(stray README.md)" "req-008 (a): README.md never calls RAVINTIO Zero by the old word"
 assert_equals "" "$(stray docs/about.md)" "req-008 (a): docs/about.md never calls RAVINTIO Zero by the old word"
-assert_equals "yes" "$(grep -qiE "distinct from .*ravintio/ravintio-${WORD}" "$REPO_ROOT/README.md" && echo yes || echo no)" \
+assert_equals "yes" "$(grep -qiE "distinct from .*ravintio/planifest-${WORD}" "$REPO_ROOT/README.md" && echo yes || echo no)" \
   "req-008 (a): README.md says RAVINTIO Zero is distinct from the separate product"
 
 echo ""

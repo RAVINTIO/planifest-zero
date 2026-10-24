@@ -18,7 +18,7 @@ REPO_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
 make_workspace() {
   local dir
   dir=$(mktemp -d -t ravintio_0000034_req003_test_XXXXXX)
-  cp -r "$1" "$dir/ravintio-zero"
+  cp -r "$1" "$dir/${2:-ravintio-zero}"
   git init "$dir" >/dev/null 2>&1
   echo "$dir"
 }
@@ -65,10 +65,12 @@ cd /; rm -rf "$WS"
 # checkout has no tags, so fall back to the canonical format check.
 if git -C "$REPO_ROOT" rev-parse -q --verify "refs/tags/v0.4.0" >/dev/null 2>&1; then
   OLD_DIR=$(mktemp -d -t ravintio_0000034_req003_old_XXXXXX)
-  git -C "$REPO_ROOT" archive v0.4.0 ravintio-zero | tar -x -C "$OLD_DIR"
-  WS=$(make_workspace "$OLD_DIR/ravintio-zero")
+  # v0.4.0 predates the 0000160 rename, so its pack folder has the old name.
+  OLD_PACK="planifest-zero"
+  git -C "$REPO_ROOT" archive v0.4.0 "$OLD_PACK" | tar -x -C "$OLD_DIR"
+  WS=$(make_workspace "$OLD_DIR/$OLD_PACK" "$OLD_PACK")
   cd "$WS"
-  bash ravintio-zero/setup.sh claude-code >/dev/null 2>&1
+  bash "$OLD_PACK/setup.sh" claude-code >/dev/null 2>&1
   OLD_SETTINGS="$(cat .claude/settings.json)"
   cd /; rm -rf "$WS" "$OLD_DIR"
   # merge-guard (0000043 req-006) postdates v0.4.0, so drop its entry first.
