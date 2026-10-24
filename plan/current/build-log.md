@@ -59,3 +59,6 @@ P0 exchange (design): Q: Confirm the design? / A: Confirmed as written, with the
 | Notes | Requirements in two agents, ADRs in one, scope, risk, and glossary in one. The execution plan follows the requirements. |
 
 - In progress: P1 drafting batch (2026-10-24T19:19:37Z)
+- Done: P1 drafting batch (2026-10-24T19:21:32Z)
+- Self-correction: consistency check flagged a cross-feature ADR number in ADR-003. Reworded to name the decision. Avoidable: yes, the drafting prompt did not say the check reads every ADR-NNN as local.
+P1 Plan: Complete: 6 requirements, 4 ADRs, scope, risk register, glossary, execution plan. Consistency check clean. Autonomous, no gate stop.
