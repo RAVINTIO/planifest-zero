@@ -146,3 +146,18 @@ P3: Validate and Accept: Complete: checks green locally and in CI, security risk
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Notes | Autonomous run. PR #23 exists as a draft from P3, so Step 9 updates it and marks it ready. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `28` (P0 4, P1 11, P2 9, P3 4, P4 0) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `4` (P0, P1, P2, P3) |
+| Primary tier agent calls | `1` (opus security review). The orchestrator ran on opus throughout |
+| Cheaper tier agent calls | `27` (sonnet) |
+| Self-corrections | `4` (P2: setup.ps1 suite fix-up, workflow shell. P3: security fixes, Windows byte count) |
+| Phases skipped | none |
