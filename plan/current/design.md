@@ -48,6 +48,8 @@ Filing a draft roadmap has no prefix. It happens on any branch and in any phase,
 - `status`: `draft`, `active`, `blocked`, or `done`
 - `position`: the next step to run
 - stop conditions
+- `Unpredicted additive changes`: `pre-approved` or `stop`, the answer to Chart's fallback question
+- a `## Schema changes` table with `Step`, `Component`, `Change`, and `Kind` (`additive`, `destructive`, or `none`). The human approves its rows at Chart. Added at P3 by a human-confirmed design change.
 
 | Step | Feature id | Backlog entries | Bump | Version | Status |
 |------|------------|-----------------|------|---------|--------|
@@ -124,6 +126,7 @@ Added at P3. These are the confirmed component's paths, so gate-write can match 
   - R-A Chart to R-E Delivery and their prefixes
   - `plan/current-roadmap/`
   - Self-confirmed P0 for roadmap steps, with a per-step bump
+  - Chart-time approval of predicted schema changes, with an opt-in fallback for unpredicted additive changes
   - PR against `roadmap/*`, squash merge after green CI, tag after merge
   - merge-guard, registered by `setup.sh` and `setup.ps1`
   - `roadmap-run.mjs` with a lock file, offered by R-B Activate

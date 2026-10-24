@@ -29,6 +29,8 @@ Hard Limit 10 fixes the phase numbers P0 to P4. The new labels must not read as 
 
 **Single approval.** The human's confirmation at R-A Chart is the one approval for the chain. A runtime check reads `plan/current-roadmap/roadmap.md` with `status: active` before P0 may self-confirm. Outside an active roadmap, P0 keeps both human confirmations.
 
+**Chart-time schema approval.** Amended 2026-10-24, after the live acceptance run stopped at migration M-003 in step 1. Chart predicts each step's schema change into a `## Schema changes` table in `roadmap.md`. The human approves, edits, or strikes each row. The chart confirmation approves the rows left. That approval meets Hard Limit 3 for a step proposal that matches a row: same step, component, field names, and types, and Kind `additive`. The step still writes the proposal and marks it `approved (roadmap chart)`. Chart also asks an opt-in fallback question that pre-approves additive changes it didn't predict. Any other proposal takes the normal exception stop. Hard Limit 4 is unchanged, so a destructive change always stops, even when a row lists it.
+
 **Stage prefixes.** The stages use these prefixes beside the phase prefixes:
 
 | Prefix | Stage |
@@ -48,6 +50,8 @@ Both sets use the form `{prefix} {Status}: {one-liner}`. The letters A to E are 
 | Keep human confirmation at every step's P0 | Highest control. No new rule | The chain stops at every step, so no run is autonomous | Fails the purpose of a roadmap. The human approved the chain at R-A Chart |
 | Skip P0 and run P1 straight from the backlog | Fewer artifacts per step | P1 to P4 and the hooks need a confirmed design and a brief | Hard Limit 1 requires `plan/current/design.md` before code |
 | Name the first stage `R-A Plan:` | Matches the natural word for the stage | Clashes with `P1 Plan:` in logs and searches | The human rejected it. `R-A Chart:` carries no clash |
+| Stop at every schema change in a step | Strictest reading of Hard Limit 3 | Any roadmap that touches data stops at each such step | The human is present at Chart and can approve predicted changes by name |
+| Blanket pre-approval of every additive change | No survey cost at Chart | The human never sees the changes by name | Kept only as an opt-in fallback for changes Chart can't predict |
 | Use plain stage names with no letter prefix | Shorter messages | A reader cannot tell a stage from a phase, and search is harder | The human wants the two sets distinct and ordered |
 
 ## Affected Components
@@ -62,11 +66,13 @@ Both sets use the form `{prefix} {Status}: {one-liner}`. The letters A to E are 
 - A chain of steps runs with no coaching stops after one human approval.
 - A vague entry still stops the run, so the agent does not guess.
 - Stage prefixes make roadmap lines easy to find and never clash with a phase prefix.
+- The human approves predicted schema changes by name while present, so an additive change does not stop the chain.
 
 **Negative:**
 - The agent confirms its own design inside a roadmap. A weak backlog entry can produce a weak design that no human reads before the PR.
 - Readers now learn two prefix sets, and the stage letters sit beside the phase numbers.
 - The confirmation line gains a second valid form, so any check on it must accept both.
+- Chart costs more, because it reads the data contracts and drafts each step's change. A later step can still find a change Chart didn't predict, and that step stops unless the human opted into the fallback.
 
 **Risks:**
 - A self-confirmed design might drift from what the human meant at R-A Chart. The roadmap PR review is the final check.
