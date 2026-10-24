@@ -44,3 +44,4 @@ Scope Lock (error path): The migration stops and moves nothing when both pack fo
 Scope Lock (cross-session continuity): Branch commits and build-log progress markers allow resume, and every migration step skips work already done. [source: draft-accepted]
 Scope Lock complete. All four scenario paths captured.
 Version: 1.0.0 (major, breaking rename for consumers; confirmed in the depth exchange)
+P0 exchange (design): Q: Confirm the design? / A: Confirmed as written, with the 1.x legacy aliases. (2026-10-24T19:19:25Z)

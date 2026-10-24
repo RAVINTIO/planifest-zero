@@ -1,7 +1,7 @@
 ---
 title: "Feature Brief - ravintio-rebrand"
 summary: "Rebrand Planifest Zero to RAVINTIO Zero across code, docs, and GitHub."
-status: "draft"
+status: "approved"
 version: "1.0.0"
 ---
 # Feature Brief - ravintio-rebrand
