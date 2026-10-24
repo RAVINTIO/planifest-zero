@@ -126,3 +126,19 @@ Fixtures used `bash ravintio-zero/migrations/migrate-ravintio-rename.sh`. All `.
 ## Clean-up
 
 Scratch directories under `.../scratchpad/p3-verify` were removed after this report was written. `git status` was clean apart from this file.
+
+## Re-verification after P3 cycle 4
+
+The helpers changed after the first pass, so REQ-005 ran again end to end on 2026-10-24. A scratch git repo under the scratchpad held a real v0.11.0 install, made with `git archive v0.11.0` and its own `setup.sh claude-code`. It also held a user file in the old overrides folder and a workflow with a pack variable and a consumer secret.
+
+| Step | Observed |
+|---|---|
+| New `setup.sh` before the migration | Printed the old-folder error and the helper to run. Installed nothing. |
+| `migrate-ravintio-rename.sh` | Exit 0. Moved the overrides and the workflow, removed both old markers, moved the old pack to `.ravintio-backup/`, and archived 0004. |
+| Rerun of the helper | Exit 0, "Nothing to do". |
+| New `setup.sh` after the migration | Exit 0. `.claude/skills/` held only the 12 `ravintio-*` skills. `core.hooksPath` was `ravintio-zero/hooks`. |
+| Overrides | The user file kept its content. |
+| Workflow | The pack variable became `RAVINTIO_REQUIRE_PWSH`. The consumer secret `PLANIFEST_DEPLOY_TOKEN` stayed unchanged. |
+| Git | `.ravintio-backup/` was in `.git/info/exclude`. Git staged the workflow as a rename and the old pack as removed. |
+
+REQ-005 criteria (a), (b), and (c) stay verified for Bash. CI run the PowerShell helper test on Windows PowerShell 5.1, PowerShell 7 on Windows, and PowerShell 7 on Linux.
