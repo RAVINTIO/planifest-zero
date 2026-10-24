@@ -29,6 +29,7 @@ As an agent, I write files outside the project without a design, so that hooks g
 - [ ] An in-project target outside the declared component paths still exits 2, and `plan/current/` writes still need the sentinel.
 - [ ] A write through an in-project symlink whose real path is inside the project still gets the checks.
 - [ ] A write through an in-project symlink whose real path is outside the project exits 0.
+- [ ] A target path outside the project whose real path is inside the project, through a symlink, still gets the checks.
 - [ ] `ravintio-zero/tests/test-gate-write-windows.mjs` and `ravintio-zero/tests/test-gate-write-windows.sh` still pass, so Windows path forms work.
 
 ## Dependencies
