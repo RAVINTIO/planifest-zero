@@ -77,7 +77,7 @@ A roadmap is a chain of feature steps that the human approves once. The standard
 - **Driver.** `ravintio-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `R-C Run: Blocked:`. Each step writes `plan/.roadmap-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.roadmap`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/roadmap-labels.mjs`.
 - **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `roadmap/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
 
-The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. Four support skills complete the set of twelve: ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, and ravintio-refresh-setup.
+The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. Five support skills complete the set of thirteen: ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, ravintio-refresh-setup, and ravintio-file-backlog.
 
 ---
 
