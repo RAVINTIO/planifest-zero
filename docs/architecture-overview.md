@@ -41,7 +41,7 @@ On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the 
 **Exception stops.** Both modes stop and print `{prefix} Blocked: {action needed}` in these cases:
 
 - A requirement or check still fails after 5 attempts.
-- P2 needs a schema change.
+- P2 needs a schema change. In a roadmap step, a change that matches a chart-approved additive row does not stop.
 - The P3 security review finds an unmitigated critical or high issue.
 - A push or `gh pr create` fails.
 - A possible credential appears in a file the run will commit, or in the PR body.
@@ -61,7 +61,7 @@ Discovery sizes each release against a budget. The optional `releaseSize` field 
 A roadmap is a chain of feature steps that the human approves once. The standard `planifest-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `R-A Chart:`, `R-B Activate:`, `R-C Run:`, `R-D Advance:`, and `R-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
 
 - **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/roadmap.md` on any branch. The one active roadmap lives in `plan/current-roadmap/roadmap.md` on the branch `roadmap/{id}-{slug}`. Roadmap ids share the backlog sequence.
-- **Chart and activate.** R-A Chart runs on `main` and ends with the human's single approval. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
+- **Chart and activate.** R-A Chart runs on `main` and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the roadmap's `## Schema changes` table. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
 - **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the roadmap branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
 - **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the tag still comes before the PR.
 - **Delivery.** R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The human merges it.

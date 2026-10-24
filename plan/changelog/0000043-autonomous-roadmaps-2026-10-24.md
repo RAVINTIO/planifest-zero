@@ -9,7 +9,7 @@
 Planifest Zero can now run a chain of feature steps from one human approval. The human charts a roadmap once, and a driver script runs each step through P0 to P4 to a squash merge and tag. It ends in one roadmap PR to `main`.
 
 - req-001: a draft roadmap is filed at `plan/roadmap/{id}-{slug}/roadmap.md` on any branch, as a backlog entry is. Ids share the backlog sequence.
-- req-002: R-A Chart plans a roadmap from a new idea or a draft. The human's confirmation is the single approval.
+- req-002: R-A Chart plans a roadmap from a new idea or a draft. The human's confirmation is the single approval. Chart lists each step's predicted schema change, and the human approves the rows by name.
 - req-003: R-B Activate cuts `roadmap/{id}-{slug}`, writes `plan/current-roadmap/roadmap.md`, and refuses without a remote, `gh` access, or when a roadmap is already active.
 - req-004: a step's P0 builds the brief from its backlog entries and self-confirms the design and scope lock.
 - req-005: R-D Advance raises the step PR against the roadmap branch, waits for green CI, and squash-merges it.

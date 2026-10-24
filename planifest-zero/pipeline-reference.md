@@ -95,7 +95,7 @@ It writes `gated` or `autonomous` to `plan/.run-mode` and logs the choice in the
 Both modes stop with a `Blocked:` message on five escalations:
 
 - A requirement or check still fails after 5 attempts.
-- Implement needs a schema change.
+- Implement needs a schema change. In a roadmap step, a change that matches a chart-approved additive row does not stop.
 - The security review finds an unmitigated critical or high issue.
 - A push or `gh pr create` fails.
 - A possible credential appears in a file the run will commit, or in the PR body.
