@@ -139,3 +139,21 @@ None of these block the skill. Each is a gap a reader meets while following it.
 4. Step 1 creates `plan/backlog/` before step 4's same-slug check. This is harmless, because the check can only match when the folder already exists, but the order reads oddly.
 5. Step 4 says "If the chosen id is taken, take the next free id". Highest plus one cannot be taken unless two runs overlap, so the rule only guards a race. Say so.
 6. Step 4 matches the slug only in `plan/backlog/`. A slug that exists in `plan/_archive/` under another id writes a duplicate-named entry. Decide whether that is intended.
+
+## Re-run after cycles 1 and 2 and REQ-011
+
+- REQ-008 b and REQ-009 a: **verified.** Cycle 1 shortened the `gate-write` bullet in `standard-boot.md`. Setup copies that file into `CLAUDE.md`, so the size suite now passes 64 of 64 with `CLAUDE.md` present.
+- REQ-003 b: **verified, now covered.** `test-0000164-req-008-no-process-substitution-loops.sh` asserts that each herestring loop starts with an empty-line skip.
+- REQ-004 b, REQ-004 c, and REQ-005 a, PowerShell side: **verified in CI.** Both Windows PowerShell 5.1 and PowerShell 7 jobs pass on PR #27 at `9f42ef9`.
+- Skill-instruction findings 1 to 6: findings 1 to 4 and 6 are fixed in `ravintio-file-backlog/SKILL.md`. Finding 5 needs no change, because the rule guards a race.
+
+### REQ-011 version relabel
+
+- AC 1: **verified.** A `grep` for "remove at 2.0.0" over `ravintio-zero/` and `docs/` finds only the guard's own planted-file assertion.
+- AC 2: **verified.** `version_at_least_0_12` returns yes for 0.12.0 and 0.13.0 and no for 0.11.0 (REQ-011 suite, 9 of 9).
+- AC 3: **verified.** The guard flags a planted "remove at 2.0.0" file and ignores unrelated version strings.
+
+### Full suite
+
+- Local, Bash 3.2 under `env -i`: 119 feature and 19 regression suites pass. 12 PowerShell suites were skipped because `pwsh` is absent.
+- CI on PR #27 at `9f42ef9`: all five jobs pass.
