@@ -41,6 +41,8 @@ import { readStdin } from "./read-stdin.mjs";
 
 const EM_DASH = "—";
 const SENTINEL = "<!-- ravintio-em-dash-allow -->";
+// Legacy alias, remove at 2.0.0 (0000160 ADR-002).
+const LEGACY_SENTINEL = "<!-- planifest-em-dash-allow -->";
 
 // Mirrors REQ-006's scope list and gate-write.mjs's ALWAYS_PERMITTED_PREFIXES shape.
 const SCOPED_PREFIXES = [
@@ -104,7 +106,7 @@ try {
   if (!isScoped(relTarget)) process.exit(0);
 
   // Sentinel bypass (ADR-003): reusable, agent- or human-writable.
-  if (content.includes(SENTINEL)) process.exit(0);
+  if (content.includes(SENTINEL) || content.includes(LEGACY_SENTINEL)) process.exit(0);
 
   const hits = findEmDashLines(content);
   if (hits.length === 0) process.exit(0);

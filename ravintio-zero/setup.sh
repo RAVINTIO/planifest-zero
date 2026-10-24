@@ -1105,6 +1105,24 @@ remove_legacy_setup_config() {
   return 0
 }
 
+# Remove the marker files the pre-rename setup wrote (0000160 REQ-002).
+# A symlink is skipped, never followed. Legacy, remove at 2.0.0 (ADR-002).
+remove_old_markers() {
+  local tool_dir="$1" skills_dir="$2" rel
+  for rel in "$tool_dir/.planifest-setup-flags" "$skills_dir/.planifest-manifest"; do
+    local path="$PROJECT_ROOT/$rel"
+    if [ -L "$path" ]; then
+      echo "  ! Warning: skipped symlink $rel" >&2
+    elif [ -f "$path" ]; then
+      if rm -f "$path" 2>/dev/null; then
+        echo "  - removed $rel"
+      else
+        echo "  ! Warning: could not remove $rel" >&2
+      fi
+    fi
+  done
+}
+
 # Write the flags-used marker recording what was applied at install time (REQ-008, ADR-002).
 # Called only after a tool's setup completes successfully. set -euo pipefail means a failed
 # setup_tool call aborts the script before this function is ever reached, satisfying
@@ -1189,6 +1207,16 @@ if [ -z "$TOOL" ]; then
   exit 0
 fi
 
+# Stop before installing anything if an old-brand folder is still present
+# (0000160 REQ-002, ADR-003). The migration renames it first.
+for old_folder in "planifest-zero" "planifest-overrides"; do
+  if [ -e "$PROJECT_ROOT/$old_folder" ]; then
+    echo "! Error: found the old folder $old_folder/ in this project." >&2
+    echo "  Run ravintio-zero/migrations/migrate-ravintio-rename.sh first, then rerun setup." >&2
+    exit 1
+  fi
+done
+
 echo "RAVINTIO Setup"
 echo "Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â"
 
@@ -1205,6 +1233,7 @@ fi
 run_tool_setup() {
   local t="$1"
   setup_tool "$t"
+  remove_old_markers "$(dirname "$TOOL_SKILLS_DIR")" "$TOOL_SKILLS_DIR"
   if write_setup_config_override "$t"; then
     remove_legacy_setup_config "$t"
   fi

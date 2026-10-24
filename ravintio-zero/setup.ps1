@@ -1113,6 +1113,34 @@ function Append-OverrideInstructions {
     Write-Host "  ~ $BootFilePath updated with override instructions"
 }
 
+# Remove the marker files the pre-rename setup wrote (0000160 REQ-002).
+# A symlink or junction is skipped, never followed. Legacy, remove at 2.0.0
+# (ADR-002).
+function Remove-OldMarkers {
+    param([string]$ToolDirRel, [string]$SkillsDirRel)
+    $oldMarkers = @(
+        ($ToolDirRel + '/.planifest-setup-flags'),
+        ($SkillsDirRel + '/.planifest-manifest')
+    )
+    foreach ($rel in $oldMarkers) {
+        $path = Join-Path $ProjectRoot $rel
+        $item = Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+        if ($null -eq $item) { continue }
+        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            [Console]::Error.WriteLine("  ! Warning: skipped symlink $rel")
+            continue
+        }
+        if ($item.PSIsContainer) { continue }
+        try {
+            Remove-Item -LiteralPath $path -Force -ErrorAction Stop
+            Write-Host "  - removed $rel"
+        }
+        catch {
+            [Console]::Error.WriteLine("  ! Warning: could not remove $rel")
+        }
+    }
+}
+
 function Invoke-RavintioSetup {
     param($ToolName)
 
@@ -1212,6 +1240,7 @@ function Invoke-RavintioSetup {
     # rather than erroring under $ErrorActionPreference = 'Stop'.
     if ($toolConfig -and $toolConfig.SkillsDir) {
         $toolDir = Split-Path -Parent $toolConfig.SkillsDir
+        Remove-OldMarkers -ToolDirRel $toolDir -SkillsDirRel $toolConfig.SkillsDir
         if (Write-SetupConfigOverride -ToolName $ToolName) {
             Remove-LegacySetupConfig -ToolName $ToolName
         }
@@ -1344,6 +1373,16 @@ if (-not $Tool) {
     Write-Host "Run from the repository root."
     Write-Host "Each tool's config: ravintio-zero\setup\[tool].ps1"
     exit 0
+}
+
+# Stop before installing anything if an old-brand folder is still present
+# (0000160 REQ-002, ADR-003). The migration renames it first.
+foreach ($oldFolder in @('planifest-zero', 'planifest-overrides')) {
+    if (Test-Path -LiteralPath (Join-Path $ProjectRoot $oldFolder)) {
+        [Console]::Error.WriteLine("! Error: found the old folder $oldFolder/ in this project.")
+        [Console]::Error.WriteLine("  Run ravintio-zero/migrations/migrate-ravintio-rename.ps1 first, then rerun setup.")
+        exit 1
+    }
 }
 
 Write-Host "RAVINTIO Setup"
