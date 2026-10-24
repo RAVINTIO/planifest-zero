@@ -95,6 +95,7 @@ ALLOWLIST=(
 
   # --- Tests that name the 0000030 folder, which 0000031 renamed ---
   "^ravintio-zero/tests/test-0000031-req-00[14]-[a-z-]+\\.sh\$${TAB}^OLD_NAME=\"planifest\"\"-framework\"\$"
+  "^ravintio-zero/tests/test-0000037-req-00[14]-[a-z-]+\\.sh\$${TAB}^OLD_FOLDER=\"planifest-\"\"framework\"\$"
 
   # --- Setup detection of leftover folders and old markers ---
   # Setup detects and reports leftover old folders.

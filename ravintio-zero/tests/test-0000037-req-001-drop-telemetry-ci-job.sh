@@ -18,7 +18,7 @@ if [ ! -f "$WORKFLOW" ]; then
 fi
 
 # Built by concatenation, so this file does not name the old folder itself.
-OLD_FOLDER="ravintio-""framework"
+OLD_FOLDER="planifest-""framework"
 
 count() {
   grep -cE "$1" "$WORKFLOW" || true

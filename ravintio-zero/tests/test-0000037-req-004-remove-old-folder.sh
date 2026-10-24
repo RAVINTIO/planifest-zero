@@ -19,7 +19,7 @@ if [ ! -d "$REPO/.git" ] && ! git -C "$REPO" rev-parse --git-dir >/dev/null 2>&1
 fi
 
 # Built by concatenation, so this file does not name the old folder itself.
-OLD_FOLDER="ravintio-""framework"
+OLD_FOLDER="planifest-""framework"
 
 echo "=== req-004 (a): the old folder is gone ==="
 assert_equals "no" "$([ -e "$REPO/$OLD_FOLDER" ] && echo yes || echo no)" \
