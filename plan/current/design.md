@@ -174,6 +174,7 @@ None
 | REQ-008 - roadmap-delivery | planifest-implement | Archive and roadmap PR in the ship skill |
 | REQ-009 - roadmap-resume-and-prefixes | planifest-implement | Resume detection and prefix tables in the orchestrator and `pipeline-reference.md` |
 | REQ-010 - merge-carve-out-governance | planifest-implement | Prose changes to the orchestrator merge rule, `custom-001`, and `custom-004` |
+| REQ-011 - chart-time-schema-approval | planifest-implement | Chart and step rules in the roadmap standard, the template table, and grep tests. Added at P3 |
 
 P1 may split these further to meet the three-criteria limit per requirement.
 

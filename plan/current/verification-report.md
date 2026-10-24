@@ -16,14 +16,12 @@ Each `planifest-zero/tests/test-0000043-req-001` to `req-010` script ran alone. 
 | 002 | (a) R-A Chart, synced main, pre-flight, one at a time, pull-in/leave/discard | `test-0000043-req-002-roadmap-chart.sh`, "req-002 (a)" | yes |
 | 002 | (b) malformed draft flagged, never parsed | same, "req-002 (b)" | yes |
 | 002 | (c) coaching, missing entry stops, confirmation is approval | same, "req-002 (c)" | yes |
-| 002 | (d) data-contract survey, `## Schema changes` table, approve, edit, or strike rows, opt-in fallback with default `stop` | same, "req-002 (d)" | yes |
 | 003 | (a) three preflight checks, one-active refusal, `Blocked:` before changes | `test-0000043-req-003-roadmap-activate.sh`, "req-003 (a)" | yes |
 | 003 | (b) branch from main, active roadmap file, draft deleted, one commit, push | same, "req-003 (b)" | yes |
 | 003 | (c) driver offer, background task, parent must not edit tree | same, "req-003 (c)" | yes |
 | 004 | (a) branch from roadmap branch, brief and deletion in one commit, `autonomous` unasked | `test-0000043-req-004-roadmap-step-discovery.sh`, "req-004 (a)" | yes |
 | 004 | (b) `draft-accepted (roadmap)`, stop only when too vague | same, "req-004 (b)" | yes |
 | 004 | (c) `Bump` values, default `minor`, downgrade block | same, "req-004 (c)" | yes |
-| 004 | (d) proposal still written, `approved (roadmap chart)` on a match, normal stop otherwise, destructive always stops | same, "req-004 (d)" | yes |
 | 005 | (a) `--base roadmap/{id}-{slug}`, `merged`, Version, `position` in same PR | `test-0000043-req-005-roadmap-advance.sh`, "req-005 (a)" | yes |
 | 005 | (b) green checks, squash, fetch, tag, push tag, `Blocked:` | same, "req-005 (b)" and "(d)" | yes, requirement text updated to match the build |
 | 005 | (c) tag-before-PR and no-merge outside a roadmap | same, "req-005 (c)" | yes |
@@ -42,6 +40,9 @@ Each `planifest-zero/tests/test-0000043-req-001` to `req-010` script ran alone. 
 | 010 | (a) `roadmap/*`, `--squash`, clean P3 and green CI in four files | `test-0000043-req-010-merge-carve-out-governance.sh`, "req-010 (a)" | yes |
 | 010 | (b) main and roadmap PR stay human-only | same, "req-010 (b)" | yes |
 | 010 | (c) `merge-guard` named, unconditional text gone | same, "req-010 (c)" | yes |
+| 011 | (a) data-contract survey, `## Schema changes` table, approve, edit, or strike rows, confirmation approves rows left | `test-0000043-req-011-chart-time-schema-approval.sh`, "req-011 (a)" | yes |
+| 011 | (b) opt-in fallback with default `stop`, template table and fallback field | same, "req-011 (b)" | yes |
+| 011 | (c) proposal still written, `approved (roadmap chart)` on a match, normal stop otherwise, destructive always stops, implement pointer | same, "req-011 (c)" | yes |
 
 ## Gaps
 

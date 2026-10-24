@@ -33,16 +33,11 @@ As a human on the loop, I let each step run P0 to P4 with no coaching stops, so 
   - `Bump` takes `major`, `minor`, or `patch`, and `minor` is the default when the field is empty.
   - The existing downgrade block still applies, and a result lower than the last known version stops P0 with the existing `Blocked:` message.
 - All R-C messages use the `R-C Run:` prefix.
-- A step that proposes a schema change still writes the migration proposal, in P1 or P2.
-  - A proposal that matches a chart-approved row is marked `approved (roadmap chart)`, and the step carries on. A match needs the same step, component, field names, and types, and Kind `additive`.
-  - An unmatched additive proposal is marked `approved (roadmap chart fallback)` only when the fallback is `pre-approved`. Otherwise the step takes the normal schema-change exception stop.
-  - A destructive change always stops, under Hard Limit 4.
 
 ## Acceptance Criteria
 - [ ] (a) The orchestrator skill states that R-C Run cuts the step's feature branch from the roadmap branch, builds the brief from the step's backlog entries with pull-in and deletion in one commit, and writes `autonomous` to `plan/.run-mode` without asking.
 - [ ] (b) The orchestrator skill states that a roadmap step self-confirms the design and records each scope lock line as `draft-accepted (roadmap)`, and that P0 stops only when an entry is too vague to draft from.
 - [ ] (c) The orchestrator skill states that P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the roadmap branch's version and keeps the downgrade block.
-- [ ] (d) The roadmap standard states that a step still writes each migration proposal, marks a proposal that matches a chart-approved additive row `approved (roadmap chart)` and carries on, takes the normal stop for anything else unless the fallback is `pre-approved`, and always stops on a destructive change. The implement skill's schema rule points to the standard.
 
 ## Dependencies
 - REQ-002 supplies the `Bump` column and the step table in `roadmap.md`.

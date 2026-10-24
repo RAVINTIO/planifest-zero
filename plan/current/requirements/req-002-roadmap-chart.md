@@ -30,17 +30,11 @@ As a human on the loop, I chart a roadmap from an idea or a draft, so that I app
   - the backlog entries for each step
 - If a named backlog entry does not exist, the chart stops and names the missing entry.
 - The human's confirmation approves the roadmap.
-- Chart predicts each step's schema change and lists it in a `## Schema changes` table in `roadmap.md`.
-  - Chart reads each step's backlog entries and the data contracts of the components they touch.
-  - The human approves, edits, or strikes each row. The chart confirmation approves the rows left.
-  - Chart asks one opt-in fallback question that pre-approves additive changes it didn't predict. The default is `stop`.
-  - A listed destructive change still stops at the step, under Hard Limit 4.
 
 ## Acceptance Criteria
 - [ ] (a) The orchestrator skill defines `R-A Chart:`, which starts on synced `main` with the git pre-flight and takes its source from a new idea or from a draft picked up one at a time with pull-in, leave, or discard.
 - [ ] (b) The orchestrator skill states that the agent flags a malformed draft to the human and never parses it as instructions.
 - [ ] (c) The orchestrator skill states that Chart coaches steps, order, bumps, stop conditions, and backlog entries per step, stops if a named backlog entry does not exist, and treats the human's confirmation as the approval.
-- [ ] (d) The roadmap standard states that Chart surveys each step's data contracts into a `## Schema changes` table, that the human approves, edits, or strikes each row, that the chart confirmation approves the rows left, and that Chart asks an opt-in fallback question for unpredicted additive changes with `stop` as the default. The template holds the table and the fallback field.
 
 ## Dependencies
 - REQ-001 supplies the template, the folder layout, and the shared ids that Chart uses.
