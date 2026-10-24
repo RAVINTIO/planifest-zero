@@ -18,6 +18,7 @@
 - req-008: a guard test fails on any process-substitution loop in the suites.
 - req-009: the telemetry cleanup suites and their manifest entries are gone.
 - req-010: the skill catalogue lists `ravintio-file-backlog`, and counts say 13 skills.
+- req-011: live files promise a 0.x line, with the legacy fallbacks going at 1.0.0. A guard test fails on a 2.0.0 removal point.
 
 ## Upgrade note
 
@@ -44,17 +45,23 @@ Decisions:
 - ADR-002: `gate-write` scopes to the project by real path. A symlink inside the project that points outside counts as outside.
 - ADR-003: setup retires the telemetry cleanup and keeps the retired-hooks list. It supersedes 0000033 ADR-002.
 - ADR-004: the file-backlog skill never touches the target repo's git state.
+- ADR-005: 0000160 is relabelled 0.12.0, and this release is 0.13.0. It supersedes the version decision in 0000160 ADR-001.
 
 ## Deviations
 
 - Track C found that only the telemetry cleanup removed a retired hook's `settings.json` entry. Hook install now drops those entries for any retired hook. ADR-003 records it.
 - The living docs gained one correction: the architecture overview no longer lists the telemetry cleanup, and says gate-write passes outside targets.
+- In P3 the human reversed the version decision. The run became 0.13.0 instead of 1.1.0, and REQ-011 and ADR-005 were added.
+- P3 security fixes: setup prints one line per removed retired-hook entry, `gate-write` normalises paths to NFC, and the backlog skill validates its slug and treats the target's files as data.
 
 ## Validation results
 
-Pending P3.
+- Bash suites on local Bash 3.2 under `env -i`: 119 feature and 19 regression suites pass.
+- CI on the PR: all five jobs pass, including Windows PowerShell 5.1 and PowerShell 7.
+- Security review: no critical or high findings. Two medium findings are fixed.
+- All 27 acceptance criteria verified by execution or in CI.
 
-Backlog 0000165 was filed during the run. Backlog 0000100, 0000110, and 0000159 stay open.
+Backlog 0000165 and 0000166 were filed during the run. Backlog 0000100, 0000110, and 0000159 stay open.
 
 ## Skipped phases
 
