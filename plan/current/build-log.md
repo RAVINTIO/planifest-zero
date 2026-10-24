@@ -99,3 +99,4 @@ P1: Plan: Complete: 15 requirements, 8 ADRs, scope, risk register, glossary, exe
 - Done: Track E REQ-006 REQ-012 REQ-013 TDD (2026-10-24T14:39:16Z). Commits f096aa0, 1979f36, 1c7e23d. A commit race put the REQ-012 driver change in 1979f36, titled "mark Track D done".
 - Done: Track A REQ-004 REQ-005 TDD (2026-10-24T14:40:33Z). Commits 1db6d4b, dfaaea3. Bash GREEN. Two new .ps1 tests unrun (pwsh absent).
 - Done: Track B REQ-003 TDD (2026-10-24T14:40:40Z). Commit 8eb3a45.
+- Done: Track F REQ-007 REQ-010 REQ-008 TDD (2026-10-24T14:44:49Z). Quiet full run prints 3,002 bytes. assert.ps1, run-tests.ps1, and the req-008 .ps1 test unrun (pwsh absent).
