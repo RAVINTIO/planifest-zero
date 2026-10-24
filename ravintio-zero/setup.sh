@@ -1013,7 +1013,7 @@ remove_legacy_setup_config() {
 }
 
 # Remove the marker files the pre-rename setup wrote (0000160 REQ-002).
-# A symlink is skipped, never followed. Legacy, remove at 2.0.0 (ADR-002).
+# A symlink is skipped, never followed. Legacy, remove at 1.0.0 (ADR-002).
 remove_old_markers() {
   local tool_dir="$1" skills_dir="$2" rel
   for rel in "$tool_dir/.planifest-setup-flags" "$skills_dir/.planifest-manifest"; do

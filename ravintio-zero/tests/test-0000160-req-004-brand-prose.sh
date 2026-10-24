@@ -5,13 +5,14 @@
 #     main ref holds the pre-rename file, the mojibake line differs from it
 #     only by the brand token.
 # (b) docs/about.md, product.yml, and component.yml record one version. Once
-#     ship has archived the run, that version is 1.0.0 or later.
+#     ship has archived the run, that version is 0.12.0 or later.
 # The brand guard test (req-006) covers the prose itself.
 
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
+source "$SCRIPT_DIR/helpers/version.sh"
 ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ROOT_DIR="$(cd "$ZERO_DIR/.." && pwd)"
 PS1="$ZERO_DIR/setup.ps1"
@@ -40,7 +41,7 @@ assert_equals "$V_ABOUT" "$V_COMPONENT" "component.yml matches docs/about.md"
 if [ -f "$ROOT_DIR/plan/current/design.md" ]; then
   echo "  SKIP: a run is in flight, so ship has not set the version yet"
 else
-  assert_equals "yes" "$([ "${V_ABOUT%%.*}" -ge 1 ] 2>/dev/null && echo yes || echo no)" "the version is 1.0.0 or later"
+  assert_equals "yes" "$(version_at_least_0_12 "$V_ABOUT")" "the version is 0.12.0 or later"
 fi
 
 print_summary

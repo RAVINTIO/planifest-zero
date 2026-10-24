@@ -58,6 +58,7 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR-002 | gate-write scopes to the project by real path | accepted | The hook exits 0 when a target's real path lies outside the project's real root. A symlink inside the project that points outside counts as outside. |
 | ADR-003 | Retire the telemetry cleanup and keep the retired-hooks list | accepted | Setup drops the legacy telemetry cleanup in both shells. The list stays as `RETIRED_HOOK_NAMES` and `$RetiredHookNames`, and hook install drops settings entries for any retired hook. Supersedes 0000033 ADR-002. |
 | ADR-004 | The file-backlog skill never touches the target repo's git state | accepted | `ravintio-file-backlog` writes one uncommitted entry folder. It never commits, pushes, switches branches, stashes, or opens a pull request there. |
+| ADR-005 | Relabel the rename release as 0.12.0 | accepted | 0000160 becomes 0.12.0 and this release is 0.13.0. Supersedes the version decision of 0000160 ADR-001. Moves the fallback removal in 0000160 ADR-002 from 2.0.0 to 1.0.0. |
 
 ---
 
@@ -187,7 +188,9 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
 | ADR-001 | The RAVINTIO rename map | accepted | Prose writes RAVINTIO in block capitals. Identifiers use lowercase `ravintio` and variables use `RAVINTIO_`. History folders stay as written. Supersedes 0000031 ADR-002 in part. |
-| ADR-002 | Legacy aliases stay accepted through 1.x | accepted | Two roadmap variables and the em dash sentinel keep their earlier names as fallbacks. The new name wins. The fallbacks go at 2.0.0. |
+| ADR-002 | Legacy aliases stay accepted through 0.x | accepted | Two roadmap variables and the em dash sentinel keep their earlier names as fallbacks. The new name wins. The fallbacks go at 1.0.0. 0000164 ADR-005 moves the removal point from 2.0.0 to 1.0.0. |
 | ADR-003 | Consumer migration 0004 | accepted | Bash and PowerShell helpers move the overrides folder and the workflow, remove old markers, move the old pack folder to `.ravintio-backup/` instead of deleting it, and archive 0004. A migration with a false `Applies when:` condition stays pending. Setup stops while an old folder remains. |
 | ADR-004 | Brand guard test | accepted | A test fails on any tracked path or line outside history that holds the earlier product name, unless a path and line allowlist entry matches. A stale entry also fails. |
+| 0000160 ADR-001 (version decision only) | 0000164 ADR-005 | The rename release is 0.12.0, not 1.0.0. The rename map stays in force. |
+| 0000160 ADR-002 (removal point only) | 0000164 ADR-005 | The legacy fallbacks go at 1.0.0, not 2.0.0. |
 | 0000033 ADR-002 | 0000164 ADR-003 | Setup no longer removes legacy telemetry wiring. A pre-0000033 consumer removes it by hand. |

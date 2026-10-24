@@ -1033,7 +1033,7 @@ function Append-OverrideInstructions {
 }
 
 # Remove the marker files the pre-rename setup wrote (0000160 REQ-002).
-# A symlink or junction is skipped, never followed. Legacy, remove at 2.0.0
+# A symlink or junction is skipped, never followed. Legacy, remove at 1.0.0
 # (ADR-002).
 function Remove-OldMarkers {
     param([string]$ToolDirRel, [string]$SkillsDirRel)

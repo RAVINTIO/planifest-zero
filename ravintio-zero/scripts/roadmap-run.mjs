@@ -20,7 +20,7 @@
 //   PLANIFEST_ROADMAP_MODEL, PLANIFEST_ROADMAP_MAX_TURNS
 //                Legacy names for the two variables above. Each applies only if its
 //                RAVINTIO_ROADMAP_ name is unset or empty. If both are set, the RAVINTIO value wins.
-//                Remove at 2.0.0 (0000160 ADR-002).
+//                Remove at 1.0.0 (0000160 ADR-002).
 //
 // Labels: the child's OTEL_RESOURCE_ATTRIBUTES gets these labels appended, with each value
 // percent-encoded by scripts/roadmap-labels.mjs. The old value stays as it was.
@@ -117,7 +117,7 @@ function fieldIn(text, name) {
 }
 
 // Reads a RAVINTIO_* variable. If it is unset or empty, falls back to the legacy
-// name from the old brand. The fallback is for 1.x only and goes at 2.0.0 (0000160 ADR-002).
+// name from the old brand. The fallback is for 0.x only and goes at 1.0.0 (0000160 ADR-002).
 function legacyEnv(name, legacy) {
   return process.env[name] || process.env[legacy] || '';
 }

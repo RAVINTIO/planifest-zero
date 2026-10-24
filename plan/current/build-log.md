@@ -123,3 +123,4 @@ P0 exchange (version, P3): Q: Why 1.0.0 for 0000160, and what should the version
 Requirement Change: contradictory, active phase P3. Version 1.1.0 becomes 0.13.0, and 0000160 is relabelled 0.12.0. The human overrode the downgrade block. P1 re-run adds ADR-005 and REQ-011 only, because the version touches none of REQ-001 to REQ-010 and their P2 output stays valid. P2 builds REQ-011, then P3 re-runs in full. (2026-10-24T23:33:26Z)
 Version: 0.13.0 (minor, human override of the downgrade block; was 1.1.0)
 - In progress: P2 REQ-011 version relabel (2026-10-24T23:33:52Z)
+- Done: P2 REQ-011 version relabel (2026-10-24T23:34:51Z)

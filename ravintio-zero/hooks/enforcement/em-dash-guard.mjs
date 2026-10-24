@@ -41,7 +41,7 @@ import { readStdin } from "./read-stdin.mjs";
 
 const EM_DASH = "—";
 const SENTINEL = "<!-- ravintio-em-dash-allow -->";
-// Legacy alias, remove at 2.0.0 (0000160 ADR-002).
+// Legacy alias, remove at 1.0.0 (0000160 ADR-002).
 const LEGACY_SENTINEL = "<!-- planifest-em-dash-allow -->";
 
 // Mirrors REQ-006's scope list and gate-write.mjs's ALWAYS_PERMITTED_PREFIXES shape.
