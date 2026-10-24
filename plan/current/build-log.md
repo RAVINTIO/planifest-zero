@@ -138,3 +138,20 @@ P3 Validate: Complete: 11 requirements verified, no critical or high findings, C
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Notes | Ship runs in sequence by design. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `15` (P0 0, P1 5, P2 6, P3 4, P4 0) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P1, P2, P3) |
+| Primary tier agent calls | `14` (sonnet) |
+| Cheaper tier agent calls | `1` (haiku, P1 scope, risk, and glossary) |
+| Self-corrections | `5` (P1 1, P2 2, P3 2) |
+| Phases skipped | none |
+
+The phase tables above give the planned agent counts. P1 added one split agent, P2 added the docs agent and the REQ-011 agent, and P3 added two hardening agents.
