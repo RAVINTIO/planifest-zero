@@ -12,7 +12,7 @@ updated: "24 Oct 2026"
 |-------|-------|
 | Version | `0.10.0` |
 | Last feature | `0000043-autonomous-roadmaps` |
-| Updated | `23 Oct 2026` |
+| Updated | `24 Oct 2026` |
 
 ## What this is
 
