@@ -150,6 +150,19 @@ printf 'Blocked: old\nResolved: old\n' > "$R/plan/current/build-log.md"
 run_driver "$R" ok
 assert_equals "0" "$CODE" "req-007 (c): a Resolved: line after Blocked: does not stop the driver"
 
+# A build log may write the stop as a list item (live acceptance run, step 1).
+R="$(make_fixture c-list-block active)"
+printf -- '- Blocked: listed stop\n' > "$R/plan/current/build-log.md"
+run_driver "$R" ok
+[ "$CODE" -ne 0 ] && r=yes || r=no
+assert_equals "yes" "$r" "req-007 (c): non-zero exit on a list-item Blocked: line"
+assert_contains "Blocked: listed stop" "$OUT" "req-007 (c): stop line repeats a list-item Blocked: message"
+
+R="$(make_fixture c-list-resolved active)"
+printf -- '- Blocked: old\n* Resolved: old\n' > "$R/plan/current/build-log.md"
+run_driver "$R" ok
+assert_equals "0" "$CODE" "req-007 (c): a list-item Resolved: line clears a list-item Blocked: line"
+
 R="$(make_fixture c-stall active)"
 run_driver "$R" stall
 [ "$CODE" -ne 0 ] && r=yes || r=no
