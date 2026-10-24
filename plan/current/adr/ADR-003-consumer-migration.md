@@ -45,6 +45,12 @@ Migration 0004 declares `Applies when:` `planifest-zero/` or `planifest-override
 - Each step is idempotent. A second run finds nothing to do and exits cleanly.
 - If a step finds a conflict, the helper stops before it moves anything. A conflict is an existing target with different content.
 - The helpers refuse a symlinked source or target. They never follow a planted link, as setup does.
+- The helpers refuse a symlink, dangling or not, at either workflow file. They also refuse one at `.claude`, `.claude/skills`, `.github`, `.github/workflows`, `ravintio-zero`, or `ravintio-zero/migrations`.
+- The helpers stop when they run inside a git work tree but below its top level.
+- The helpers stop when `planifest-zero/` holds no `setup.sh`. They also stop when git tracks the repo and the folder holds untracked or modified files. They list those files.
+- The workflow rewrite goes to a temp file in the same folder, which then replaces the target. A write never follows a link.
+- The PowerShell helper deletes `planifest-zero/` with a walk that deletes each reparse point as a link only. Windows PowerShell 5.1 `Remove-Item -Recurse` follows nested junctions, so the helper does not use it there.
+- Setup stops on a leftover old folder that is a link, dangling or not. Setup skips old markers under a symlinked `.claude` or `.claude/skills`.
 - The helper reports each step it takes and each step it skips.
 
 ### Setup behaviour

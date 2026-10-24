@@ -16,7 +16,7 @@ The pack changed its name from Planifest to RAVINTIO. A consumer repo that insta
 - the installed `.github/workflows/planifest.yml`
 - the old marker files `.claude/.planifest-setup-flags` and `.claude/skills/.planifest-manifest`
 
-The helper moves or removes each one. The helper stops before it moves anything if it finds a conflict.
+The helper moves or removes each one. The helper stops before it moves anything if it finds a conflict, a symlink, or a sign that it runs in the wrong place.
 
 ---
 
@@ -38,6 +38,10 @@ The helper moves or removes each one. The helper stops before it moves anything 
    - Both `planifest-overrides/` and `ravintio-overrides/` exist. The human picks the authoritative folder.
    - `.github/workflows/ravintio.yml` already exists. The human merges or deletes one workflow.
    - A source or target folder is a symlink. The human replaces the link with a real folder.
+   - A workflow file or a parent folder the helper writes into is a symlink, dangling or not. That covers `.claude`, `.claude/skills`, `.github`, `.github/workflows`, `ravintio-zero`, and `ravintio-zero/migrations`. The human replaces the link.
+   - The helper ran below the top level of its git repo. The human runs it from the repo root.
+   - `planifest-zero/` holds no `setup.sh`, so it may not be the old pack. The human checks the folder.
+   - `planifest-zero/` holds untracked or modified files. The helper lists them. The human moves or commits them.
 
 6. If the helper exits 0, run setup for the installed tool:
    - Bash: `ravintio-zero/setup.sh claude-code`
