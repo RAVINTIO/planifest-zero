@@ -1,4 +1,4 @@
-import { mkdirSync, symlinkSync, realpathSync } from "node:fs";
+import { mkdirSync, symlinkSync, realpathSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { check, makeProject, makeOutside, run, finish } from "./helpers/gate-write-harness.mjs";
 
@@ -44,5 +44,19 @@ for (const design of [false, true]) {
   const real = realpathSync(p);
   check(2, run(p, join(real, "other", "x.js")), "REQ-006 real-path spelling of target, ungated, exits 2");
   check(0, run(real, join(p, "src", "comp", "x.js")), "REQ-006 cwd real spelling, target alias spelling, component, exits 0");
+}
+
+// S-002: an NFD-spelled target under an NFC project path still reads as inside
+{
+  const nfc = "caf\u00e9";
+  const nfd = nfc.normalize("NFD");
+  const base = makeOutside();
+  const proj = join(base, nfc);
+  mkdirSync(join(proj, "plan", "current"), { recursive: true });
+  mkdirSync(join(proj, "src", "comp"), { recursive: true });
+  writeFileSync(join(proj, "plan", "current", "design.md"),
+    "## Component Paths\n- src/comp\n\n## Scope\n- In: test\n");
+  check(2, run(proj, join(base, nfd, "other", "x.js")), "REQ-006 NFD target, NFC project, ungated, exits 2");
+  check(0, run(proj, join(base, nfd, "src", "comp", "x.js")), "REQ-006 NFD target, NFC project, component, exits 0");
 }
 finish();
