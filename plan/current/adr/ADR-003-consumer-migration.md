@@ -31,25 +31,38 @@ A consumer who runs the new setup before the migration risks a half-moved instal
 Ship `migrations/0004-ravintio-rename.md` with two helpers: `migrate-ravintio-rename.sh` and `migrate-ravintio-rename.ps1`. The helpers do the same work.
 
 1. Move `planifest-overrides/` to `ravintio-overrides/`. The markers live in the generated boot file, and setup rewrites it on every run, so the helper leaves them alone.
-2. Move `.github/workflows/planifest.yml` to `.github/workflows/ravintio.yml` and rewrite the `planifest-zero/` paths inside it.
+2. Move `.github/workflows/planifest.yml` to `.github/workflows/ravintio.yml`. Rewrite the `planifest-zero/` paths inside it, and the pack's own `PLANIFEST_` variables. A consumer's own `PLANIFEST_` names, such as secrets, stay as they are (S-010).
 3. Remove the old marker files `.claude/.planifest-setup-flags` and `.claude/skills/.planifest-manifest`. No install writes a `.planifest-session` file, so the helper does not look for one.
-4. Remove the old `planifest-zero/` folder after the consumer has copied in the new `ravintio-zero/` pack.
+4. Move the old `planifest-zero/` folder to `.ravintio-backup/planifest-zero/` after the consumer has copied in the new `ravintio-zero/` pack. The helper never deletes it. It first stops git tracking the folder, then renames it. It adds `.ravintio-backup/` to `.git/info/exclude`, and tells the human to delete the backup after checking it.
 5. After a run that changes the repo, move `0004-ravintio-rename.md` to `migrations/_done/`.
 
 ### Applies when
 
 Migration 0004 declares `Applies when:` `planifest-zero/` or `planifest-overrides/` exists. The orchestrator and `ravintio-migrator` skip a migration whose condition is false and leave it pending. The pack source repo has neither folder, so 0004 ships pending and never runs there.
 
+### Backup instead of deletion
+
+The first helpers deleted `planifest-zero/`. Each guard added to make that safe either missed a case or blocked a normal upgrade:
+
+- S-001: Windows PowerShell 5.1 `Remove-Item -Recurse` follows a nested junction and deletes the files behind it.
+- S-011: the dirty check missed ignored files, and skipped outside git.
+- S-012: the git top-level check blocked a project below its git root.
+- S-013: the parent-link refusal blocked a linked `ravintio-zero` or `.claude`.
+- S-014: the dirty check blocked a pack that git never tracked, or a stray `.DS_Store`.
+- S-015: the PowerShell tree walk could stop halfway on a reparse folder that is not a link.
+
+A rename deletes nothing and never follows a nested link, so the helper needs none of those guards. Any custom file stays in the backup. The helpers drop the top-level check, the `setup.sh` check, the dirty check, and `Remove-TreeNoFollow`.
+
 ### Safety rules
 
 - Each step is idempotent. A second run finds nothing to do and exits cleanly.
 - If a step finds a conflict, the helper stops before it moves anything. A conflict is an existing target with different content.
-- The helpers refuse a symlinked source or target. They never follow a planted link, as setup does.
-- The helpers refuse a symlink, dangling or not, at either workflow file. They also refuse one at `.claude`, `.claude/skills`, `.github`, `.github/workflows`, `ravintio-zero`, or `ravintio-zero/migrations`.
-- The helpers stop when they run inside a git work tree but below its top level.
-- The helpers stop when `planifest-zero/` holds no `setup.sh`. They also stop when git tracks the repo and the folder holds untracked or modified files. They list those files.
+- The helpers refuse a symlink, dangling or not, at `planifest-zero`, `planifest-overrides`, `ravintio-overrides`, `.ravintio-backup`, or either workflow file. They never follow a planted link, as setup does.
+- The helpers stop when `.ravintio-backup/planifest-zero` already exists. They never overwrite an earlier backup.
+- A symlinked parent folder skips only the step that would write through it, with a warning. A link at `.github` or `.github/workflows` skips the workflow step. A link at `.claude` or `.claude/skills` skips the marker under it. A link at `ravintio-zero` or `ravintio-zero/migrations` skips the archive step. The helpers only read a linked `ravintio-zero` otherwise.
+- The helpers run from the folder that holds `ravintio-zero/`, which may sit below the git top level.
 - The workflow rewrite goes to a temp file in the same folder, which then replaces the target. A write never follows a link.
-- The PowerShell helper deletes `planifest-zero/` with a walk that deletes each reparse point as a link only. Windows PowerShell 5.1 `Remove-Item -Recurse` follows nested junctions, so the helper does not use it there.
+- The old pack moves with a plain rename: `mv` in Bash and `System.IO.Directory.Move` in PowerShell. A rename moves a nested link as a link.
 - Setup stops on a leftover old folder that is a link, dangling or not. Setup skips old markers under a symlinked `.claude` or `.claude/skills`.
 - The helper reports each step it takes and each step it skips.
 
@@ -79,13 +92,15 @@ Once the pack ships only `ravintio-*` skills, `prune_retired_skills` and `Remove
 **Positive:**
 - A consumer runs one migration and keeps their overrides and workflow.
 - A failed run leaves the repo in its starting state, because conflicts stop before any move.
+- The upgrade deletes no file. A custom or ignored file in the old pack stays in `.ravintio-backup/`.
 
 **Negative:**
 - Consumers must run the migration before setup. Setup blocks until they do.
 - Two helpers on two shells double the test work.
+- The backup stays on disk until the human deletes it.
 
 **Risks:**
-- A consumer has a custom file inside `planifest-zero/`. The helper does not move it. The migration text tells the consumer to check the folder before removal.
+- A consumer has a custom file inside `planifest-zero/`. It lands in `.ravintio-backup/planifest-zero/`. The helper and the migration text tell the consumer to check the backup before deleting it.
 
 ## Related ADRs
 
