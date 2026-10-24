@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-ORCHESTRATOR="$ZERO_DIR/skills/planifest-orchestrator/SKILL.md"
+ORCHESTRATOR="$(orch_combined "$ZERO_DIR/skills/planifest-orchestrator")"
 DISCOVERY_TPL="$ZERO_DIR/templates/discovery.template.md"
 DESIGN_TPL="$ZERO_DIR/templates/design.template.md"
 

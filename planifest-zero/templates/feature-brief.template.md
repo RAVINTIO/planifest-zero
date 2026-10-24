@@ -22,7 +22,7 @@ version: "0.1.0"
 
 Break the feature into discrete features. Each feature should be small enough that an agent can implement it within a single session.
 
-> **Release size:** The orchestrator sizes each release against the `releaseSize` budget in `product.yml`. See Decomposition in the orchestrator skill.
+> **Release size:** The orchestrator sizes each release against the `releaseSize` budget in `product.yml`. See Decomposition in `references/orchestrator-discovery-coaching.md` of the orchestrator skill.
 >
 > **User story format:** Write each story as "As a [role], I [action], so that [outcome]." Each story becomes one requirement doc. If a story implies more than 3 acceptance criteria, split it into two stories.
 

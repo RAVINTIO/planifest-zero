@@ -2,6 +2,7 @@
 name: planifest-refactor
 description: TDD refactor phase: improves code quality while keeping all tests passing. Invoked by planifest-implement after planifest-implementer confirms GREEN.
 recommended_model: haiku
+model: haiku
 ---
 
 # Planifest - refactor
@@ -38,7 +39,7 @@ Quality improvements out of scope: extracting shared utilities used by only one 
 2. **Apply** improvements incrementally, one concern at a time.
 3. **Run the full test suite** after each significant change:
    ```
-   bash planifest-zero/tests/run-tests.sh
+   PLANIFEST_TEST_QUIET=1 bash planifest-zero/tests/run-tests.sh
    # or the appropriate full suite command for the stack
    ```
 4. **Confirm ALL GREEN**: every test in the suite must pass, not just the current requirement's test. If any test breaks, revert the last change and try a different approach.

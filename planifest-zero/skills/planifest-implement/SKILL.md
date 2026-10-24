@@ -43,6 +43,8 @@ Build multiple components in dependency order: shared packages, then data owners
 
 Before writing any dependency manifest, check `planifest-overrides/library-standards/{language}/prefer-avoid.md`, then the pack's `standards/library-standards/` lists. Substitute preferred alternatives for avoided libraries. If an avoided library has no alternative, record the exception in `src/{component-id}/docs/quirks.md` and escalate. Skip the audit when the lists are stubs. Follow `standards/library-standards/_version-policy.md` for version pinning.
 
+Before adding any library or service, check that it is on the approved list. The list is the `Approved dependencies` field of `design.md` in a gated run and the `## Dependencies` table of `roadmap.md` in a roadmap step. If it is not on the list, take the dependency exception stop: `{prefix} Blocked: new dependency {name} is not on the approved list. Approve it or choose an approved alternative.` This applies in every run mode.
+
 ## TDD inner loop
 
 For each functional requirement, orchestrate three subagents in sequence. This is the mandatory implementation discipline.
@@ -60,6 +62,8 @@ for each requirement:
     else if attempt >= 5:
       ESCALATE to the human. Do not proceed to the next requirement.
 ```
+
+Pass each dispatch the `model` from that skill's own `recommended_model` field. If a haiku unit fails twice, retry that unit on `sonnet`. The two haiku failures count toward the five attempts, and the five-attempt escalation is unchanged.
 
 After 5 failed attempts on one requirement, stop in both run modes with `P2 Implement: Blocked: {requirement} still fails after 5 attempts. Review the escalation and choose the next step.` Then report: the requirement ID, the test file, what each attempt tried and why it stayed RED, your root-cause assessment, and a recommended action. Wait for human direction.
 

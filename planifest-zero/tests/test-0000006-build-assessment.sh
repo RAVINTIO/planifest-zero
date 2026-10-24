@@ -84,7 +84,7 @@ assert_contains "Security review"            "$DISPATCH_STD" "req-004: security 
 assert_contains "Codebase discovery"         "$DISPATCH_STD" "req-004: codebase discovery classified"
 assert_contains "Formatting"                 "$DISPATCH_STD" "req-004: formatting classified"
 assert_contains "Tier-to-model"              "$DISPATCH_STD" "req-004: tier-to-model mapping table present"
-assert_contains "claude-haiku"               "$DISPATCH_STD" "req-004: Haiku listed as cheaper tier for Claude Code"
+assert_contains '| Claude Code | `sonnet` | `haiku` |' "$DISPATCH_STD" "req-004: Haiku listed as cheaper tier for Claude Code"
 
 # -----------------------------------------------------------------------
 

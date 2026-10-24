@@ -25,10 +25,13 @@ assert_equals "yes" "$([ -n "$JOB" ] && echo yes || echo no)" "req-005: the wind
 assert_contains "runs-on: windows-latest" "$JOB" "req-005: the job runs on windows-latest"
 assert_contains "contents: read" "$JOB" "req-005: the job has read-only contents permission"
 assert_equals "0" "$(printf '%s\n' "$JOB" | grep -c 'secrets\.' || true)" "req-005: the job uses no secrets"
-assert_contains "shell: powershell" "$JOB" "req-005: one step runs under Windows PowerShell 5.1"
-assert_contains "shell: pwsh" "$JOB" "req-005: one step runs under PowerShell 7"
-assert_equals "2" "$(printf '%s\n' "$JOB" | grep -c 'planifest-zero/tests/run-tests.ps1' || true)" \
-  "req-005: both steps run run-tests.ps1"
+# 0000151 req-015: the two hosts are matrix entries, and one step runs
+# run-tests.ps1 for each entry.
+assert_contains "shell: powershell" "$JOB" "req-005: one matrix entry runs under Windows PowerShell 5.1"
+assert_contains "shell: pwsh" "$JOB" "req-005: one matrix entry runs under PowerShell 7"
+assert_equals "2" "$(printf '%s\n' "$JOB" | grep -cE '^ *- shell: ' || true)" "req-005: the matrix has both hosts"
+assert_equals "1" "$(printf '%s\n' "$JOB" | grep -c 'planifest-zero/tests/run-tests.ps1' || true)" \
+  "req-005: the step runs run-tests.ps1 for each matrix entry"
 
 # P5 S-005 and S-006.
 assert_equals "1" "$(printf '%s\n' "$JOB" | grep -cE 'uses: actions/checkout@[0-9a-f]{40}' || true)" \

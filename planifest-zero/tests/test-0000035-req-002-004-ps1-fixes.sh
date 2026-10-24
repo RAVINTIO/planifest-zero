@@ -42,7 +42,11 @@ echo "=== req-003: setup.ps1 runs on Windows PowerShell 5.1 ==="
 assert_equals "0" "$(cat "$SETUP_PS1" "$ZERO_DIR"/setup/*.ps1 | grep -c -- '-AsHashtable' || true)" \
   "req-003: setup.ps1 and setup/*.ps1 use no -AsHashtable"
 ALLOWED="$(extract_function_body 'Merge-AllowedTools')"
-assert_contains "Write-SettingsAtomic" "$ALLOWED" \
+# 0000151 req-005 routes the write through Write-SettingsOrExit, which wraps
+# Write-SettingsAtomic, so the write stays atomic.
+assert_contains "Write-SettingsOrExit" "$ALLOWED" \
+  "req-003: Merge-AllowedTools writes through Write-SettingsOrExit"
+assert_contains "Write-SettingsAtomic" "$(extract_function_body 'Write-SettingsOrExit')" \
   "req-003: Merge-AllowedTools still writes through Write-SettingsAtomic"
 assert_contains "notcontains 'Agent'" "$ALLOWED" \
   "req-003: Merge-AllowedTools still adds Agent only once"

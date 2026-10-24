@@ -50,6 +50,20 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: read
+    # Both hosts run in parallel. fail-fast stays off so one failure does not
+    # cancel the other, and the job passes only when both entries pass
+    # (0000151 req-015).
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shell: powershell
+          - shell: pwsh
+    # A step's shell key takes no expression, so the matrix sets the job
+    # default instead.
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
     steps:
       # Pinned to the v4 commit, with no token left in .git/config while the
       # PR's code runs (0000036 S-005).
@@ -57,15 +71,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: PowerShell suites on Windows PowerShell 5.1
-        shell: powershell
-        run: |
-          & ./planifest-zero/tests/run-tests.ps1
-          exit $LASTEXITCODE
-
-      - name: PowerShell suites on PowerShell 7
-        if: ${{ !cancelled() }}
-        shell: pwsh
+      - name: PowerShell suites on ${{ matrix.shell }}
         run: |
           & ./planifest-zero/tests/run-tests.ps1
           exit $LASTEXITCODE

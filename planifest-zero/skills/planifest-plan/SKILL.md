@@ -63,7 +63,7 @@ A decision needs an ADR when it meets any of these criteria:
 - **Costly to reverse** - database engine, ORM, auth strategy.
 - **Crosses components** - sync vs async communication, shared types, event schema.
 - **Constrains future work** - deployment topology, provider lock-in, data partitioning.
-- **Deviates from the declared stack** - any library or compute model not in the design.
+- **Deviates from the declared stack** - any library or compute model not in the design. A library or service that is not on the approved list also takes the dependency exception stop. The list is the `Approved dependencies` field of `design.md` in a gated run and the `## Dependencies` table of `roadmap.md` in a roadmap step. This applies in every run mode.
 - **Security trade-off** - session storage, token expiry, CORS configuration.
 - **Data ownership assignment** - every data ownership mapping gets an ADR.
 

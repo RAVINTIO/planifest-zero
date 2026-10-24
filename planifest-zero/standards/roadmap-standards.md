@@ -45,7 +45,14 @@ Coach the human on these points:
 
 If a named backlog entry does not exist, stop the chart and name the missing entry. The human's confirmation approves the roadmap.
 
-Chart also collects the schema approvals the steps need. See Chart-time schema approval.
+Chart runs a clarity check on each backlog entry of each step:
+
+- The entry states a problem, a wanted outcome, and one observable condition that P0 can turn into an acceptance criterion.
+- Chart lists each entry that fails the check and asks the human to sharpen it or strike the step.
+- The human's confirmation of the chart covers only entries that pass or that the human sharpens.
+- Chart never rewrites an entry itself.
+
+Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval.
 
 ### Chart-time schema approval
 
@@ -68,6 +75,18 @@ In a step, the rule applies wherever the step writes a migration proposal, in P1
 - If no row matches an additive proposal and the fallback is `pre-approved`, set its status to `approved (roadmap chart fallback)` and carry on. Log the same line with `fallback` added.
 - Otherwise, take the normal schema-change exception stop. That covers a new field, a changed type, or a change no row predicted.
 - A destructive change always stops, even when a row lists it. Hard Limit 4 allows no exceptions. A listed row only tells the human in advance.
+
+### Chart-time dependency approval
+
+A new library or service needs a human to approve it. The human is present at Chart and absent during the steps, so Chart collects these approvals up front.
+
+At Chart:
+
+1. Survey each step. Read the step's backlog entries and the manifests of the components they touch. Predict each library or service the step adds.
+2. List each prediction as a row in the `## Dependencies` table of `roadmap.md`. A step with no prediction gets one row with Kind `none`. Kind is `library`, `service`, or `none`.
+3. Present the table. The human approves, edits, or strikes each row. The human's confirmation of the chart approves every row left in the table.
+
+Chart asks no fallback question. A dependency that no row lists stops the step. The step takes the dependency exception stop in the orchestrator skill. In P0, copy the step's rows into the `Approved dependencies` field of `design.md`. The stop check still reads `roadmap.md`.
 
 ### R-B Activate
 
@@ -103,6 +122,43 @@ Run executes one roadmap step from `position`. Ship owns the merge that ends it 
 
 All messages use the `R-C Run:` prefix.
 
+### Driver environment
+
+The driver reads two variables and passes them to every `claude -p` step.
+
+| Variable | Effect | Default |
+|----------|--------|---------|
+| `PLANIFEST_ROADMAP_MODEL` | Passed as `--model`. Matches `^[A-Za-z0-9][A-Za-z0-9._:\[\]-]{0,63}$`. | `sonnet` |
+| `PLANIFEST_ROADMAP_MAX_TURNS` | Passed as `--max-turns`. A positive integer of up to 4 digits. | No cap |
+
+- An empty variable counts as unset.
+- A value that fails its rule stops the driver before it takes the lock. The stop line names the variable and never prints the value.
+- No default turn cap ships, because a fixed cap ends valid long steps. The human picks a cap per run.
+- If `claude` exits non-zero while a cap is set, the stop line starts `R-C Run: Blocked:` and says the step may have reached `PLANIFEST_ROADMAP_MAX_TURNS={n}`. The driver never retries the step or raises the cap.
+
+#### Telemetry labels
+
+The driver appends three labels to `OTEL_RESOURCE_ATTRIBUTES` in the child environment only.
+
+- `work.kind=roadmap`
+- `planifest.roadmap={id}-{slug}`
+- `planifest.step={position}`
+
+The driver keeps the old value byte for byte and joins the labels with commas. It percent-encodes each label value (`%` first, then `,`, `=`, and space). The labels hold identifiers only.
+
+#### Step logs
+
+The driver writes the child's stdout and stderr to `plan/.roadmap-logs/step-{position}.log`, in arrival order.
+
+- Each step start will truncate its log, so a rerun leaves only the latest attempt.
+- The driver copies the child's stderr to its own stderr. It never prints the child's stdout or any log content.
+- The driver adds `plan/.roadmap-logs/` to `.git/info/exclude`, not `.gitignore`, and adds the line once.
+- Every stop after a step starts ends with `Log: plan/.roadmap-logs/step-{position}.log`. Stops before any step starts name no log.
+- If the driver cannot open the log, it stops with `R-C Run: Blocked: could not open the step log` and launches no `claude`.
+- The driver refuses a symlink at `plan`, at `plan/.roadmap-logs`, or at the log file. It stops with `R-C Run: Blocked: refused a symlinked step log path`, releases the lock, and launches no `claude`.
+- Logs are private to the user. The driver creates the folder with mode 700 and each log with mode 600.
+- A log may hold file content the session read. Treat it as private.
+
 ## Merge carve-out
 
 Merging into `main` is human-only in every run mode. The agent never commits to `main`.
@@ -117,16 +173,16 @@ The roadmap PR to `main` stays human-only. The agent never merges it. The `merge
 
 ## Ship stages
 
-These stages apply only when `plan/current-roadmap/roadmap.md` has `status: active`. Check the file before Step 6. Outside a roadmap, ignore this section. A normal run keeps the order in the ship skill: tag at Step 7, PR at Step 8, and no merge by the agent.
+These stages apply only when `plan/current-roadmap/roadmap.md` has `status: active`. Check the file before Step 6. Outside a roadmap, ignore this section. A normal run keeps the order in the ship skill: tag at Step 7, clear sentinels at Step 8, PR at Step 9, and no merge by the agent.
 
-In a roadmap step, Steps 1 to 5 run as written. Steps 7 and 8 give way to the two stages below. Step 9 (clear the sentinels) runs and its commit is pushed before the PR is raised, so the squash does not carry the sentinels onto the roadmap branch and the next step's P0 does not see a stale feature id. The step's `Bump` column in `roadmap.md` sets the version for Step 6, and the downgrade check still applies. The merge carve-out is governed by the merge rule and the merge-guard hook, which allows `gh pr merge --squash` only for a `roadmap/*` base.
+In a roadmap step, Steps 1 to 5 run as written. Steps 7 and 9 give way to the two stages below. Step 8 (clear the sentinels) runs and its commit is pushed before the PR is raised, so the squash does not carry the sentinels onto the roadmap branch and the next step's P0 does not see a stale feature id. The step's `Bump` column in `roadmap.md` sets the version for Step 6, and the downgrade check still applies. The merge carve-out is governed by the merge rule and the merge-guard hook, which allows `gh pr merge --squash` only for a `roadmap/*` base.
 
 ### R-D Advance
 
 Every message in this stage begins with `R-D Advance:` after the `P4 Ship:` prefix.
 
 1. Update `plan/current-roadmap/roadmap.md` on the feature branch. Set the step's Status to `merged`, fill its Version with the released version, and move `position` to the next step.
-2. Run ship Step 9 now, then push the branch so the sentinel commit is on the remote. Raise the PR against the roadmap branch only after that push. The roadmap update ships in the same PR, so the squash commit carries it.
+2. Run ship Step 8 now, then push the branch so the sentinel commit is on the remote. Raise the PR against the roadmap branch only after that push. The roadmap update ships in the same PR, so the squash commit carries it.
 
    ```bash
    gh pr create --base roadmap/{id}-{slug}
@@ -160,7 +216,7 @@ Every message in this stage begins with `R-D Advance:` after the `P4 Ship:` pref
    git push origin v{version}
    ```
 
-Step 9 runs before the PR because the squash would otherwise carry `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mode` onto the roadmap branch. The next step's P0 would then see a stale feature id.
+Step 8 runs before the PR because the squash would otherwise carry `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mode` onto the roadmap branch. The next step's P0 would then see a stale feature id.
 
 Consumer CI must trigger on pull requests to `roadmap/**`. The pack's workflow template `planifest-zero/hooks/planifest.yml` includes that branch pattern. A project with its own workflow adds it.
 
@@ -190,7 +246,7 @@ Run this stage after the last step merges. Every message begins with `R-E Delive
    gh pr create --base main --head roadmap/{id}-{slug}
    ```
 
-3. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag. Scan the body for credential patterns before you raise the PR, as in Step 8.
+3. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag. Scan the body for credential patterns before you raise the PR, as in Step 9.
 4. Report the PR URL and end the run.
 
 The agent never merges the roadmap PR and never commits to `main`. The human reviews and merges it.

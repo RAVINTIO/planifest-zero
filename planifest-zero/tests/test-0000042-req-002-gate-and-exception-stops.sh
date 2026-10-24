@@ -37,7 +37,7 @@ STOPS="$(section '## Exception Stops' "$ORCH")"
 GATE="$(section '## Acceptance gate' "$VAL")"
 SECURITY="$(section '## Security review' "$VAL")"
 CI="$(section '## CI process' "$VAL")"
-PR_STEP="$(section '### Step 8: PR' "$SHIP")"
+PR_STEP="$(section '### Step 9: PR' "$SHIP")"
 FINAL="$(section '### Step 10: Final gate' "$SHIP")"
 SHIP_LIMITS="$(section '## Hard Limits' "$SHIP")"
 

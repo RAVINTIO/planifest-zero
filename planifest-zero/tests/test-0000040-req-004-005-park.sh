@@ -9,12 +9,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO="$(cd "$ROOT/.." && pwd)"
-ORCH="$ROOT/skills/planifest-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ROOT/skills/planifest-orchestrator")"
 PARK="$ROOT/skills/planifest-orchestrator/scripts/park.mjs"
 PARK_TPL="$ROOT/templates/park.template.md"
 ENTRY_TPL="$ROOT/templates/backlog-entry.template.md"
 S=$(cat "$ORCH")
-PARK_SEC=$(printf '%s\n' "$S" | sed -n '/^## Park Command/,/^## Context Hygiene/p')
+PARK_SEC=$(printf '%s\n' "$S" | sed -n '/^## Park Command/,/^# Orchestrator reference:/p')
 RESUME_SEC=$(printf '%s\n' "$S" | sed -n '/^## Resume Detection/,/^## Pack Index/p')
 STEP10=$(printf '%s\n' "$S" | sed -n '/^10\. \*\*Backlog pickup\*\*/,/^11\. /p')
 

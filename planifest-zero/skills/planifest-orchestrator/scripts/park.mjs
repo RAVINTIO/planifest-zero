@@ -42,6 +42,8 @@
 //     never reads a branch name as an option, a forced push, or another ref.
 //
 // If a git or gh call fails, the script prints the exact error and exits 1.
+// Park refuses a symlink in plan, plan/backlog, the entry folder, or entry.md,
+// and any real path outside plan/backlog/, before it writes or deletes (ADR-008).
 // A failed park or finish-pr returns the working tree to the feature branch.
 // If the entry's add or commit fails, the script first unstages and deletes
 // the entry. A failed cleanup step never replaces the original error.
@@ -49,8 +51,8 @@
 // force-pushes. It has no dependencies beyond Node and the git and gh tools.
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, isAbsolute, relative, resolve } from 'node:path';
+import { existsSync, lstatSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
 const REMOTE = 'origin';
 const MAIN = 'main';
@@ -152,11 +154,47 @@ function commitOffMain(message) {
   git('commit', '-m', message);
 }
 
+// Resolves a path that may not exist yet: the nearest existing ancestor's real
+// path, plus the names that are still missing.
+function realPathOrAncestor(path) {
+  const missing = [];
+  let current = resolve(path);
+  while (!existsSync(current) && !isLink(current)) {
+    missing.unshift(basename(current));
+    current = dirname(current);
+  }
+  return join(realpathSync(current), ...missing);
+}
+function isLink(path) {
+  try {
+    return lstatSync(path).isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
+// Refuses a symlink in any part of the entry path, and any path whose real
+// location leaves the real plan/backlog/. The chore branch comes from origin/main,
+// so its tree is untrusted. It runs right before each write, mkdir, or delete.
+// The message names the repo-relative part only, never the link target.
+function checkEntryPath(ctx) {
+  const dir = dirname(ctx.entryPath);
+  for (const part of ['plan', BACKLOG_DIR, dir, ctx.entryPath]) {
+    if (isLink(part)) throw new ParkError(`Refusing ${part.slice(0, 200)}: it is a symlink.`);
+  }
+  const root = realPathOrAncestor(BACKLOG_DIR);
+  const fromRoot = relative(root, realPathOrAncestor(ctx.entryPath));
+  if (!fromRoot || fromRoot.startsWith('..') || isAbsolute(fromRoot)) {
+    throw new ParkError(`Refusing ${dir.slice(0, 200)}: it leaves ${BACKLOG_DIR}/.`);
+  }
+}
+
 // Unstages and deletes the entry after a failed add or commit. Each step
 // swallows its own failure, so the caller always rethrows the original error.
 function removeEntry(ctx) {
   run('git', ['reset', '-q', '--', ctx.entryPath], { allowFail: true });
   try {
+    checkEntryPath(ctx);
     rmSync(ctx.entryPath, { force: true });
   } catch {
     // The original error matters more than a failed delete.
@@ -173,7 +211,9 @@ function finishPr(ctx) {
     gitOk('fetch', REMOTE, `refs/heads/${ctx.chore}:${remoteChore}`);
     const base = gitOk('rev-parse', '-q', '--verify', remoteChore) ? remoteChore : `${REMOTE}/${MAIN}`;
     git('checkout', '-B', ctx.chore, base);
+    checkEntryPath(ctx);
     mkdirSync(dirname(ctx.entryPath), { recursive: true });
+    checkEntryPath(ctx);
     writeFileSync(ctx.entryPath, ctx.entry);
     try {
       git('add', '--', ctx.entryPath);

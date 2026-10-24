@@ -96,7 +96,7 @@ echo "=== req-006: pipeline standards wiring ==="
 # now lives in the phase skills. planifest-plan bundles
 # formatting-standards.md and planifest-implement bundles
 # library-standards/_version-policy.md.
-ORCH=$(cat "$SKILLS/planifest-orchestrator/SKILL.md")
+ORCH=$(cat "$(orch_combined "$SKILLS/planifest-orchestrator")")
 assert_contains "formatting-standards.md"       "$PLAN" "req-006: formatting-standards.md in planifest-plan bundle_standards"
 assert_contains "library-standards/_version-policy.md" "$IMPLEMENT" "req-006: _version-policy.md in planifest-implement bundle_standards"
 

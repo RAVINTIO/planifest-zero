@@ -10,12 +10,36 @@
 //
 // Environment:
 //   CLAUDE_BIN   The claude executable. Defaults to "claude", found through PATH.
+//   PLANIFEST_ROADMAP_MODEL
+//                The model for every step, passed as --model. Defaults to "sonnet".
+//                It must match ^[A-Za-z0-9][A-Za-z0-9._:\[\]-]{0,63}$.
+//   PLANIFEST_ROADMAP_MAX_TURNS
+//                A turn cap for every step, passed as --max-turns. If unset or empty,
+//                no cap applies and no default ships. It must be 1 to 9999. If claude
+//                exits non-zero while a cap is set, the stop line names the cap.
+//
+// Labels: the child's OTEL_RESOURCE_ATTRIBUTES gets these labels appended, with each value
+// percent-encoded by scripts/roadmap-labels.mjs. The old value stays as it was.
+//   work.kind=roadmap
+//   planifest.roadmap={id}-{slug}
+//   planifest.step={position}
+// Only the child sees the change. The labels hold identifiers, never prompt or file text.
+//
+// Logs: each step writes the child's stdout and stderr, in arrival order, to
+// plan/.roadmap-logs/step-{position}.log. Each step start will truncate its log, so a
+// rerun leaves only the latest attempt. The driver copies the child's stderr to its own
+// stderr and never prints the child's stdout or any log content. It excludes the folder
+// through .git/info/exclude. The driver refuses a symlink at plan, at the log folder, or at
+// the log file, and stops with "R-C Run: Blocked: refused a symlinked step log path". Logs
+// are private to the user: the folder has mode 700 and each log mode 600. Every stop after a step starts ends with
+// "Log: plan/.roadmap-logs/step-{position}.log".
 //
 // What it does:
 //   1. Reads plan/current-roadmap/roadmap.md and stops unless status is "active".
 //   2. Takes plan/.roadmap-runner.lock. If the lock exists, it refuses to start
 //      and leaves the lock alone.
-//   3. Runs `claude -p --permission-mode auto "Run roadmap step {position}"`
+//   3. Runs `claude -p --permission-mode auto --model {model} [--max-turns {n}]
+//      "Run roadmap step {position}"`
 //      and waits. It never passes --continue or --resume, so each step gets a
 //      fresh session. The position goes to claude as one argument, never
 //      through a shell.
@@ -40,17 +64,22 @@
 // It has no dependencies beyond Node.
 
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, existsSync, readFileSync, readdirSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { appendFileSync, closeSync, constants as fsConstants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
+import { isAbsolute, join, relative, resolve } from 'node:path';
+import { withRoadmapLabels } from './roadmap-labels.mjs';
 
 const ROADMAP = 'plan/current-roadmap/roadmap.md';
 const LOCK = 'plan/.roadmap-runner.lock';
+const LOGS = 'plan/.roadmap-logs';
 const BUILD_LOG = 'plan/current/build-log.md';
 const ARCHIVE = 'plan/_archive';
 const STATUS = /^(draft|active|blocked|done)$/;
 const POSITION = /^[1-9][0-9]{0,2}$/;
 const BRANCH = /^roadmap\/([0-9]{7})-([a-z0-9]+(-[a-z0-9]+)*)$/;
 const MAX_LINE = 500;
+const MODEL = /^[A-Za-z0-9][A-Za-z0-9._:[\]-]{0,63}$/;
+const TURNS = /^[1-9][0-9]{0,3}$/;
+const DEFAULT_MODEL = 'sonnet';
 
 class Stop extends Error {}
 
@@ -83,6 +112,19 @@ function fieldIn(text, name) {
   return /^(["']).*\1$/.test(v) ? v.slice(1, -1).trim() : v;
 }
 
+// Reads and validates the child settings. The stop lines name the variable, never the value.
+function readChildConfig() {
+  const model = process.env.PLANIFEST_ROADMAP_MODEL || DEFAULT_MODEL;
+  if (!MODEL.test(model)) {
+    throw new Stop('R-C Run: Blocked: PLANIFEST_ROADMAP_MODEL must match ^[A-Za-z0-9][A-Za-z0-9._:[\\]-]{0,63}$');
+  }
+  const turns = process.env.PLANIFEST_ROADMAP_MAX_TURNS || '';
+  if (turns !== '' && !TURNS.test(turns)) {
+    throw new Stop('R-C Run: Blocked: PLANIFEST_ROADMAP_MAX_TURNS must be a positive integer of up to 4 digits');
+  }
+  return { model, turns };
+}
+
 function readRoadmap(root) {
   const file = join(root, ROADMAP);
   if (!existsSync(file)) throw new Stop(`R-C Run: Blocked: ${ROADMAP} is missing`);
@@ -97,8 +139,8 @@ function readRoadmap(root) {
   return { status, position, id: b[1], slug: b[2] };
 }
 
-// Adds the lock path to .git/info/exclude so a step session's "stage everything"
-// never commits the lock. Skips quietly outside a git work tree.
+// Adds the lock path and the log folder to .git/info/exclude so a step session's
+// "stage everything" never commits either. Skips quietly outside a git work tree.
 function excludeLock(root) {
   const git = (...args) => spawnSync('git', args, { cwd: root, encoding: 'utf8' });
   const inside = git('rev-parse', '--is-inside-work-tree');
@@ -106,9 +148,47 @@ function excludeLock(root) {
   const p = git('rev-parse', '--git-path', 'info/exclude');
   if (p.status !== 0) return;
   const file = resolve(root, p.stdout.trim());
-  const text = existsSync(file) ? readFileSync(file, 'utf8') : '';
-  if (text.split(/\r?\n/).includes(LOCK)) return;
-  appendFileSync(file, (text === '' || text.endsWith('\n') ? '' : '\n') + LOCK + '\n');
+  let text = existsSync(file) ? readFileSync(file, 'utf8') : '';
+  for (const entry of [LOCK, `${LOGS}/`]) {
+    if (text.split(/\r?\n/).includes(entry)) continue;
+    const add = (text === '' || text.endsWith('\n') ? '' : '\n') + entry + '\n';
+    appendFileSync(file, add);
+    text += add;
+  }
+}
+
+// True when the path is a symlink. A missing path is not one.
+function isLink(path) {
+  try {
+    return lstatSync(path).isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
+// Opens plan/.roadmap-logs/step-{position}.log for writing and truncates it.
+// Refuses a symlink at plan, at the log folder, or at the log file, and a log folder
+// whose real path leaves the real root. The open adds O_NOFOLLOW where the platform has it.
+// The folder gets mode 0o700 and the log 0o600. Returns the file descriptor and the
+// root-relative path.
+function openLog(root, position) {
+  const rel = `${LOGS}/step-${position}.log`;
+  const refuse = () => new Stop('R-C Run: Blocked: refused a symlinked step log path');
+  try {
+    const dir = join(root, LOGS);
+    for (const part of [join(root, 'plan'), dir]) if (isLink(part)) throw refuse();
+    mkdirSync(dir, { recursive: true, mode: 0o700 });
+    const rootReal = realpathSync(root);
+    const within = relative(rootReal, realpathSync(dir));
+    if (within.startsWith('..') || isAbsolute(within)) throw refuse();
+    const file = join(root, rel);
+    if (isLink(file)) throw refuse();
+    const { O_WRONLY, O_CREAT, O_TRUNC, O_NOFOLLOW = 0 } = fsConstants;
+    return { fd: openSync(file, O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW, 0o600), rel };
+  } catch (e) {
+    if (e instanceof Stop) throw e;
+    throw new Stop('R-C Run: Blocked: could not open the step log');
+  }
 }
 
 // Returns the last Blocked: line when no Resolved: line follows it, else null.
@@ -132,20 +212,32 @@ function delivered(root, id, slug) {
   return readdirSync(dir).some((n) => n.startsWith(prefix));
 }
 
-function runStep(root, position) {
+function runStep(root, position, cfg, fd, labels) {
   return new Promise((resolveStep) => {
     const bin = process.env.CLAUDE_BIN || 'claude';
-    const child = spawn(bin, ['-p', '--permission-mode', 'auto', `Run roadmap step ${position}`], {
+    const args = ['-p', '--permission-mode', 'auto', '--model', cfg.model];
+    if (cfg.turns) args.push('--max-turns', cfg.turns);
+    args.push(`Run roadmap step ${position}`);
+    const child = spawn(bin, args, {
       cwd: root,
-      stdio: ['ignore', 'ignore', 'inherit'],
+      env: { ...process.env, OTEL_RESOURCE_ATTRIBUTES: withRoadmapLabels(process.env.OTEL_RESOURCE_ATTRIBUTES, labels.id, labels.slug, position) },
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
     activeChild = child;
+    child.stdout.on('data', (chunk) => writeSync(fd, chunk));
+    child.stderr.on('data', (chunk) => {
+      writeSync(fd, chunk);
+      writeSync(2, chunk);
+    });
     child.on('error', (e) => resolveStep({ error: e.code || 'spawn error' }));
     child.on('close', (code, signal) => resolveStep({ code, signal }));
   });
 }
 
 let activeChild = null;
+let currentLog = null;
+
+const withLog = (line) => (currentLog ? `${line} Log: ${currentLog}` : line);
 let lockPath = null;
 
 function releaseLock() {
@@ -162,7 +254,7 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
   process.on(sig, () => {
     if (activeChild) activeChild.kill(sig);
     releaseLock();
-    out(`R-C Run: Blocked: driver stopped by ${sig}`);
+    out(withLog(`R-C Run: Blocked: driver stopped by ${sig}`));
     process.exit(1);
   });
 }
@@ -170,6 +262,7 @@ process.on('exit', releaseLock);
 
 async function main() {
   const root = parseArgs(process.argv.slice(2));
+  const cfg = readChildConfig();
   let rm = readRoadmap(root);
   if (rm.status !== 'active') throw new Stop(`R-C Run: Blocked: roadmap status is ${rm.status}, not active`);
   const { id, slug } = rm;
@@ -186,12 +279,21 @@ async function main() {
 
   for (;;) {
     const position = rm.position;
+    currentLog = null;
+    const log = openLog(root, position);
+    currentLog = log.rel;
     out(`R-C Run: Starting: roadmap step ${position} in a fresh session`);
-    const res = await runStep(root, position);
+    let res;
+    try {
+      res = await runStep(root, position, cfg, log.fd, { id, slug });
+    } finally {
+      closeSync(log.fd);
+    }
     activeChild = null;
     if (res.error) throw new Stop(`R-C Run: Blocked: could not start claude (${res.error})`);
     if (res.code !== 0) {
-      throw new Stop(`R-C Run: Blocked: claude exited ${res.code ?? res.signal} on step ${position}`);
+      const cap = cfg.turns ? `. The step may have reached PLANIFEST_ROADMAP_MAX_TURNS=${cfg.turns}` : '';
+      throw new Stop(`R-C Run: Blocked: claude exited ${res.code ?? res.signal} on step ${position}${cap}`);
     }
 
     if (delivered(root, id, slug)) {
@@ -214,7 +316,7 @@ async function main() {
 main().then(
   () => process.exit(0),
   (e) => {
-    out(e instanceof Stop ? e.message : `R-C Run: Blocked: driver error ${e.code || e.name}`);
+    out(e instanceof Stop ? withLog(e.message) : `R-C Run: Blocked: driver error ${e.code || e.name}`);
     process.exit(1);
   },
 );

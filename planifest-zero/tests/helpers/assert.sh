@@ -7,6 +7,22 @@
 PASS=0
 FAIL=0
 
+# PLANIFEST_TEST_QUIET=1 hides PASS lines. A failing suite prints its name once,
+# before its first FAIL line (0000151 req-008).
+QUIET_NAMED=0
+
+_pass_line() {
+  [ "${PLANIFEST_TEST_QUIET:-0}" = "1" ] || echo "  PASS: $1"
+}
+
+_fail_line() {
+  if [ "${PLANIFEST_TEST_QUIET:-0}" = "1" ] && [ "$QUIET_NAMED" -eq 0 ]; then
+    echo "--- $(basename "$0") ---"
+    QUIET_NAMED=1
+  fi
+  echo "  FAIL: $1"
+}
+
 # -----------------------------------------------------------------------
 # JSON helpers (jq preferred, node fallback)
 # -----------------------------------------------------------------------
@@ -62,10 +78,10 @@ assert_equals() {
   local message="${3:-assertion}"
 
   if [ "$expected" = "$actual" ]; then
-    echo "  PASS: $message"
+    _pass_line "$message"
     ((PASS++)) || true
   else
-    echo "  FAIL: $message"
+    _fail_line "$message"
     echo "        expected: $expected"
     echo "        actual:   $actual"
     ((FAIL++)) || true
@@ -81,10 +97,10 @@ assert_contains() {
   # under `set -o pipefail` for haystacks >64KB (pipe buffer): grep -q exits on
   # an early match, printf takes SIGPIPE (141), pipefail fails the pipeline.
   if [[ "$haystack" == *"$needle"* ]]; then
-    echo "  PASS: $message"
+    _pass_line "$message"
     ((PASS++)) || true
   else
-    echo "  FAIL: $message"
+    _fail_line "$message"
     echo "        needle:   $needle"
     echo "        haystack: $haystack"
     ((FAIL++)) || true
@@ -96,12 +112,28 @@ assert_exit_zero() {
   local message="${2:-exit code assertion}"
 
   if [ "$actual_exit" -eq 0 ]; then
-    echo "  PASS: $message"
+    _pass_line "$message"
     ((PASS++)) || true
   else
-    echo "  FAIL: $message — expected exit 0, got $actual_exit"
+    _fail_line "$message — expected exit 0, got $actual_exit"
     ((FAIL++)) || true
   fi
+}
+
+# 0000151 req-011: the orchestrator SKILL.md keeps its core sections and moves
+# rarely used ones to references/orchestrator-*.md. This prints the path of a
+# temp file that holds SKILL.md followed by those files, so a test can keep
+# every assertion about a moved string and read it from one text.
+# Usage: ORCH="$(orch_combined "$ZERO_DIR/skills/planifest-orchestrator")"
+orch_combined() {
+  # One fixed file per user, replaced by an atomic rename, so runs leave no
+  # growing pile of temp files behind.
+  local dir="$1" out tmp
+  out="${TMPDIR:-/tmp}/planifest-orch-combined-$(id -u).md"
+  tmp="$(mktemp "${TMPDIR:-/tmp}/orch-combined.XXXXXX")"
+  cat "$dir/SKILL.md" "$dir"/references/orchestrator-*.md > "$tmp" 2>/dev/null
+  mv -f "$tmp" "$out"
+  echo "$out"
 }
 
 print_summary() {

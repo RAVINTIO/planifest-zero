@@ -266,6 +266,25 @@ function Write-SettingsAtomic {
     }
 }
 
+function Write-SettingsOrExit {
+    # Write-SettingsAtomic, with any fault turned into one fixed line on
+    # stderr and exit 1, as setup.sh prints it (0000151 req-005). The line holds
+    # no absolute path and no PowerShell error text. Remove-LegacyTelemetryWiring
+    # calls Write-SettingsAtomic directly, so it keeps its own warning.
+    param(
+        [string]$Path,
+        [string]$Json,
+        [string]$SettingsRel = '.claude/settings.json'
+    )
+    try {
+        Write-SettingsAtomic -Path $Path -Json $Json
+    }
+    catch {
+        [Console]::Error.WriteLine("! Error: $SettingsRel could not be written. Fix its permissions and rerun setup.")
+        exit 1
+    }
+}
+
 function New-HookEntry {
     # One settings.json hook entry: a matcher and one node command.
     param([string]$Matcher, [string]$Module, [string]$HooksDir)
@@ -502,7 +521,7 @@ function Merge-EnforcementHookSettings {
         $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
 
         # Depth 100 keeps deep user values whole (0000039 req-003).
-        Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 100)
+        Write-SettingsOrExit -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 100) -SettingsRel $SettingsRel
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
     }
     else {
@@ -515,7 +534,7 @@ function Merge-EnforcementHookSettings {
                 UserPromptSubmit = @($userPromptEntries)
             }
         }
-        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
+        Write-SettingsOrExit -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100) -SettingsRel $SettingsRel
         Write-Host "  + .claude/settings.json (created with enforcement hook entries)"
     }
 }
@@ -548,7 +567,7 @@ function Merge-AllowedTools {
         $settings | Add-Member -NotePropertyName 'allowedTools' -NotePropertyValue ($existing + @('Agent')) -Force
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
+        Write-SettingsOrExit -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
         Write-Host "  ~ .claude/settings.json (Agent added to allowedTools)"
     } else {
         Write-Host "  - .claude/settings.json (Agent already in allowedTools)"
@@ -568,6 +587,9 @@ function Remove-LeftoverSettingsTmp {
 # Telemetry hook module names a pre-0000033 project may still reference from
 # .claude/settings.json (0000033 req-004, ADR-002 decision 1). The modules
 # themselves are gone, so every entry naming one is a broken reference.
+# This is also the retired-hooks list: Install-EnforcementHooks deletes an
+# installed hook on it and never one absent from it (0000151 ADR-007).
+# Retiring a hook means adding its name here and in setup.sh.
 $TelemetryHookModules = @(
     'emit-phase-start',
     'emit-phase-end',
@@ -577,9 +599,12 @@ $TelemetryHookModules = @(
     'resolve-phase',
     'record-telemetry-failure',
     'check-telemetry-failures',
-    'check-telemetry-receipts'
+    'check-telemetry-receipts',
+    'phase-enum'
 )
 $TelemetryMcpMatcher = 'mcp__structured-telemetry-mcp__emit_event'
+# Remove-RetiredHooks prunes installed hooks by this list (0000151 ADR-007).
+$RetiredHookNames = $TelemetryHookModules
 
 function Remove-LegacyTelemetryWiring {
     # Mirror of remove_legacy_telemetry_wiring in setup.sh (0000033 req-004,
@@ -674,6 +699,44 @@ function Remove-LegacyTelemetryWiring {
     }
 }
 
+function Test-UnderRealRoot {
+    # True when the item and every folder between it and the root are plain
+    # entries, not reparse points, and the item sits under the root.
+    param($Item, [string]$RootFull)
+    if (-not $Item.FullName.StartsWith($RootFull + [IO.Path]::DirectorySeparatorChar)) { return $false }
+    $current = $Item
+    while ($current -and $current.FullName.TrimEnd('\', '/') -ne $RootFull) {
+        if ($current.Attributes -band [IO.FileAttributes]::ReparsePoint) { return $false }
+        $current = if ($current -is [IO.FileInfo]) { $current.Directory } else { $current.Parent }
+    }
+    return $true
+}
+
+function Remove-RetiredHooks {
+    # Mirror of prune_retired_hooks in setup.sh (0000151 req-004, ADR-007).
+    # Deletes each installed hook whose base name is on $RetiredHookNames,
+    # checks the whole hooks tree, and prints one line per removal.
+    param([string]$HooksRootRel)
+    $root = Join-Path $ProjectRoot $HooksRootRel
+    if (-not (Test-Path -LiteralPath $root -PathType Container)) { return }
+    foreach ($name in $RetiredHookNames) {
+        # Windows PowerShell 5.1 follows junctions on -Recurse, so drop any
+        # match under a reparse point or outside the hooks root.
+        $rootFull = (Get-Item -LiteralPath $root).FullName.TrimEnd('\', '/')
+        $found = @(Get-ChildItem -LiteralPath $root -Recurse -File -Filter "$name.mjs" -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -ceq "$name.mjs" } |
+            Where-Object { Test-UnderRealRoot -Item $_ -RootFull $rootFull })
+        foreach ($file in $found) {
+            try {
+                Remove-Item -LiteralPath $file.FullName -Force -ErrorAction Stop
+                $rel = $file.FullName.Substring($ProjectRoot.TrimEnd('\', '/').Length + 1) -replace '\\', '/'
+                Write-Host "  - removed $rel"
+            }
+            catch { }
+        }
+    }
+}
+
 function Install-EnforcementHooks {
     # Copy the enforcement hook modules and wire all six into settings.json.
     # Always runs — no flag required.
@@ -702,6 +765,8 @@ function Install-EnforcementHooks {
         Copy-Item -Path $_.FullName -Destination $destFile -Force
         Write-Host "  + $HooksDirRel/$($_.Name)"
     }
+
+    Remove-RetiredHooks -HooksRootRel (Split-Path -Parent $HooksDirRel)
 
     Merge-EnforcementHookSettings -SettingsPath $settings -HooksDir $HooksDirRel -SettingsRel $SettingsRel
 }

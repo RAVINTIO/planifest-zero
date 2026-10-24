@@ -6,6 +6,7 @@
 #   PLANIFEST_PWSH=<path>        PowerShell 7 program to run .ps1 suites (default: pwsh)
 #   PLANIFEST_REQUIRE_PWSH=1     fail the run when pwsh is missing (0000036 ADR-002)
 #   PLANIFEST_PREFLIGHT_ONLY=1   check for stray files, run no suite, and exit
+#   PLANIFEST_TEST_QUIET=1       hide PASS lines and banners, keep every failure and the summary
 
 set -uo pipefail
 
@@ -42,6 +43,7 @@ KNOWN_NON_SUITES=(
   "fixtures/0000039-setup-hardening/invalid-settings.json"    # invalid JSON with a planted value (0000039 req-001)
   "fixtures/0000039-setup-hardening/single-object-hooks.json" # single-object hooks values (0000039 req-002)
   "fixtures/0000039-setup-hardening/deep-settings.json"       # a value nested 15 levels deep (0000039 req-003)
+  "fixtures/0000151-orchestrator-skill-base.md"               # orchestrator SKILL.md at the base commit (0000151 req-011)
 )
 
 is_known_file() {
@@ -76,22 +78,44 @@ HAVE_PWSH=0
 command -v "$PWSH" >/dev/null 2>&1 && HAVE_PWSH=1
 
 # Runs one suite and prints its name. Returns 0 on pass, 1 on fail, and 2 when
-# a PowerShell suite can't run because pwsh is missing.
+# a PowerShell suite can't run because pwsh is missing. With
+# PLANIFEST_TEST_QUIET=1 the output of a passing suite is dropped, and a
+# failing suite prints its output with its name once (0000151 req-008).
 run_one() {
-  local file="$1"
+  local file="$1" quiet_out code name
+  name="$(basename "$file")"
+  if [ "${PLANIFEST_TEST_QUIET:-0}" = "1" ]; then
+    case "$file" in
+      *.ps1) [ "$HAVE_PWSH" -eq 0 ] && return 2 ;;
+    esac
+    quiet_out="$(run_suite_body "$file" 2>&1)"
+    code=$?
+    if [ "$code" -ne 0 ]; then
+      case "$quiet_out" in
+        *"--- $name ---"*) ;;
+        *) echo ""; echo "--- $name ---" ;;
+      esac
+      printf '%s\n' "$quiet_out"
+    fi
+    return "$code"
+  fi
   echo ""
-  echo "--- $(basename "$file") ---"
+  echo "--- $name ---"
   case "$file" in
     *.ps1)
       if [ "$HAVE_PWSH" -eq 0 ]; then
         echo "  SKIP: pwsh not found"
         return 2
       fi
-      "$PWSH" -NoProfile -File "$file"
       ;;
-    *)
-      bash "$file"
-      ;;
+  esac
+  run_suite_body "$file"
+}
+
+run_suite_body() {
+  case "$1" in
+    *.ps1) "$PWSH" -NoProfile -File "$1" ;;
+    *) bash "$1" ;;
   esac
 }
 
