@@ -2,7 +2,7 @@
 
 **Feature:** hardening-and-backlog-skill
 **Version:** 0.13.0
-**PR:** pending
+**PR:** [#27](https://github.com/RAVINTIO/ravintio-zero/pull/27)
 
 ## What changed
 
