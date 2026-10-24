@@ -80,9 +80,9 @@ P1: Plan: Complete: 15 requirements, 8 ADRs, scope, risk register, glossary, exe
 | Start | `2026-10-24T14:35:32Z` |
 | Model tier | primary (orchestration), cheaper tier sonnet for TDD tracks |
 | Skills loaded | planifest-implement |
-| Agents spawned | `pending` |
+| Agents spawned | `9` (sonnet: 7 TDD tracks, 1 orchestrator batch, 1 docs) |
 | MCP calls | `0` |
-| Parallel task batches | `pending` |
+| Parallel task batches | `1` (seven tracks), then 2 sequential batches |
 | Notes | Batch 1: seven TDD tracks per the execution plan. Batch 2: REQ-014, REQ-009, REQ-011 in sequence. |
 
 - In progress: Track A REQ-004 REQ-005 TDD (2026-10-24T14:35:32Z)
@@ -107,3 +107,5 @@ REQ-015 fix-up: GitHub rejected the workflow, because a step's shell key takes n
 - Measure (REQ-011): CLAUDE.md plus SKILL.md was 44,538 bytes (8,322 plus 36,216). After the split it is 35301 bytes (8322 plus 26979). The saving is 9237 bytes (20.7% of the total, 25.5% of SKILL.md). Seven files under references/orchestrator-*.md hold the moved sections. Scope Lock Challenge, Audit Trail, Skill Map, Opening Briefing, and Decomposition moved too, to reach the 27,162 byte target. The Opening Briefing sits in the coaching file, so the orchestrator reads that file on a fresh P0.
 - Done: Batch 2 REQ-014 REQ-009 REQ-011 TDD (2026-10-24T15:07:39Z). Commits c92a73d, 6aeb90d, 418a9ab. Orchestrator SKILL.md 36,216 to 26,979 bytes. Full quiet suite: 110 feature and 19 regression suites pass, 11 PowerShell suites skipped (pwsh absent). Deviation: REQ-014 says gated and autonomous run, because the 0000042 backstop bans the word interactive.
 - In progress: P2 docs (component manifest, living docs, change record) (2026-10-24T15:07:39Z)
+- Done: P2 docs (component manifest, living docs, change record) (2026-10-24T15:09:29Z). Commits b5dd270 to fa4201a. Self-description and consistency checks clean.
+P2: Implement: Complete: 15 of 15 requirements green (2026-10-24T15:09:29Z).
