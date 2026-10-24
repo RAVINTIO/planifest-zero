@@ -30,6 +30,10 @@ KNOWN_NON_SUITES=(
   "run-tests.sh"                           # this runner
   "run-tests.ps1"                          # the PowerShell-only runner (0000036 ADR-002)
   "test-gate-write-windows.mjs"            # called by test-gate-write-windows.sh
+  "helpers/gate-write-harness.mjs"         # shared harness for the 0000164 gate-write suites
+  "test-0000164-req-001-gate-write-outside-project.mjs"  # called by the req-001 .sh suite
+  "test-0000164-req-002-gate-write-documented-scope.mjs" # called by the req-002 .sh suite
+  "test-0000164-req-006-gate-write-symlink-cases.mjs"    # called by the req-006 .sh suite
   "regression/test-gate-write-windows.mjs" # the regression copy of the same
   "regression/regression-manifest.json"    # the promoted-suite list
   "regression/.gitkeep"                    # keeps the folder in git
