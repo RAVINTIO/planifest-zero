@@ -90,3 +90,4 @@ P1 Plan: Complete: ten requirements, four ADRs, execution plan, scope, risk regi
 - In progress: track C REQ-004, REQ-009 telemetry cleanup (2026-10-24T23:03:13Z)
 - In progress: track D REQ-005, REQ-010 file-backlog skill (2026-10-24T23:03:13Z)
 - Done: track B REQ-003, REQ-008 Bash 3.2 loops (2026-10-24T23:05:24Z)
+- Done: track D REQ-005, REQ-010 file-backlog skill (2026-10-24T23:05:35Z)
