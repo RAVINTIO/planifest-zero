@@ -63,3 +63,8 @@ P0 exchange (design): Q: Confirm the design? / A: Confirmed as written. (2026-10
 - In progress: P1 requirements REQ-001 to REQ-003 (2026-10-24T22:58:16Z)
 - In progress: P1 requirements REQ-004 to REQ-005 (2026-10-24T22:58:16Z)
 - In progress: P1 scope, risk register, and glossary (2026-10-24T22:58:16Z)
+- Done: P1 requirements REQ-001 to REQ-003 (2026-10-24T22:59:54Z)
+- Done: P1 requirements REQ-004 to REQ-005 (2026-10-24T22:59:54Z)
+- Done: P1 scope, risk register, and glossary (2026-10-24T22:59:54Z)
+- In progress: P1 ADRs (2026-10-24T22:59:54Z)
+- In progress: P1 execution plan (2026-10-24T22:59:54Z)
