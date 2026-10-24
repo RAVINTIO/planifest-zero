@@ -134,3 +134,15 @@ CI on PR #23 at 4a7821e: all five jobs pass. windows-powershell runs 5.1 and 7 i
 - Done: P3 execution verification (2026-10-24T15:38:33Z). 45 criteria: 44 verified, 0 failed, REQ-015 (c) verified in CI.
 Acceptance evidence written to plan/current/acceptance-evidence.md (autonomous run, no gate stop).
 P3: Validate and Accept: Complete: checks green locally and in CI, security risk low after fixes, 0 failed criteria (2026-10-24T15:38:33Z).
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T15:38:46Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Autonomous run. PR #23 exists as a draft from P3, so Step 9 updates it and marks it ready. |
