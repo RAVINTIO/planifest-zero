@@ -47,3 +47,19 @@ Scope Lock (error path): `gate-write` resolves real paths so an in-project symli
 Scope Lock (cross-session continuity): The skill makes one uncommitted folder write. A rerun finds an existing folder with the same slug and reports it instead of writing a duplicate. [source: draft-accepted]
 Scope Lock complete. All four scenario paths captured.
 P0 exchange (design): Q: Confirm the design? / A: Confirmed as written. (2026-10-24T22:57:53Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T22:58:16Z` |
+| Model tier | primary orchestrator, primary requirements agents, cheaper scope agent |
+| Skills loaded | ravintio-plan |
+| Agents spawned | `4` |
+| MCP calls | `0` |
+| Parallel task batches | `2` |
+| Notes | Batch 1: requirements in two agents, scope, risk, and glossary in one. Batch 2: ADRs in one agent while the orchestrator writes the execution plan. |
+
+- In progress: P1 requirements REQ-001 to REQ-003 (2026-10-24T22:58:16Z)
+- In progress: P1 requirements REQ-004 to REQ-005 (2026-10-24T22:58:16Z)
+- In progress: P1 scope, risk register, and glossary (2026-10-24T22:58:16Z)
