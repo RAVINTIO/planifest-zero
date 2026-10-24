@@ -246,3 +246,20 @@ Method: same stub driver harness, plus `git init` in each fixture.
 ## Failed criteria
 
 None.
+
+## CI evidence (PR #23)
+
+CI run `40106508296` on commit `4a7821e` passed all five jobs. That run settles the clauses marked not-verifiable on this machine.
+
+| Criterion | Outcome | Evidence |
+|-----------|---------|----------|
+| REQ-004 (a), (b), (c) `.ps1` clauses | verified | `test-0000151-req-004-prune-retired-hooks.ps1` passed under Windows PowerShell 5.1 and PowerShell 7 |
+| REQ-005 (b), (c) `.ps1` clauses | verified | `test-0000151-req-005-setup-write-error-line.ps1` passed under both hosts |
+| REQ-008 (a), (b) `.ps1` clauses | verified | `test-0000151-req-008-quiet-test-output.ps1` passed under both hosts |
+| REQ-011 (c) `.ps1` clause | verified | `test-0000151-req-011-orchestrator-references-split.ps1` passed under both hosts after the LF byte-count fix (`4a7821e`) |
+| REQ-015 (b) `.ps1` clause | verified | Both hosts printed the three `[timing]` lines per case |
+| REQ-015 (c) wall time | verified | `windows-powershell` entries ran in parallel: 3 min 5 s (5.1) and 4 min 15 s (7). The job took 4 min 15 s, below the 4 min 30 s slower step before the change |
+
+The earlier CI run `40106182675` failed one assertion under both hosts: the REQ-011 byte budget counted CRLF line endings. The fix counts bytes with LF endings.
+
+A final quiet full run on this machine after the P3 fixes passed 110 feature suites and 19 regression suites, with 11 PowerShell suites skipped.
