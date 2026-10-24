@@ -113,3 +113,4 @@ P2 Implement: Complete: 6 requirements built, Bash suite 114 of 114. Autonomous,
 - P3 cycle 5 result (2026-10-24T20:59:57Z): CI run 40131879508 on 110be12. Windows PowerShell 5.1 and PowerShell 7 jobs pass. bash-suites fails one check: the 0000042 wording test flags `ravintio-zero/tests/test-0000160-req-006-brand-guard.sh:80`, a guard allowlist entry that names the old folder pattern `planifest[-]framework`.
 Blocked: bash-suites still fails after 5 attempts (2026-10-24T20:59:57Z)
 Resolved: bash-suites still fails after 5 attempts (2026-10-24T21:10:45Z, human approved one more cycle to allowlist the brand guard's own entries in the 0000042 wording test)
+- P3 cycle 6, human approved (2026-10-24T21:18:40Z). Fix: the 0000042 wording allowlist covers the brand guard's own allowlist line. Local check used Bash 3.2-safe copies of every suite with the `done < <(` pattern, and all passed.
