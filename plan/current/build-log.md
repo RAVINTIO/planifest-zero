@@ -62,3 +62,17 @@ P0 exchange (design): Q: Confirm the design? / A: Confirmed as written, with the
 - Done: P1 drafting batch (2026-10-24T19:21:32Z)
 - Self-correction: consistency check flagged a cross-feature ADR number in ADR-003. Reworded to name the decision. Avoidable: yes, the drafting prompt did not say the check reads every ADR-NNN as local.
 P1 Plan: Complete: 6 requirements, 4 ADRs, scope, risk register, glossary, execution plan. Consistency check clean. Autonomous, no gate stop.
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T19:22:38Z` |
+| Model tier | primary orchestrator, cheaper TDD agents |
+| Skills loaded | planifest-implement |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `3` (batch 1 sequential, batch 2 parallel, batch 3 sequential) |
+| Notes | Batch 1 is one scripted pass by the orchestrator. Every other unit depends on it, so it cannot split. |
+
+- In progress: batch 1 mechanical rename (2026-10-24T19:22:38Z)
