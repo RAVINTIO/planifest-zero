@@ -69,3 +69,4 @@ P0: Discovery: Complete: design confirmed, 15 requirements, autonomous run.
 - Done: P1 REQ-007 REQ-008 REQ-010 requirements (2026-10-24T14:32:06Z)
 - Done: P1 REQ-009 REQ-011 requirements (2026-10-24T14:32:15Z)
 - Done: P1 REQ-001 REQ-002 REQ-005 requirements (2026-10-24T14:32:34Z). Ship steps renumber to Step 8 clear sentinels and Step 9 PR, with the order tests updated.
+- Done: P1 REQ-006 REQ-012 REQ-013 REQ-014 requirements (2026-10-24T14:33:05Z). No turn cap when unset. A new roadmap-labels.mjs helper holds the encoder.
