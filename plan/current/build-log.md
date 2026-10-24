@@ -45,3 +45,17 @@ Scope Lock (cross-session continuity): Branch commits and build-log progress mar
 Scope Lock complete. All four scenario paths captured.
 Version: 1.0.0 (major, breaking rename for consumers; confirmed in the depth exchange)
 P0 exchange (design): Q: Confirm the design? / A: Confirmed as written, with the 1.x legacy aliases. (2026-10-24T19:19:25Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T19:19:37Z` |
+| Model tier | primary orchestrator, cheaper drafting agents |
+| Skills loaded | planifest-plan |
+| Agents spawned | `4` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Requirements in two agents, ADRs in one, scope, risk, and glossary in one. The execution plan follows the requirements. |
+
+- In progress: P1 drafting batch (2026-10-24T19:19:37Z)
