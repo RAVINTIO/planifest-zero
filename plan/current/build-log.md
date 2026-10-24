@@ -54,9 +54,9 @@ P0: Discovery: Complete: design confirmed, 15 requirements, autonomous run.
 | Start | `2026-10-24T14:29:46Z` |
 | Model tier | primary (orchestration), cheaper (requirement drafting) |
 | Skills loaded | planifest-plan |
-| Agents spawned | `pending` |
+| Agents spawned | `11` (sonnet: 5 requirement drafters, 1 ADR writer, 1 scope writer, 3 criteria regroupers. claude-code-guide: 1 fact check) |
 | MCP calls | `0` |
-| Parallel task batches | `pending` |
+| Parallel task batches | `3` |
 | Notes | Autonomous run. No gate stop. |
 - In progress: P1 REQ-001 REQ-002 REQ-005 requirements (2026-10-24T14:29:55Z)
 - In progress: P1 REQ-003 REQ-004 REQ-015 requirements (2026-10-24T14:29:55Z)
@@ -70,3 +70,5 @@ P0: Discovery: Complete: design confirmed, 15 requirements, autonomous run.
 - Done: P1 REQ-009 REQ-011 requirements (2026-10-24T14:32:15Z)
 - Done: P1 REQ-001 REQ-002 REQ-005 requirements (2026-10-24T14:32:34Z). Ship steps renumber to Step 8 clear sentinels and Step 9 PR, with the order tests updated.
 - Done: P1 REQ-006 REQ-012 REQ-013 REQ-014 requirements (2026-10-24T14:33:05Z). No turn cap when unset. A new roadmap-labels.mjs helper holds the encoder.
+Consistency check: clean after grouping each requirement's criteria into three (2026-10-24T14:35:08Z).
+P1: Plan: Complete: 15 requirements, 8 ADRs, scope, risk register, glossary, execution plan. Autonomous run, no gate stop.
