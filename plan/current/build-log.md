@@ -118,3 +118,4 @@ P2 Implement: Complete: 10 requirements built across 4 parallel tracks. Bash 3.2
 - In progress: P3 cycle 2 file-backlog skill hardening (S-006, S-007, S-008, skill findings) (2026-10-24T23:22:33Z)
 - In progress: P3 cycle 2 setup and gate-write hardening (S-005, S-002, REQ-003 b coverage) (2026-10-24T23:22:33Z)
 - Done: P3 cycle 2 file-backlog skill hardening (S-006, S-007, S-008, skill findings) (2026-10-24T23:23:55Z)
+- Done: P3 cycle 2 setup and gate-write hardening (S-005, S-002, REQ-003 b coverage). Full Bash suite under env -i: 118 and 19 pass. (2026-10-24T23:28:06Z)
