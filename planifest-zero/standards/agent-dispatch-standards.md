@@ -28,13 +28,13 @@ Canonical home for model tier selection and parallelism/dispatch mechanics, shar
 | Discovery coaching | Primary | Dialogue, gap assessment |
 | Build assessment (ship phase) | Cheaper | Read-only summarisation from a structured log |
 
-**Tier-to-model mapping by tool** (update when tools release new models):
+**Tier-to-model mapping by tool** (the Agent tool's `model` values are aliases, so they track new releases):
 
 | Tool | Primary tier | Cheaper tier |
 |------|-------------|-------------|
-| Claude Code | claude-sonnet-4-6 (or latest Sonnet) | claude-haiku-4-5 (or latest Haiku) |
+| Claude Code | `sonnet` | `haiku` |
 
-**How to apply:** Before calling `Agent(...)`, look up the task in the table. Pass `model: {resolved model name}` as a parameter. Record the tier in the build log for the ship phase's build assessment.
+**How to apply:** Before calling `Agent(...)`, look up the task in the table. Pass `model: {resolved model name}` as a parameter. An Agent call without `model` inherits the parent's model, so a cheaper-tier task would run on the parent's tier. Every Agent call passes `model` explicitly. Record the tier in the build log for the ship phase's build assessment.
 
 ---
 
@@ -76,10 +76,10 @@ Agent spawning is level-2 parallelism (the Agent tool for independent sub-tasks 
 **Concrete parallel dispatch skeleton** (send both `Agent()` calls in a single message so they execute concurrently):
 
 ```
-Agent({ description: "Implement REQ-001: {one-liner}", subagent_type: "general-purpose", model: "claude-haiku-4-5",
+Agent({ description: "Implement REQ-001: {one-liner}", subagent_type: "general-purpose", model: "haiku",
   prompt: "Requirement: plan/current/requirements/req-001-{slug}.md. ADR: plan/current/adr/ADR-00N-{slug}.md. Stack: {constraint}. Task: {what to build}. If you discover an out-of-scope bug/gap, file it at plan/backlog/{backlog-id-1}-{slug}/entry.md per templates/backlog-entry.template.md; do not report it back for me to relay. Confirm: files modified, what changed." })
 
-Agent({ description: "Implement REQ-002: {one-liner}", subagent_type: "general-purpose", model: "claude-haiku-4-5",
+Agent({ description: "Implement REQ-002: {one-liner}", subagent_type: "general-purpose", model: "haiku",
   prompt: "Requirement: plan/current/requirements/req-002-{slug}.md. ADR: plan/current/adr/ADR-00N-{slug}.md. Stack: {constraint}. Task: {what to build}. If you discover an out-of-scope bug/gap, file it at plan/backlog/{backlog-id-2}-{slug}/entry.md per templates/backlog-entry.template.md; do not report it back for me to relay. Confirm: files modified, what changed." })
 ```
 

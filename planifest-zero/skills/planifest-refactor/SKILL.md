@@ -2,6 +2,7 @@
 name: planifest-refactor
 description: TDD refactor phase: improves code quality while keeping all tests passing. Invoked by planifest-implement after planifest-implementer confirms GREEN.
 recommended_model: haiku
+model: haiku
 ---
 
 # Planifest - refactor
