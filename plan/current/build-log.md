@@ -44,3 +44,5 @@ Scope Lock (error path): Read-only settings give one fixed line and exit 1, park
 Scope Lock (cross-session continuity): Ship clears sentinels before the push, interrupted-ship cleanup still applies, and step logs survive the session. [source: draft-accepted]
 Scope Lock complete. All four scenario paths captured.
 Run mode: autonomous (2026-10-24T13:41:00Z)
+P0 exchange (design): Q: Confirm the design? / A: Confirmed (2026-10-24T14:29:27Z).
+P0: Discovery: Complete: design confirmed, 15 requirements, autonomous run.

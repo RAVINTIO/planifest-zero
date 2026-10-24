@@ -1,7 +1,7 @@
 ---
 title: "Feature Brief - hardening, token efficiency, and faster CI"
 summary: "Ten backlog entries: setup and hook hardening, a park security fix, ship order, roadmap driver logging and labels, token efficiency, and faster PowerShell CI."
-status: "draft"
+status: "approved"
 version: "0.1.0"
 ---
 # Feature Brief - hardening, token efficiency, and faster CI
