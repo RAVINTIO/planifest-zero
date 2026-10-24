@@ -38,6 +38,18 @@ Canonical home for model tier selection and parallelism/dispatch mechanics, shar
 
 ---
 
+## WebFetch of a reference page
+
+Run a `WebFetch` of a full reference page in a subagent on `sonnet` or `haiku`. The page then stays out of the main session, so later turns do not re-read it.
+
+1. Name the extract the parent needs in the dispatch prompt.
+2. The dispatch passes `model` explicitly, as the tier table requires.
+3. The subagent returns only that extract, not the page.
+
+A small page that the parent needs in full may run in the main session.
+
+---
+
 ## Parallelism Rules
 
 **Default posture: parallel.** Sequential dispatch requires an explicit dependency justification. **Dependency test:** can task B start before task A's output is available? If you cannot state why it must wait, dispatch both in parallel (single message, multiple Agent tool calls).
