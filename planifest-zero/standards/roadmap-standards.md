@@ -45,7 +45,14 @@ Coach the human on these points:
 
 If a named backlog entry does not exist, stop the chart and name the missing entry. The human's confirmation approves the roadmap.
 
-Chart also collects the schema approvals the steps need. See Chart-time schema approval.
+Chart runs a clarity check on each backlog entry of each step:
+
+- The entry states a problem, a wanted outcome, and one observable condition that P0 can turn into an acceptance criterion.
+- Chart lists each entry that fails the check and asks the human to sharpen it or strike the step.
+- The human's confirmation of the chart covers only entries that pass or that the human sharpens.
+- Chart never rewrites an entry itself.
+
+Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval.
 
 ### Chart-time schema approval
 
@@ -68,6 +75,18 @@ In a step, the rule applies wherever the step writes a migration proposal, in P1
 - If no row matches an additive proposal and the fallback is `pre-approved`, set its status to `approved (roadmap chart fallback)` and carry on. Log the same line with `fallback` added.
 - Otherwise, take the normal schema-change exception stop. That covers a new field, a changed type, or a change no row predicted.
 - A destructive change always stops, even when a row lists it. Hard Limit 4 allows no exceptions. A listed row only tells the human in advance.
+
+### Chart-time dependency approval
+
+A new library or service needs a human to approve it. The human is present at Chart and absent during the steps, so Chart collects these approvals up front.
+
+At Chart:
+
+1. Survey each step. Read the step's backlog entries and the manifests of the components they touch. Predict each library or service the step adds.
+2. List each prediction as a row in the `## Dependencies` table of `roadmap.md`. A step with no prediction gets one row with Kind `none`. Kind is `library`, `service`, or `none`.
+3. Present the table. The human approves, edits, or strikes each row. The human's confirmation of the chart approves every row left in the table.
+
+Chart asks no fallback question. A dependency that no row lists stops the step. The step takes the dependency exception stop in the orchestrator skill. In P0, copy the step's rows into the `Approved dependencies` field of `design.md`. The stop check still reads `roadmap.md`.
 
 ### R-B Activate
 

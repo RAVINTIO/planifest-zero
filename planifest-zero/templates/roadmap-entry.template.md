@@ -17,6 +17,9 @@ status: "draft"  # draft | active | blocked | done
 >
 > `## Schema changes` lists each step's predicted data change. The human approves the rows at
 > Chart. See Chart-time schema approval in `planifest-zero/standards/roadmap-standards.md`.
+>
+> `## Dependencies` lists each step's predicted library or service. The human approves the rows
+> at Chart. See Chart-time dependency approval in the same file.
 
 **Goal:** {{What the whole chain delivers, in one or two sentences.}}
 **Branch:** roadmap/{{id}}-{{slug}}
@@ -34,6 +37,12 @@ status: "draft"  # draft | active | blocked | done
 | Step | Component | Change | Kind |
 |------|-----------|--------|------|
 | 1 | {{component id, or none}} | {{the predicted data change, or none}} | {{additive, destructive, or none}} |
+
+## Dependencies
+
+| Step | Name | Kind | Purpose |
+|------|------|------|---------|
+| 1 | none | none | {{the library or service the step adds, or none. Kind is library, service, or none}} |
 
 ## Steps
 

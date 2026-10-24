@@ -64,8 +64,8 @@ assert_contains "$CRED_MSG" "$STOPS" \
   "req-011 (c): the Exception Stops table has a credential row"
 assert_contains 'before the commit and before any push' "$STOPS" \
   "req-011 (c): the credential stop fires before the commit and any push"
-assert_equals "5" "$(printf '%s\n' "$STOPS" | grep -cE '^\| .* \| `(\{prefix\}|P[0-4] [A-Za-z]+:) ?Blocked: ')" \
-  "req-011 (c): the table has five exception rows"
+assert_equals "6" "$(printf '%s\n' "$STOPS" | grep -cE '^\| .* \| `(\{prefix\}|P[0-4] [A-Za-z]+:) ?Blocked: ')" \
+  "req-011 (c): the table has six exception rows (the sixth is the 0000151 dependency stop)"
 for f in "$REF" "$FLOW"; do
   assert_contains 'possible credential' "$(cat "$f")" \
     "req-011 (c): $(basename "$f") lists the credential stop"
