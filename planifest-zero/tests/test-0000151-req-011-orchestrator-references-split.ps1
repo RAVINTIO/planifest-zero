@@ -19,7 +19,10 @@ Assert-True ($refFiles.Count -ge 6) "req-011 (b): at least six reference files e
 foreach ($f in $refFiles) {
     Assert-True ($skillText.Contains("references/$($f.Name)")) "req-011 (b): Pack Index has a row for $($f.Name)"
 }
-Assert-True ((Get-Item -LiteralPath (Join-Path $skillDir 'SKILL.md')).Length -le 27162) "req-011 (a): SKILL.md is 27162 bytes or fewer"
+# A Windows checkout may convert line endings to CRLF, so count the bytes
+# with LF endings, as the repository stores them.
+$skillText = [IO.File]::ReadAllText((Join-Path $skillDir 'SKILL.md')) -replace "`r`n", "`n"
+Assert-True ([Text.Encoding]::UTF8.GetByteCount($skillText) -le 27162) "req-011 (a): SKILL.md is 27162 bytes or fewer"
 
 Write-Host ""
 Write-Host "=== req-011 (c): setup installs the reference files ==="
