@@ -79,7 +79,7 @@ Once the pack ships only `ravintio-*` skills, `prune_retired_skills` and `Remove
 ## Related ADRs
 
 - 0000160 ADR-001 - depends-on: the rename map defines the targets
-- 0000151 ADR-007 - extends: pruning retired skills by list
+- 0000151 decision "Setup prunes retired hooks by list" - extends: the same prune-by-list approach
 - 0000031 ADR-002 - related-to: the last folder rename
 
 ## Supersedes
