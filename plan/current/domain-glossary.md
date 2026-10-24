@@ -21,7 +21,7 @@ version: "0.1.0"
 | Component paths | The paths that this feature's components own: `ravintio-zero/`, `.claude/`, `.github/`, `scripts/`, `CLAUDE.md`, `README.md`, and `product.yml`. | None | ravintio-zero |
 | Real path | The absolute path with symlinks resolved. `gate-write` compares real paths. For a file that does not exist yet, it uses the nearest existing parent. | Resolved path, canonical path | ravintio-zero |
 | Retired-hooks list | The `RETIRED_HOOK_NAMES` array in `setup.sh` and the `$RetiredHookNames` array in `setup.ps1`. Setup prunes the hook entries that it names. | Retired hook names | ravintio-zero |
-| Legacy telemetry wiring | Telemetry hook entries that pack versions before 0000033 left in a consumer repo. Setup removed them before 1.1.0. From 1.1.0, setup no longer removes them. | None | ravintio-zero |
+| Legacy telemetry wiring | Telemetry hook entries that pack versions before 0000033 left in a consumer repo. Setup removed them before 0.13.0. From 0.13.0, setup no longer removes them. | None | ravintio-zero |
 | Backlog entry | A folder `plan/backlog/{id}-{slug}/` that holds one `entry.md`. It records an out-of-scope item for a later discovery run. | Backlog item | ravintio-zero |
 | Backlog id high-water mark | The highest backlog id ever allocated in a repo, including picked-up and discarded entries. The next id is this value plus one. | Id high-water mark | ravintio-zero |
 | Target repo | The other repo where the backlog-filing skill writes one uncommitted backlog entry folder. The skill never commits, pushes, switches branches, or opens a PR in it. | Other repo | ravintio-zero |

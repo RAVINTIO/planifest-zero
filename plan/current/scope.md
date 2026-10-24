@@ -8,7 +8,7 @@ version: "0.1.0"
 
 **Skill:** plan
 **Feature:** 0000164-hardening-and-backlog-skill
-**Version:** 1.1.0
+**Version:** 0.13.0
 
 ## In Scope
 
@@ -17,7 +17,7 @@ version: "0.1.0"
 - The five suites switch from `done < <(...)` to `done <<< "$(...)"` and skip empty lines. A guard test fails on the old pattern under `tests/`.
 - `setup.sh` and `setup.ps1` drop the telemetry cleanup and its call. The names stay as `RETIRED_HOOK_NAMES` and `$RetiredHookNames`. Cleanup tests go, pruning tests stay.
 - New skill `ravintio-zero/skills/ravintio-file-backlog/SKILL.md`, a catalogue row, and tests.
-- Version 1.1.0.
+- Version 0.13.0.
 
 ## Out of Scope
 

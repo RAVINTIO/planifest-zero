@@ -2,7 +2,7 @@
 title: "Feature Brief - hardening and backlog skill"
 summary: "Four backlog entries: a gate-write fix, Bash 3.2 test loops, telemetry cleanup retirement, and a backlog-filing skill."
 status: "approved"
-version: "1.1.0"
+version: "0.13.0"
 ---
 # Feature Brief - hardening and backlog skill
 

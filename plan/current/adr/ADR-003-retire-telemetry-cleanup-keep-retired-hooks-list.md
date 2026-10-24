@@ -24,7 +24,7 @@ Setup in both shells drops the legacy telemetry cleanup and its call.
 - Remove `remove_legacy_telemetry_wiring`, `Remove-LegacyTelemetryWiring`, `TELEMETRY_MCP_MATCHER`, and `$TelemetryMcpMatcher`.
 - Keep the ten names as `RETIRED_HOOK_NAMES` in `setup.sh` and `$RetiredHookNames` in `setup.ps1`. The pruning functions read the renamed lists and behave as before.
 - Delete or rewrite the suites that test the cleanup. Keep the pruning suites and change their list-name asserts.
-- State in the 1.1.0 changelog that a pre-0000033 consumer removes stale telemetry wiring by hand.
+- State in the 0.13.0 changelog that a pre-0000033 consumer removes stale telemetry wiring by hand.
 - Leave the archived 0000033 ADR-002 as written. Archives record history.
 - Hook install drops each `settings.json` entry that runs a hook on the retired-hooks list. Before 0000164, only the telemetry cleanup removed those entries. Pruning now removes them for any retired hook, so it keeps working after the cleanup goes.
 - Setup no longer removes the `mcp__structured-telemetry-mcp__emit_event` matcher entries, `.claude/telemetry-enabled`, or the `plan/.telemetry-*` folders.

@@ -16,7 +16,7 @@ version: "0.1.0"
 As a consumer, I run setup without the legacy telemetry cleanup, so that setup carries no dead code. (Backlog 0000095)
 
 ## Functional Requirements
-- Add a changelog note in the 1.1.0 entry. A pre-0000033 consumer must remove stale telemetry wiring by hand.
+- Add a changelog note in the 0.13.0 entry. A pre-0000033 consumer must remove stale telemetry wiring by hand.
 
 ## Test impact
 
@@ -52,7 +52,7 @@ Suites that test pruning. Keep them passing.
 
 ## Acceptance Criteria
 - [ ] Every suite passes in CI on all hosts, with the cleanup suites deleted or rewritten as listed above.
-- [ ] The 1.1.0 changelog entry states that a pre-0000033 consumer removes stale telemetry wiring by hand.
+- [ ] The 0.13.0 changelog entry states that a pre-0000033 consumer removes stale telemetry wiring by hand.
 - [ ] `ravintio-zero/component.yml` no longer claims a telemetry wiring retraction.
 
 ## Dependencies

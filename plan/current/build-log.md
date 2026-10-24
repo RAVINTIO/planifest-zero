@@ -119,3 +119,6 @@ P2 Implement: Complete: 10 requirements built across 4 parallel tracks. Bash 3.2
 - In progress: P3 cycle 2 setup and gate-write hardening (S-005, S-002, REQ-003 b coverage) (2026-10-24T23:22:33Z)
 - Done: P3 cycle 2 file-backlog skill hardening (S-006, S-007, S-008, skill findings) (2026-10-24T23:23:55Z)
 - Done: P3 cycle 2 setup and gate-write hardening (S-005, S-002, REQ-003 b coverage). Full Bash suite under env -i: 118 and 19 pass. (2026-10-24T23:28:06Z)
+P0 exchange (version, P3): Q: Why 1.0.0 for 0000160, and what should the versions be? / A: The human asked for the rename, not a major bump. 0000160 becomes 0.12.0, this run 0.13.0. Re-version, tag `v0.12.0`, and delete `v1.0.0` from origin at ship. (2026-10-24T23:33:26Z)
+Requirement Change: contradictory, active phase P3. Version 1.1.0 becomes 0.13.0, and 0000160 is relabelled 0.12.0. The human overrode the downgrade block. P1 re-run adds ADR-005 and REQ-011 only, because the version touches none of REQ-001 to REQ-010 and their P2 output stays valid. P2 builds REQ-011, then P3 re-runs in full. (2026-10-24T23:33:26Z)
+Version: 0.13.0 (minor, human override of the downgrade block; was 1.1.0)

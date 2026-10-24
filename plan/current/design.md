@@ -8,6 +8,7 @@
 
 ## Product Layer
 - User stories:
+  - US-006: As the maintainer, I see the rename release as 0.12.0 and this one as 0.13.0, so that the version line matches the minor bumps I asked for. (Requirement change, P3)
   - US-001: As an agent, I write files outside the project without a design, so that hooks gate only this project. (0000162)
   - US-002: As a maintainer, I read in `CLAUDE.md` and the hook which paths it gates, including `plan/backlog/` and `plan/roadmap/` between runs, so that docs match behaviour. (0000162)
   - US-003: As a maintainer on macOS, I get the same suite results as CI, so that a local pass is a real pass. (0000161)
@@ -34,7 +35,7 @@
 - Components: `ravintio-zero`, the drop-in pipeline pack.
 - Data ownership: none
 - Deployment: consumers copy the pack folder and run setup
-- API versioning: semantic versioning. 1.1.0 is a minor release.
+- API versioning: semantic versioning in 0.x. 0.13.0 is a minor release. 0000160 shipped as 1.0.0 and is relabelled 0.12.0 (ADR-005).
 
 ## Component Paths
 - `ravintio-zero/`
@@ -52,7 +53,7 @@
   - The five suites switch from `done < <(...)` to `done <<< "$(...)"` and skip empty lines. A guard test fails on the old pattern under `tests/`.
   - `setup.sh` and `setup.ps1` drop the telemetry cleanup and its call. The names stay as `RETIRED_HOOK_NAMES` and `$RetiredHookNames`. Cleanup tests go, pruning tests stay.
   - New skill `ravintio-zero/skills/ravintio-file-backlog/SKILL.md`, a catalogue row, and tests.
-  - Version 1.1.0.
+  - Version 0.13.0. 0000160 is relabelled 0.12.0, and the `PLANIFEST_*` fallbacks now go at 1.0.0 rather than 2.0.0 (ADR-005, REQ-011).
 - Out:
   - Narrowing the `plan/` or `docs/` allowed set.
   - Backlog entries 0000100, 0000110, and 0000159.
@@ -88,6 +89,7 @@ None
 | REQ-008 - bash32-guard-test | ravintio-implement | New guard test and full-suite check |
 | REQ-009 - retire-telemetry-tests-and-docs | ravintio-implement | Suite rewrites, manifest, and changelog |
 | REQ-010 - file-backlog-guardrails-and-catalogue | ravintio-implement | Catalogue row and skill-count suites |
+| REQ-011 - version-relabel | ravintio-implement | Comment, doc, and test edits with a guard test |
 
 ## Repo Instructions
 

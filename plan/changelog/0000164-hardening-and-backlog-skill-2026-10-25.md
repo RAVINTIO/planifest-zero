@@ -1,7 +1,7 @@
 # Changelog (0000164-hardening-and-backlog-skill, 25 Oct 2026)
 
 **Feature:** hardening-and-backlog-skill
-**Version:** 1.1.0
+**Version:** 0.13.0
 **PR:** pending
 
 ## What changed
