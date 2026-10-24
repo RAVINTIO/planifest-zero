@@ -1,8 +1,8 @@
-# RAVINTIO
+# RAVINTIO Zero
 
 RAVINTIO Zero is a specification-first pipeline for Claude Code. It requires the agent to produce a complete, reviewable execution plan, validated against templates and schemas, before it generates code.
 
-RAVINTIO Zero is distinct from the product in the [`ravintio/planifest-framework`](https://github.com/ravintio/planifest-framework) repository. RAVINTIO Zero began as a cut-down copy of that product.
+RAVINTIO Zero is distinct from RAVINTIO Framework, the product in the [`ravintio/planifest-framework`](https://github.com/ravintio/planifest-framework) repository. RAVINTIO Zero began as a cut-down copy of that product.
 
 RAVINTIO Zero treats the human as product owner and architect. The agent is the implementer, working within constraints the human sets.
 
