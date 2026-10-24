@@ -103,6 +103,20 @@ Run executes one roadmap step from `position`. Ship owns the merge that ends it 
 
 All messages use the `R-C Run:` prefix.
 
+### Driver environment
+
+The driver reads two variables and passes them to every `claude -p` step.
+
+| Variable | Effect | Default |
+|----------|--------|---------|
+| `PLANIFEST_ROADMAP_MODEL` | Passed as `--model`. Matches `^[A-Za-z0-9][A-Za-z0-9._:\[\]-]{0,63}$`. | `sonnet` |
+| `PLANIFEST_ROADMAP_MAX_TURNS` | Passed as `--max-turns`. A positive integer of up to 4 digits. | No cap |
+
+- An empty variable counts as unset.
+- A value that fails its rule stops the driver before it takes the lock. The stop line names the variable and never prints the value.
+- No default turn cap ships, because a fixed cap ends valid long steps. The human picks a cap per run.
+- If `claude` exits non-zero while a cap is set, the stop line starts `R-C Run: Blocked:` and says the step may have reached `PLANIFEST_ROADMAP_MAX_TURNS={n}`. The driver never retries the step or raises the cap.
+
 ## Merge carve-out
 
 Merging into `main` is human-only in every run mode. The agent never commits to `main`.

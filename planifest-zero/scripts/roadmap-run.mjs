@@ -10,12 +10,20 @@
 //
 // Environment:
 //   CLAUDE_BIN   The claude executable. Defaults to "claude", found through PATH.
+//   PLANIFEST_ROADMAP_MODEL
+//                The model for every step, passed as --model. Defaults to "sonnet".
+//                It must match ^[A-Za-z0-9][A-Za-z0-9._:\[\]-]{0,63}$.
+//   PLANIFEST_ROADMAP_MAX_TURNS
+//                A turn cap for every step, passed as --max-turns. If unset or empty,
+//                no cap applies and no default ships. It must be 1 to 9999. If claude
+//                exits non-zero while a cap is set, the stop line names the cap.
 //
 // What it does:
 //   1. Reads plan/current-roadmap/roadmap.md and stops unless status is "active".
 //   2. Takes plan/.roadmap-runner.lock. If the lock exists, it refuses to start
 //      and leaves the lock alone.
-//   3. Runs `claude -p --permission-mode auto "Run roadmap step {position}"`
+//   3. Runs `claude -p --permission-mode auto --model {model} [--max-turns {n}]
+//      "Run roadmap step {position}"`
 //      and waits. It never passes --continue or --resume, so each step gets a
 //      fresh session. The position goes to claude as one argument, never
 //      through a shell.
@@ -51,6 +59,9 @@ const STATUS = /^(draft|active|blocked|done)$/;
 const POSITION = /^[1-9][0-9]{0,2}$/;
 const BRANCH = /^roadmap\/([0-9]{7})-([a-z0-9]+(-[a-z0-9]+)*)$/;
 const MAX_LINE = 500;
+const MODEL = /^[A-Za-z0-9][A-Za-z0-9._:[\]-]{0,63}$/;
+const TURNS = /^[1-9][0-9]{0,3}$/;
+const DEFAULT_MODEL = 'sonnet';
 
 class Stop extends Error {}
 
@@ -81,6 +92,19 @@ function fieldIn(text, name) {
   if (!m) return '';
   const v = m[1].replace(/\s+#.*$/, '').trim();
   return /^(["']).*\1$/.test(v) ? v.slice(1, -1).trim() : v;
+}
+
+// Reads and validates the child settings. The stop lines name the variable, never the value.
+function readChildConfig() {
+  const model = process.env.PLANIFEST_ROADMAP_MODEL || DEFAULT_MODEL;
+  if (!MODEL.test(model)) {
+    throw new Stop('R-C Run: Blocked: PLANIFEST_ROADMAP_MODEL must match ^[A-Za-z0-9][A-Za-z0-9._:[\\]-]{0,63}$');
+  }
+  const turns = process.env.PLANIFEST_ROADMAP_MAX_TURNS || '';
+  if (turns !== '' && !TURNS.test(turns)) {
+    throw new Stop('R-C Run: Blocked: PLANIFEST_ROADMAP_MAX_TURNS must be a positive integer of up to 4 digits');
+  }
+  return { model, turns };
 }
 
 function readRoadmap(root) {
@@ -132,10 +156,13 @@ function delivered(root, id, slug) {
   return readdirSync(dir).some((n) => n.startsWith(prefix));
 }
 
-function runStep(root, position) {
+function runStep(root, position, cfg) {
   return new Promise((resolveStep) => {
     const bin = process.env.CLAUDE_BIN || 'claude';
-    const child = spawn(bin, ['-p', '--permission-mode', 'auto', `Run roadmap step ${position}`], {
+    const args = ['-p', '--permission-mode', 'auto', '--model', cfg.model];
+    if (cfg.turns) args.push('--max-turns', cfg.turns);
+    args.push(`Run roadmap step ${position}`);
+    const child = spawn(bin, args, {
       cwd: root,
       stdio: ['ignore', 'ignore', 'inherit'],
     });
@@ -170,6 +197,7 @@ process.on('exit', releaseLock);
 
 async function main() {
   const root = parseArgs(process.argv.slice(2));
+  const cfg = readChildConfig();
   let rm = readRoadmap(root);
   if (rm.status !== 'active') throw new Stop(`R-C Run: Blocked: roadmap status is ${rm.status}, not active`);
   const { id, slug } = rm;
@@ -187,11 +215,12 @@ async function main() {
   for (;;) {
     const position = rm.position;
     out(`R-C Run: Starting: roadmap step ${position} in a fresh session`);
-    const res = await runStep(root, position);
+    const res = await runStep(root, position, cfg);
     activeChild = null;
     if (res.error) throw new Stop(`R-C Run: Blocked: could not start claude (${res.error})`);
     if (res.code !== 0) {
-      throw new Stop(`R-C Run: Blocked: claude exited ${res.code ?? res.signal} on step ${position}`);
+      const cap = cfg.turns ? `. The step may have reached PLANIFEST_ROADMAP_MAX_TURNS=${cfg.turns}` : '';
+      throw new Stop(`R-C Run: Blocked: claude exited ${res.code ?? res.signal} on step ${position}${cap}`);
     }
 
     if (delivered(root, id, slug)) {
