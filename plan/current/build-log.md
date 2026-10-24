@@ -27,7 +27,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Start | `2026-10-23T20:22:58Z` |
 | Model tier | primary |
 | Skills loaded | planifest-orchestrator |
-| Agents spawned | `0` |
+| Agents spawned | `1` (claude-code-guide: self-clear lookup) |
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Notes | Adoption mode assumed standard-iterative (archive present). |
@@ -95,10 +95,10 @@ P2 Implement: Complete: 10 of 10 requirements green (2026-10-23T23:32:29Z).
 | Start | `2026-10-23T23:32:29Z` |
 | Model tier | primary |
 | Skills loaded | planifest-validate-and-accept |
-| Agents spawned | `0` |
+| Agents spawned | `7` (sonnet 5, opus forks 2) |
 | MCP calls | `0` |
-| Parallel task batches | `0` |
-| Notes | none |
+| Parallel task batches | `1` |
+| Notes | Sonnet: hand-off fixes, security review, merge-guard hardening, coverage and execution checks, driver quoting fix. Opus forks: req-011 and req-012. Hardening ran beside the coverage checks. |
 P3 review cycle 1: Check: roadmap standard against a live run. Error: four hand-off bugs (pending CI blocks every step, sentinels squash onto the roadmap branch, no return to the roadmap branch or Delivery trigger, runner lock committed by ship Step 4). Root cause: code. Fix: commits 2c1f56c, 1da0af6, 75dbce2, 292ef10, each with a failing test first. Result: full suite green, skill text 1382 of 1447.
 P3 review cycle 2: Check: security review. Findings: 2 medium and 6 low, none critical or high. Fix: merge-guard fail-closed tripwire (28a775f), report updated (64ded5a). F-002 `git push HEAD:main` stays a recommendation.
 P3 review cycle 3: Check: verification by execution. Error: driver rejected quoted template values. Root cause: code. Fix: 2f0b6ed. Test gaps closed in b4a824b, and req-005 text matched to the build in aeb25e2.
@@ -107,3 +107,28 @@ Design change (P3, human-confirmed 2026-10-24): R-A Chart predicts each step's s
 Design change (P3, human-confirmed 2026-10-24): before each dispatched unit starts, the phase appends and commits an `In progress:` line to the build log. On resume, an `In progress:` line with no later `Done:` line marks an interrupted unit. The session stashes any uncommitted changes with a named stash, reruns the unit from its start, and logs `Resumed after interruption:`. Source: the live acceptance run's stop-and-restart test. The resumed session committed half-written test files from the stopped unit without checking them, and left no trace of the stop.
 P3 review cycle 4: Check: live acceptance run in planifest/pz-roadmap-acceptance-0000043. Two features and two roadmaps ran. Faults found and fixed test-first: driver list-item Blocked: lines (1d409ab), remote feature branches left on origin (4fab9d1), interrupted-unit resume (req-012). Design changes: req-011 and req-012, both human-confirmed. Evidence: verification-report.md and acceptance-evidence.md.
 P3: Validate and Accept complete (2026-10-24T12:19:01Z). Autonomous mode, evidence goes in the PR.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T11:40:00Z` |
+| Model tier | primary |
+| Skills loaded | planifest-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Autonomous. Changelog, archive, build report, version 0.10.0, tag, PR. |
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `24` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P1, P2, P3) |
+| Primary tier agent calls | `2` (opus forks in P3) |
+| Cheaper tier agent calls | `21` (sonnet 20, haiku 1). The P0 claude-code-guide agent has no recorded tier. |
+| Self-corrections | `4` (P3 review cycles 1 to 4) |
+| Phases skipped | none |
