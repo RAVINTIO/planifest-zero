@@ -30,6 +30,10 @@ Setup no longer removes legacy telemetry wiring. A consumer that last ran a setu
 
 Until then, the tool tries to run a missing module on every prompt in that consumer. Setup still prunes retired hook files and the `settings.json` entries that run them.
 
+## Version relabel
+
+0000160 shipped as 1.0.0 and is relabelled 0.12.0. This release is 0.13.0. Tag `v0.12.0` replaces `v1.0.0`. The legacy `PLANIFEST_*` and `planifest-em-dash-allow` fallbacks now go at 1.0.0. A consumer who pinned `v1.0.0` moves to `v0.12.0` or later. See ADR-005.
+
 ## Why
 
 Hooks blocked legitimate writes outside the project, and the docs described the gate as narrower than it is. The telemetry cleanup ran on every setup for a case with no known live consumer. Agents also had no defined way to file a backlog entry in another repo.
