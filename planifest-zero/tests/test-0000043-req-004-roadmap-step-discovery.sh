@@ -48,4 +48,18 @@ assert_contains '`docs/about.md` when `product.yml` is absent' "$RC" "req-004 (c
 assert_contains 'downgrade block' "$RC" "req-004 (c): downgrade block kept"
 assert_contains 'R-C Run' "$(printf '%s\n' "$DSA" | grep 'Suggest a version bump')" "req-004 (c): version step points to R-C Run"
 
+echo ""
+echo "=== req-004 (d): chart-approved schema changes ==="
+SC="$(awk '$0 == "### Chart-time schema approval" {on=1; next} on && /^### / {exit} on {print}' "$STD")"
+IMPL="$(cat "$ZERO_DIR/skills/planifest-implement/SKILL.md")"
+assert_contains 'Chart-time schema approval' "$RC" "req-004 (d): R-C Run points to chart-time schema approval"
+assert_contains 'still writes the proposal' "$SC" "req-004 (d): the step still writes the migration proposal"
+assert_contains 'same component, the same field names and types' "$SC" "req-004 (d): match needs same component, field names, and types"
+assert_contains '`approved (roadmap chart)`' "$SC" "req-004 (d): a match is marked approved (roadmap chart)"
+assert_contains 'carry on without stopping' "$SC" "req-004 (d): a match does not stop"
+assert_contains 'normal schema-change exception stop' "$SC" "req-004 (d): no match stops unless the fallback is pre-approved"
+assert_contains '`approved (roadmap chart fallback)`' "$SC" "req-004 (d): fallback marks unpredicted additive changes"
+assert_contains 'A destructive change always stops' "$SC" "req-004 (d): destructive changes always stop"
+assert_contains 'roadmap-standards.md' "$(printf '%s\n' "$IMPL" | grep 'Schema changes')" "req-004 (d): implement schema rule points to the roadmap standard"
+
 print_summary
