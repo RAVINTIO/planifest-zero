@@ -2,7 +2,7 @@
 
 **Feature:** autonomous-roadmaps
 **Version:** 0.10.0
-**PR:** raised at P4 Ship
+**PR:** #21 (https://github.com/planifest/planifest-zero/pull/21)
 
 ## What changed
 
