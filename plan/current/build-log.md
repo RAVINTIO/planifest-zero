@@ -37,3 +37,7 @@ P0 exchange (backlog): Q: Which backlog entries should this run pull in? / A: 00
 Backlog pull-in: 0000162, 0000161, 0000095, 0000163. Left: 0000100, 0000110, 0000159.
 P0 exchange (identity): Q: Feature id, version, and branch? / A: `0000164-hardening-and-backlog-skill`, minor bump to 1.1.0, branch `feat/0000164-hardening-and-backlog-skill` from `main`.
 Version: 1.1.0 (minor)
+P0 exchange (gate scope): Q: After the outside-project fix, what should gate-write gate inside the project? / A: Every path apart from `plan/backlog/` and `plan/roadmap/`. Clarified: keep today's allowed set, and name `plan/backlog/` and `plan/roadmap/` as allowed between runs in the hook, tests, and `CLAUDE.md`.
+P0 exchange (telemetry): Q: What should 0000095 remove? / A: The cleanup only. The module names stay as a standalone retired-hooks list (0000151 ADR-007).
+P0 exchange (skill name): Q: What should the 0000163 skill be called? / A: `ravintio-file-backlog`.
+Run mode: autonomous (2026-10-24T22:55:13Z)
