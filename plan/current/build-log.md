@@ -101,3 +101,4 @@ P2 Implement: Complete: 6 requirements built, Bash suite 114 of 114. Autonomous,
 | Notes | `pwsh` is absent locally, so a draft PR runs the PowerShell suites in CI. |
 
 - In progress: P3 batch 1, security review, execution verification, coverage audit, CI (2026-10-24T19:57:18Z)
+- P3 cycle 1 (2026-10-24T20:00:07Z). Check: semantic coverage. Error: six criteria had no covering test (REQ-001 AC2 and AC3, REQ-004 AC2 and AC3, and partial REQ-002 parity). Root cause: REQ-001 and REQ-004 ran as a mechanical pass with no TDD track. Fix: added `test-0000160-req-001-pack-identifiers.sh` and `test-0000160-req-004-brand-prose.sh`, each with a case that proves the check can fail. Result: both pass. The REQ-004 version check runs once ship archives the run, so CI on the final PR checks 1.0.0. Avoidable: yes, the build order gave the mechanical pass no tests of its own.
