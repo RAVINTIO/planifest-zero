@@ -92,3 +92,6 @@ P1 Plan: Complete: ten requirements, four ADRs, execution plan, scope, risk regi
 - Done: track B REQ-003, REQ-008 Bash 3.2 loops (2026-10-24T23:05:24Z)
 - Done: track D REQ-005, REQ-010 file-backlog skill (2026-10-24T23:05:35Z)
 - Done: track A REQ-001, REQ-006, REQ-002, REQ-007 gate-write (2026-10-24T23:06:56Z)
+- Done: track C REQ-004, REQ-009 telemetry cleanup (2026-10-24T23:10:04Z)
+- Deviation: track C found that only the telemetry cleanup removed a retired hook's `settings.json` entry. Hook install now drops those entries for any retired hook. ADR-003 records it. (2026-10-24T23:10:04Z)
+- Self-correction: the REQ-007 test needed `CLAUDE.md`, which is gitignored and absent in CI, so it now skips the file when absent. The longer gate-write bullet took `CLAUDE.md` plus orchestrator `SKILL.md` over the 0000151 byte budget, so the bullet is shorter. (2026-10-24T23:10:04Z)
