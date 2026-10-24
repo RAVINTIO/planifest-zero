@@ -2,6 +2,9 @@
 # PowerShell host that started this script (0000036 ADR-002). CI runs it once
 # with powershell (Windows PowerShell 5.1) and once with pwsh (PowerShell 7).
 # run-tests.sh runs the same suites with pwsh, alongside the bash suites.
+#
+# Environment:
+#   PLANIFEST_TEST_QUIET=1   hide PASS lines and banners, keep every failure and the summary
 
 $ErrorActionPreference = 'Stop'
 
@@ -22,10 +25,23 @@ if ($suites.Count -eq 0) {
 
 $failed = @()
 foreach ($suite in $suites) {
-    Write-Host ""
-    Write-Host "--- $($suite.Name) ---"
-    & $hostExe -NoProfile -ExecutionPolicy Bypass -File $suite.FullName
-    if ($LASTEXITCODE -ne 0) { $failed += $suite.Name }
+    if ($env:PLANIFEST_TEST_QUIET -eq '1') {
+        $suiteOut = & $hostExe -NoProfile -ExecutionPolicy Bypass -File $suite.FullName 2>&1 | Out-String
+        if ($LASTEXITCODE -ne 0) {
+            $failed += $suite.Name
+            if (-not $suiteOut.Contains("--- $($suite.Name) ---")) {
+                Write-Host ""
+                Write-Host "--- $($suite.Name) ---"
+            }
+            Write-Host $suiteOut
+        }
+    }
+    else {
+        Write-Host ""
+        Write-Host "--- $($suite.Name) ---"
+        & $hostExe -NoProfile -ExecutionPolicy Bypass -File $suite.FullName
+        if ($LASTEXITCODE -ne 0) { $failed += $suite.Name }
+    }
 }
 
 Write-Host ""

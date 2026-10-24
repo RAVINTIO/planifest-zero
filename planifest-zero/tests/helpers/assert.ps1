@@ -6,16 +6,38 @@
 
 $global:AssertPass = 0
 $global:AssertFail = 0
+$global:AssertNamed = $false
+
+# PLANIFEST_TEST_QUIET=1 hides PASS lines. A failing suite prints its name
+# once, before its first FAIL line (0000151 req-008).
+function Write-AssertPass {
+    param([string]$Message)
+    if ($env:PLANIFEST_TEST_QUIET -ne '1') { Write-AssertPass $Message }
+}
+
+function Write-AssertFail {
+    param([string]$Message)
+    if ($env:PLANIFEST_TEST_QUIET -eq '1' -and -not $global:AssertNamed) {
+        $frames = @(Get-PSCallStack)
+        $suiteName = 'suite'
+        if ($frames.Count -gt 0 -and $frames[$frames.Count - 1].ScriptName) {
+            $suiteName = Split-Path -Leaf $frames[$frames.Count - 1].ScriptName
+        }
+        Write-Host "--- $suiteName ---"
+        $global:AssertNamed = $true
+    }
+    Write-AssertFail $Message
+}
 
 function Assert-Equal {
     param($Expected, $Actual, [string]$Message)
     if ("$Expected" -ceq "$Actual") {
         $global:AssertPass++
-        Write-Host "  PASS: $Message"
+        Write-AssertPass $Message
     }
     else {
         $global:AssertFail++
-        Write-Host "  FAIL: $Message"
+        Write-AssertFail $Message
         Write-Host "        expected: $Expected"
         Write-Host "        actual:   $Actual"
     }
@@ -25,17 +47,26 @@ function Assert-True {
     param([bool]$Condition, [string]$Message)
     if ($Condition) {
         $global:AssertPass++
-        Write-Host "  PASS: $Message"
+        Write-AssertPass $Message
     }
     else {
         $global:AssertFail++
-        Write-Host "  FAIL: $Message"
+        Write-AssertFail $Message
     }
 }
 
 function Assert-Contains {
     param([string]$Needle, [string]$Haystack, [string]$Message)
-    Assert-True ($Haystack.Contains($Needle)) $Message
+    if ($Haystack.Contains($Needle)) {
+        $global:AssertPass++
+        Write-AssertPass $Message
+    }
+    else {
+        $global:AssertFail++
+        Write-AssertFail $Message
+        Write-Host "        needle:   $Needle"
+        Write-Host "        haystack: $Haystack"
+    }
 }
 
 function Complete-Suite {

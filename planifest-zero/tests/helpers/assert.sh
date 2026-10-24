@@ -7,6 +7,22 @@
 PASS=0
 FAIL=0
 
+# PLANIFEST_TEST_QUIET=1 hides PASS lines. A failing suite prints its name once,
+# before its first FAIL line (0000151 req-008).
+QUIET_NAMED=0
+
+_pass_line() {
+  [ "${PLANIFEST_TEST_QUIET:-0}" = "1" ] || echo "  PASS: $1"
+}
+
+_fail_line() {
+  if [ "${PLANIFEST_TEST_QUIET:-0}" = "1" ] && [ "$QUIET_NAMED" -eq 0 ]; then
+    echo "--- $(basename "$0") ---"
+    QUIET_NAMED=1
+  fi
+  echo "  FAIL: $1"
+}
+
 # -----------------------------------------------------------------------
 # JSON helpers (jq preferred, node fallback)
 # -----------------------------------------------------------------------
@@ -62,10 +78,10 @@ assert_equals() {
   local message="${3:-assertion}"
 
   if [ "$expected" = "$actual" ]; then
-    echo "  PASS: $message"
+    _pass_line "$message"
     ((PASS++)) || true
   else
-    echo "  FAIL: $message"
+    _fail_line "$message"
     echo "        expected: $expected"
     echo "        actual:   $actual"
     ((FAIL++)) || true
@@ -81,10 +97,10 @@ assert_contains() {
   # under `set -o pipefail` for haystacks >64KB (pipe buffer): grep -q exits on
   # an early match, printf takes SIGPIPE (141), pipefail fails the pipeline.
   if [[ "$haystack" == *"$needle"* ]]; then
-    echo "  PASS: $message"
+    _pass_line "$message"
     ((PASS++)) || true
   else
-    echo "  FAIL: $message"
+    _fail_line "$message"
     echo "        needle:   $needle"
     echo "        haystack: $haystack"
     ((FAIL++)) || true
@@ -96,10 +112,10 @@ assert_exit_zero() {
   local message="${2:-exit code assertion}"
 
   if [ "$actual_exit" -eq 0 ]; then
-    echo "  PASS: $message"
+    _pass_line "$message"
     ((PASS++)) || true
   else
-    echo "  FAIL: $message — expected exit 0, got $actual_exit"
+    _fail_line "$message — expected exit 0, got $actual_exit"
     ((FAIL++)) || true
   fi
 }

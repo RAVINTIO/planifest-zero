@@ -30,7 +30,7 @@ Run the stack's declared checks in this order:
 1. **Semantic correctness**: every requirement needs a mapped, executing test identifiable by req-ID. Every acceptance criterion needs a covering test. Produce a coverage table. A missing criterion is a failure, not a warning.
 2. **Lint**
 3. **Typecheck**
-4. **Test**
+4. **Test**: for this pack run `PLANIFEST_TEST_QUIET=1 bash planifest-zero/tests/run-tests.sh`, which prints only failures and the summary
 5. **Build**
 
 If a check fails, self-correct: read the error, find the root cause, fix it, re-run. Record each cycle (check, error, root cause, fix, result). Maximum **5 cycles**. Loop mechanics (state file, run-log records, stop rules, escalation format) follow `planifest-loop-runner`, with a cap of 5. After 5 failed cycles, STOP and escalate in both run modes:
