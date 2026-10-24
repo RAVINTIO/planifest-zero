@@ -6,7 +6,7 @@ Last updated: 0000151-hardening-efficiency-and-ci
 
 ```mermaid
 graph TD
-    subgraph "planifest-zero (component-pack)"
+    subgraph "ravintio-zero (component-pack)"
         SKILLS["skills/ (orchestrator + phase skills)"]
         STANDARDS["standards/, templates/, schemas/"]
         SETUP["setup.sh / setup.ps1"]
@@ -16,13 +16,13 @@ graph TD
         VERSION["scripts/product-version.mjs"]
         DRIVER["scripts/roadmap-run.mjs"]
         LABELS["scripts/roadmap-labels.mjs"]
-        REFS["skills/planifest-orchestrator/references/\n(seven orchestrator-*.md files)"]
+        REFS["skills/ravintio-orchestrator/references/\n(seven orchestrator-*.md files)"]
         LOGS["plan/.roadmap-logs/step-N.log"]
     end
 
     subgraph "Project root"
         PRODUCT["product.yml"]
-        MANIFEST["planifest-zero/component.yml"]
+        MANIFEST["ravintio-zero/component.yml"]
     end
 
     subgraph "Claude Code runtime"
@@ -70,11 +70,11 @@ graph TD
 
 **The driver depends on `claude` and `gh`.** `roadmap-run.mjs` uses Node built-ins, `roadmap-labels.mjs`, the `claude` command, and `gh`. It reads `plan/current-roadmap/roadmap.md` and `plan/current/build-log.md`. It never edits the working tree.
 
-**The driver passes a model and labels to each child.** It passes `--model` from `PLANIFEST_ROADMAP_MODEL`, which defaults to `sonnet`. It passes `--max-turns` only when `PLANIFEST_ROADMAP_MAX_TURNS` is set. It appends `work.kind`, `planifest.roadmap`, and `planifest.step` labels to `OTEL_RESOURCE_ATTRIBUTES` in the child environment.
+**The driver passes a model and labels to each child.** It passes `--model` from `RAVINTIO_ROADMAP_MODEL`, which defaults to `sonnet`. It passes `--max-turns` only when `RAVINTIO_ROADMAP_MAX_TURNS` is set. It appends `work.kind`, `ravintio.roadmap`, and `ravintio.step` labels to `OTEL_RESOURCE_ATTRIBUTES` in the child environment.
 
 **The driver writes one log per step.** Each step writes stdout and stderr to `plan/.roadmap-logs/step-{position}.log`. The driver excludes the folder through `.git/info/exclude` and leaves `.gitignore` alone. Every stop line names the log.
 
-**The orchestrator reads seven reference files on demand.** Rarely used sections live in `skills/planifest-orchestrator/references/orchestrator-*.md`, and the Pack Index lists each one. The Exception Stops table stays in `SKILL.md`.
+**The orchestrator reads seven reference files on demand.** Rarely used sections live in `skills/ravintio-orchestrator/references/orchestrator-*.md`, and the Pack Index lists each one. The Exception Stops table stays in `SKILL.md`.
 
 **A sixth exception stop reads the approved dependency list.** The list is `design.md` "Approved dependencies" in a gated or autonomous run, and `roadmap.md` "## Dependencies" in a roadmap step. The stop fires in every run when work adds a library or service that is not on the list.
 

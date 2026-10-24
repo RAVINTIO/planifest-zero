@@ -1,0 +1,143 @@
+# RAVINTIO Component Manifest
+id: "ravintio-zero"
+name: "RAVINTIO Zero"
+feature: "0000151-hardening-efficiency-and-ci"
+version: "0.11.0"
+status: "active"
+type: "component-pack"
+domain: "developer-tooling"
+summary: "Core standards, skills, hooks, and setup scripts that enforce the RAVINTIO confirmed-design pipeline."
+systemContext: "Installed into a Claude Code project via setup.sh or setup.ps1. Provides enforcement hooks, structured standards, and the agent skills that drive the five-phase pipeline."
+
+responsibilities:
+  - "Enforce the confirmed-design gate: block writes outside declared component scope"
+  - "Inject active scope context on every agent turn via the check-design hook"
+  - "Declare preferred and avoided libraries per language via library-standards docs"
+  - "Provide formatting standards: date format (DD MMM YYYY), locale (British English), verbosity"
+  - "Supply migration files for propagating standards changes across existing repos"
+  - "Register and sync capability skills from ravintio-overrides/"
+  - "Maintain the build log throughout a pipeline run for the ship-phase build assessment"
+  - "Direct model tier selection for all spawned subagents"
+  - "Enforce parallelism directives across all phase skills"
+  - "Track installed skill directories via .ravintio-manifest for safe re-runs"
+  - "Record the active setup flags in plan/state/{tool}.md, tracked, and retract any legacy setup-config record or telemetry wiring on the next run"
+  - "Accept retired setup flags with one warning each, so a refresh of an older install completes"
+  - "Write settings.json through a same-folder temporary file and a rename, so a failed write never truncates it"
+  - "Wire the same six enforcement hooks from setup.sh and setup.ps1, and check the match with a parity suite"
+  - "Run every test suite, Bash and PowerShell, and fail the run on any test file it would otherwise skip without a word"
+  - "Repair the hook entries setup owns: remove RAVINTIO PreToolUse entries on any matcher, and replace a non-array hook event value with a warning"
+  - "Detect and recommend adoption mode at discovery, and state standard-iterative mode without asking when it is the only signal"
+  - "Suggest and confirm the version number at discovery"
+  - "Run the Scope Lock Challenge before design confirmation, drafted inline"
+  - "Enforce one question at a time across all phase skills"
+  - "Run an approved roadmap as a chain of feature steps, with the merge-guard hook limiting agent merges to squash merges into roadmap branches"
+  - "Write each hook block reason to stderr and stdout, so the agent sees why a write stopped"
+  - "Refuse a symlinked entry path in park, and prune installed hooks named on the retired list in setup"
+  - "Run each roadmap step with a model, an optional turn cap, a step log, and telemetry labels"
+  - "Stop every run, gated or autonomous, when work adds a library or service that is not on the approved list"
+  - "Keep the orchestrator skill small by moving rarely used sections into references/ files"
+  - "Hide passing test lines when RAVINTIO_TEST_QUIET=1 is set, and keep every failure line"
+
+exceptions:
+  - "Does not generate application code. That is the implement phase's job in consumer projects."
+  - "Does not configure CI for consumer projects."
+  - "Supports Claude Code only. No other agentic tool target exists."
+
+stack:
+  language: "bash | powershell | javascript"
+  runtime: "node"
+  framework: "none"
+  frontend: "none"
+  styling: "none"
+  componentLibrary: "none"
+  database: "none"
+  orm: "none"
+  testing: "bash"
+  iac: "none"
+  cloud: "none"
+  compute: "none"
+  ci: "github-actions"
+
+contract:
+  inputs:
+    - name: "stdin (hook payload)"
+      type: "event"
+      description: "JSON hook payload from Claude Code lifecycle events"
+  outputs:
+    - name: "stdout (additionalContext or block message)"
+      type: "event"
+      description: "gate-write block message or check-design scope injection"
+  consumedBy: ["claude-code-hooks"]
+  consumes: []
+  breakingChangePolicy: "requires-adr"
+
+data:
+  ownsData: false
+  tables: []
+  schemaVersion: "0.0.0"
+  migrationPath: "ravintio-zero/migrations/"
+
+scope:
+  inScope:
+    - "Library standards docs for TypeScript, Python, Go, Java, databases"
+    - "Formatting standards: date format, locale, verbosity"
+    - "Enforcement hooks: gate-write, check-design, ratchet-check, em-dash-guard, merge-guard, auto-trigger-orchestrator, check-orchestrator-presence"
+    - "Git hook: commit-msg"
+    - "Roadmap standard and entry template: standards/roadmap-standards.md, templates/roadmap-entry.template.md"
+    - "Shared hook module: read-stdin.mjs"
+    - "Orchestrator sentinel enforcement"
+    - "Capability skill intake via ravintio-overrides/capability-skills/"
+    - "Migration infrastructure for standards propagation"
+    - "setup.sh and setup.ps1 for Claude Code registration"
+    - "The 12 pipeline skills across the five phases"
+    - "Templates, schemas, and standards bundled into each skill at install time"
+    - "Orchestrator references: skills/ravintio-orchestrator/references/orchestrator-*.md"
+    - "scripts/: consistency-check.mjs, product-version.mjs, roadmap-labels.mjs, roadmap-run.mjs, self-description-check.mjs, promote-to-regression.sh, refresh-delete-boot-files"
+    - "tests/ and tests/regression/ for the pack's own behaviour"
+  outOfScope:
+    - "Application-level code generation (handled by the implement phase in consumer projects)"
+    - "CI pipeline configuration for consumer projects"
+    - "Any agentic tool other than Claude Code"
+  deferred: []
+
+risk:
+  level: "low"
+  items:
+    - "Path translation on Windows and Git Bash requires cygpath guards in tests"
+    - "Aggressive skill trimming can leave technically complete but ambiguous wording that increases agent retries. The regression-pack baseline comparison is the mitigation."
+    - "The em dash guard's bypass sentinel matches anywhere in the payload, so any document explaining the rule exempts itself from it."
+    - "Setup prunes a retired hook only if its name is on the retired list, so a retirement without a list entry leaves a stale copy in .claude/hooks/."
+    - "The PowerShell suites changed in 0000151 were not run locally because pwsh was absent. CI runs them on Windows PowerShell 5.1 and PowerShell 7."
+    - "Moving orchestrator text to references/ means a test that greps SKILL.md for a moved rule fails until it reads the reference file."
+
+quality:
+  testCoverage:
+    unit: 0
+    integration: 0
+    e2e: 0
+  techDebt:
+    - "The test suite mixes per-feature suites with regression copies. Consolidation is future work."
+  quirks:
+    - "REQ-011 wrote its split test after the move, so it has no RED run. A line-preservation check proves no rule was lost."
+    - "gate-write, em-dash-guard, and ratchet-check write the block reason to stderr and stdout. The text is identical on both."
+    - "With RAVINTIO_ROADMAP_MAX_TURNS unset, a roadmap step has no turn cap. The driver never raises the cap or retries a capped step."
+    - "gate-write component path matching is prefix-based, so very short prefixes may over-permit"
+    - "ratchet-check treats a reworded criterion as remove plus add and blocks it. The .ratchet-approve marker is the intended path for legitimate rewording."
+    - "ratchet-check cannot verify who wrote .ratchet-approve. Marker forgery is audit-detected via ratchet-log.md and the ship-phase build assessment, not prevented."
+    - "product-version.mjs parses only the constrained product.template.yml shape, not arbitrary YAML"
+    - "read-stdin.mjs lives in hooks/enforcement/, which installs unconditionally, so every enforcement hook can import it."
+    - "The em dash guard only matches the Write and Edit tools and only inspects paths resolving under 5 relative prefixes. A write made through Bash is not inspected. This is a style rule, not an authorisation control."
+
+pipeline:
+  templateVersion: "1.0.0"
+  featureMode: "standard-iterative"
+  domainKnowledgePath: "plan/current"
+
+metadata:
+  createdAt: "2026-05-02"
+  updatedAt: "2026-10-24"
+  createdBy: "agent"
+  lastModifiedBy: "agent"
+  skill: "ravintio-implement"
+  tool: "claude-code"
+  model: "claude-opus-5"

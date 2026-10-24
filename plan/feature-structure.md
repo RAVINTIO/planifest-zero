@@ -1,12 +1,12 @@
 # Repository structure
 
-> The canonical layout for a Planifest-managed repository. Three top-level folders, three concerns.
+> The canonical layout for a RAVINTIO-managed repository. Three top-level folders, three concerns.
 
 ## The three folders
 
 ```
 repo/
-+-- planifest-zero/          <- The pack: skills, templates, schemas,
++-- ravintio-zero/          <- The pack: skills, templates, schemas,
 |                               standards, hooks, setup scripts.
 |
 +-- plan/                    <- The specifications and records.
@@ -69,4 +69,4 @@ src/
 ```
 
 This repository's single component is the pack itself, so its manifest
-lives at `planifest-zero/component.yml` and `src/` holds only the scaffold.
+lives at `ravintio-zero/component.yml` and `src/` holds only the scaffold.

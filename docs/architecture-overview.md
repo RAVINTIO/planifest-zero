@@ -4,16 +4,16 @@ Last updated: 0000151-hardening-efficiency-and-ci
 
 ## What this repo is
 
-This repo is Planifest Zero itself. It holds one component, `planifest-zero`, which other projects install into their working tree.
+This repo is RAVINTIO Zero itself. It holds one component, `ravintio-zero`, which other projects install into their working tree.
 
-Planifest Zero is not a service. It has no runtime of its own. It ships these things:
+RAVINTIO Zero is not a service. It has no runtime of its own. It ships these things:
 
 1. **Skills.** Markdown instructions that Claude Code auto-discovers from `.claude/skills/`. Twelve skills drive the five-phase pipeline.
 2. **Hooks.** Node `.mjs` scripts that Claude Code invokes synchronously at tool-call boundaries. Enforcement hooks block or annotate. Git hooks guard commits and pushes. No hook makes an outbound network call.
 3. **Standards, templates, and schemas.** The reference material that skills bundle at install time.
 4. **Setup scripts.** `setup.sh` and `setup.ps1` copy the above into a target project and wire `.claude/settings.json`.
 
-The repo runs its own pipeline on the `planifest-zero/` it ships. Git reads its hooks from `planifest-zero/hooks` through `core.hooksPath`.
+The repo runs its own pipeline on the `ravintio-zero/` it ships. Git reads its hooks from `ravintio-zero/hooks` through `core.hooksPath`.
 
 ---
 
@@ -23,11 +23,11 @@ The pipeline runs five phases, numbered P0 to P4. There is one route: every chan
 
 | Phase | Prefix | Owning skill |
 |-------|--------|--------------|
-| Discovery | `P0 Discovery:` | planifest-orchestrator |
-| Plan | `P1 Plan:` | planifest-plan |
-| Implement | `P2 Implement:` | planifest-implement |
-| Validate and accept | `P3 Validate:` | planifest-validate-and-accept |
-| Ship | `P4 Ship:` | planifest-ship |
+| Discovery | `P0 Discovery:` | ravintio-orchestrator |
+| Plan | `P1 Plan:` | ravintio-plan |
+| Implement | `P2 Implement:` | ravintio-implement |
+| Validate and accept | `P3 Validate:` | ravintio-validate-and-accept |
+| Ship | `P4 Ship:` | ravintio-ship |
 
 ### Run modes
 
@@ -55,7 +55,7 @@ No mode merges a PR or commits to `main`. The human merges every PR.
 
 **Ship order.** P4 creates the tag locally at Step 7. Step 8 reads the run mode, then clears the pipeline sentinels in a commit. Step 9 pushes the branch and the tag and raises the PR. Step 10 is the final gate. So the sentinels never reach `main` through the PR.
 
-**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Seven files under `skills/planifest-orchestrator/references/` hold the rarely used sections word for word: adoption modes, discovery coaching, discovery records, mid-pipeline changes, scope lock, session commands, and the skills catalogue. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
+**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Seven files under `skills/ravintio-orchestrator/references/` hold the rarely used sections word for word: adoption modes, discovery coaching, discovery records, mid-pipeline changes, scope lock, session commands, and the skills catalogue. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
 
 **Model tiers.** Every Agent call passes `model`, set to `sonnet` or `haiku`. The three TDD skills set `model: haiku`. A haiku unit that fails twice retries on sonnet. A WebFetch of a full reference page goes through a sonnet or haiku subagent that returns an extract.
 
@@ -67,17 +67,17 @@ Discovery sizes each release against a budget. The optional `releaseSize` field 
 
 ### Roadmaps
 
-A roadmap is a chain of feature steps that the human approves once. The standard `planifest-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `R-A Chart:`, `R-B Activate:`, `R-C Run:`, `R-D Advance:`, and `R-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
+A roadmap is a chain of feature steps that the human approves once. The standard `ravintio-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `R-A Chart:`, `R-B Activate:`, `R-C Run:`, `R-D Advance:`, and `R-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
 
 - **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/roadmap.md` on any branch. The one active roadmap lives in `plan/current-roadmap/roadmap.md` on the branch `roadmap/{id}-{slug}`. Roadmap ids share the backlog sequence.
 - **Chart and activate.** R-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the roadmap's `## Schema changes` table. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
 - **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the roadmap branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
 - **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the tag still comes before the PR.
 - **Delivery.** R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The human merges it.
-- **Driver.** `planifest-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `R-C Run: Blocked:`. Each step writes `plan/.roadmap-logs/step-{position}.log`, and the driver appends `work.kind`, `planifest.roadmap`, and `planifest.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/roadmap-labels.mjs`.
+- **Driver.** `ravintio-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `R-C Run: Blocked:`. Each step writes `plan/.roadmap-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.roadmap`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/roadmap-labels.mjs`.
 - **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `roadmap/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
 
-The implement phase dispatches a TDD trio per requirement: planifest-test-writer, planifest-implementer, and planifest-refactor. Four support skills complete the set of twelve: planifest-loop-runner, planifest-optimise-agent, planifest-migrator, and planifest-refresh-setup.
+The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. Four support skills complete the set of twelve: ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, and ravintio-refresh-setup.
 
 ---
 
@@ -86,7 +86,7 @@ The implement phase dispatches a TDD trio per requirement: planifest-test-writer
 Setup targets Claude Code only. It copies skills and hooks into `.claude/`, prunes retired skills, writes the boot file, and wires the git hooks.
 
 ```
-planifest-zero/          setup.sh claude-code          target project
+ravintio-zero/          setup.sh claude-code          target project
 ├── skills/          ──────────────────────────────────▶   .claude/skills/
 ├── templates/       ── bundled per skill frontmatter ──▶   .claude/skills/*/assets/
 ├── standards/       ── bundled per skill frontmatter ──▶   .claude/skills/*/references/
@@ -97,13 +97,13 @@ planifest-zero/          setup.sh claude-code          target project
 
 Skills bundle selectively. Each `SKILL.md` declares `bundle_templates` and `bundle_standards` in its frontmatter, and setup copies only those files. A skill with no manifest gets everything.
 
-Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from the template, then re-appends the contents of `planifest-overrides/instructions/` between sentinel markers. Durable local customisation lives in the overrides directory, never in the boot file.
+Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from the template, then re-appends the contents of `ravintio-overrides/instructions/` between sentinel markers. Durable local customisation lives in the overrides directory, never in the boot file.
 
 ---
 
 ## Setup-config record
 
-`setup.sh` and `setup.ps1` write the tracked record of active setup flags to `plan/state/{tool}.md`, creating the folder when it is absent. The record and the gitignored flags marker hold `tool`, `flags`, and `writtenAt`. The `planifest-refresh-setup` skill reads and validates that record before falling back to the gitignored marker and hook inference.
+`setup.sh` and `setup.ps1` write the tracked record of active setup flags to `plan/state/{tool}.md`, creating the folder when it is absent. The record and the gitignored flags marker hold `tool`, `flags`, and `writtenAt`. The `ravintio-refresh-setup` skill reads and validates that record before falling back to the gitignored marker and hook inference.
 
 ---
 
@@ -153,15 +153,15 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 **Write failures.** One catch around the shared `writeSettings` prints a fixed line with the relative path and exits 1. It covers the hook install and the allowed-tools write, and `setup.ps1` prints the same line.
 
-**Atomic settings writes.** Every `settings.json` write goes to `settings.json.planifest-tmp` in the same folder first, then replaces the target. So `settings.json` is always the old file or the new one. Setup removes a leftover temporary file before it writes, and creates the new one exclusively, so it never follows a planted link. The new file keeps the original's mode, or its ACL on Windows. Setup leaves a read-only `settings.json` unchanged. `setup.sh` writes a symlinked `settings.json` through to its real file. Other files setup writes, such as the boot file, are rewritten whole on each run.
+**Atomic settings writes.** Every `settings.json` write goes to `settings.json.ravintio-tmp` in the same folder first, then replaces the target. So `settings.json` is always the old file or the new one. Setup removes a leftover temporary file before it writes, and creates the new one exclusively, so it never follows a planted link. The new file keeps the original's mode, or its ACL on Windows. Setup leaves a read-only `settings.json` unchanged. `setup.sh` writes a symlinked `settings.json` through to its real file. Other files setup writes, such as the boot file, are rewritten whole on each run.
 
-**Leftover temporary file.** Each run removes a leftover `settings.json.planifest-tmp` before its first settings write, even when `node` is missing. It removes a file or a link, never a folder, and never follows a link.
+**Leftover temporary file.** Each run removes a leftover `settings.json.ravintio-tmp` before its first settings write, even when `node` is missing. It removes a file or a link, never a folder, and never follows a link.
 
 **Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same seven hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
 
-**Hook entry repair.** Both scripts find a Planifest `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse` or `UserPromptSubmit` holds a value that isn't an array, setup prints a warning that names the event and the file. The warning never prints the old value, because a hook command can hold a secret. It then replaces the value with the Planifest entries and exits 0. An absent or null value gets the entries with no warning.
+**Hook entry repair.** Both scripts find a RAVINTIO `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse` or `UserPromptSubmit` holds a value that isn't an array, setup prints a warning that names the event and the file. The warning never prints the old value, because a hook command can hold a secret. It then replaces the value with the RAVINTIO entries and exits 0. An absent or null value gets the entries with no warning.
 
-**Per-command filter.** Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. Setup removes each Planifest command and keeps any user command in the same entry. If an entry holds only Planifest commands, setup drops it. A `hooks` value that holds one object counts as a one-item array, so setup filters it the same way. An entry with no commands stays as it was. A command counts as Planifest only when it runs `<module>.mjs` at a path boundary, matched case-sensitively.
+**Per-command filter.** Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. Setup removes each RAVINTIO command and keeps any user command in the same entry. If an entry holds only RAVINTIO commands, setup drops it. A `hooks` value that holds one object counts as a one-item array, so setup filters it the same way. An entry with no commands stays as it was. A command counts as RAVINTIO only when it runs `<module>.mjs` at a path boundary, matched case-sensitively.
 
 **Invalid JSON.** If `settings.json` isn't valid JSON, the hook install step prints one fixed line that names the file. The line never holds the file's contents. Setup leaves the file unchanged and exits 1, because it can't install the hooks. The telemetry cleanup prints nothing for this file.
 
@@ -175,13 +175,13 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 ## Tests
 
-A wording test greps every tracked file outside history for the retired word that once described Planifest Zero. It passes only lines that match an allowlist of generic uses. A phase guard test fails on a phase number outside P0 to P4 or on a retired letter prefix.
+A wording test greps every tracked file outside history for the retired word that once described RAVINTIO Zero. It passes only lines that match an allowlist of generic uses. A phase guard test fails on a phase number outside P0 to P4 or on a retired letter prefix.
 
-`planifest-zero/tests/run-tests.sh` runs every Bash and PowerShell suite. Before any suite runs, it checks every file under `tests/`. A file that is neither a suite nor on its known list fails the run, and the runner names it. Without `pwsh`, it prints how many PowerShell suites it skipped.
+`ravintio-zero/tests/run-tests.sh` runs every Bash and PowerShell suite. Before any suite runs, it checks every file under `tests/`. A file that is neither a suite nor on its known list fails the run, and the runner names it. Without `pwsh`, it prints how many PowerShell suites it skipped.
 
-Set `PLANIFEST_TEST_QUIET=1` to hide PASS lines and banners. The runner then keeps every FAIL line with its detail, the failing suite name, the summary, and the exit codes. A quiet full run prints about 3 KB. Skills that run the full suite set it.
+Set `RAVINTIO_TEST_QUIET=1` to hide PASS lines and banners. The runner then keeps every FAIL line with its detail, the failing suite name, the summary, and the exit codes. A quiet full run prints about 3 KB. Skills that run the full suite set it.
 
-The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `PLANIFEST_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
+The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `RAVINTIO_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
 
 ---
 
@@ -191,4 +191,4 @@ The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows
 
 This project has one component and keeps `product.yml` anyway. Its top-level `id` gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. The orchestrator hard-stops at discovery when that `id` is missing.
 
-The five phase names live in prose in `planifest-zero/pipeline-reference.md`. No module encodes them.
+The five phase names live in prose in `ravintio-zero/pipeline-reference.md`. No module encodes them.
