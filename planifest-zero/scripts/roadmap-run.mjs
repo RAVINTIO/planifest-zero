@@ -18,6 +18,13 @@
 //                no cap applies and no default ships. It must be 1 to 9999. If claude
 //                exits non-zero while a cap is set, the stop line names the cap.
 //
+// Labels: the child's OTEL_RESOURCE_ATTRIBUTES gets these labels appended, with each value
+// percent-encoded by scripts/roadmap-labels.mjs. The old value stays as it was.
+//   work.kind=roadmap
+//   planifest.roadmap={id}-{slug}
+//   planifest.step={position}
+// Only the child sees the change. The labels hold identifiers, never prompt or file text.
+//
 // Logs: each step writes the child's stdout and stderr, in arrival order, to
 // plan/.roadmap-logs/step-{position}.log. Each step start will truncate its log, so a
 // rerun leaves only the latest attempt. The driver copies the child's stderr to its own
@@ -57,6 +64,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { withRoadmapLabels } from './roadmap-labels.mjs';
 
 const ROADMAP = 'plan/current-roadmap/roadmap.md';
 const LOCK = 'plan/.roadmap-runner.lock';
@@ -180,7 +188,7 @@ function delivered(root, id, slug) {
   return readdirSync(dir).some((n) => n.startsWith(prefix));
 }
 
-function runStep(root, position, cfg, fd) {
+function runStep(root, position, cfg, fd, labels) {
   return new Promise((resolveStep) => {
     const bin = process.env.CLAUDE_BIN || 'claude';
     const args = ['-p', '--permission-mode', 'auto', '--model', cfg.model];
@@ -188,6 +196,7 @@ function runStep(root, position, cfg, fd) {
     args.push(`Run roadmap step ${position}`);
     const child = spawn(bin, args, {
       cwd: root,
+      env: { ...process.env, OTEL_RESOURCE_ATTRIBUTES: withRoadmapLabels(process.env.OTEL_RESOURCE_ATTRIBUTES, labels.id, labels.slug, position) },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     activeChild = child;
@@ -252,7 +261,7 @@ async function main() {
     out(`R-C Run: Starting: roadmap step ${position} in a fresh session`);
     let res;
     try {
-      res = await runStep(root, position, cfg, log.fd);
+      res = await runStep(root, position, cfg, log.fd, { id, slug });
     } finally {
       closeSync(log.fd);
     }

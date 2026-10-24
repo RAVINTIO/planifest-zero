@@ -117,6 +117,16 @@ The driver reads two variables and passes them to every `claude -p` step.
 - No default turn cap ships, because a fixed cap ends valid long steps. The human picks a cap per run.
 - If `claude` exits non-zero while a cap is set, the stop line starts `R-C Run: Blocked:` and says the step may have reached `PLANIFEST_ROADMAP_MAX_TURNS={n}`. The driver never retries the step or raises the cap.
 
+#### Telemetry labels
+
+The driver appends three labels to `OTEL_RESOURCE_ATTRIBUTES` in the child environment only.
+
+- `work.kind=roadmap`
+- `planifest.roadmap={id}-{slug}`
+- `planifest.step={position}`
+
+The driver keeps the old value byte for byte and joins the labels with commas. It percent-encodes each label value (`%` first, then `,`, `=`, and space). The labels hold identifiers only.
+
 #### Step logs
 
 The driver writes the child's stdout and stderr to `plan/.roadmap-logs/step-{position}.log`, in arrival order.
