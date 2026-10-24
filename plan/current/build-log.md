@@ -128,3 +128,27 @@ P3 Validate and Accept: Complete: CI green, security low, 18 of 18 criteria veri
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Notes | Each step reads the output of the step before, so P4 runs in sequence. PR #25 exists as a draft, so Step 9 edits it and marks it ready. |
+- Done: Step 1 changelog. Step 2: no `.skips` file, the changelog says "None".
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `15` (P0 2, P1 4, P2 4, P3 5) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `4` (P0, P1, P2 batch 2, P3 batch 1) |
+| Primary tier agent calls | `3` (opus: the security review, resumed twice for re-reviews, and two security fix agents) |
+| Cheaper tier agent calls | `12` (sonnet) |
+| Self-corrections | `10` (P1 1, P2 3, P3 6) |
+| Phases skipped | none |
+
+| Phase | Agents | Parallel batches | Self-corrections |
+|-------|--------|------------------|------------------|
+| P0 Discovery | 2 sonnet Explore surveys | 1 | 0 |
+| P1 Plan | 4 sonnet drafting agents | 1 | 1 (cross-feature ADR number) |
+| P2 Implement | 4 sonnet TDD tracks | 1 of 3 batches | 3 (pre-rename history in tests, migration self-run, three suites after batch 2) |
+| P3 Validate and Accept | 1 opus review, 2 opus fix agents, 2 sonnet | 1 | 6 (coverage, security, Bash 3.2 and split names, helper redesign, split names, guard pair) |
+| P4 Ship | 0 | 0 | 0 |
