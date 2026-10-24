@@ -10,8 +10,8 @@ updated: "24 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.9.0` |
-| Last feature | `0000042-autonomous-mode-and-prefixes` |
+| Version | `0.10.0` |
+| Last feature | `0000043-autonomous-roadmaps` |
 | Updated | `23 Oct 2026` |
 
 ## What this is
