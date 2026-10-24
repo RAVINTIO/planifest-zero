@@ -114,3 +114,5 @@ P2 Implement: Complete: 6 requirements built, Bash suite 114 of 114. Autonomous,
 Blocked: bash-suites still fails after 5 attempts (2026-10-24T20:59:57Z)
 Resolved: bash-suites still fails after 5 attempts (2026-10-24T21:10:45Z, human approved one more cycle to allowlist the brand guard's own entries in the 0000042 wording test)
 - P3 cycle 6, human approved (2026-10-24T21:18:40Z). Fix: the 0000042 wording allowlist covers the brand guard's own allowlist line. Local check used Bash 3.2-safe copies of every suite with the `done < <(` pattern, and all passed.
+- Done: P3 batch 1 (2026-10-24T21:28:48Z). CI run 40133961149 on 10228a6 passed 5 of 5 jobs. Feature 129 of 129, regression 19 of 19, PowerShell 13 of 13 on both Windows hosts.
+P3 Validate and Accept: Complete: CI green, security low, 18 of 18 criteria verified or covered. Evidence in `acceptance-evidence.md`. Autonomous, no gate stop.
