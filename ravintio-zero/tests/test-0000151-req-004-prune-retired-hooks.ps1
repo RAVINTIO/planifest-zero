@@ -32,6 +32,8 @@ foreach ($n in $retired) {
     Assert-Contains "  - removed .claude/hooks/enforcement/$n.mjs" $run.Output "req-004 (a): removal line for $n.mjs"
 }
 Assert-Equal 3 (Get-RemovalLines $run.Output).Count "req-004 (a): exactly three removal lines"
+Assert-Contains "  - removed retired hook entry phase-enum from .claude/settings.json" $run.Output "S-005: settings.json removal line for phase-enum"
+Assert-Equal 1 @($run.Output -split "`r?`n" | Where-Object { $_.Contains('- removed retired hook entry') }).Count "S-005: only the entry that existed is named"
 
 Write-Host ""
 Write-Host "=== req-004 (b): other hooks and settings entries ==="
@@ -52,6 +54,7 @@ Write-Host "=== req-004 (a): a second run prints no removal line ==="
 $run2 = Invoke-Setup $ws @('claude-code')
 Assert-Equal 0 $run2.Code "req-004 (a): second run exits 0"
 Assert-Equal 0 (Get-RemovalLines $run2.Output).Count "req-004 (a): second run prints no removal line"
+Assert-Equal 0 @($run2.Output -split "`r?`n" | Where-Object { $_.Contains('- removed retired hook entry') }).Count "S-005: second run prints no settings.json removal line"
 Remove-SetupWorkspace $ws
 
 Write-Host ""

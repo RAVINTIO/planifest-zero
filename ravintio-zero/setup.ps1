@@ -507,6 +507,13 @@ function Merge-EnforcementHookSettings {
             if (-not $eventName) { continue }
             $eventValue = $existing.hooks.$eventName
             if ($eventValue -is [array]) {
+                # One line per removed entry names it (0000164 S-005).
+                foreach ($entry in $eventValue) {
+                    foreach ($hook in @($entry.hooks)) {
+                        $m = [regex]::Match("$($hook.command)", $retiredPattern)
+                        if ($m.Success) { Write-Host "  - removed retired hook entry $($m.Groups[2].Value) from $SettingsRel" }
+                    }
+                }
                 $existing.hooks.$eventName = @(Remove-RavintioHookCommands -Entries $eventValue -Pattern $retiredPattern)
             }
         }

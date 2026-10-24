@@ -453,14 +453,18 @@ install_enforcement_hooks() {
       // RAVINTIO entries are appended afterwards. The match is
       // case-sensitive, and only <module>.mjs at a path boundary counts
       // (0000035 S-004). The rule matches setup.ps1.
-      const keepUserCommands = (entries, moduleRe) => {
+      const keepUserCommands = (entries, moduleRe, onDrop) => {
         const kept = [];
         for (const entry of entries) {
           const v = entry && entry.hooks;
           const single = v !== null && typeof v === "object" && !Array.isArray(v);
           const cmds = single ? [v] : v;
           if (!Array.isArray(cmds) || cmds.length === 0) { kept.push(entry); continue; }
-          const userCmds = cmds.filter(h => !moduleRe.test(String((h && h.command) || "")));
+          const userCmds = cmds.filter(h => {
+            const m = moduleRe.exec(String((h && h.command) || ""));
+            if (m && onDrop) onDrop(m[2]);
+            return !m;
+          });
           if (userCmds.length === 0) continue;
           if (!single && userCmds.length !== cmds.length) entry.hooks = userCmds;
           kept.push(entry);
@@ -470,11 +474,13 @@ install_enforcement_hooks() {
       // Drop each settings entry that runs a retired hook, on every event
       // (0000151 ADR-007), so no entry names a pruned file. The match is the
       // same path-boundary rule. A non-array event value stays as it was.
+      // One line per removed entry names it (0000164 S-005).
       const retired = (process.env.RAVINTIO_RETIRED || "").split(" ").filter(Boolean);
       if (retired.length > 0) {
         const retiredModule = new RegExp("(^|[\\s\"\\x27/\\\\])(" + retired.join("|") + ")\\.mjs\\b");
         for (const ev of Object.keys(s.hooks)) {
-          if (Array.isArray(s.hooks[ev])) s.hooks[ev] = keepUserCommands(s.hooks[ev], retiredModule);
+          if (Array.isArray(s.hooks[ev])) s.hooks[ev] = keepUserCommands(s.hooks[ev], retiredModule, name =>
+            console.log("  - removed retired hook entry " + name + " from " + process.env.RAVINTIO_SETTINGS_REL));
         }
       }
       // PreToolUse: gate-write + ratchet-check + em-dash-guard for Write and Edit,
