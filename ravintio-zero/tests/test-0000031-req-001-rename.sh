@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Feature 0000031 req-001: the old framework folder renamed to the pack folder,
+# Feature 0000031 req-001: the pack folder took its 0000031 name, with
 # every live reference updated. Historical records exempt.
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
