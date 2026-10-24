@@ -27,13 +27,28 @@ move_path() {
 }
 
 # Refuse a symlink before any other check. Never follow a planted link.
-for p in "$OLD_OVERRIDES" "$NEW_OVERRIDES" "$OLD_PACK"; do
+# This covers each source and target, the two workflow files, and each parent
+# folder the helper writes into. A dangling link counts too.
+for p in "$OLD_OVERRIDES" "$NEW_OVERRIDES" "$OLD_PACK" "$OLD_WORKFLOW" "$NEW_WORKFLOW" \
+         ".claude" ".claude/skills" ".github" ".github/workflows" \
+         "ravintio-zero" "ravintio-zero/migrations"; do
     if [ -L "$p" ]; then
         echo "ERROR: $p is a symlink. Refusing to continue. Nothing was moved."
-        echo "Replace the link with a real folder or remove it, then run this helper again."
+        echo "Replace the link with a real file or folder, or remove it, then run this helper again."
         exit 1
     fi
 done
+
+# Run only from the top level of a git repo. Outside git, skip this check.
+in_git=0
+if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" = "true" ]; then
+    in_git=1
+    if [ -n "$(git rev-parse --show-prefix 2>/dev/null || true)" ]; then
+        echo "ERROR: this folder is not the top level of its git repo. Nothing was moved."
+        echo "Run this helper from the repo root: $(git rev-parse --show-toplevel)"
+        exit 1
+    fi
+fi
 
 # Step 1: the new pack must be in place.
 if [ ! -d "ravintio-zero" ]; then
@@ -53,10 +68,29 @@ if [ -d "$OLD_OVERRIDES" ] && [ -d "$NEW_OVERRIDES" ]; then
 fi
 
 # Step 4 conflict check runs before any move, so a stop leaves the repo untouched.
-if [ -e "$OLD_WORKFLOW" ] && [ -e "$NEW_WORKFLOW" ]; then
+if { [ -e "$OLD_WORKFLOW" ] || [ -L "$OLD_WORKFLOW" ]; } && { [ -e "$NEW_WORKFLOW" ] || [ -L "$NEW_WORKFLOW" ]; }; then
     echo "ERROR: $NEW_WORKFLOW already exists. Nothing was moved."
     echo "Merge or delete one of $OLD_WORKFLOW and $NEW_WORKFLOW, then run this helper again."
     exit 1
+fi
+
+# Step 6 checks run before any move. The helper deletes the old pack folder,
+# so it must look like the old pack and hold nothing that git cannot restore.
+if [ -d "$OLD_PACK" ]; then
+    if [ ! -f "$OLD_PACK/setup.sh" ]; then
+        echo "ERROR: $OLD_PACK/ holds no setup.sh, so it may not be the old pack. Nothing was moved."
+        echo "Check the folder and remove it yourself if you no longer need it, then run this helper again."
+        exit 1
+    fi
+    if [ "$in_git" -eq 1 ]; then
+        dirty="$(git status --porcelain --untracked-files=all -- "$OLD_PACK")"
+        if [ -n "$dirty" ]; then
+            echo "ERROR: $OLD_PACK/ holds untracked or modified files. Nothing was moved."
+            printf '%s\n' "$dirty" | sed 's/^/  /'
+            echo "Move or commit these files, then run this helper again."
+            exit 1
+        fi
+    fi
 fi
 
 # Step 3: overrides.
@@ -71,10 +105,12 @@ fi
 # Step 4: workflow.
 if [ -e "$OLD_WORKFLOW" ]; then
     move_path "$OLD_WORKFLOW" "$NEW_WORKFLOW"
-    tmp="$(mktemp)"
-    sed 's#planifest-zero/#ravintio-zero/#g' "$NEW_WORKFLOW" > "$tmp"
-    cat "$tmp" > "$NEW_WORKFLOW"
-    rm -f "$tmp"
+    # Write to a temp file in the same folder, then rename it over the target,
+    # so the write replaces the file and never follows a link.
+    tmp="$(mktemp "$(dirname "$NEW_WORKFLOW")/.ravintio.yml.XXXXXX")"
+    cp -p "$NEW_WORKFLOW" "$tmp"
+    sed -e 's#planifest-zero/#ravintio-zero/#g' -e 's#PLANIFEST_#RAVINTIO_#g' "$NEW_WORKFLOW" > "$tmp"
+    mv -f "$tmp" "$NEW_WORKFLOW"
     echo "Moved $OLD_WORKFLOW to $NEW_WORKFLOW."
     changed=1
 else
@@ -94,6 +130,12 @@ done
 
 # Step 6: old pack folder.
 if [ -d "$OLD_PACK" ]; then
+    # Check for a link again right before removal. rm -rf removes a nested link
+    # as a link and never deletes the files behind it.
+    if [ -L "$OLD_PACK" ]; then
+        echo "ERROR: $OLD_PACK became a symlink during the run. Refusing to remove it."
+        exit 1
+    fi
     rm -rf "$OLD_PACK"
     echo "Removed $OLD_PACK/."
     changed=1
