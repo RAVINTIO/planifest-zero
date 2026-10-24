@@ -78,6 +78,8 @@ ALLOWLIST=(
   "^ravintio-zero/tests/test-0000042-req-008-pack-prose\\.sh\$${TAB}planifest-\\\$\\{WORD\\}"
   # The 0000042 wording test names the sibling repo and the old folder in its allowlist.
   "^ravintio-zero/tests/(regression/)?test-0000042-req-010-pack-wording-allowlist\\.sh\$${TAB}planifest\\[-\\]framework"
+  # It also allowlists this guard's own entry for that pattern.
+  "^ravintio-zero/tests/(regression/)?test-0000042-req-010-pack-wording-allowlist\\.sh\$${TAB}test-0000160-req-006-brand-guard"
 
   # --- 1.x legacy aliases, removed at 2.0.0 ---
   # The roadmap runner reads the old environment variable names as a fallback.
