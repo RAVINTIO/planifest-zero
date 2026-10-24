@@ -112,13 +112,14 @@ function excludeLock(root) {
 }
 
 // Returns the last Blocked: line when no Resolved: line follows it, else null.
+// Either line may carry a list marker, such as "- " or "* ".
 function openBlock(root) {
   const file = join(root, BUILD_LOG);
   if (!existsSync(file)) return null;
   let last = null;
   for (const line of readFileSync(file, 'utf8').split(/\r?\n/)) {
-    if (/^\s*Blocked:/.test(line)) last = line.trim();
-    else if (/^\s*Resolved:/.test(line)) last = null;
+    if (/^\s*(?:[-*+]\s+)?Blocked:/.test(line)) last = line.trim();
+    else if (/^\s*(?:[-*+]\s+)?Resolved:/.test(line)) last = null;
   }
   return last === null ? null : last.slice(0, MAX_LINE);
 }
