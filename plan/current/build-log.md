@@ -68,3 +68,7 @@ P0 exchange (design): Q: Confirm the design? / A: Confirmed as written. (2026-10
 - Done: P1 scope, risk register, and glossary (2026-10-24T22:59:54Z)
 - In progress: P1 ADRs (2026-10-24T22:59:54Z)
 - In progress: P1 execution plan (2026-10-24T22:59:54Z)
+- Done: P1 ADRs (2026-10-24T23:02:35Z)
+- Done: P1 execution plan (2026-10-24T23:02:35Z)
+- Self-correction: the consistency check flagged five requirements over three criteria and three ADR-007 cross-feature references. A sonnet agent split them into REQ-006 to REQ-010 and reworded the references. Check clean. (2026-10-24T23:02:35Z)
+P1 Plan: Complete: ten requirements, four ADRs, execution plan, scope, risk register, and glossary. Autonomous run, no gate stop. (2026-10-24T23:02:35Z)
