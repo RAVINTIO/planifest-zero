@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000043-autonomous-roadmaps
+Last updated: 0000151-hardening-efficiency-and-ci
 
 ## What this repo is
 
@@ -45,27 +45,36 @@ On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the 
 - The P3 security review finds an unmitigated critical or high issue.
 - A push or `gh pr create` fails.
 - A possible credential appears in a file the run will commit, or in the PR body.
+- P1 or P2 adds a library or service that is not on the approved dependency list. The list is `design.md` "Approved dependencies" in a gated or autonomous run, and `roadmap.md` "## Dependencies" in a roadmap step.
 
 Each stop adds a `Blocked:` line to the build log. A resumed run does not pass it until a `Resolved:` line follows.
 
 No mode merges a PR or commits to `main`. The human merges every PR.
 
+**Context size.** At each gate in a gated run, the orchestrator reports the context size. Past about 150,000 tokens, it recommends `/clear`.
+
+**Ship order.** P4 creates the tag locally at Step 7. Step 8 reads the run mode, then clears the pipeline sentinels in a commit. Step 9 pushes the branch and the tag and raises the PR. Step 10 is the final gate. So the sentinels never reach `main` through the PR.
+
+**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Seven files under `skills/planifest-orchestrator/references/` hold the rarely used sections word for word: adoption modes, discovery coaching, discovery records, mid-pipeline changes, scope lock, session commands, and the skills catalogue. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
+
+**Model tiers.** Every Agent call passes `model`, set to `sonnet` or `haiku`. The three TDD skills set `model: haiku`. A haiku unit that fails twice retries on sonnet. A WebFetch of a full reference page goes through a sonnet or haiku subagent that returns an extract.
+
 ### Release sizing
 
 Discovery sizes each release against a budget. The optional `releaseSize` field in `product.yml` sets it to `small`, `medium`, or `large`, and the default is `medium`. Discovery gives each candidate requirement a size class from the files it touches, then recommends a fill up to the budget.
 
-**Park.** When the human says "park", the orchestrator shelves the feature on its branch. It writes `plan/current/park.md`, pushes the branch, and raises a `chore/park-{feature-id}` PR. That PR files a backlog entry with status `parked`. The working tree then returns to `main`. The git and `gh` steps live in the orchestrator's `scripts/park.mjs`. If a local add or commit fails on the chore branch, park unstages and deletes the entry, then returns to the feature branch. Park refuses an `--entry` that is the target path, so that cleanup never deletes the only copy. At a later discovery, backlog pickup offers resume or discard for a parked entry. Park and pickup never merge a PR, never commit to `main`, and never force-push.
+**Park.** When the human says "park", the orchestrator shelves the feature on its branch. It writes `plan/current/park.md`, pushes the branch, and raises a `chore/park-{feature-id}` PR. That PR files a backlog entry with status `parked`. The working tree then returns to `main`. The git and `gh` steps live in the orchestrator's `scripts/park.mjs`. If a local add or commit fails on the chore branch, park unstages and deletes the entry, then returns to the feature branch. Park refuses an `--entry` that is the target path, so that cleanup never deletes the only copy. Park also refuses any symlink in the entry path. It checks each part with `lstat` and the real path against the real `plan/backlog/`, before it creates, writes, or removes anything. At a later discovery, backlog pickup offers resume or discard for a parked entry. Park and pickup never merge a PR, never commit to `main`, and never force-push.
 
 ### Roadmaps
 
 A roadmap is a chain of feature steps that the human approves once. The standard `planifest-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `R-A Chart:`, `R-B Activate:`, `R-C Run:`, `R-D Advance:`, and `R-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
 
 - **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/roadmap.md` on any branch. The one active roadmap lives in `plan/current-roadmap/roadmap.md` on the branch `roadmap/{id}-{slug}`. Roadmap ids share the backlog sequence.
-- **Chart and activate.** R-A Chart runs on `main` and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the roadmap's `## Schema changes` table. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
+- **Chart and activate.** R-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the roadmap's `## Schema changes` table. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
 - **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the roadmap branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
 - **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the tag still comes before the PR.
 - **Delivery.** R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The human merges it.
-- **Driver.** `planifest-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step.
+- **Driver.** `planifest-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `R-C Run: Blocked:`. Each step writes `plan/.roadmap-logs/step-{position}.log`, and the driver appends `work.kind`, `planifest.roadmap`, and `planifest.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/roadmap-labels.mjs`.
 - **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `roadmap/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
 
 The implement phase dispatches a TDD trio per requirement: planifest-test-writer, planifest-implementer, and planifest-refactor. Four support skills complete the set of twelve: planifest-loop-runner, planifest-optimise-agent, planifest-migrator, and planifest-refresh-setup.
@@ -102,7 +111,7 @@ Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from 
 
 Enforcement is deterministic where it can be, and instructional where it cannot.
 
-**Deterministic.** A hook exits 2 with a human-readable message and Claude Code blocks the tool call. `gate-write` blocks writes to `src/` without a confirmed design. `ratchet-check` blocks weakening edits to an active loop's artifacts. `em-dash-guard` rejects U+2014 in scoped prose paths. `merge-guard` blocks a `gh pr merge` that is not a squash into a `roadmap/*` branch.
+**Deterministic.** A hook exits 2 with a human-readable message and Claude Code blocks the tool call. `gate-write`, `em-dash-guard`, `ratchet-check`, and `merge-guard` write the reason to stderr and stdout, so the agent sees why the call stopped. `gate-write` blocks writes to `src/` without a confirmed design. `ratchet-check` blocks weakening edits to an active loop's artifacts. `em-dash-guard` rejects U+2014 in scoped prose paths. `merge-guard` blocks a `gh pr merge` that is not a squash into a `roadmap/*` branch.
 
 **Instructional.** Skills tell the agent what to do. The orchestrator's hard limits, the one-question-at-a-time rule, and the phase gates all rely on the agent following its instructions.
 
@@ -140,6 +149,10 @@ Each prints one warning and setup skips it. After `--backend-url`, setup also sk
 
 PowerShell 7 splits an argument such as `--backend-url=https://x` at its first colon. `setup.ps1` skips the rest of the value too, and never prints a tool name that isn't a plain name.
 
+**Retired hooks.** Both scripts delete an installed hook and its wiring only if its name is on the retired list. The list holds `phase-enum`. A hook that is not on the list stays.
+
+**Write failures.** One catch around the shared `writeSettings` prints a fixed line with the relative path and exits 1. It covers the hook install and the allowed-tools write, and `setup.ps1` prints the same line.
+
 **Atomic settings writes.** Every `settings.json` write goes to `settings.json.planifest-tmp` in the same folder first, then replaces the target. So `settings.json` is always the old file or the new one. Setup removes a leftover temporary file before it writes, and creates the new one exclusively, so it never follows a planted link. The new file keeps the original's mode, or its ACL on Windows. Setup leaves a read-only `settings.json` unchanged. `setup.sh` writes a symlinked `settings.json` through to its real file. Other files setup writes, such as the boot file, are rewritten whole on each run.
 
 **Leftover temporary file.** Each run removes a leftover `settings.json.planifest-tmp` before its first settings write, even when `node` is missing. It removes a file or a link, never a folder, and never follows a link.
@@ -166,7 +179,9 @@ A wording test greps every tracked file outside history for the retired word tha
 
 `planifest-zero/tests/run-tests.sh` runs every Bash and PowerShell suite. Before any suite runs, it checks every file under `tests/`. A file that is neither a suite nor on its known list fails the run, and the runner names it. Without `pwsh`, it prints how many PowerShell suites it skipped.
 
-The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them under Windows PowerShell 5.1 and PowerShell 7. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `PLANIFEST_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
+Set `PLANIFEST_TEST_QUIET=1` to hide PASS lines and banners. The runner then keeps every FAIL line with its detail, the failing suite name, the summary, and the exit codes. A quiet full run prints about 3 KB. Skills that run the full suite set it.
+
+The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `PLANIFEST_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
 
 ---
 
