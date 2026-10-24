@@ -2,7 +2,7 @@
 # Tests for feature 0000160-ravintio-rebrand, req-002: hooks and setup detect
 # and write ravintio names. Covers the hooks, em-dash-guard's legacy sentinel
 # alias (ADR-002), setup.sh markers, old-marker cleanup, core.hooksPath, and
-# the stop on a leftover planifest folder (ADR-003).
+# the stop on a leftover old pack folder (ADR-003).
 
 set -uo pipefail
 

@@ -86,12 +86,15 @@ ALLOWLIST=(
   "^docs/dependency-graph\\.md\$${TAB}PLANIFEST_ROADMAP_(MODEL|MAX_TURNS)"
   # The component manifest lists the fallback variables.
   "^ravintio-zero/component\\.yml\$${TAB}PLANIFEST_ROADMAP_(MODEL|MAX_TURNS)"
-  # The REQ-003 test checks the fallback.
-  "^ravintio-zero/tests/test-0000160-req-003-.*\\.sh\$${TAB}PLANIFEST_ROADMAP_(MODEL|MAX_TURNS)"
+  # The REQ-003 test checks the fallback, scans for the old variable prefix, and checks no old label is emitted.
+  "^ravintio-zero/tests/test-0000160-req-003-.*\\.sh\$${TAB}PLANIFEST_|planifest\\."
   # The em dash guard honours the old sentinel.
   "^ravintio-zero/hooks/enforcement/em-dash-guard\\.mjs\$${TAB}planifest-em-dash-allow"
   # The REQ-002 test checks the old sentinel and the setup leftovers.
   "^ravintio-zero/tests/test-0000160-req-002-.*\$${TAB}planifest-(em-dash-allow|zero|overrides)|\\.planifest-(setup-flags|manifest)"
+
+  # --- Tests that name the 0000030 folder, which 0000031 renamed ---
+  "^ravintio-zero/tests/test-0000031-req-00[14]-[a-z-]+\\.sh\$${TAB}^OLD_NAME=\"planifest\"\"-framework\"\$"
 
   # --- Setup detection of leftover folders and old markers ---
   # Setup detects and reports leftover old folders.
@@ -138,10 +141,11 @@ check_lines() {
   while IFS= read -r path; do
     [ -f "$root/$path" ] || continue
     while IFS= read -r hit; do
+      [ -n "$hit" ] || continue
       num="${hit%%:*}"
       text="${hit#*:}"
       allowed "$path" "$text" || echo "$path:$num"
-    done < <(grep -inI -- planifest "$root/$path" 2>/dev/null)
+    done <<< "$(grep -inI -- planifest "$root/$path" 2>/dev/null)"
   done
 }
 
@@ -179,8 +183,9 @@ STRAY="$(printf '%s\n' "$SCOPE" | check_lines "$REPO_ROOT")"
 while IFS= read -r p; do
   [ -f "$REPO_ROOT/$p" ] || continue
   while IFS= read -r hit; do
+    [ -n "$hit" ] || continue
     allowed "$p" "${hit#*:}" || true
-  done < <(grep -inI -- planifest "$REPO_ROOT/$p" 2>/dev/null)
+  done <<< "$(grep -inI -- planifest "$REPO_ROOT/$p" 2>/dev/null)"
 done <<< "$SCOPE"
 COUNT_HITS=0
 if [ -n "$STRAY" ]; then
