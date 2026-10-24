@@ -12,7 +12,7 @@ $global:AssertNamed = $false
 # once, before its first FAIL line (0000151 req-008).
 function Write-AssertPass {
     param([string]$Message)
-    if ($env:PLANIFEST_TEST_QUIET -ne '1') { Write-AssertPass $Message }
+    if ($env:PLANIFEST_TEST_QUIET -ne '1') { Write-Host "  PASS: $Message" }
 }
 
 function Write-AssertFail {
@@ -26,7 +26,7 @@ function Write-AssertFail {
         Write-Host "--- $suiteName ---"
         $global:AssertNamed = $true
     }
-    Write-AssertFail $Message
+    Write-Host "  FAIL: $Message"
 }
 
 function Assert-Equal {

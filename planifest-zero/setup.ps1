@@ -699,6 +699,19 @@ function Remove-LegacyTelemetryWiring {
     }
 }
 
+function Test-UnderRealRoot {
+    # True when the item and every folder between it and the root are plain
+    # entries, not reparse points, and the item sits under the root.
+    param($Item, [string]$RootFull)
+    if (-not $Item.FullName.StartsWith($RootFull + [IO.Path]::DirectorySeparatorChar)) { return $false }
+    $current = $Item
+    while ($current -and $current.FullName.TrimEnd('\', '/') -ne $RootFull) {
+        if ($current.Attributes -band [IO.FileAttributes]::ReparsePoint) { return $false }
+        $current = if ($current -is [IO.FileInfo]) { $current.Directory } else { $current.Parent }
+    }
+    return $true
+}
+
 function Remove-RetiredHooks {
     # Mirror of prune_retired_hooks in setup.sh (0000151 req-004, ADR-007).
     # Deletes each installed hook whose base name is on $RetiredHookNames,
@@ -707,8 +720,12 @@ function Remove-RetiredHooks {
     $root = Join-Path $ProjectRoot $HooksRootRel
     if (-not (Test-Path -LiteralPath $root -PathType Container)) { return }
     foreach ($name in $RetiredHookNames) {
+        # Windows PowerShell 5.1 follows junctions on -Recurse, so drop any
+        # match under a reparse point or outside the hooks root.
+        $rootFull = (Get-Item -LiteralPath $root).FullName.TrimEnd('\', '/')
         $found = @(Get-ChildItem -LiteralPath $root -Recurse -File -Filter "$name.mjs" -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -ceq "$name.mjs" })
+            Where-Object { $_.Name -ceq "$name.mjs" } |
+            Where-Object { Test-UnderRealRoot -Item $_ -RootFull $rootFull })
         foreach ($file in $found) {
             try {
                 Remove-Item -LiteralPath $file.FullName -Force -ErrorAction Stop

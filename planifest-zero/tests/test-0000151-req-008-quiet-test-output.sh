@@ -80,4 +80,15 @@ for f in $(grep -rl 'run-tests' "$ZERO_DIR/skills" --include=SKILL.md); do
   assert_equals "yes" "$(grep 'run-tests' "$f" | grep -q 'PLANIFEST_TEST_QUIET=1' && echo yes || echo no)" "$(basename "$(dirname "$f")") names PLANIFEST_TEST_QUIET=1 in the command"
 done
 
+echo "=== (a) assert.ps1 helpers print and do not recurse ==="
+# pwsh may be absent, so read the helper bodies. A helper that calls itself
+# recurses until PowerShell stops it and never prints (P3 finding S-002).
+PS1_HELPERS="$ZERO_DIR/tests/helpers/assert.ps1"
+for h in Write-AssertPass Write-AssertFail; do
+  BODY="$(awk -v h="$h" '$0 ~ "^function "h" " {f=1; next} f && /^}/ {exit} f {print}' "$PS1_HELPERS")"
+  assert_equals "0" "$(printf '%s\n' "$BODY" | grep -c -- "$h" || true)" "$h does not call itself"
+done
+assert_contains 'Write-Host "  PASS: $Message"' "$(cat "$PS1_HELPERS")" "Write-AssertPass prints the PASS line"
+assert_contains 'Write-Host "  FAIL: $Message"' "$(cat "$PS1_HELPERS")" "Write-AssertFail prints the FAIL line"
+
 print_summary
