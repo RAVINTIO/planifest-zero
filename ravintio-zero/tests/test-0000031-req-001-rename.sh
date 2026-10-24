@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Feature 0000031 req-001: ravintio-zero/ renamed to ravintio-zero/,
+# Feature 0000031 req-001: the old framework folder renamed to the pack folder,
 # every live reference updated. Historical records exempt.
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -8,7 +8,7 @@ REPO="$(cd "$ZERO_DIR/.." && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 # Concatenated so repo-wide renames never rewrite this test's target string.
-OLD_NAME="ravintio""-framework"
+OLD_NAME="planifest""-framework"
 
 echo "=== (a) folder is named ravintio-zero ==="
 assert_equals "ravintio-zero" "$(basename "$ZERO_DIR")" "pack folder basename"
