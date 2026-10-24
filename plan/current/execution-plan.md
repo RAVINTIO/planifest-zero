@@ -31,16 +31,21 @@
 | [req-003-bash32-test-loops.md](requirements/req-003-bash32-test-loops.md) | Five suites drop `done < <(...)`, plus a guard test | US-003 |
 | [req-004-retire-telemetry-cleanup.md](requirements/req-004-retire-telemetry-cleanup.md) | Setup drops the telemetry cleanup in both shells | US-004 |
 | [req-005-file-backlog-skill.md](requirements/req-005-file-backlog-skill.md) | New `ravintio-file-backlog` skill | US-005 |
+| [req-006-gate-write-symlink-cases.md](requirements/req-006-gate-write-symlink-cases.md) | Symlink, alias, and Windows cases of the outside-project rule | US-001 |
+| [req-007-gate-write-doc-correction.md](requirements/req-007-gate-write-doc-correction.md) | Correct the gate description in `CLAUDE.md` and three other files | US-002 |
+| [req-008-bash32-guard-test.md](requirements/req-008-bash32-guard-test.md) | Guard test for `done < <(` and the full-suite check | US-003 |
+| [req-009-retire-telemetry-tests-and-docs.md](requirements/req-009-retire-telemetry-tests-and-docs.md) | Telemetry suite changes, manifest update, and changelog note | US-004 |
+| [req-010-file-backlog-guardrails-and-catalogue.md](requirements/req-010-file-backlog-guardrails-and-catalogue.md) | Never-commit rule, catalogue row, and skill-count suites | US-005 |
 
 ## Build order
 
 Each track works on its own files, so the tracks run in parallel except where noted.
 
 1. **Batch 1, parallel:**
-   - REQ-001 then REQ-002 in one track. Both edit `gate-write.mjs`, so they run in sequence.
-   - REQ-003 in `ravintio-zero/tests/`. It edits the five suites and adds the guard test.
-   - REQ-004 in `setup.sh`, `setup.ps1`, `component.yml`, and the telemetry suites.
-   - REQ-005 in `ravintio-zero/skills/ravintio-file-backlog/`, the catalogue, and the two skill-count suites.
+   - REQ-001, REQ-006, REQ-002, then REQ-007 in one track. REQ-001, REQ-006, and REQ-002 edit `gate-write.mjs`, so they run in sequence. REQ-007 edits docs only.
+   - REQ-003 then REQ-008 in `ravintio-zero/tests/`. REQ-003 edits the five suites. REQ-008 adds the guard test and runs the full suite.
+   - REQ-004 then REQ-009 in `setup.sh`, `setup.ps1`, `component.yml`, and the telemetry suites. REQ-009 carries the test, manifest, and changelog changes.
+   - REQ-005 then REQ-010 in `ravintio-zero/skills/ravintio-file-backlog/`, the catalogue, and the two skill-count suites.
 2. **Batch 2, sequential:** the full suite runs on Bash 5 and on macOS Bash 3.2 under `env -i`. The living docs update after that.
 
 REQ-003 and REQ-004 both touch `ravintio-zero/tests/` but edit different files. REQ-003 must not edit a suite that REQ-004 deletes. None of the five REQ-003 files is on REQ-004's delete list.

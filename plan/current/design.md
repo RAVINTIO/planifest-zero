@@ -16,7 +16,7 @@
 - Acceptance criteria confirmed: 5 (feature brief)
 - Constraints:
   - The skill never commits, pushes, switches branches, or opens a PR in the target repo.
-  - Retired-hook pruning (0000151 ADR-007) keeps working, from a list no longer named for telemetry.
+  - Retired-hook pruning (the 0000151 retired-hooks ADR (decision 7)) keeps working, from a list no longer named for telemetry.
   - The allowed set under `plan/` and `docs/` stays as it is.
 - Integrations: none
 
@@ -83,6 +83,11 @@ None
 | REQ-003 - bash32-test-loops | ravintio-implement | Mechanical edit in five suites plus a guard test |
 | REQ-004 - retire-telemetry-cleanup | ravintio-implement | Setup change on two shells with test updates |
 | REQ-005 - file-backlog-skill | ravintio-implement | New skill with structure tests |
+| REQ-006 - gate-write-symlink-cases | ravintio-implement | Symlink and Windows path tests for the hook |
+| REQ-007 - gate-write-doc-correction | ravintio-implement | Doc edits in four files |
+| REQ-008 - bash32-guard-test | ravintio-implement | New guard test and full-suite check |
+| REQ-009 - retire-telemetry-tests-and-docs | ravintio-implement | Suite rewrites, manifest, and changelog |
+| REQ-010 - file-backlog-guardrails-and-catalogue | ravintio-implement | Catalogue row and skill-count suites |
 
 ## Repo Instructions
 
