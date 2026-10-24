@@ -14,6 +14,9 @@ status: "draft"  # draft | active | blocked | done
 >
 > `Bump` takes `major`, `minor`, or `patch`. Leave it empty for the default, `minor`.
 > `position` names the next step to run.
+>
+> `## Schema changes` lists each step's predicted data change. The human approves the rows at
+> Chart. See Chart-time schema approval in `planifest-zero/standards/roadmap-standards.md`.
 
 **Goal:** {{What the whole chain delivers, in one or two sentences.}}
 **Branch:** roadmap/{{id}}-{{slug}}
@@ -23,6 +26,14 @@ status: "draft"  # draft | active | blocked | done
 ## Stop conditions
 
 - {{A condition that halts the chain, for example a step blocks or a CI run fails twice.}}
+
+## Schema changes
+
+**Unpredicted additive changes:** {{pre-approved | stop}}
+
+| Step | Component | Change | Kind |
+|------|-----------|--------|------|
+| 1 | {{component id, or none}} | {{the predicted data change, or none}} | {{additive, destructive, or none}} |
 
 ## Steps
 

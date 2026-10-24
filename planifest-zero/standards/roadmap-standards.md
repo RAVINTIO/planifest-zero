@@ -45,6 +45,30 @@ Coach the human on these points:
 
 If a named backlog entry does not exist, stop the chart and name the missing entry. The human's confirmation approves the roadmap.
 
+Chart also collects the schema approvals the steps need. See Chart-time schema approval.
+
+### Chart-time schema approval
+
+Hard Limit 3 needs a human to approve each schema change. The human is present at Chart and absent during the steps, so Chart collects these approvals up front.
+
+At Chart:
+
+1. Survey each step. Read the step's backlog entries and the data contracts of the components they touch. Draft the data change the step needs.
+2. List each predicted change as a row in the `## Schema changes` table of `roadmap.md`. A step with no change gets a row with Kind `none`. Kind is `additive`, `destructive`, or `none`.
+3. Present the table. The human approves, edits, or strikes each row. The human's confirmation of the chart approves every row left in the table.
+4. Ask one fallback question: "Also pre-approve additive changes that Chart didn't predict?" Record the answer in the `**Unpredicted additive changes:**` field as `pre-approved` or `stop`. The default is `stop`.
+
+An additive change adds a field, a table, or an index. It removes nothing and changes no existing name or type.
+
+In a step, the rule applies wherever the step writes a migration proposal, in P1 or P2:
+
+- The step still writes the proposal at `src/{component-id}/docs/migrations/proposed-{desc}.md`, so the docs stay complete.
+- A proposal matches a row when it has the same step, the same component, the same field names and types, and Kind `additive`.
+- If the proposal matches a row, set its status to `approved (roadmap chart)` and name the row in its approval section. Then carry on without stopping. Log `Schema change approved (roadmap chart): {path}` in the build log.
+- If no row matches an additive proposal and the fallback is `pre-approved`, set its status to `approved (roadmap chart fallback)` and carry on. Log the same line with `fallback` added.
+- Otherwise, take the normal schema-change exception stop. That covers a new field, a changed type, or a change no row predicted.
+- A destructive change always stops, even when a row lists it. Hard Limit 4 allows no exceptions. A listed row only tells the human in advance.
+
 ### R-B Activate
 
 Activate turns a charted roadmap into a live branch. Run these checks first:
@@ -73,6 +97,7 @@ Run executes one roadmap step from `position`. Ship owns the merge that ends it 
 - P0 writes `autonomous` to `plan/.run-mode` without asking the run-mode question.
 - P0 builds `feature-brief.md` from the backlog entries that the step's row lists. It pulls each entry in and deletes its folder in the same commit. It does not ask pull-in, leave, or discard.
 - P0 self-confirms the design and the Scope Lock Challenge. Each scope lock line ends with `[source: draft-accepted (roadmap)]`. The design confirmation records `draft-accepted (roadmap)` in place of a human confirmation.
+- A schema change that matches a chart-approved row does not stop the step. See Chart-time schema approval.
 - P0 stops only when a backlog entry is too vague to draft a brief from. Print `Blocked:` with the entry and what is missing. The exception stops in Exception Stops still apply, including the credential stop.
 - P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the roadmap branch's version. That is the last known version from Discovery Start Actions step 8. The roadmap branch's version comes from `product.yml`, or from `docs/about.md` when `product.yml` is absent. The downgrade block still applies.
 

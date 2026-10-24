@@ -424,7 +424,7 @@ After the human acts, the run resumes in the same mode from `plan/.run-mode`.
 | Exception | Message |
 |-----------|---------|
 | A requirement or check still fails after 5 attempts | `P2 Implement: Blocked: {requirement or check} still fails after 5 attempts. Review the escalation and choose the next step.` (P3 uses `P3 Validate:`) |
-| P2 needs a schema change | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
+| P2 needs a schema change, unless a roadmap step matches a chart-approved row (see `roadmap-standards.md`) | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
 | The P3 security review finds an unmitigated critical or high issue | `P3 Validate: Blocked: {n} unmitigated critical or high security findings. Approve a mitigation or accept the risk.` |
 | A push or `gh pr create` fails | `P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.` (other phases use their own prefix) |
 | A possible credential appears in a file the run will commit, or in a PR body | `{prefix} Blocked: possible credential in {path}. Remove it or confirm it is not a secret.` Stop before the commit and before any push. Never print the value. |
