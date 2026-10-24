@@ -18,7 +18,7 @@ status: "draft"  # draft | active | blocked | done
 **Goal:** {{What the whole chain delivers, in one or two sentences.}}
 **Branch:** roadmap/{{id}}-{{slug}}
 **Status:** {{draft | active | blocked | done}}
-**Position:** {{next step to run, for example step 1}}
+**Position:** {{number of the next step to run, for example 1}}
 
 ## Stop conditions
 
