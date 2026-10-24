@@ -31,7 +31,11 @@ $global:Workspaces = @()
 function New-SetupWorkspace {
     $ws = Join-Path ([System.IO.Path]::GetTempPath()) ("planifest_0000036_" + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $ws | Out-Null
+    $copyTimer = [System.Diagnostics.Stopwatch]::StartNew()
     Copy-Item -Path $global:ZeroDir -Destination (Join-Path $ws 'planifest-zero') -Recurse
+    # Timing lines go to the host, never into the data a test captures
+    # (0000151 req-015).
+    Write-Host ("[timing] workspace copy: {0} ms" -f $copyTimer.ElapsedMilliseconds)
     New-Item -ItemType Directory -Path (Join-Path $ws '.claude') | Out-Null
     & git -C $ws init -q 2>&1 | Out-Null
     # Without its own repo, setup's git config would reach a parent repo
@@ -63,8 +67,14 @@ function Invoke-Setup {
     $savedCeiling = $env:GIT_CEILING_DIRECTORIES
     $env:GIT_CEILING_DIRECTORIES = Split-Path -Parent $Workspace
     try {
+        # A bare child process shows the host start-up cost on its own.
+        $startTimer = [System.Diagnostics.Stopwatch]::StartNew()
+        & $global:HostExe -NoProfile -Command 'exit 0' 2>&1 | Out-Null
+        Write-Host ("[timing] pwsh start-up: {0} ms" -f $startTimer.ElapsedMilliseconds)
+        $setupTimer = [System.Diagnostics.Stopwatch]::StartNew()
         $output = & $global:HostExe -NoProfile -ExecutionPolicy Bypass -File $setup @SetupArgs 2>&1 | Out-String
         $code = $LASTEXITCODE
+        Write-Host ("[timing] setup.ps1: {0} ms" -f $setupTimer.ElapsedMilliseconds)
     }
     finally {
         $env:GIT_CEILING_DIRECTORIES = $savedCeiling
