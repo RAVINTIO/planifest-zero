@@ -38,3 +38,9 @@ P0 exchange (depth): Q: How deep should the rename go? / A: Full rename with a c
 P0 exchange (history): Q: Rewrite `plan/_archive/` and `plan/changelog/`? / A: No. Leave them as written.
 P0 exchange (casing): Q: (human, unprompted) / A: Write the brand as RAVINTIO in block caps.
 Run mode: autonomous (2026-10-24T18:01:28Z)
+Scope Lock (happy path): After merge the pack sits at `ravintio-zero/` with `ravintio-*` skills, suites pass, and prose reads RAVINTIO Zero. The org rename and then the repo rename follow the merge. [source: draft-accepted]
+Scope Lock (first-run path): A fresh consumer setup creates only ravintio names: skills, `ravintio-overrides/`, and `.github/workflows/ravintio.yml`. [source: draft-accepted]
+Scope Lock (error path): The migration stops and moves nothing when both pack folders, or both overrides folders, exist. [source: draft-accepted]
+Scope Lock (cross-session continuity): Branch commits and build-log progress markers allow resume, and every migration step skips work already done. [source: draft-accepted]
+Scope Lock complete. All four scenario paths captured.
+Version: 1.0.0 (major, breaking rename for consumers; confirmed in the depth exchange)
