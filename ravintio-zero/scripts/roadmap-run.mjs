@@ -17,6 +17,10 @@
 //                A turn cap for every step, passed as --max-turns. If unset or empty,
 //                no cap applies and no default ships. It must be 1 to 9999. If claude
 //                exits non-zero while a cap is set, the stop line names the cap.
+//   PLANIFEST_ROADMAP_MODEL, PLANIFEST_ROADMAP_MAX_TURNS
+//                Legacy names for the two variables above. Each applies only if its
+//                RAVINTIO_ROADMAP_ name is unset or empty. If both are set, the RAVINTIO value wins.
+//                Remove at 2.0.0 (0000160 ADR-002).
 //
 // Labels: the child's OTEL_RESOURCE_ATTRIBUTES gets these labels appended, with each value
 // percent-encoded by scripts/roadmap-labels.mjs. The old value stays as it was.
@@ -112,13 +116,19 @@ function fieldIn(text, name) {
   return /^(["']).*\1$/.test(v) ? v.slice(1, -1).trim() : v;
 }
 
+// Reads a RAVINTIO_* variable. If it is unset or empty, falls back to the legacy
+// name from the old brand. The fallback is for 1.x only and goes at 2.0.0 (0000160 ADR-002).
+function legacyEnv(name, legacy) {
+  return process.env[name] || process.env[legacy] || '';
+}
+
 // Reads and validates the child settings. The stop lines name the variable, never the value.
 function readChildConfig() {
-  const model = process.env.RAVINTIO_ROADMAP_MODEL || DEFAULT_MODEL;
+  const model = legacyEnv('RAVINTIO_ROADMAP_MODEL', 'PLANIFEST_ROADMAP_MODEL') || DEFAULT_MODEL;
   if (!MODEL.test(model)) {
     throw new Stop('R-C Run: Blocked: RAVINTIO_ROADMAP_MODEL must match ^[A-Za-z0-9][A-Za-z0-9._:[\\]-]{0,63}$');
   }
-  const turns = process.env.RAVINTIO_ROADMAP_MAX_TURNS || '';
+  const turns = legacyEnv('RAVINTIO_ROADMAP_MAX_TURNS', 'PLANIFEST_ROADMAP_MAX_TURNS');
   if (turns !== '' && !TURNS.test(turns)) {
     throw new Stop('R-C Run: Blocked: RAVINTIO_ROADMAP_MAX_TURNS must be a positive integer of up to 4 digits');
   }
