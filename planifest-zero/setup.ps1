@@ -266,6 +266,25 @@ function Write-SettingsAtomic {
     }
 }
 
+function Write-SettingsOrExit {
+    # Write-SettingsAtomic, with any fault turned into one fixed line on
+    # stderr and exit 1, as setup.sh prints it (0000151 req-005). The line holds
+    # no absolute path and no PowerShell error text. The telemetry cleanup calls
+    # Write-SettingsAtomic directly, so it keeps its own warning.
+    param(
+        [string]$Path,
+        [string]$Json,
+        [string]$SettingsRel = '.claude/settings.json'
+    )
+    try {
+        Write-SettingsAtomic -Path $Path -Json $Json
+    }
+    catch {
+        [Console]::Error.WriteLine("! Error: $SettingsRel could not be written. Fix its permissions and rerun setup.")
+        exit 1
+    }
+}
+
 function New-HookEntry {
     # One settings.json hook entry: a matcher and one node command.
     param([string]$Matcher, [string]$Module, [string]$HooksDir)
@@ -502,7 +521,7 @@ function Merge-EnforcementHookSettings {
         $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
 
         # Depth 100 keeps deep user values whole (0000039 req-003).
-        Write-SettingsAtomic -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 100)
+        Write-SettingsOrExit -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 100) -SettingsRel $SettingsRel
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
     }
     else {
@@ -515,7 +534,7 @@ function Merge-EnforcementHookSettings {
                 UserPromptSubmit = @($userPromptEntries)
             }
         }
-        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
+        Write-SettingsOrExit -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100) -SettingsRel $SettingsRel
         Write-Host "  + .claude/settings.json (created with enforcement hook entries)"
     }
 }
@@ -548,7 +567,7 @@ function Merge-AllowedTools {
         $settings | Add-Member -NotePropertyName 'allowedTools' -NotePropertyValue ($existing + @('Agent')) -Force
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        Write-SettingsAtomic -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
+        Write-SettingsOrExit -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
         Write-Host "  ~ .claude/settings.json (Agent added to allowedTools)"
     } else {
         Write-Host "  - .claude/settings.json (Agent already in allowedTools)"

@@ -23,9 +23,21 @@ STRICT_ORCHESTRATOR=false
 # Writes a temporary file in the same folder, then renames it over the target,
 # so settings.json is always the old file or the new one. The temporary file
 # keeps the original's mode. A failed write removes the temporary file and
-# rethrows, leaving the original untouched.
+# prints one fixed error line, leaving the original untouched.
 PLANIFEST_WRITE_SETTINGS_JS='
 function writeSettings(sf, text) {
+  // Any write fault ends in one fixed line and exit 1, with no absolute path,
+  // error code, or stack trace (0000151 req-005). The inner function removes
+  // its temporary file before the error reaches this catch.
+  try {
+    writeSettingsFile(sf, text);
+  } catch (_) {
+    process.stderr.write("! Error: " + (process.env.PLANIFEST_SETTINGS_REL || "settings.json") +
+      " could not be written. Fix its permissions and rerun setup.\n");
+    process.exit(1);
+  }
+}
+function writeSettingsFile(sf, text) {
   const fs = require("fs");
   // Write through a symlinked settings.json to its real file, as before.
   let target = sf;
