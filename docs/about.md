@@ -1,7 +1,7 @@
 ---
-version: "0.9.0"
-feature: "0000041-setup-cleanup-and-park-hardening"
-updated: "22 Oct 2026"
+version: "0.10.0"
+feature: "0000043-autonomous-roadmaps"
+updated: "24 Oct 2026"
 ---
 # About
 
