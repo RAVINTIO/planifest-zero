@@ -70,7 +70,7 @@ function writeSettingsFile(sf, text) {
 # Prepended to every node script that reads settings.json before it acts on
 # the hooks (0000040 req-001, ADR-002). A settings object is a plain object
 # whose hooks value is absent, null, or a plain object. The hook install step
-# and remove_legacy_telemetry_wiring apply the same rule.
+# applies the same rule.
 RAVINTIO_SETTINGS_SHAPE_JS='
 const isPlainObject = v => v !== null && typeof v === "object" && !Array.isArray(v);
 const isSettingsObject = s => isPlainObject(s) && (s.hooks == null || isPlainObject(s.hooks));
@@ -317,116 +317,10 @@ remove_leftover_settings_tmp() {
   fi
 }
 
-# Telemetry hook module names a pre-0000033 project may still reference from
-# .claude/settings.json (0000033 req-004, ADR-002 decision 1). The modules
-# themselves are gone, so every entry naming one is a broken reference.
-# This is also the retired-hooks list: install_enforcement_hooks deletes an
-# installed hook on it and never one absent from it (0000151 ADR-007).
-# Retiring a hook means adding its name here and in setup.ps1.
-TELEMETRY_HOOK_MODULES="emit-phase-start emit-phase-end emit-event-receipt emit-event context-pressure resolve-phase record-telemetry-failure check-telemetry-failures check-telemetry-receipts phase-enum"
-RETIRED_HOOK_NAMES="$TELEMETRY_HOOK_MODULES"
-TELEMETRY_MCP_MATCHER="mcp__structured-telemetry-mcp__emit_event"
-
-remove_legacy_telemetry_wiring() {
-  # Retract the telemetry wiring setup itself once wrote (0000033 req-004,
-  # ADR-002). Runs on every invocation, not behind a flag, because a person
-  # cannot be expected to remember they once passed --structured-telemetry-mcp
-  # (decision 6). Called BEFORE install_enforcement_hooks so the enforcement
-  # install is the last writer of settings.json and its six entries cannot be
-  # disturbed by this filter.
-  #
-  # Prints one line per removal (decision 4), warns and continues on failure so
-  # setup still exits 0 (decision 4), and prints nothing when there is nothing
-  # to remove, which makes an upgraded project indistinguishable from a fresh
-  # install on the second run (decision 5). A file that is invalid JSON or not
-  # a settings object skips in silence, because install_enforcement_hooks
-  # reports that fault (0000041 ADR-002). Only a read or write error warns.
-  local settings_rel="$1"   # e.g. .claude/settings.json
-
-  # 1. Telemetry hook entries in the project's settings.json.
-  local settings="$PROJECT_ROOT/$settings_rel"
-  if [ -f "$settings" ] && command -v node >/dev/null 2>&1; then
-    local result
-    result="$(RAVINTIO_SETTINGS="$settings" \
-      RAVINTIO_TELEMETRY_MODULES="$TELEMETRY_HOOK_MODULES" \
-      RAVINTIO_TELEMETRY_MATCHER="$TELEMETRY_MCP_MATCHER" node -e "$RAVINTIO_WRITE_SETTINGS_JS$RAVINTIO_SETTINGS_SHAPE_JS"'
-      const fs = require("fs");
-      const sf      = process.env.RAVINTIO_SETTINGS;
-      const modules = process.env.RAVINTIO_TELEMETRY_MODULES.split(" ").filter(Boolean);
-      const matcher = process.env.RAVINTIO_TELEMETRY_MATCHER;
-      // Never log the file contents (req-004 logging policy): report only
-      // "removed" or "none" on stdout.
-      const raw = fs.readFileSync(sf, "utf8").replace(/^﻿/, "");
-      // Invalid JSON or a value that is not a settings object counts as
-      // nothing to clean (0000041 ADR-002). The hook install step runs next
-      // and prints the one line for the fault.
-      let s;
-      try { s = JSON.parse(raw); } catch (_) { s = undefined; }
-      if (!isSettingsObject(s)) { console.log("none"); process.exit(0); }
-      // A command is telemetry only when it runs `<module>.mjs` at a path
-      // boundary, which is every shape an old setup wrote. A bare substring
-      // would also catch a user hook such as ./my-tools/emit-event-logger.sh.
-      const moduleRe = new RegExp("(^|[\\s\"\x27/\\\\])(" + modules.join("|") + ")\\.mjs\\b");
-      const isTelemetryCommand = (c) =>
-        moduleRe.test(c || "") || (c || "").includes(matcher);
-      let removed = 0;
-      for (const [event, entries] of Object.entries(s.hooks || {})) {
-        if (!Array.isArray(entries)) continue;
-        const kept = [];
-        for (const entry of entries) {
-          if ((entry.matcher || "").includes(matcher)) { removed++; continue; }
-          const hooks = Array.isArray(entry.hooks) ? entry.hooks : [];
-          const keptHooks = hooks.filter(h => !isTelemetryCommand(h.command));
-          if (keptHooks.length === 0 && hooks.length > 0) { removed++; continue; }
-          if (keptHooks.length !== hooks.length) { entry.hooks = keptHooks; removed++; }
-          kept.push(entry);
-        }
-        s.hooks[event] = kept;
-      }
-      if (removed > 0) {
-        writeSettings(sf, JSON.stringify(s, null, 2) + "\n");
-        console.log("removed");
-      } else {
-        console.log("none");
-      }
-    ' 2>/dev/null)" || result="error"
-
-    case "$result" in
-      removed) echo "  - removed telemetry hook entries from $settings_rel" ;;
-      none)    ;;
-      *)       echo "  ! Warning: could not remove telemetry hook entries from $settings_rel" >&2 ;;
-    esac
-  elif [ -f "$settings" ]; then
-    # Say why stale entries stay, instead of skipping in silence (0000034 req-004).
-    echo "  ! Warning: node not found, skipping the telemetry cleanup of $settings_rel" >&2
-  fi
-
-  # 2. The telemetry opt-in sentinel (decision 2).
-  local sentinel_rel=".claude/telemetry-enabled"
-  local sentinel="$PROJECT_ROOT/$sentinel_rel"
-  if [ -e "$sentinel" ]; then
-    if rm -f "$sentinel" 2>/dev/null; then
-      echo "  - removed $sentinel_rel"
-    else
-      echo "  ! Warning: could not remove $sentinel_rel" >&2
-    fi
-  fi
-
-  # 3. The failure and receipt marker directories (decision 3).
-  local marker_rel
-  for marker_rel in "plan/.telemetry-failures" "plan/.telemetry-receipts"; do
-    local marker="$PROJECT_ROOT/$marker_rel"
-    if [ -e "$marker" ]; then
-      if rm -rf "$marker" 2>/dev/null && [ ! -e "$marker" ]; then
-        echo "  - removed $marker_rel/"
-      else
-        echo "  ! Warning: could not remove $marker_rel/" >&2
-      fi
-    fi
-  done
-
-  return 0
-}
+# The retired-hooks list (0000151 ADR-007). install_enforcement_hooks deletes an
+# installed hook named here and never one absent from it. Retiring a hook means
+# adding its name here and in setup.ps1.
+RETIRED_HOOK_NAMES="emit-phase-start emit-phase-end emit-event-receipt emit-event context-pressure resolve-phase record-telemetry-failure check-telemetry-failures check-telemetry-receipts phase-enum"
 
 prune_retired_hooks() {
   # Delete each installed hook whose base name is on RETIRED_HOOK_NAMES
@@ -981,13 +875,10 @@ setup_tool() {
     append_override_instructions "$TOOL_BOOT_FILE"
   fi
 
-  # remove_legacy_telemetry_wiring retracts what a pre-0000033 run left behind
-  # (req-004, ADR-002).
   # Ordered BEFORE the enforcement hook install so that install is the last
   # writer of settings.json this run.
   if [ -n "${TOOL_SETTINGS_FILE:-}" ]; then
     remove_leftover_settings_tmp "$TOOL_SETTINGS_FILE"
-    remove_legacy_telemetry_wiring "$TOOL_SETTINGS_FILE"
   fi
 
   # Install RAVINTIO enforcement hooks unconditionally (REQ-008)
