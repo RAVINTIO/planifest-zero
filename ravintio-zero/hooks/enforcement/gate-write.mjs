@@ -39,7 +39,7 @@ const ALWAYS_PERMITTED_FILES = [
 const PATHS_SECTION_RE = /^##\s+(Component Paths|Scope)\s*$/im;
 
 function norm(p) {
-  return normalize(p).replace(/\\/g, "/").toLowerCase();
+  return normalize(p).normalize("NFC").replace(/\\/g, "/").toLowerCase();
 }
 
 // Real path of p. If p does not exist yet, resolve the nearest existing parent
