@@ -2,6 +2,7 @@
 
 **Target standard:** `ravintio-zero/`, `ravintio-overrides/`, `.github/workflows/ravintio.yml`, and `.ravintio-*` markers
 **Scope:** consumer repo root
+**Applies when:** `planifest-zero/` or `planifest-overrides/` exists in the repo root. In any other repo, including the pack source, the migration stays pending and nothing runs.
 **Safe to skip:** No. Setup stops while `planifest-zero/` or `planifest-overrides/` remains. Re-running is safe.
 
 ---
@@ -46,4 +47,4 @@ The helper moves or removes each one. The helper stops before it moves anything 
 
 7. Ask the human to check that `ravintio-overrides/` holds their content and that `git status` shows the moves. Ask: `Confirmed? (y/n)`
 
-Move this file to `ravintio-zero/migrations/_done/0004-ravintio-rename.md` when the migration is complete or explicitly skipped by the human.
+The helper moves this file to `ravintio-zero/migrations/_done/` after a run that changes the repo. If you made the changes by hand, or the human explicitly skips the migration, move it yourself.

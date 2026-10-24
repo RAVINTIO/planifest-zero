@@ -70,7 +70,7 @@ R-A to R-E are stage letters, not phase numbers. The pipeline still has exactly 
 
 On every session start, before any action:
 
-1. **Pending migrations first.** Check `ravintio-zero/migrations/` for `.md` files not in `_done/`. If found, invoke `ravintio-migrator` for each before any other phase work.
+1. **Pending migrations first.** Check `ravintio-zero/migrations/` for `.md` files not in `_done/`. If found, invoke `ravintio-migrator` for each before any other phase work. Skip one whose `Applies when:` condition is false, and leave it pending.
 2. **Pack dependency update.** Detect per `ravintio-zero/standards/pack-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a pack update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
 3. **Check the roadmap, then scan `plan/current/`.** Check `plan/current-roadmap/` first.
    - If a roadmap is `active` and `plan/current/` holds artifacts, resume that step through the rest of this list.

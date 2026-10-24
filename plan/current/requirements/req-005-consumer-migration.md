@@ -27,6 +27,8 @@ As a consumer, I run one migration that moves my overrides and workflow and remo
   5. Remove `.claude/.planifest-setup-flags` and `.claude/skills/.planifest-manifest`.
   6. Remove the old `planifest-zero/` folder.
   7. Print the next step: run `ravintio-zero/setup.sh claude-code`.
+- After a run that changes the repo, move `0004-ravintio-rename.md` to `migrations/_done/`. A repo with no old install keeps it pending.
+- The migration declares `Applies when:`. The orchestrator and `ravintio-migrator` skip a migration whose condition is false and leave it pending. This keeps 0004 from running in the pack source repo.
 - Make each step skip work that is already done, so a rerun is safe.
 - Refuse a source or target folder that is a symlink. Never follow a planted link.
 - Make the `.sh` and `.ps1` helpers behave the same, including output and exit codes.

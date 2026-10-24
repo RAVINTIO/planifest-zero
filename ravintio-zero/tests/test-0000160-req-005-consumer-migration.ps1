@@ -24,6 +24,8 @@ function New-Repo {
     [System.IO.File]::WriteAllText((Join-Path $d ".claude\.$old-setup-flags"), 'x', $utf8)
     [System.IO.File]::WriteAllText((Join-Path $d ".claude\skills\.$old-manifest"), 'x', $utf8)
     [System.IO.File]::WriteAllText((Join-Path $d "$old-zero\file.md"), 'x', $utf8)
+    New-Item -ItemType Directory -Path (Join-Path $d 'ravintio-zero\migrations') -Force | Out-Null
+    [System.IO.File]::WriteAllText((Join-Path $d 'ravintio-zero\migrations\0004-ravintio-rename.md'), 'm', $utf8)
     & git -C $d init -q 2>&1 | Out-Null
     & git -C $d config user.email t@example.com
     & git -C $d config user.name t
@@ -81,6 +83,8 @@ Assert-True (Test-Path -LiteralPath (Join-Path $r 'ravintio-zero')) 'new pack fo
 Assert-Contains 'Next step: run ravintio-zero/setup.sh claude-code' $run.Output 'prints the setup command'
 $renames = @(& git -C $r diff --cached --name-status | Where-Object { $_ -match '^R' })
 Assert-Equal 2 $renames.Count 'git records the overrides file and workflow as renames'
+Assert-True (Test-Path -LiteralPath (Join-Path $r 'ravintio-zero\migrations\_done\0004-ravintio-rename.md')) 'clean run archives migration 0004'
+Assert-True (-not (Test-Path -LiteralPath (Join-Path $r 'ravintio-zero\migrations\0004-ravintio-rename.md'))) 'migration 0004 no longer pending'
 
 Write-Host ""
 Write-Host "=== (b) rerun changes nothing ==="
@@ -89,6 +93,16 @@ $run = Invoke-Helper $r
 Assert-Equal 0 $run.Code 'rerun exits 0'
 Assert-Equal $before (Get-Snapshot $r) 'rerun changes nothing'
 Assert-Contains 'Nothing to do' $run.Output 'rerun says nothing to do'
+
+Write-Host ""
+Write-Host "=== (b2) a repo with no old install keeps 0004 pending ==="
+$s = Join-Path $scratch 'source'
+New-Item -ItemType Directory -Path (Join-Path $s 'ravintio-zero\migrations') -Force | Out-Null
+[System.IO.File]::WriteAllText((Join-Path $s 'ravintio-zero\migrations\0004-ravintio-rename.md'), 'm', $utf8)
+& git -C $s init -q 2>&1 | Out-Null
+$run = Invoke-Helper $s
+Assert-Equal 0 $run.Code 'no old install exits 0'
+Assert-True (Test-Path -LiteralPath (Join-Path $s 'ravintio-zero\migrations\0004-ravintio-rename.md')) 'no old install leaves 0004 pending'
 
 Write-Host ""
 Write-Host "=== (c) untracked folder uses plain move ==="

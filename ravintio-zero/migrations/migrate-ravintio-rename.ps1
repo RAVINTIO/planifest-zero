@@ -130,6 +130,18 @@ else {
     Write-Host "Skipped $OldPack/: not present."
 }
 
+# Archive this migration once it has changed the repo, so the orchestrator
+# stops offering it. A repo with no old install keeps it pending.
+$Migration = 'ravintio-zero/migrations/0004-ravintio-rename.md'
+if ($changed -and (Test-Path -LiteralPath $Migration -PathType Leaf)) {
+    $item = Get-Item -LiteralPath $Migration -Force
+    if (-not ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+        New-Item -ItemType Directory -Path 'ravintio-zero/migrations/_done' -Force | Out-Null
+        Move-Item -LiteralPath $Migration -Destination 'ravintio-zero/migrations/_done/'
+        Write-Host "Archived $Migration to ravintio-zero/migrations/_done/."
+    }
+}
+
 # Step 7: next step.
 if (-not $changed) {
     Write-Host "Nothing to do. This repo already uses the ravintio names."

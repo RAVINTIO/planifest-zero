@@ -101,6 +101,15 @@ else
     echo "Skipped $OLD_PACK/: not present."
 fi
 
+# Archive this migration once it has changed the repo, so the orchestrator
+# stops offering it. A repo with no old install keeps it pending.
+MIGRATION="ravintio-zero/migrations/0004-ravintio-rename.md"
+if [ "$changed" -eq 1 ] && [ -f "$MIGRATION" ] && [ ! -L "$MIGRATION" ]; then
+    mkdir -p ravintio-zero/migrations/_done
+    mv "$MIGRATION" ravintio-zero/migrations/_done/
+    echo "Archived $MIGRATION to ravintio-zero/migrations/_done/."
+fi
+
 # Step 7: next step.
 if [ "$changed" -eq 0 ]; then
     echo "Nothing to do. This repo already uses the ravintio names."

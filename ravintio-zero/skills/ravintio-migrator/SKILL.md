@@ -21,6 +21,8 @@ bundle_standards: [formatting-standards.md]
 
 Read the migration file. Output a one-paragraph summary: what it scans for, what it changes, which directories it covers.
 
+If the file has an `Applies when:` line and the condition is false in this repo, stop here. Report `Skipped: {migration file} does not apply to this repo.` Leave the file pending and do not archive it.
+
 ### Step 2: Scan
 
 Scan the declared scope directories for matches as described in the migration file. Collect all findings before presenting any, recording the file path, line number, current value, and proposed correction for each.

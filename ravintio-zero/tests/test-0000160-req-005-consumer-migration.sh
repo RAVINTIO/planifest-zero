@@ -23,6 +23,8 @@ make_repo() {
   echo "x" > "$d/.claude/.$OLD-setup-flags"
   echo "x" > "$d/.claude/skills/.$OLD-manifest"
   echo "x" > "$d/$OLD-zero/file.md"
+  mkdir -p "$d/ravintio-zero/migrations"
+  echo "m" > "$d/ravintio-zero/migrations/0004-ravintio-rename.md"
   ( cd "$d" && git init -q . && git config user.email t@example.com && git config user.name t \
     && git add -A && git commit -q -m init )
   echo "$d"
@@ -48,6 +50,8 @@ assert_equals "no" "$([ -e "$R/$OLD-zero" ] && echo yes || echo no)" "old pack f
 assert_equals "yes" "$([ -d "$R/ravintio-zero" ] && echo yes || echo no)" "new pack folder kept"
 assert_contains "Next step: run ravintio-zero/setup.sh claude-code" "$OUT" "prints the setup command"
 STAGED=$(cd "$R" && git diff --cached --name-status | grep -c '^R')
+assert_equals "yes" "$([ -f "$R/ravintio-zero/migrations/_done/0004-ravintio-rename.md" ] && echo yes || echo no)" "clean run archives migration 0004"
+assert_equals "no" "$([ -e "$R/ravintio-zero/migrations/0004-ravintio-rename.md" ] && echo yes || echo no)" "migration 0004 no longer pending"
 assert_equals "2" "$STAGED" "git records the overrides file and workflow as renames"
 
 echo "=== (b) rerun changes nothing ==="
@@ -56,6 +60,15 @@ OUT=$(run "$R"); CODE=$?
 assert_equals "0" "$CODE" "rerun exits 0"
 assert_equals "$BEFORE" "$(snapshot "$R")" "rerun changes nothing"
 assert_contains "Nothing to do" "$OUT" "rerun says nothing to do"
+
+echo "=== (b2) a repo with no old install keeps 0004 pending ==="
+S="$WS/source"
+mkdir -p "$S/ravintio-zero/migrations"
+echo "m" > "$S/ravintio-zero/migrations/0004-ravintio-rename.md"
+( cd "$S" && git init -q . )
+OUT=$(run "$S"); CODE=$?
+assert_equals "0" "$CODE" "no old install exits 0"
+assert_equals "yes" "$([ -f "$S/ravintio-zero/migrations/0004-ravintio-rename.md" ] && echo yes || echo no)" "no old install leaves 0004 pending"
 
 echo "=== (c) untracked folder uses plain mv ==="
 R=$(make_repo untracked)

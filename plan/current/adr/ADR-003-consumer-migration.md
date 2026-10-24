@@ -30,10 +30,15 @@ A consumer who runs the new setup before the migration risks a half-moved instal
 
 Ship `migrations/0004-ravintio-rename.md` with two helpers: `migrate-ravintio-rename.sh` and `migrate-ravintio-rename.ps1`. The helpers do the same work.
 
-1. Move `planifest-overrides/` to `ravintio-overrides/` and rewrite the `planifest-overrides:instructions` markers in the instruction files.
+1. Move `planifest-overrides/` to `ravintio-overrides/`. The markers live in the generated boot file, and setup rewrites it on every run, so the helper leaves them alone.
 2. Move `.github/workflows/planifest.yml` to `.github/workflows/ravintio.yml` and rewrite the `planifest-zero/` paths inside it.
-3. Remove the old marker files: `.planifest-setup-flags`, `.planifest-manifest`, and `.planifest-session`.
+3. Remove the old marker files `.claude/.planifest-setup-flags` and `.claude/skills/.planifest-manifest`. No install writes a `.planifest-session` file, so the helper does not look for one.
 4. Remove the old `planifest-zero/` folder after the consumer has copied in the new `ravintio-zero/` pack.
+5. After a run that changes the repo, move `0004-ravintio-rename.md` to `migrations/_done/`.
+
+### Applies when
+
+Migration 0004 declares `Applies when:` `planifest-zero/` or `planifest-overrides/` exists. The orchestrator and `ravintio-migrator` skip a migration whose condition is false and leave it pending. The pack source repo has neither folder, so 0004 ships pending and never runs there.
 
 ### Safety rules
 
