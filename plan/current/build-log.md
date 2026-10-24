@@ -95,3 +95,4 @@ P1: Plan: Complete: 15 requirements, 8 ADRs, scope, risk register, glossary, exe
 - Check (REQ-007): Claude Code honours a skill-level `model` frontmatter field (alias such as sonnet or haiku, or inherit) per the Claude Code docs, so the three TDD skills set `model: haiku`. The explicit `model` parameter on each Agent call stays. An Agent call without `model` takes the subagent definition model, then CLAUDE_CODE_SUBAGENT_MODEL, then the main conversation model.
 - Done: Track G REQ-015 TDD (2026-10-24T14:37:16Z). Commit 8c90bbc. PowerShell helper timing unrun locally (pwsh absent). Wall time measured at P3.
 - Done: Track C REQ-001 TDD (2026-10-24T14:37:33Z). Commit d19cb62. RED confirmed against the original park.mjs in a scratch tree (12 failures).
+- Done: Track D REQ-002 TDD (2026-10-24T14:38:13Z). Ship steps now Step 7 tag, Step 8 clear sentinels, Step 9 PR. Five order tests updated by step number only.
