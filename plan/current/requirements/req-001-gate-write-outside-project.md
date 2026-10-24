@@ -21,16 +21,13 @@ As an agent, I write files outside the project without a design, so that hooks g
 - If the target does not exist yet, the hook resolves the nearest existing parent and rejoins the remaining segments.
 - If the real target path is outside the real project root, the hook exits 0 before Check 0.
 - If the real target path is inside the real project root, Checks 0 to 3 run as they do today.
-- Resolving both paths the same way handles an in-project symlink that points outside and the macOS `/private/tmp` and `/tmp` aliasing.
 - The hook adds no process or network call.
 
 ## Acceptance Criteria
 - [ ] A target outside the project exits 0 when `plan/current/design.md` exists and when it does not.
 - [ ] An in-project target outside the declared component paths still exits 2, and `plan/current/` writes still need the sentinel.
 - [ ] A write through an in-project symlink whose real path is inside the project still gets the checks.
-- [ ] A write through an in-project symlink whose real path is outside the project exits 0.
-- [ ] A target path outside the project whose real path is inside the project, through a symlink, still gets the checks.
-- [ ] `ravintio-zero/tests/test-gate-write-windows.mjs` and `ravintio-zero/tests/test-gate-write-windows.sh` still pass, so Windows path forms work.
 
 ## Dependencies
 - None. REQ-002 documents the behaviour this requirement sets.
+- REQ-006 covers the symlink and Windows cases of this rule.

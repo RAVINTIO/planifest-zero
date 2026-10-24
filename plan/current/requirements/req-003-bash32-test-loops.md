@@ -24,13 +24,11 @@ As a maintainer on macOS, I get the same suite results as CI, so that a local pa
   - `ravintio-zero/tests/regression/test-0000042-req-010-pack-wording-allowlist.sh`
   - `ravintio-zero/tests/test-0000160-req-001-pack-identifiers.sh`
 - Each converted loop skips empty lines, because `<<< "$(...)"` yields one empty line for empty output.
-- A guard test under `ravintio-zero/tests/` fails when any file under `tests/` contains `done < <(`. The guard excludes its own file.
 
 ## Acceptance Criteria
 - [ ] `grep -rl 'done < <(' ravintio-zero/tests` lists only the guard test, if it names the pattern at all.
 - [ ] Each converted loop skips an empty line and gives the same results as before on its input.
-- [ ] The guard test exits non-zero when a temporary file under `tests/` contains `done < <(`, and exits 0 otherwise.
-- [ ] The full suite passes on Bash 3.2 (`env -i` run) and on Bash 5 in CI.
 
 ## Dependencies
 - None.
+- REQ-008 adds the guard test and the full-suite check.

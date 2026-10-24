@@ -15,7 +15,7 @@ version: "0.1.0"
 
 0000033 ADR-002 made setup remove telemetry wiring on every run. That wiring came from `setup.sh --structured-telemetry-mcp`, which the pack removed in 0000033. The cleanup now runs in each setup for a case that no live consumer is known to have.
 
-The cleanup code lives in `remove_legacy_telemetry_wiring` and `Remove-LegacyTelemetryWiring`, with a matcher constant and a list of ten module names. The module list also feeds retired-hook pruning (0000151 ADR-007). Deleting the list with the cleanup would break pruning.
+The cleanup code lives in `remove_legacy_telemetry_wiring` and `Remove-LegacyTelemetryWiring`, with a matcher constant and a list of ten module names. The module list also feeds retired-hook pruning (the 0000151 retired-hooks ADR (decision 7)). Deleting the list with the cleanup would break pruning.
 
 ## Decision
 
@@ -32,7 +32,7 @@ Setup in both shells drops the legacy telemetry cleanup and its call.
 | Alternative | Pros | Cons | Why Rejected |
 |-------------|------|------|-------------|
 | Keep the cleanup | Repairs an old consumer on upgrade | Dead code runs on every setup in two shells, with ten test suites | No live consumer needs it |
-| Delete the cleanup and the list together | Smaller scripts | Breaks retired-hook pruning from 0000151 ADR-007 | Pruning still needs the names |
+| Delete the cleanup and the list together | Smaller scripts | Breaks retired-hook pruning from the 0000151 retired-hooks ADR (decision 7) | Pruning still needs the names |
 | Move the cleanup into a one-off migration | Keeps the repair available | Adds migration machinery for a case with no known user | The changelog note covers the rare case |
 
 ## Affected Components
@@ -56,7 +56,7 @@ Setup in both shells drops the legacy telemetry cleanup and its call.
 
 ## Related ADRs
 
-- 0000151 ADR-007 - depends-on (pruning reads the renamed list)
+- the 0000151 retired-hooks ADR (decision 7) - depends-on (pruning reads the renamed list)
 - 0000033 ADR-002 - supersedes
 
 ## Supersedes
