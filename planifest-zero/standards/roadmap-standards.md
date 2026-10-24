@@ -117,6 +117,17 @@ The driver reads two variables and passes them to every `claude -p` step.
 - No default turn cap ships, because a fixed cap ends valid long steps. The human picks a cap per run.
 - If `claude` exits non-zero while a cap is set, the stop line starts `R-C Run: Blocked:` and says the step may have reached `PLANIFEST_ROADMAP_MAX_TURNS={n}`. The driver never retries the step or raises the cap.
 
+#### Step logs
+
+The driver writes the child's stdout and stderr to `plan/.roadmap-logs/step-{position}.log`, in arrival order.
+
+- Each step start will truncate its log, so a rerun leaves only the latest attempt.
+- The driver copies the child's stderr to its own stderr. It never prints the child's stdout or any log content.
+- The driver adds `plan/.roadmap-logs/` to `.git/info/exclude`, not `.gitignore`, and adds the line once.
+- Every stop after a step starts ends with `Log: plan/.roadmap-logs/step-{position}.log`. Stops before any step starts name no log.
+- If the driver cannot open the log, it stops with `R-C Run: Blocked: could not open the step log` and launches no `claude`.
+- A log may hold file content the session read. Treat it as private.
+
 ## Merge carve-out
 
 Merging into `main` is human-only in every run mode. The agent never commits to `main`.

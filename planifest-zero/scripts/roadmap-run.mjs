@@ -18,6 +18,13 @@
 //                no cap applies and no default ships. It must be 1 to 9999. If claude
 //                exits non-zero while a cap is set, the stop line names the cap.
 //
+// Logs: each step writes the child's stdout and stderr, in arrival order, to
+// plan/.roadmap-logs/step-{position}.log. Each step start will truncate its log, so a
+// rerun leaves only the latest attempt. The driver copies the child's stderr to its own
+// stderr and never prints the child's stdout or any log content. It excludes the folder
+// through .git/info/exclude. Every stop after a step starts ends with
+// "Log: plan/.roadmap-logs/step-{position}.log".
+//
 // What it does:
 //   1. Reads plan/current-roadmap/roadmap.md and stops unless status is "active".
 //   2. Takes plan/.roadmap-runner.lock. If the lock exists, it refuses to start
@@ -48,11 +55,12 @@
 // It has no dependencies beyond Node.
 
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, existsSync, readFileSync, readdirSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const ROADMAP = 'plan/current-roadmap/roadmap.md';
 const LOCK = 'plan/.roadmap-runner.lock';
+const LOGS = 'plan/.roadmap-logs';
 const BUILD_LOG = 'plan/current/build-log.md';
 const ARCHIVE = 'plan/_archive';
 const STATUS = /^(draft|active|blocked|done)$/;
@@ -121,8 +129,8 @@ function readRoadmap(root) {
   return { status, position, id: b[1], slug: b[2] };
 }
 
-// Adds the lock path to .git/info/exclude so a step session's "stage everything"
-// never commits the lock. Skips quietly outside a git work tree.
+// Adds the lock path and the log folder to .git/info/exclude so a step session's
+// "stage everything" never commits either. Skips quietly outside a git work tree.
 function excludeLock(root) {
   const git = (...args) => spawnSync('git', args, { cwd: root, encoding: 'utf8' });
   const inside = git('rev-parse', '--is-inside-work-tree');
@@ -130,9 +138,25 @@ function excludeLock(root) {
   const p = git('rev-parse', '--git-path', 'info/exclude');
   if (p.status !== 0) return;
   const file = resolve(root, p.stdout.trim());
-  const text = existsSync(file) ? readFileSync(file, 'utf8') : '';
-  if (text.split(/\r?\n/).includes(LOCK)) return;
-  appendFileSync(file, (text === '' || text.endsWith('\n') ? '' : '\n') + LOCK + '\n');
+  let text = existsSync(file) ? readFileSync(file, 'utf8') : '';
+  for (const entry of [LOCK, `${LOGS}/`]) {
+    if (text.split(/\r?\n/).includes(entry)) continue;
+    const add = (text === '' || text.endsWith('\n') ? '' : '\n') + entry + '\n';
+    appendFileSync(file, add);
+    text += add;
+  }
+}
+
+// Opens plan/.roadmap-logs/step-{position}.log for writing and truncates it.
+// Returns the file descriptor and the root-relative path.
+function openLog(root, position) {
+  try {
+    mkdirSync(join(root, LOGS), { recursive: true });
+    const rel = `${LOGS}/step-${position}.log`;
+    return { fd: openSync(join(root, rel), 'w'), rel };
+  } catch {
+    throw new Stop('R-C Run: Blocked: could not open the step log');
+  }
 }
 
 // Returns the last Blocked: line when no Resolved: line follows it, else null.
@@ -156,7 +180,7 @@ function delivered(root, id, slug) {
   return readdirSync(dir).some((n) => n.startsWith(prefix));
 }
 
-function runStep(root, position, cfg) {
+function runStep(root, position, cfg, fd) {
   return new Promise((resolveStep) => {
     const bin = process.env.CLAUDE_BIN || 'claude';
     const args = ['-p', '--permission-mode', 'auto', '--model', cfg.model];
@@ -164,15 +188,23 @@ function runStep(root, position, cfg) {
     args.push(`Run roadmap step ${position}`);
     const child = spawn(bin, args, {
       cwd: root,
-      stdio: ['ignore', 'ignore', 'inherit'],
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
     activeChild = child;
+    child.stdout.on('data', (chunk) => writeSync(fd, chunk));
+    child.stderr.on('data', (chunk) => {
+      writeSync(fd, chunk);
+      writeSync(2, chunk);
+    });
     child.on('error', (e) => resolveStep({ error: e.code || 'spawn error' }));
     child.on('close', (code, signal) => resolveStep({ code, signal }));
   });
 }
 
 let activeChild = null;
+let currentLog = null;
+
+const withLog = (line) => (currentLog ? `${line} Log: ${currentLog}` : line);
 let lockPath = null;
 
 function releaseLock() {
@@ -189,7 +221,7 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
   process.on(sig, () => {
     if (activeChild) activeChild.kill(sig);
     releaseLock();
-    out(`R-C Run: Blocked: driver stopped by ${sig}`);
+    out(withLog(`R-C Run: Blocked: driver stopped by ${sig}`));
     process.exit(1);
   });
 }
@@ -214,8 +246,16 @@ async function main() {
 
   for (;;) {
     const position = rm.position;
+    currentLog = null;
+    const log = openLog(root, position);
+    currentLog = log.rel;
     out(`R-C Run: Starting: roadmap step ${position} in a fresh session`);
-    const res = await runStep(root, position, cfg);
+    let res;
+    try {
+      res = await runStep(root, position, cfg, log.fd);
+    } finally {
+      closeSync(log.fd);
+    }
     activeChild = null;
     if (res.error) throw new Stop(`R-C Run: Blocked: could not start claude (${res.error})`);
     if (res.code !== 0) {
@@ -243,7 +283,7 @@ async function main() {
 main().then(
   () => process.exit(0),
   (e) => {
-    out(e instanceof Stop ? e.message : `R-C Run: Blocked: driver error ${e.code || e.name}`);
+    out(e instanceof Stop ? withLog(e.message) : `R-C Run: Blocked: driver error ${e.code || e.name}`);
     process.exit(1);
   },
 );
