@@ -126,3 +126,15 @@ Version: 0.13.0 (minor, human override of the downgrade block; was 1.1.0)
 - Done: P2 REQ-011 version relabel (2026-10-24T23:34:51Z)
 - P3 re-run after the requirement change: REQ-011 verified, full suite 119 and 19 pass locally, CI green at `9f42ef9`. (2026-10-24T23:46:07Z)
 P3 Validate: Complete: 11 requirements verified, no critical or high findings, CI green. Evidence in `acceptance-evidence.md`. Autonomous, no gate stop. (2026-10-24T23:46:07Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T23:46:35Z` |
+| Model tier | primary orchestrator, cheaper build assessment |
+| Skills loaded | ravintio-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Ship runs in sequence by design. |
