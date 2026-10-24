@@ -152,3 +152,5 @@ P3 Validate and Accept: Complete: CI green, security low, 18 of 18 criteria veri
 | P2 Implement | 4 sonnet TDD tracks | 1 of 3 batches | 3 (pre-rename history in tests, migration self-run, three suites after batch 2) |
 | P3 Validate and Accept | 1 opus review, 2 opus fix agents, 2 sonnet | 1 | 6 (coverage, security, Bash 3.2 and split names, helper redesign, split names, guard pair) |
 | P4 Ship | 0 | 0 | 0 |
+
+- P4 note (2026-10-24T21:37:59Z): after the archive, `test-0000160-req-001-pack-identifiers.sh` failed on the run's own new archive and changelog. Fixed with `--diff-filter=a`, proved to fail on an edit to an existing changelog, and re-tagged `v1.0.0` locally before any push. Run mode read at Step 8: autonomous.
