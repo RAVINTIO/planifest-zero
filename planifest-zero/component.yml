@@ -1,7 +1,7 @@
 # Planifest Component Manifest
 id: "planifest-zero"
 name: "Planifest Zero"
-feature: "0000041-setup-cleanup-and-park-hardening"
+feature: "0000151-hardening-efficiency-and-ci"
 version: "0.10.0"
 status: "active"
 type: "component-pack"
@@ -31,6 +31,12 @@ responsibilities:
   - "Run the Scope Lock Challenge before design confirmation, drafted inline"
   - "Enforce one question at a time across all phase skills"
   - "Run an approved roadmap as a chain of feature steps, with the merge-guard hook limiting agent merges to squash merges into roadmap branches"
+  - "Write each hook block reason to stderr and stdout, so the agent sees why a write stopped"
+  - "Refuse a symlinked entry path in park, and prune installed hooks named on the retired list in setup"
+  - "Run each roadmap step with a model, an optional turn cap, a step log, and telemetry labels"
+  - "Stop every run, gated or autonomous, when work adds a library or service that is not on the approved list"
+  - "Keep the orchestrator skill small by moving rarely used sections into references/ files"
+  - "Hide passing test lines when PLANIFEST_TEST_QUIET=1 is set, and keep every failure line"
 
 exceptions:
   - "Does not generate application code. That is the implement phase's job in consumer projects."
@@ -85,7 +91,8 @@ scope:
     - "setup.sh and setup.ps1 for Claude Code registration"
     - "The 12 pipeline skills across the five phases"
     - "Templates, schemas, and standards bundled into each skill at install time"
-    - "scripts/: consistency-check.mjs, product-version.mjs, roadmap-run.mjs, self-description-check.mjs, promote-to-regression.sh, refresh-delete-boot-files"
+    - "Orchestrator references: skills/planifest-orchestrator/references/orchestrator-*.md"
+    - "scripts/: consistency-check.mjs, product-version.mjs, roadmap-labels.mjs, roadmap-run.mjs, self-description-check.mjs, promote-to-regression.sh, refresh-delete-boot-files"
     - "tests/ and tests/regression/ for the pack's own behaviour"
   outOfScope:
     - "Application-level code generation (handled by the implement phase in consumer projects)"
@@ -99,7 +106,9 @@ risk:
     - "Path translation on Windows and Git Bash requires cygpath guards in tests"
     - "Aggressive skill trimming can leave technically complete but ambiguous wording that increases agent retries. The regression-pack baseline comparison is the mitigation."
     - "The em dash guard's bypass sentinel matches anywhere in the payload, so any document explaining the rule exempts itself from it."
-    - "setup.sh prunes retired skills but not hook modules, so a hook module deleted upstream leaves a stale copy in .claude/hooks/."
+    - "Setup prunes a retired hook only if its name is on the retired list, so a retirement without a list entry leaves a stale copy in .claude/hooks/."
+    - "The PowerShell suites changed in 0000151 were not run locally because pwsh was absent. CI runs them on Windows PowerShell 5.1 and PowerShell 7."
+    - "Moving orchestrator text to references/ means a test that greps SKILL.md for a moved rule fails until it reads the reference file."
 
 quality:
   testCoverage:
@@ -109,6 +118,9 @@ quality:
   techDebt:
     - "The test suite mixes per-feature suites with regression copies. Consolidation is future work."
   quirks:
+    - "REQ-011 wrote its split test after the move, so it has no RED run. A line-preservation check proves no rule was lost."
+    - "gate-write, em-dash-guard, and ratchet-check write the block reason to stderr and stdout. The text is identical on both."
+    - "With PLANIFEST_ROADMAP_MAX_TURNS unset, a roadmap step has no turn cap. The driver never raises the cap or retries a capped step."
     - "gate-write component path matching is prefix-based, so very short prefixes may over-permit"
     - "ratchet-check treats a reworded criterion as remove plus add and blocks it. The .ratchet-approve marker is the intended path for legitimate rewording."
     - "ratchet-check cannot verify who wrote .ratchet-approve. Marker forgery is audit-detected via ratchet-log.md and the ship-phase build assessment, not prevented."
@@ -123,7 +135,7 @@ pipeline:
 
 metadata:
   createdAt: "2026-05-02"
-  updatedAt: "2026-10-22"
+  updatedAt: "2026-10-24"
   createdBy: "agent"
   lastModifiedBy: "agent"
   skill: "planifest-implement"
