@@ -16,17 +16,17 @@ The pack changed its name from Planifest to RAVINTIO. A consumer repo that insta
 - the installed `.github/workflows/planifest.yml`
 - the old marker files `.claude/.planifest-setup-flags` and `.claude/skills/.planifest-manifest`
 
-The helper moves or removes each one. The helper stops before it moves anything if it finds a conflict, a symlink, or a sign that it runs in the wrong place.
+The helper moves or removes each one. It never deletes `planifest-zero/`. It moves the folder to `.ravintio-backup/planifest-zero/` and adds `.ravintio-backup/` to `.git/info/exclude`. The helper stops before it moves anything if it finds a conflict or a symlink at a path it moves.
 
 ---
 
 ## Migrator instructions
 
-1. Check that `ravintio-zero/` exists in the repo root. If it doesn't, ask the human to copy the new `ravintio-zero/` folder into the repo, then continue.
+1. Check that `ravintio-zero/` exists in the project root. If it doesn't, ask the human to copy the new `ravintio-zero/` folder into the project, then continue. The project root can sit below the git top level.
 
-2. Check `planifest-zero/` for files you added yourself. The helper deletes the whole folder. Show the human any custom file and ask them to move it first.
+2. Tell the human that the helper moves `planifest-zero/` to `.ravintio-backup/planifest-zero/` and deletes nothing. Git stops tracking the old pack, and `.git/info/exclude` hides the backup.
 
-3. Show: `Will run the helper from the repo root. It moves planifest-overrides/ and planifest.yml, then removes the old markers and planifest-zero/.`
+3. Show: `Will run the helper from the project root. It moves planifest-overrides/ and planifest.yml, removes the old markers, and moves planifest-zero/ to .ravintio-backup/.`
    Ask: `Proceed? (y/n)`
 
 4. If yes, run the helper that matches the shell:
@@ -37,18 +37,22 @@ The helper moves or removes each one. The helper stops before it moves anything 
    - `ravintio-zero/` is missing.
    - Both `planifest-overrides/` and `ravintio-overrides/` exist. The human picks the authoritative folder.
    - `.github/workflows/ravintio.yml` already exists. The human merges or deletes one workflow.
-   - A source or target folder is a symlink. The human replaces the link with a real folder.
-   - A workflow file or a parent folder the helper writes into is a symlink, dangling or not. That covers `.claude`, `.claude/skills`, `.github`, `.github/workflows`, `ravintio-zero`, and `ravintio-zero/migrations`. The human replaces the link.
-   - The helper ran below the top level of its git repo. The human runs it from the repo root.
-   - `planifest-zero/` holds no `setup.sh`, so it may not be the old pack. The human checks the folder.
-   - `planifest-zero/` holds untracked or modified files. The helper lists them. The human moves or commits them.
+   - `.ravintio-backup/planifest-zero` already exists from an earlier upgrade. The human checks it and deletes `.ravintio-backup/`.
+   - `planifest-zero`, `planifest-overrides`, `ravintio-overrides`, `.ravintio-backup`, or a workflow file is a symlink, dangling or not. The human replaces the link with a real file or folder.
 
-6. If the helper exits 0, run setup for the installed tool:
+6. If the helper printed a `WARNING:` line about a symlinked parent folder, it skipped that one step and carried on:
+   - `.github` or `.github/workflows`: the workflow step. The human renames `planifest.yml` to `ravintio.yml` and rewrites its paths.
+   - `.claude` or `.claude/skills`: the old marker under it. The human removes the marker.
+   - `ravintio-zero` or `ravintio-zero/migrations`: the archive step. Move this file to `_done/` yourself.
+
+7. If the helper exits 0, run setup for the installed tool:
    - Bash: `ravintio-zero/setup.sh claude-code`
    - PowerShell: `ravintio-zero/setup.ps1 claude-code`
 
    Setup prunes the old `planifest-*` skill folders because the pack no longer ships them.
 
-7. Ask the human to check that `ravintio-overrides/` holds their content and that `git status` shows the moves. Ask: `Confirmed? (y/n)`
+8. Ask the human to check that `ravintio-overrides/` holds their content and that `git status` shows the moves. Ask: `Confirmed? (y/n)`
+
+9. Ask the human to check `.ravintio-backup/planifest-zero/` for files of their own, then delete `.ravintio-backup/`.
 
 The helper moves this file to `ravintio-zero/migrations/_done/` after a run that changes the repo. If you made the changes by hand, or the human explicitly skips the migration, move it yourself.
