@@ -7,7 +7,7 @@ ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO="$(cd "$ZERO_DIR/.." && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-OLD_NAME="ravintio""-framework"
+OLD_NAME="planifest""-framework"
 
 WS=$(mktemp -d)
 trap 'rm -rf "$WS"' EXIT
