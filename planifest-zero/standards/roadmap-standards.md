@@ -155,6 +155,8 @@ The driver writes the child's stdout and stderr to `plan/.roadmap-logs/step-{pos
 - The driver adds `plan/.roadmap-logs/` to `.git/info/exclude`, not `.gitignore`, and adds the line once.
 - Every stop after a step starts ends with `Log: plan/.roadmap-logs/step-{position}.log`. Stops before any step starts name no log.
 - If the driver cannot open the log, it stops with `R-C Run: Blocked: could not open the step log` and launches no `claude`.
+- The driver refuses a symlink at `plan`, at `plan/.roadmap-logs`, or at the log file. It stops with `R-C Run: Blocked: refused a symlinked step log path`, releases the lock, and launches no `claude`.
+- Logs are private to the user. The driver creates the folder with mode 700 and each log with mode 600.
 - A log may hold file content the session read. Treat it as private.
 
 ## Merge carve-out

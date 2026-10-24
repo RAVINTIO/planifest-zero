@@ -29,7 +29,9 @@
 // plan/.roadmap-logs/step-{position}.log. Each step start will truncate its log, so a
 // rerun leaves only the latest attempt. The driver copies the child's stderr to its own
 // stderr and never prints the child's stdout or any log content. It excludes the folder
-// through .git/info/exclude. Every stop after a step starts ends with
+// through .git/info/exclude. The driver refuses a symlink at plan, at the log folder, or at
+// the log file, and stops with "R-C Run: Blocked: refused a symlinked step log path". Logs
+// are private to the user: the folder has mode 700 and each log mode 600. Every stop after a step starts ends with
 // "Log: plan/.roadmap-logs/step-{position}.log".
 //
 // What it does:
@@ -62,8 +64,8 @@
 // It has no dependencies beyond Node.
 
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { appendFileSync, closeSync, constants as fsConstants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
+import { isAbsolute, join, relative, resolve } from 'node:path';
 import { withRoadmapLabels } from './roadmap-labels.mjs';
 
 const ROADMAP = 'plan/current-roadmap/roadmap.md';
@@ -155,14 +157,36 @@ function excludeLock(root) {
   }
 }
 
-// Opens plan/.roadmap-logs/step-{position}.log for writing and truncates it.
-// Returns the file descriptor and the root-relative path.
-function openLog(root, position) {
+// True when the path is a symlink. A missing path is not one.
+function isLink(path) {
   try {
-    mkdirSync(join(root, LOGS), { recursive: true });
-    const rel = `${LOGS}/step-${position}.log`;
-    return { fd: openSync(join(root, rel), 'w'), rel };
+    return lstatSync(path).isSymbolicLink();
   } catch {
+    return false;
+  }
+}
+
+// Opens plan/.roadmap-logs/step-{position}.log for writing and truncates it.
+// Refuses a symlink at plan, at the log folder, or at the log file, and a log folder
+// whose real path leaves the real root. The open adds O_NOFOLLOW where the platform has it.
+// The folder gets mode 0o700 and the log 0o600. Returns the file descriptor and the
+// root-relative path.
+function openLog(root, position) {
+  const rel = `${LOGS}/step-${position}.log`;
+  const refuse = () => new Stop('R-C Run: Blocked: refused a symlinked step log path');
+  try {
+    const dir = join(root, LOGS);
+    for (const part of [join(root, 'plan'), dir]) if (isLink(part)) throw refuse();
+    mkdirSync(dir, { recursive: true, mode: 0o700 });
+    const rootReal = realpathSync(root);
+    const within = relative(rootReal, realpathSync(dir));
+    if (within.startsWith('..') || isAbsolute(within)) throw refuse();
+    const file = join(root, rel);
+    if (isLink(file)) throw refuse();
+    const { O_WRONLY, O_CREAT, O_TRUNC, O_NOFOLLOW = 0 } = fsConstants;
+    return { fd: openSync(file, O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW, 0o600), rel };
+  } catch (e) {
+    if (e instanceof Stop) throw e;
     throw new Stop('R-C Run: Blocked: could not open the step log');
   }
 }

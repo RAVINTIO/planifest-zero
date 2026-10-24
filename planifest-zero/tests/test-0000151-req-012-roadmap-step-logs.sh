@@ -128,11 +128,46 @@ assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo 
 assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-012 (b): no step ran"
 
 echo ""
+echo "=== req-012 (d): symlinks and modes (S-001, S-003) ==="
+mode_of() { stat -c %a "$1" 2>/dev/null || stat -f %Lp "$1"; }
+
+R="$(make_fixture d-file active)"
+mkdir -p "$R/plan/.roadmap-logs"
+printf 'victim bytes\n' > "$WORK/victim-file"
+ln -s "$WORK/victim-file" "$R/plan/.roadmap-logs/step-1.log"
+run_driver "$R" ok
+assert_equals "1" "$CODE" "req-012 (d): a symlinked step log exits 1"
+assert_contains "R-C Run: Blocked: refused a symlinked step log path" "$OUT" "req-012 (d): symlinked log stop line"
+assert_equals "0" "$(printf '%s\n' "$OUT" | grep -c "$WORK")" "req-012 (d): stop line omits the target path"
+assert_equals "victim bytes" "$(cat "$WORK/victim-file")" "req-012 (d): the victim file keeps its bytes"
+assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-012 (d): lock released after a symlinked log"
+assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-012 (d): no step ran after a symlinked log"
+
+R="$(make_fixture d-dir active)"
+mkdir -p "$WORK/victim-dir"
+printf 'victim bytes\n' > "$WORK/victim-dir/step-1.log"
+ln -s "$WORK/victim-dir" "$R/plan/.roadmap-logs"
+run_driver "$R" ok
+assert_equals "1" "$CODE" "req-012 (d): a symlinked log folder exits 1"
+assert_contains "R-C Run: Blocked: refused a symlinked step log path" "$OUT" "req-012 (d): symlinked folder stop line"
+assert_equals "0" "$(printf '%s\n' "$OUT" | grep -c "$WORK")" "req-012 (d): folder stop line omits the target path"
+assert_equals "victim bytes" "$(cat "$WORK/victim-dir/step-1.log")" "req-012 (d): the victim folder file keeps its bytes"
+assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-012 (d): lock released after a symlinked folder"
+assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-012 (d): no step ran after a symlinked folder"
+
+R="$(make_fixture d-mode active)"
+run_driver "$R" ok
+assert_equals "700" "$(mode_of "$R/plan/.roadmap-logs")" "req-012 (d): log folder mode is 700"
+assert_equals "600" "$(mode_of "$R/plan/.roadmap-logs/step-1.log")" "req-012 (d): log mode is 600"
+
+echo ""
 echo "=== req-012 (c): documentation ==="
 HEAD_TXT="$(sed -n '1,60p' "$DRIVER")"
 for f in "$HEAD_TXT" "$(cat "$STANDARDS")"; do
   assert_contains "plan/.roadmap-logs/" "$f" "req-012 (c): names the log folder"
   assert_contains "truncate" "$f" "req-012 (c): names the truncate rule"
+  assert_contains "symlink" "$f" "req-012 (c): names the symlink refusal"
+  assert_contains "private" "$f" "req-012 (c): says logs are private"
 done
 
 print_summary
