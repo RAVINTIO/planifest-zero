@@ -18,7 +18,7 @@ As a consumer, I get hooks, setup, and scripts that detect and write `ravintio` 
 ## Functional Requirements
 - `auto-trigger-orchestrator.mjs` detects `ravintio-zero/` as the pack folder.
 - `self-description-check.mjs` matches `ravintio-zero/` paths.
-- `em-dash-guard.mjs` uses the `ravintio-zero/` and `ravintio-overrides/` path prefixes.
+- `em-dash-guard.mjs` uses the `ravintio-zero/` path prefixes. Its scope is otherwise unchanged, so it still does not cover the overrides folder.
 - `em-dash-guard.mjs` honours the sentinel `ravintio-em-dash-allow`. It also accepts the old `planifest-em-dash-allow` in 1.x.
 - `gate-write.mjs` reads and writes the `.ravintio-session` marker.
 - `setup.sh` and `setup.ps1` write `.ravintio-setup-flags` and `.ravintio-manifest`, and use the `.ravintio-tmp` suffix.
