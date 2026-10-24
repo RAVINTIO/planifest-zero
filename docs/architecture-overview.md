@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000151-hardening-efficiency-and-ci
+Last updated: 0000160-ravintio-rebrand
 
 ## What this repo is
 
@@ -132,6 +132,12 @@ The module match is case-sensitive. Setup prints one line per removal and stays 
 
 If `node` isn't on the `PATH` and `settings.json` exists, `setup.sh` prints one warning that it skipped this cleanup.
 
+**Rename upgrade.** Version 1.0.0 renamed the pack, the overrides folder, the skills, and the marker files. If setup finds the earlier pack or overrides folder in the project root, it stops before it installs anything. It names the folder and the migration helper to run. Each run also removes the two earlier marker files when present, and skips a symlink. Skill pruning removes the earlier skill folders.
+
+Migration 0004 and its helpers, `migrations/migrate-ravintio-rename.sh` and `.ps1`, do the upgrade. They move the overrides folder and the workflow file, and rewrite the pack paths inside the workflow. They remove the earlier markers and the earlier pack folder. A conflict or a symlink stops the helper before it moves anything. A rerun changes nothing. After a run that changes the project, the helper moves 0004 to `migrations/_done/`.
+
+A migration can declare an `Applies when:` condition. The orchestrator and `ravintio-migrator` skip a migration whose condition is false and leave it pending. So 0004 ships pending, and never runs in this repo.
+
 ---
 
 ## Re-run safety
@@ -175,7 +181,7 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 ## Tests
 
-A wording test greps every tracked file outside history for the retired word that once described RAVINTIO Zero. It passes only lines that match an allowlist of generic uses. A phase guard test fails on a phase number outside P0 to P4 or on a retired letter prefix.
+A wording test greps every tracked file outside history for the retired word that once described RAVINTIO Zero. It passes only lines that match an allowlist of generic uses. A phase guard test fails on a phase number outside P0 to P4 or on a retired letter prefix. A brand guard test fails on any tracked path or line outside history that holds the earlier product name, unless an allowlist entry matches. It also fails on a stale allowlist entry.
 
 `ravintio-zero/tests/run-tests.sh` runs every Bash and PowerShell suite. Before any suite runs, it checks every file under `tests/`. A file that is neither a suite nor on its known list fails the run, and the runner names it. Without `pwsh`, it prints how many PowerShell suites it skipped.
 

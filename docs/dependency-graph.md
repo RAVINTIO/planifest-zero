@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000151-hardening-efficiency-and-ci
+Last updated: 0000160-ravintio-rebrand
 
 ## Component dependency diagram
 
