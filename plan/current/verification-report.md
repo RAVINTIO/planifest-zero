@@ -76,9 +76,33 @@ Fixed in 2f0b6ed. The template writes quoted frontmatter such as `status: "draft
 
 ## Live acceptance run
 
-Pending live acceptance run. The parent fills this section.
+The run used the private repo `planifest/pz-roadmap-acceptance-0000043`, with the pack copied from this branch. A parent session drove each pipeline run through `claude -p --permission-mode auto`. The human answered the coaching questions through the parent and merged every PR into `main`.
+
+| Run | What ran | Result |
+|---|---|---|
+| Feature 1 | `0000001-notes-create-read`, PR #1 | Shipped green at 0.1.0. The human merged it. |
+| Feature 2 | `0000002-notes-update-delete`, PR #2 | Shipped green at 0.2.0. The pack-update provenance stop fired as designed. |
+| Roadmap 1 | `0000007-notes-organisation`, four steps, PRs #3 to #6, roadmap PR #7 | All four steps squash-merged and tagged. One exception stop at step 1 (M-003). |
+| Roadmap 2 | `0000010-notes-ordering`, two steps, PRs #8 and #9, roadmap PR #10 | Both steps squash-merged and tagged. The driver stopped mid-step and restarted. |
 
 | Criterion | Outcome | Observation |
 |---|---|---|
-| merge-guard against a real `gh` and real PRs | pending live acceptance run | |
-| Brief acceptance criteria 1 to 4, 6 and 8 (end-to-end roadmap) | pending live acceptance run | |
+| merge-guard against a real `gh` and real PRs | verified | It blocked the agent's own merge of PR #1 into `main` with exit 2. It allowed six squash merges into `roadmap/*`: PRs #3 to #6, #8, and #9. |
+| 1. A draft roadmap filed on a feature branch reaches `main` and Chart offers it | not-verifiable live | Both live charts started from a new idea. `test-0000043-req-001` and `req-002` cover the draft path. |
+| 2. Activate cuts the branch, writes `plan/current-roadmap/`, and commits once | verified | Commits `f91b52c` and `a81267f`, each pushed to a new `roadmap/*` branch. |
+| 3. Each step PR targets the roadmap branch, squash-merges after green CI, and is tagged on the squash commit | verified | Tags `v0.3.0` to `v1.0.0` sit on `96f85cc`, `5200447`, `d13e401`, and `cb69977`. Tags `v1.1.0` and `v1.2.0` sit on the squash commits of PRs #8 and #9. |
+| 4. Each step's version follows its bump | verified | minor, minor, patch, and major gave 0.3.0, 0.4.0, 0.4.1, and 1.0.0. Two minor bumps then gave 1.1.0 and 1.2.0. |
+| 5. merge-guard allows `roadmap/*` and blocks other bases | verified | See the merge-guard row. |
+| 6. The driver runs fresh sessions and stops on `Blocked:` or a stalled position | verified | Roadmap 1 step 1 stopped at M-003. The step wrote `- Blocked:`, so the driver reported a stalled position. Commit `1d409ab` fixes that, and the driver now repeats the reason. |
+| 7. Delivery archives the roadmap and raises one PR that asks for a merge commit | verified | PRs #7 and #10. The human used a merge commit for both, and every step tag is reachable from `main`. |
+| 8. Two features, then a four-step roadmap from Activate to Delivery with no human input | verified with one stop | Roadmap 1 needed one human decision, the M-003 schema approval, as Hard Limit 3 requires. Chart-time schema approval (req-011) closes that gap. Roadmap 2 ran from Activate to Delivery with no human input. |
+| Recoverability NFR: a stopped driver resumes the same step | verified | SIGTERM at step 1's P2 stopped the child session and released the lock. The restarted driver finished step 1 and step 2. |
+| req-011 chart-time schema approval | verified | Roadmap 2's Chart listed `pinned` as additive. Step 1 marked M-004 `approved (roadmap chart)` and did not stop. |
+| req-012 progress markers | not-verifiable live | The test repo's pack predates req-012. `test-0000043-req-012` covers it. |
+
+The run found four faults. Each is fixed on this branch with a failing test first:
+
+- The driver missed `Blocked:` lines written as list items (`1d409ab`).
+- merge-guard wrote its block reason only to stdout, which the agent never sees (`96314f2`).
+- R-D Advance left feature branches on `origin` (`4fab9d1`).
+- The resumed step committed half-written files from the stopped unit and left no trace of the stop (req-012).
