@@ -22,6 +22,10 @@ if [ -f "$WORKFLOW" ]; then
   assert_contains "- shell: powershell" "$JOB" "req-015: one entry is Windows PowerShell 5.1"
   assert_contains "- shell: pwsh" "$JOB" "req-015: one entry is PowerShell 7"
   assert_contains 'shell: ${{ matrix.shell }}' "$JOB" "req-015: the step takes its shell from the matrix"
+  # GitHub rejects an expression in a step's shell key, so it must sit under
+  # the job's defaults.run.
+  assert_contains "$(printf 'defaults:\n      run:\n        shell: ${{ matrix.shell }}')" "$JOB" "req-015: the matrix shell is the job's default run shell"
+  assert_equals "1" "$(printf '%s\n' "$JOB" | grep -cE 'shell: \$\{\{' || true)" "req-015: no step sets an expression shell"
   assert_equals "1" "$(printf '%s\n' "$JOB" | grep -c 'planifest-zero/tests/run-tests.ps1' || true)" \
     "req-015: one run-tests.ps1 invocation per matrix entry"
   assert_contains "runs-on: windows-latest" "$JOB" "req-015: the job keeps windows-latest"
