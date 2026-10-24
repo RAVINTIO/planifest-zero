@@ -58,3 +58,9 @@ P0: Discovery: Complete: design confirmed, 15 requirements, autonomous run.
 | MCP calls | `0` |
 | Parallel task batches | `pending` |
 | Notes | Autonomous run. No gate stop. |
+- In progress: P1 REQ-001 REQ-002 REQ-005 requirements (2026-10-24T14:29:55Z)
+- In progress: P1 REQ-003 REQ-004 REQ-015 requirements (2026-10-24T14:29:55Z)
+- In progress: P1 REQ-006 REQ-012 REQ-013 REQ-014 requirements (2026-10-24T14:29:55Z)
+- In progress: P1 REQ-007 REQ-008 REQ-010 requirements (2026-10-24T14:29:55Z)
+- In progress: P1 REQ-009 REQ-011 requirements (2026-10-24T14:29:55Z)
+- In progress: P1 Claude Code fact check (2026-10-24T14:29:55Z)
