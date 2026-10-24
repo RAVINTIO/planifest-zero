@@ -1111,7 +1111,10 @@ remove_old_markers() {
   local tool_dir="$1" skills_dir="$2" rel
   for rel in "$tool_dir/.planifest-setup-flags" "$skills_dir/.planifest-manifest"; do
     local path="$PROJECT_ROOT/$rel"
-    if [ -L "$path" ]; then
+    if [ -L "$PROJECT_ROOT/$tool_dir" ] || [ -L "$PROJECT_ROOT/${rel%/*}" ]; then
+      # A linked parent folder would send the removal outside the project.
+      echo "  ! Warning: skipped $rel under a symlinked folder" >&2
+    elif [ -L "$path" ]; then
       echo "  ! Warning: skipped symlink $rel" >&2
     elif [ -f "$path" ]; then
       if rm -f "$path" 2>/dev/null; then
@@ -1210,7 +1213,7 @@ fi
 # Stop before installing anything if an old-brand folder is still present
 # (0000160 REQ-002, ADR-003). The migration renames it first.
 for old_folder in "planifest-zero" "planifest-overrides"; do
-  if [ -e "$PROJECT_ROOT/$old_folder" ]; then
+  if [ -e "$PROJECT_ROOT/$old_folder" ] || [ -L "$PROJECT_ROOT/$old_folder" ]; then
     echo "! Error: found the old folder $old_folder/ in this project." >&2
     echo "  Run ravintio-zero/migrations/migrate-ravintio-rename.sh first, then rerun setup." >&2
     exit 1

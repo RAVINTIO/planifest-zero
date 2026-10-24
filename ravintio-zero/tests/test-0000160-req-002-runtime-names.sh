@@ -119,4 +119,29 @@ for folder in "planifest-zero" "planifest-overrides"; do
   assert_equals absent "$r" "nothing is installed ($folder)"
 done
 
+echo ""
+echo "=== req-002: setup stops on a dangling leftover link ==="
+
+for folder in "planifest-zero" "planifest-overrides"; do
+  WS="$(new_workspace)"
+  ln -s "$TMP/no-such-folder" "$WS/$folder"
+  run_setup "$WS"
+  rc=$?
+  assert_equals 1 "$rc" "setup exits 1 when $folder is a dangling link"
+  [ -e "$WS/.claude/.ravintio-setup-flags" ] && r=present || r=absent
+  assert_equals absent "$r" "nothing is installed (dangling $folder)"
+done
+
+echo ""
+echo "=== req-002: setup skips old markers under a linked folder ==="
+
+WS="$(new_workspace)"
+mkdir -p "$TMP/real-skills"
+echo keep >"$TMP/real-skills/.planifest-manifest"
+mkdir -p "$WS/.claude"
+ln -s "$TMP/real-skills" "$WS/.claude/skills"
+run_setup "$WS"
+assert_equals keep "$(cat "$TMP/real-skills/.planifest-manifest" 2>/dev/null)" "old marker under a linked .claude/skills is kept"
+assert_contains "skipped" "$(cat "$WS/setup.err")" "setup warns about the linked folder"
+
 print_summary

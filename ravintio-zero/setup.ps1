@@ -1124,6 +1124,16 @@ function Remove-OldMarkers {
     )
     foreach ($rel in $oldMarkers) {
         $path = Join-Path $ProjectRoot $rel
+        # A linked parent folder would send the removal outside the project.
+        $linkedParent = $false
+        foreach ($dirRel in @($ToolDirRel, ($rel -replace '/[^/]*$', ''))) {
+            $dirItem = Get-Item -LiteralPath (Join-Path $ProjectRoot $dirRel) -Force -ErrorAction SilentlyContinue
+            if ($dirItem -and ($dirItem.Attributes -band [IO.FileAttributes]::ReparsePoint)) { $linkedParent = $true }
+        }
+        if ($linkedParent) {
+            [Console]::Error.WriteLine("  ! Warning: skipped $rel under a symlinked folder")
+            continue
+        }
         $item = Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
         if ($null -eq $item) { continue }
         if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
@@ -1378,7 +1388,8 @@ if (-not $Tool) {
 # Stop before installing anything if an old-brand folder is still present
 # (0000160 REQ-002, ADR-003). The migration renames it first.
 foreach ($oldFolder in @('planifest-zero', 'planifest-overrides')) {
-    if (Test-Path -LiteralPath (Join-Path $ProjectRoot $oldFolder)) {
+    # Get-Item -Force also finds a dangling link, which Test-Path misses.
+    if ($null -ne (Get-Item -LiteralPath (Join-Path $ProjectRoot $oldFolder) -Force -ErrorAction SilentlyContinue)) {
         [Console]::Error.WriteLine("! Error: found the old folder $oldFolder/ in this project.")
         [Console]::Error.WriteLine("  Run ravintio-zero/migrations/migrate-ravintio-rename.ps1 first, then rerun setup.")
         exit 1
