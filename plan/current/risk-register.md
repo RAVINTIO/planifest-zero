@@ -26,6 +26,9 @@ version: "1.0.0"
 | R-009 | operational | Old marker files such as `.planifest-session` and `.planifest-manifest` stay behind and confuse detection. | medium | low | Setup and the migration remove old markers. Tests check that none remain. | open |
 | R-010 | operational | Renaming `planifest-*` skills leaves orphan skill folders in a consumer's installed tool directory. | low | medium | Setup already prunes skills the pack no longer ships. Add a test that the old skill names go on the next run. | open |
 | R-011 | operational | Sibling repos and their docs still link to `planifest` org URLs after the pack changes. | medium | low | Sibling repos are out of scope. Log a follow-up edit for their links after the org rename. | open |
+| R-012 | operational | The rename helper stops partway when `git rm --cached` refuses a staged edit in the old pack, or when the backup move crosses volumes on Windows (S-016). | low | low | Nothing is lost. The helper exits 1 with git's error. The consumer commits or unstages the edit and reruns. Accepted for 1.0.0. | accepted |
+| R-013 | security | The exclude write follows a symlinked `.git/info/exclude` and appends one fixed line to its target (S-017). | low | low | Only a local actor can plant the link, and the line is fixed text. Accepted for 1.0.0. | accepted |
+| R-014 | operational | The backup keeps a full old pack in the project until the consumer deletes it (S-018). | medium | low | The helper tells the consumer to delete `.ravintio-backup/` after a check. The exclude file keeps it out of git. Accepted for 1.0.0. | accepted |
 
 ## Assumptions Logged as Risks
 
