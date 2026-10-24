@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000042-autonomous-mode-and-prefixes
+Last updated: 0000043-autonomous-roadmaps
 
 ## Component dependency diagram
 
@@ -11,9 +11,10 @@ graph TD
         STANDARDS["standards/, templates/, schemas/"]
         SETUP["setup.sh / setup.ps1"]
         GITHOOKS["git hooks\n(commit-msg, pre-commit, pre-push)"]
-        ENFORCE["hooks/enforcement/\n(gate-write, check-design, ratchet-check,\nem-dash-guard, auto-trigger-orchestrator,\ncheck-orchestrator-presence)"]
+        ENFORCE["hooks/enforcement/\n(gate-write, check-design, ratchet-check,\nem-dash-guard, merge-guard,\nauto-trigger-orchestrator, check-orchestrator-presence)"]
         ENFSHARED["hooks/enforcement/read-stdin.mjs\nshared module, always installed"]
         VERSION["scripts/product-version.mjs"]
+        DRIVER["scripts/roadmap-run.mjs"]
     end
 
     subgraph "Project root"
@@ -28,6 +29,7 @@ graph TD
 
     subgraph "External"
         NODE["node (required, sole runtime)"]
+        GH["gh and claude command-line tools"]
     end
 
     SETUP -->|"installs"| SKILLS
@@ -42,6 +44,10 @@ graph TD
     ENFORCE --> ENFSHARED
     ENFORCE --> NODE
 
+    ENFORCE -->|"merge-guard reads PR base"| GH
+    DRIVER -->|"starts one claude -p per step"| GH
+    DRIVER --> NODE
+
     VERSION -->|"reads components[]"| PRODUCT
     VERSION -->|"reads version"| MANIFEST
 ```
@@ -50,11 +56,13 @@ graph TD
 
 ## Edges that matter
 
-**Every enforcement hook imports `read-stdin.mjs`.** All six hooks share the one module. Setup copies `hooks/enforcement/` as a unit, so the import always resolves.
+**Every enforcement hook imports `read-stdin.mjs`.** All seven hooks share the one module. Setup copies `hooks/enforcement/` as a unit, so the import always resolves.
 
-**Setup wires six hooks into `.claude/settings.json`.** `gate-write`, `ratchet-check`, and `em-dash-guard` run on `PreToolUse` for Write and Edit. `auto-trigger-orchestrator`, `check-orchestrator-presence`, and `check-design` run on `UserPromptSubmit`, in that order. Setup finds its own entries by module name on any matcher, and replaces a non-array event value with a warning.
+**Setup wires seven hooks into `.claude/settings.json`.** `gate-write`, `ratchet-check`, and `em-dash-guard` run on `PreToolUse` for Write and Edit. `merge-guard` runs on `PreToolUse` for Bash. `auto-trigger-orchestrator`, `check-orchestrator-presence`, and `check-design` run on `UserPromptSubmit`, in that order. Setup finds its own entries by module name on any matcher, and replaces a non-array event value with a warning.
 
-**Nothing leaves the machine.** No hook or script makes an outbound network call. Planifest Zero has no external integration besides `node`.
+**Two components make network calls, both on request.** `merge-guard` runs `gh pr view` to read a PR base before a merge. `roadmap-run.mjs` starts `claude` and `gh` child processes. No other hook or script makes an outbound network call. `node` is the only dependency of the pack itself.
+
+**The driver depends on `claude` and `gh`.** `roadmap-run.mjs` uses only Node built-ins, the `claude` command, and `gh`. It reads `plan/current-roadmap/roadmap.md` and `plan/current/build-log.md`, and it never edits the working tree.
 
 **`product-version.mjs` reads `components[].id` and each component's `version`.** It derives the product version under `versionPolicy: max-component-version`. No code reads the top-level `id` in `product.yml`. The orchestrator's discovery hard stop requires it.
 

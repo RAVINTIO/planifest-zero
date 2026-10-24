@@ -4,7 +4,9 @@ You may fetch, pull, push, and create pull requests (`gh pr create`) without ask
 Two actions are human-only, with no exception:
 
 - Committing directly to `main`. Every change lands via a feature branch.
-- Merging pull requests. The human on the loop reviews and merges.
+- Merging pull requests into `main`. The human on the loop reviews and merges.
+
+One narrow exception: `gh pr merge --squash` for your own feature PR into `roadmap/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `planifest-zero/standards/roadmap-standards.md`.
 
 Report back if any remote git or GitHub command fails for any reason.
 

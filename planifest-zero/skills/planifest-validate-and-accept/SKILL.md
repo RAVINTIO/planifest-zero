@@ -106,7 +106,7 @@ Rollbacks are human-initiated, never automatic.
 - **One question at a time.**
 - **Fix the actual bug.** Do not widen scope: no adjacent refactors, no extra coverage beyond the failure. Record standards violations that do not break a check as recommendations.
 - **If a failure reveals a requirements ambiguity**, record it in `src/{component-id}/docs/quirks.md` and flag it for the human.
-- **Track every cycle** in `plan/current/build-log.md`.
+- **Track every cycle** in `plan/current/build-log.md`, with progress markers per "Progress Markers and Interrupted Units" in `planifest-zero/standards/agent-dispatch-standards.md`.
 - **Capability skills**: load one if it exists for the declared testing framework.
 
 ## Parallelism

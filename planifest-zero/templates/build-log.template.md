@@ -52,6 +52,16 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 -->
 
+<!-- Progress markers. Each dispatched unit adds these lines under its phase
+     block, per "Progress Markers and Interrupted Units" in
+     planifest-zero/standards/agent-dispatch-standards.md:
+
+- In progress: {unit} ({ISO-8601 timestamp})
+- Done: {unit} ({ISO-8601 timestamp})
+- Resumed after interruption: {unit} rerun, {stash note}
+
+-->
+
 ---
 
 ## Summary (filled at ship, P4)

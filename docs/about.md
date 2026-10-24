@@ -1,7 +1,7 @@
 ---
-version: "0.9.0"
-feature: "0000041-setup-cleanup-and-park-hardening"
-updated: "22 Oct 2026"
+version: "0.10.0"
+feature: "0000043-autonomous-roadmaps"
+updated: "24 Oct 2026"
 ---
 # About
 
@@ -10,9 +10,9 @@ updated: "22 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.9.0` |
-| Last feature | `0000042-autonomous-mode-and-prefixes` |
-| Updated | `23 Oct 2026` |
+| Version | `0.10.0` |
+| Last feature | `0000043-autonomous-roadmaps` |
+| Updated | `24 Oct 2026` |
 
 ## What this is
 

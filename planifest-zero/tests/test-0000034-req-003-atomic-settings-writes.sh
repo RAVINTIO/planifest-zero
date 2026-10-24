@@ -71,6 +71,8 @@ if git -C "$REPO_ROOT" rev-parse -q --verify "refs/tags/v0.4.0" >/dev/null 2>&1;
   bash planifest-zero/setup.sh claude-code >/dev/null 2>&1
   OLD_SETTINGS="$(cat .claude/settings.json)"
   cd /; rm -rf "$WS" "$OLD_DIR"
+  # merge-guard (0000043 req-006) postdates v0.4.0, so drop its entry first.
+  NEW_SETTINGS="$(printf '%s' "$NEW_SETTINGS" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{const s=JSON.parse(d);s.hooks.PreToolUse=s.hooks.PreToolUse.filter(e=>!JSON.stringify(e).includes("merge-guard"));process.stdout.write(JSON.stringify(s,null,2))})')"
   assert_equals "$OLD_SETTINGS" "$NEW_SETTINGS" \
     "req-003 (b): settings.json matches the v0.4.0 script byte for byte"
 else

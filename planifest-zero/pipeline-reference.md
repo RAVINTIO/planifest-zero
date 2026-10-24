@@ -34,6 +34,21 @@ Status messages use one form: `{prefix} {Status}: {one-liner}`. The status is St
 - Blocked: `P0 Discovery: Blocked: {specific gap}`
 - Skipped: `P3 Validate: Skipped: {reason}`
 
+Roadmap stages use five more prefixes. They use the same `{prefix} {Status}: {one-liner}` form.
+
+| Prefix | Stage | What the agent is doing |
+|--------|-------|-------------------------|
+| `R-A Chart:` | Chart | Planning a roadmap with the human and taking their confirmation |
+| `R-B Activate:` | Activate | Cutting the roadmap branch, writing the active roadmap, and offering the driver |
+| `R-C Run:` | Run | Running one roadmap step through P0 to P4 |
+| `R-D Advance:` | Advance | Merging the step PR into the roadmap branch and tagging it |
+| `R-E Delivery:` | Delivery | Archiving the roadmap and raising the roadmap PR to `main` |
+
+- Starting a step: `R-C Run: Starting: {step}`
+- Blocked: `R-B Activate: Blocked: {failed check}`
+
+R-A to R-E are stage letters, not phase numbers. The pipeline still has exactly five phases, P0 to P4.
+
 If you see a `Resuming` message at the start of a session, the orchestrator detected existing artifacts in `plan/current/` and is continuing where it left off.
 
 ---
@@ -80,7 +95,7 @@ It writes `gated` or `autonomous` to `plan/.run-mode` and logs the choice in the
 Both modes stop with a `Blocked:` message on five escalations:
 
 - A requirement or check still fails after 5 attempts.
-- Implement needs a schema change.
+- Implement needs a schema change. In a roadmap step, a change that matches a chart-approved additive row does not stop.
 - The security review finds an unmitigated critical or high issue.
 - A push or `gh pr create` fails.
 - A possible credential appears in a file the run will commit, or in the PR body.
@@ -98,10 +113,11 @@ Ship is the terminal phase. It runs three steps in order.
 1. **Archive.** The changelog entry is written to `plan/changelog/{feature-id}-{YYYY-MM-DD}.md`, then `plan/current/` is archived to `plan/_archive/{feature-id}-{date}/` and cleared. The orchestrator sentinel is deleted last, after the archive is confirmed complete.
 2. **Build assessment.** An assessment sub-agent reads the archived `build-log.md` and produces a structured efficiency report at `plan/_archive/{feature-id}-{date}/build-report.md`.
 3. **Tag and PR.** The agent reads the version from `component.yml`, creates a local git tag (`v{version}`), then raises the PR. In a gated run, it first asks the human whether to push and raise the PR or output a PR description for manual use. If `local-git-only` is active in `planifest-overrides/instructions/`, the agent skips the prompt and outputs a PR description directly.
+   - **Roadmap step.** When `plan/current-roadmap/roadmap.md` has `status: active`, the order differs. The agent raises the PR with `--base roadmap/{id}-{slug}`, waits for green CI, squash-merges, fetches, then tags the squash commit and pushes the tag. After the last step, R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The agent never merges that PR. See the ship skill's Roadmap steps section.
 
 ### Build Log
 
-From discovery onwards, the orchestrator maintains `plan/current/build-log.md`, a working file tracking per-phase build metrics. It is created from `planifest-zero/templates/build-log.template.md` at discovery and appended at each phase boundary. If a session is interrupted and resumed, the orchestrator appends rather than overwrites.
+From discovery onwards, the orchestrator maintains `plan/current/build-log.md`, a working file tracking per-phase build metrics. It is created from `planifest-zero/templates/build-log.template.md` at discovery and appended at each phase boundary. If a session is interrupted and resumed, the orchestrator appends rather than overwrites. Each dispatched unit also logs `In progress:` and `Done:` lines, so a resumed session reruns an interrupted unit. See "Progress Markers and Interrupted Units" in `planifest-zero/standards/agent-dispatch-standards.md`.
 
 The build log records per phase: model tier used, skills loaded, agents spawned, MCP tool calls, parallel task batch count.
 

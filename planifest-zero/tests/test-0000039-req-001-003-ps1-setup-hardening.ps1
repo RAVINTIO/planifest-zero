@@ -135,6 +135,7 @@ $expected = @(
     'PreToolUse|Edit|node ".claude/hooks/enforcement/ratchet-check.mjs"',
     'PreToolUse|Write|node ".claude/hooks/enforcement/em-dash-guard.mjs"',
     'PreToolUse|Edit|node ".claude/hooks/enforcement/em-dash-guard.mjs"',
+    'PreToolUse|Bash|node ".claude/hooks/enforcement/merge-guard.mjs"',
     'UserPromptSubmit|.*|node ./tools/notify.sh (object)',
     'UserPromptSubmit|.*|node ".claude/hooks/enforcement/auto-trigger-orchestrator.mjs"',
     'UserPromptSubmit|.*|node ".claude/hooks/enforcement/check-orchestrator-presence.mjs"',
@@ -165,7 +166,7 @@ if ($run.Code -ne 0) { Write-Host $run.Output }
 $settings = Read-Settings $ws
 $odd = @($settings.hooks.PreToolUse)[0]
 Assert-Equal 'node .claude/hooks/enforcement/gate-write.mjs' "$($odd.hooks)" "req-002: the string hooks value stays as it was"
-Assert-Equal 7 (@($settings.hooks.PreToolUse).Count) "req-002: the six fresh PreToolUse entries follow it"
+Assert-Equal 8 (@($settings.hooks.PreToolUse).Count) "req-002: the seven fresh PreToolUse entries follow it"
 Remove-SetupWorkspace $ws
 
 Write-Host ""

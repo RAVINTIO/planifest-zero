@@ -7,7 +7,7 @@
 $global:ZeroDir = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $global:HostExe = (Get-Process -Id $PID).Path
 
-# The nine entries setup.sh writes, in order (0000035 ADR-001).
+# The ten entries setup.sh writes, in order (0000035 ADR-001, 0000043 req-006).
 $global:ExpectedEntries = @(
     'PreToolUse Write gate-write',
     'PreToolUse Edit gate-write',
@@ -15,13 +15,14 @@ $global:ExpectedEntries = @(
     'PreToolUse Edit ratchet-check',
     'PreToolUse Write em-dash-guard',
     'PreToolUse Edit em-dash-guard',
+    'PreToolUse Bash merge-guard',
     'UserPromptSubmit .* auto-trigger-orchestrator',
     'UserPromptSubmit .* check-orchestrator-presence',
     'UserPromptSubmit .* check-design'
 ) -join "`n"
 
 $global:PlanifestModules = @(
-    'gate-write', 'ratchet-check', 'em-dash-guard',
+    'gate-write', 'ratchet-check', 'em-dash-guard', 'merge-guard',
     'auto-trigger-orchestrator', 'check-orchestrator-presence', 'check-design'
 )
 

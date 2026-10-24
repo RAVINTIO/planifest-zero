@@ -15,7 +15,7 @@ bundle_standards: []
 2. Do not modify application code or pack files during this phase.
 3. Never skip the archive step. A populated `plan/current/` breaks resume detection for the next feature.
 4. Read `plan/.run-mode` before Step 8. In `gated`, the final gate stops before the PR. In `autonomous`, raise the PR without a stop. The PR is where the human reviews the run.
-5. Never merge a PR and never commit to `main`, in any run mode.
+5. Merging into `main` stays human-only in every run mode, and the agent never commits to `main`. The one exception is `gh pr merge --squash` for the agent's own feature PR into `roadmap/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `planifest-zero/standards/roadmap-standards.md`.
 6. Credentials are never in your context.
 7. One question at a time.
 
@@ -135,3 +135,7 @@ P4 Ship: Complete: PR #{n} ready for your review
 ```
 
 Use the run mode read before Step 8, because Step 9 deletes `plan/.run-mode`. Merging the PR is human-only in every mode, no exception.
+
+## Roadmap steps
+
+When `plan/current-roadmap/roadmap.md` has `status: active`, read `planifest-zero/standards/roadmap-standards.md` first. Steps 7 and 8 give way to its R-D Advance stage, and R-E Delivery follows the last step. Outside a roadmap, ignore this section.

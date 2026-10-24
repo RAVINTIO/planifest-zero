@@ -10,7 +10,7 @@
 
 id: "planifest-zero"
 name: "Planifest Zero"
-version: "0.9.0"
+version: "0.10.0"
 feature: "0000041-setup-cleanup-and-park-hardening"
 
 versionPolicy: "max-component-version"

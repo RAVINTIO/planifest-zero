@@ -2,7 +2,7 @@ name: Planifest Strict Pipeline
 
 on:
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, 'roadmap/**' ]
 
 jobs:
   validate-branch:
