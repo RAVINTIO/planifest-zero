@@ -38,3 +38,9 @@ P0 exchange (pre-flight): Q: Base branch while PR #22 (backlog 0000150) is open?
 Backlog pickup: pulled in 0000139, 0000142, 0000143, 0000144, 0000145, 0000146, 0000147, 0000148, 0000149, 0000150. Entry texts kept in plan/current/backlog-sources/. Left 0000095, 0000100, 0000110.
 P0 exchange (defaults): Q: Apply the survey defaults for 0000139, 0000143, 0000144, 0000145, 0000146, 0000148, 0000150, and version 0.11.0? / A: No objection raised. Defaults stand.
 P0 exchange (dependency stop): Q: For 0000147, a new exception stop for an unapproved library or service in roadmap steps only, in every run, or drop it? / A: Stop in every run. Interactive runs approve dependencies in design.md, roadmap steps at R-A Chart.
+Scope Lock (happy path): Setup prunes retired hooks, blocked agents see hook reasons, ship PRs carry no sentinels, roadmap steps run on Sonnet with logs and labels, quiet tests print failures and the summary, and CI runs 5.1 and 7 in parallel. [source: draft-accepted]
+Scope Lock (first-run path): Projects without retired hooks see no change, the first step creates the log folder and exclude line, and unset env vars fall back to defaults. [source: draft-accepted]
+Scope Lock (error path): Read-only settings give one fixed line and exit 1, park refuses symlinks before any write or delete, turn-cap and unapproved-dependency stops fire, and quiet mode keeps failure detail. [source: draft-accepted]
+Scope Lock (cross-session continuity): Ship clears sentinels before the push, interrupted-ship cleanup still applies, and step logs survive the session. [source: draft-accepted]
+Scope Lock complete. All four scenario paths captured.
+Run mode: autonomous (2026-10-24T13:41:00Z)
