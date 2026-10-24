@@ -68,3 +68,4 @@ P0: Discovery: Complete: design confirmed, 15 requirements, autonomous run.
 - Done: P1 REQ-003 REQ-004 REQ-015 requirements (2026-10-24T14:31:55Z)
 - Done: P1 REQ-007 REQ-008 REQ-010 requirements (2026-10-24T14:32:06Z)
 - Done: P1 REQ-009 REQ-011 requirements (2026-10-24T14:32:15Z)
+- Done: P1 REQ-001 REQ-002 REQ-005 requirements (2026-10-24T14:32:34Z). Ship steps renumber to Step 8 clear sentinels and Step 9 PR, with the order tests updated.
