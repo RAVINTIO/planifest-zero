@@ -126,3 +126,5 @@ P2: Implement: Complete: 15 of 15 requirements green (2026-10-24T15:09:29Z).
 - In progress: P3 security review (2026-10-24T15:09:53Z)
 - In progress: P3 execution verification (2026-10-24T15:09:53Z)
 - In progress: P3 full test suite (2026-10-24T15:09:53Z)
+- Done: P3 semantic coverage and library audit (2026-10-24T15:14:23Z). Library audit pass (Node built-ins only). Six uncovered checks found. Three new assertions close REQ-008 normal-mode detail, REQ-013 driver environment, REQ-014 installed copies. The REQ-008 size NFR, REQ-011 byte record, and REQ-015 wall time are measured, not tested.
+- Done: P3 full test suite (2026-10-24T15:14:23Z). Quiet run: 110 feature and 19 regression suites pass, 11 PowerShell suites skipped (pwsh absent), 237 bytes of output.
