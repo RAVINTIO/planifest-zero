@@ -127,6 +127,7 @@ Added at P3. These are the confirmed component's paths, so gate-write can match 
   - `plan/current-roadmap/`
   - Self-confirmed P0 for roadmap steps, with a per-step bump
   - Chart-time approval of predicted schema changes, with an opt-in fallback for unpredicted additive changes
+  - Progress markers for each dispatched unit, and a resume rule that stashes left-over changes and reruns an interrupted unit
   - PR against `roadmap/*`, squash merge after green CI, tag after merge
   - merge-guard, registered by `setup.sh` and `setup.ps1`
   - `roadmap-run.mjs` with a lock file, offered by R-B Activate
@@ -175,6 +176,7 @@ None
 | REQ-009 - roadmap-resume-and-prefixes | planifest-implement | Resume detection and prefix tables in the orchestrator and `pipeline-reference.md` |
 | REQ-010 - merge-carve-out-governance | planifest-implement | Prose changes to the orchestrator merge rule, `custom-001`, and `custom-004` |
 | REQ-011 - chart-time-schema-approval | planifest-implement | Chart and step rules in the roadmap standard, the template table, and grep tests. Added at P3 |
+| REQ-012 - progress-markers-and-resume | planifest-implement | Marker and resume rules in the agent dispatch standard, a Resume Detection step, and grep and driver tests. Added at P3 |
 
 P1 may split these further to meet the three-criteria limit per requirement.
 
