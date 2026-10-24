@@ -400,7 +400,7 @@ install_enforcement_hooks() {
   local merge_guard_cmd="node \"$hooks_dir_rel/merge-guard.mjs\""
 
   if command -v node >/dev/null 2>&1; then
-    RAVINTIO_GATE="$gate_cmd" RAVINTIO_RATCHET="$ratchet_cmd" RAVINTIO_EM_DASH="$em_dash_cmd" RAVINTIO_TRIGGER="$trigger_cmd" RAVINTIO_PRESENCE="$presence_cmd" RAVINTIO_DESIGN="$design_cmd" RAVINTIO_MERGE_GUARD="$merge_guard_cmd" RAVINTIO_SETTINGS="$settings" RAVINTIO_SETTINGS_REL="$settings_rel" node -e "$RAVINTIO_WRITE_SETTINGS_JS$RAVINTIO_SETTINGS_SHAPE_JS"'
+    RAVINTIO_GATE="$gate_cmd" RAVINTIO_RATCHET="$ratchet_cmd" RAVINTIO_EM_DASH="$em_dash_cmd" RAVINTIO_TRIGGER="$trigger_cmd" RAVINTIO_PRESENCE="$presence_cmd" RAVINTIO_DESIGN="$design_cmd" RAVINTIO_MERGE_GUARD="$merge_guard_cmd" RAVINTIO_RETIRED="$RETIRED_HOOK_NAMES" RAVINTIO_SETTINGS="$settings" RAVINTIO_SETTINGS_REL="$settings_rel" node -e "$RAVINTIO_WRITE_SETTINGS_JS$RAVINTIO_SETTINGS_SHAPE_JS"'
       const fs = require("fs"), path = require("path");
       const gate     = process.env.RAVINTIO_GATE;
       const ratchet  = process.env.RAVINTIO_RATCHET;
@@ -467,6 +467,16 @@ install_enforcement_hooks() {
         }
         return kept;
       };
+      // Drop each settings entry that runs a retired hook, on every event
+      // (0000151 ADR-007), so no entry names a pruned file. The match is the
+      // same path-boundary rule. A non-array event value stays as it was.
+      const retired = (process.env.RAVINTIO_RETIRED || "").split(" ").filter(Boolean);
+      if (retired.length > 0) {
+        const retiredModule = new RegExp("(^|[\\s\"\\x27/\\\\])(" + retired.join("|") + ")\\.mjs\\b");
+        for (const ev of Object.keys(s.hooks)) {
+          if (Array.isArray(s.hooks[ev])) s.hooks[ev] = keepUserCommands(s.hooks[ev], retiredModule);
+        }
+      }
       // PreToolUse: gate-write + ratchet-check + em-dash-guard for Write and Edit,
       // then merge-guard for Bash (0000043 req-006)
       // (idempotent: remove then re-add). Remove the three modules on any

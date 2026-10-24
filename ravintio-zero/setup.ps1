@@ -498,6 +498,19 @@ function Merge-EnforcementHookSettings {
             $existing.hooks.$eventName = @()
         }
 
+        # Drop each settings entry that runs a retired hook, on every event
+        # (0000151 ADR-007), so no entry names a pruned file. The match is the
+        # same path-boundary rule as below. A non-array event value stays as it
+        # was. setup.sh does the same from RETIRED_HOOK_NAMES.
+        $retiredPattern = '(^|[\s"''/\\])(' + ($RetiredHookNames -join '|') + ')\.mjs\b'
+        foreach ($eventName in @($existing.hooks.PSObject.Properties.Name)) {
+            if (-not $eventName) { continue }
+            $eventValue = $existing.hooks.$eventName
+            if ($eventValue -is [array]) {
+                $existing.hooks.$eventName = @(Remove-RavintioHookCommands -Entries $eventValue -Pattern $retiredPattern)
+            }
+        }
+
         # Merge PreToolUse. Remove every earlier command for the three
         # modules, on any matcher, so an old single Write|Edit entry goes too.
         # A user command in the same entry stays (0000038 ADR-002).
