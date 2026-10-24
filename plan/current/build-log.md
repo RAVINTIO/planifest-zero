@@ -97,3 +97,18 @@ P1 Plan: Complete: ten requirements, four ADRs, execution plan, scope, risk regi
 - Self-correction: the REQ-007 test needed `CLAUDE.md`, which is gitignored and absent in CI, so it now skips the file when absent. The longer gate-write bullet took `CLAUDE.md` plus orchestrator `SKILL.md` over the 0000151 byte budget, so the bullet is shorter. (2026-10-24T23:10:04Z)
 - Done: P2 living docs, change record, and component.yml close-out (2026-10-24T23:14:38Z)
 P2 Implement: Complete: 10 requirements built across 4 parallel tracks. Bash 3.2 full suite under env -i: 118 feature and 19 regression suites pass, 12 PowerShell suites left to CI. Autonomous, no gate stop. (2026-10-24T23:14:38Z)
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T23:14:53Z` |
+| Model tier | primary (verification and security agents) |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: execution verification with the coverage table, and the security review, in parallel. A draft PR starts CI, because CI runs only on pull requests and `pwsh` is absent locally. |
+
+- In progress: P3 execution verification and coverage (2026-10-24T23:14:53Z)
+- In progress: P3 security review (2026-10-24T23:14:53Z)
