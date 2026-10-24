@@ -79,3 +79,9 @@ P1 Plan: Complete: 6 requirements, 4 ADRs, scope, risk register, glossary, execu
 - Done: batch 1 mechanical rename (2026-10-24T19:37:22Z). 287 files changed by one byte-exact perl pass. Paths moved with `git mv`. Protected names: the 0000031 and 0000037 feature ids, the sibling repo names, and `docs/decisions-index.md` past-decision rows.
 - Self-correction: four suites named pre-rename history (the v0.4.0 tag folder, a 0000151 byte fixture, and sibling repo allowlist entries). Fixed each to name the history it reads. Avoidable: partly, the plan did not list tests that read git history.
 - Local reinstall: `ravintio-zero/setup.sh claude-code` set `core.hooksPath` to `ravintio-zero/hooks` and installed `ravintio-*` skills.
+- Done: batch 2, four parallel TDD tracks (2026-10-24T19:56:29Z). REQ-002 (sonnet), REQ-003 (sonnet), REQ-005 (sonnet), and REQ-006 (sonnet). Each committed only its own paths with `git commit -- <paths>`, and no commit picked up another track's files.
+- Self-correction: REQ-005 found that this repo's own orchestrator would run pending migration 0004 against itself. Added an `Applies when:` precondition to the orchestrator, the migrator, and 0004. The helper archives 0004 after a run that changes the repo. REQ-005 and ADR-003 updated to match. Avoidable: yes, the plan did not consider that the pack source repo self-hosts its own migrations.
+- Self-correction: three suites failed after batch 2. A 0000042 README check, the REQ-003 scan of a past decision row, and a stale guard entry for tests that build the old word from parts. Fixed each. Avoidable: partly, the tracks ran their suites while others were mid-change.
+- Note: REQ-005 wrote its helpers before its tests, because a safety check refused its first command. The archive step added later went test first.
+- Full Bash suite: 114 passed, 0 failed. 13 PowerShell suites skipped, `pwsh` not installed. CI runs them.
+- In progress: batch 3 living docs (2026-10-24T19:56:29Z)
