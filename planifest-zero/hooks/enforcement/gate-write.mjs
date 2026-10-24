@@ -70,6 +70,13 @@ function matchesComponentPath(relPath, componentPaths) {
   });
 }
 
+// Claude Code shows the agent only stderr on exit 2. Stdout keeps the tests' view.
+function block(message) {
+  process.stderr.write(message);
+  process.stdout.write(message);
+  process.exit(2);
+}
+
 try {
   const raw = await readStdin();
   const input = JSON.parse(raw);
@@ -103,12 +110,11 @@ try {
   if (isPlanCurrent && !isFeatureBrief && !isAlwaysPermittedBasename) {
     const sentinelPath = join(cwd, "plan", ".orchestrator-active");
     if (!existsSync(sentinelPath)) {
-      process.stdout.write(
+      block(
         "[Planifest] No orchestrator sentinel at plan/.orchestrator-active. " +
         "Load the planifest-orchestrator skill and complete P0 Discovery before " +
         "writing plan artefacts.\n"
       );
-      process.exit(2);
     }
   }
 
@@ -118,11 +124,10 @@ try {
   // Check 2 — design.md must exist
   const designPath = join(cwd, "plan", "current", "design.md");
   if (!existsSync(designPath)) {
-    process.stdout.write(
+    block(
       "[Planifest] No confirmed design at plan/current/design.md. " +
       "Complete P0 Discovery first.\n"
     );
-    process.exit(2);
   }
 
   // Check 3 — path must be in component paths list
@@ -145,11 +150,10 @@ try {
   }
 
   if (!matchesComponentPath(relTarget, componentPaths)) {
-    process.stdout.write(
+    block(
       `[Planifest] Path '${relTarget}' is not covered by the confirmed design. ` +
       "Add it to the '## Component Paths' section of plan/current/design.md first.\n"
     );
-    process.exit(2);
   }
 
   process.exit(0);
