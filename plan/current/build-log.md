@@ -41,3 +41,8 @@ P0 exchange (gate scope): Q: After the outside-project fix, what should gate-wri
 P0 exchange (telemetry): Q: What should 0000095 remove? / A: The cleanup only. The module names stay as a standalone retired-hooks list (0000151 ADR-007).
 P0 exchange (skill name): Q: What should the 0000163 skill be called? / A: `ravintio-file-backlog`.
 Run mode: autonomous (2026-10-24T22:55:13Z)
+Scope Lock (happy path): `ravintio-file-backlog` writes one entry folder in another repo and reports the path. `gate-write` permits it, and nothing is committed. Setup runs with no telemetry cleanup, and suites agree on Bash 3.2 and 5. [source: draft-accepted]
+Scope Lock (first-run path): With no `plan/backlog/`, the skill creates it, starts at `0000001` or above the archive and changelog high-water mark, and falls back to the pack template. [source: draft-accepted]
+Scope Lock (error path): `gate-write` resolves real paths so an in-project symlink cannot skip the checks. The skill takes the next free id and never overwrites a folder. [source: draft-accepted]
+Scope Lock (cross-session continuity): The skill makes one uncommitted folder write. A rerun finds an existing folder with the same slug and reports it instead of writing a duplicate. [source: draft-accepted]
+Scope Lock complete. All four scenario paths captured.
