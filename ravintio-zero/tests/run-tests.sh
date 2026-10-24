@@ -62,12 +62,13 @@ is_known_file() {
 
 UNDISCOVERED=0
 while IFS= read -r file; do
+  [ -n "$file" ] || continue
   rel="${file#"$SCRIPT_DIR"/}"
   if ! is_known_file "$rel"; then
     echo "Undiscovered file: $rel"
     UNDISCOVERED=$((UNDISCOVERED + 1))
   fi
-done < <(find "$SCRIPT_DIR" \( -type f -o -type l \) | LC_ALL=C sort)
+done <<< "$(find "$SCRIPT_DIR" \( -type f -o -type l \) | LC_ALL=C sort)"
 
 if [ "${RAVINTIO_PREFLIGHT_ONLY:-0}" = "1" ]; then
   [ "$UNDISCOVERED" -eq 0 ]

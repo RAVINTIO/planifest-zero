@@ -38,8 +38,9 @@ assert_contains "ravintio-x other-x" "$(bad_names "$TMP/skills")" "a wrong name 
 echo "=== (b) regression manifest paths ==="
 MISSING=""
 while IFS= read -r p; do
+  [ -n "$p" ] || continue
   [ -f "$ZERO_DIR/$p" ] || MISSING="$MISSING $p"
-done < <(sed -n 's/.*"filePath": *"\(tests\/[^"]*\)".*/\1/p' "$ZERO_DIR/tests/regression/regression-manifest.json")
+done <<< "$(sed -n 's/.*"filePath": *"\(tests\/[^"]*\)".*/\1/p' "$ZERO_DIR/tests/regression/regression-manifest.json")"
 assert_equals "" "$MISSING" "every regression manifest filePath exists"
 assert_equals "yes" "$([ "$(grep -c '"filePath": *"tests/' "$ZERO_DIR/tests/regression/regression-manifest.json")" -gt 0 ] && echo yes || echo no)" "the manifest lists at least one test"
 
