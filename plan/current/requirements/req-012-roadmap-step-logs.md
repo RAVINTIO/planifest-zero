@@ -34,14 +34,17 @@ As a maintainer, I read a per-step log when a roadmap step blocks, so that I can
 - The driver never prints log content to its stdout.
 
 ## Acceptance Criteria
-- [ ] (a) After a two-step stub run, `plan/.roadmap-logs/step-1.log` and `step-2.log` exist and each holds the stub's stdout and stderr lines.
-- [ ] (b) After a stub run that fails, blocks, or stalls, the single `R-C Run: Blocked:` line ends with `Log: plan/.roadmap-logs/step-{position}.log` and that file exists.
-- [ ] (c) Rerunning a blocked step with a shorter stub output leaves a log with only the new output.
-- [ ] (d) The stub's stderr text appears on the driver's stderr, and its stdout text does not appear on the driver's stdout.
-- [ ] (e) In a git fixture, `.git/info/exclude` holds `plan/.roadmap-logs/` exactly once after two runs, and `git status --porcelain` lists no log file.
-- [ ] (f) In a fixture where `plan/.roadmap-logs` is a regular file, the driver exits 1 with the log-open stop line, releases the lock, and runs no step.
-- [ ] (g) A stop before the first step, such as an inactive roadmap or an existing lock, prints no `Log:` suffix.
-- [ ] (h) `roadmap-standards.md` and the driver header comment name `plan/.roadmap-logs/` and the truncate rule.
+- [ ] (a) Log files behave as follows:
+  - After a two-step stub run, `plan/.roadmap-logs/step-1.log` and `step-2.log` exist and each holds the stub's stdout and stderr lines.
+  - After a stub run that fails, blocks, or stalls, the single `R-C Run: Blocked:` line ends with `Log: plan/.roadmap-logs/step-{position}.log` and that file exists.
+  - Rerunning a blocked step with a shorter stub output leaves a log with only the new output.
+  - A stop before the first step, such as an inactive roadmap or an existing lock, prints no `Log:` suffix.
+- [ ] (b) Output and git handling behave as follows:
+  - The stub's stderr text appears on the driver's stderr, and its stdout text does not appear on the driver's stdout.
+  - In a git fixture, `.git/info/exclude` holds `plan/.roadmap-logs/` exactly once after two runs, and `git status --porcelain` lists no log file.
+  - In a fixture where `plan/.roadmap-logs` is a regular file, the driver exits 1 with the log-open stop line, releases the lock, and runs no step.
+- [ ] (c) Docs name the log rule:
+  - `roadmap-standards.md` and the driver header comment name `plan/.roadmap-logs/` and the truncate rule.
 
 ## Dependencies
 - REQ-006 changes the same `claude` call. Build it first.

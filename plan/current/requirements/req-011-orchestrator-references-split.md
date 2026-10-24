@@ -57,16 +57,19 @@ As the person paying for runs, I get a smaller starting context in every fresh s
 - The implementer updates any other file that cites a moved section by heading, such as other skills, standards, and docs.
 
 ## Acceptance Criteria
-- [ ] (a) `SKILL.md` is at least 25% smaller than 36,216 bytes, which means 27,162 bytes or fewer. The combined size of `CLAUDE.md` and `SKILL.md` is 35,484 bytes or fewer.
-- [ ] (b) A script or test proves no rule line was lost. Every non-blank line of the old `SKILL.md` (taken from git at the base commit) appears in the new `SKILL.md` or in a `references/` file. The check ignores heading lines only.
-- [ ] (c) The proof in (b) fails when the test removes one non-heading line from a moved file. The test shows this with a mutation case.
-- [ ] (d) The Pack Index lists every new `references/` file with a one-line trigger. A test fails if a file under `references/` has no Pack Index row.
-- [ ] (e) Each section on the inline list is present in `SKILL.md` with its original text.
-- [ ] (f) Every test that read a moved string passes against the new location. A diff of the test files shows paths changed and no assertion removed or loosened.
-- [ ] (g) The full suite passes, including the PowerShell suites.
-- [ ] (h) A fresh run of `setup.sh` installs every new `references/` file under `.claude/skills/planifest-orchestrator/references/`. A test covers `setup.sh`, and the PowerShell suite covers `setup.ps1`.
-- [ ] (i) The build log records the before and after byte counts and the percentage saved.
-- [ ] (j) No gate, hard limit, or exception stop is weaker. The inline list in the requirements above is intact, and no moved text drops a rule.
+- [ ] (a) Size and no-loss proof for the split holds:
+  - `SKILL.md` is at least 25% smaller than 36,216 bytes, which means 27,162 bytes or fewer. The combined size of `CLAUDE.md` and `SKILL.md` is 35,484 bytes or fewer.
+  - A script or test proves no rule line was lost. Every non-blank line of the old `SKILL.md` (taken from git at the base commit) appears in the new `SKILL.md` or in a `references/` file. The check ignores heading lines only.
+  - The no-loss proof fails when the test removes one non-heading line from a moved file. The test shows this with a mutation case.
+  - No gate, hard limit, or exception stop is weaker. The inline list in the requirements above is intact, and no moved text drops a rule.
+- [ ] (b) Index, inline sections, and test paths hold:
+  - The Pack Index lists every new `references/` file with a one-line trigger. A test fails if a file under `references/` has no Pack Index row.
+  - Each section on the inline list is present in `SKILL.md` with its original text.
+  - Every test that read a moved string passes against the new location. A diff of the test files shows paths changed and no assertion removed or loosened.
+- [ ] (c) Suite, install, and build log hold:
+  - The full suite passes, including the PowerShell suites.
+  - A fresh run of `setup.sh` installs every new `references/` file under `.claude/skills/planifest-orchestrator/references/`. A test covers `setup.sh`, and the PowerShell suite covers `setup.ps1`.
+  - The build log records the before and after byte counts and the percentage saved.
 
 ## Dependencies
 - REQ-009 adds the context-size rule. Place it inline so the split never moves it.

@@ -44,16 +44,19 @@ As a maintainer charting a roadmap, I sharpen vague entries and approve new depe
 - No existing stop, library audit, or ADR rule changes or weakens.
 
 ## Acceptance Criteria
-- [ ] (a) `roadmap-standards.md` has a clarity check under R-A Chart that names the three things an entry states, and says the human sharpens or strikes a failing entry.
-- [ ] (b) `roadmap-standards.md` has a dependency survey section that names the `## Dependencies` table, the three kinds, the `none` row, and the rule that an unlisted dependency stops the step.
-- [ ] (c) `roadmap-entry.template.md` has a `## Dependencies` heading after `## Schema changes` with the four columns, and a `none` example row.
-- [ ] (d) `design.template.md` has an `Approved dependencies` field under `## Dependencies`.
-- [ ] (e) The Exception Stops table in the orchestrator `SKILL.md` has six rows. The sixth names both lists and states that it applies to both run modes.
-- [ ] (f) The sixth row's message uses the `Blocked:` form and names the new dependency.
-- [ ] (g) `planifest-implement/SKILL.md` and `planifest-plan/SKILL.md` each contain the dependency stop wording and name both lists.
-- [ ] (h) The five original Exception Stops rows are byte-identical to their text before the change.
-- [ ] (i) The existing roadmap-chart tests still pass, including `test-0000043-req-002-roadmap-chart.sh` and `test-0000043-req-011-chart-time-schema-approval.sh`.
-- [ ] (j) The installed copies under `.claude/skills/` match the sources after setup reruns.
+- [ ] (a) Docs and templates carry the new rules:
+  - `roadmap-standards.md` has a clarity check under R-A Chart that names the three things an entry states, and says the human sharpens or strikes a failing entry.
+  - `roadmap-standards.md` has a dependency survey section that names the `## Dependencies` table, the three kinds, the `none` row, and the rule that an unlisted dependency stops the step.
+  - `roadmap-entry.template.md` has a `## Dependencies` heading after `## Schema changes` with the four columns, and a `none` example row.
+  - `design.template.md` has an `Approved dependencies` field under `## Dependencies`.
+- [ ] (b) Exception Stops and skills carry the dependency stop:
+  - The Exception Stops table in the orchestrator `SKILL.md` has six rows. The sixth names both lists and states that it applies to both run modes.
+  - The sixth row's message uses the `Blocked:` form and names the new dependency.
+  - `planifest-implement/SKILL.md` and `planifest-plan/SKILL.md` each contain the dependency stop wording and name both lists.
+  - The five original Exception Stops rows are byte-identical to their text before the change.
+- [ ] (c) Existing tests and installed copies stay green:
+  - The existing roadmap-chart tests still pass, including `test-0000043-req-002-roadmap-chart.sh` and `test-0000043-req-011-chart-time-schema-approval.sh`.
+  - The installed copies under `.claude/skills/` match the sources after setup reruns.
 
 ## Dependencies
 - Chart-time schema approval in `roadmap-standards.md` is the pattern this requirement follows.

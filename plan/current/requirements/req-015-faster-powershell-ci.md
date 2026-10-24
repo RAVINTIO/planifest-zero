@@ -31,14 +31,17 @@ As a contributor, I wait less for CI, so that I get feedback sooner.
 - `planifest-zero/tests/test-0000036-req-005-windows-ci-job.sh` moves to the matrix shape and keeps the intent of every assertion.
 
 ## Acceptance Criteria
-- [ ] (a) The job block defines a `strategy.matrix` with exactly two entries, one for each shell, and `fail-fast: false`.
-- [ ] (b) The job block still contains `runs-on: windows-latest`, `contents: read`, no `secrets.` reference, one `actions/checkout@` line pinned to a 40-character commit, and `persist-credentials: false`.
-- [ ] (c) Both shells run `planifest-zero/tests/run-tests.ps1`: the job text holds `shell: powershell` and `shell: pwsh` (as a matrix value or step), and exactly one `run-tests.ps1` invocation runs per matrix entry.
-- [ ] (d) `test-0000036-req-005-windows-ci-job.sh` is updated for the matrix. Each existing assertion keeps its check (job exists, windows-latest, contents read, no secrets, both shells, pinned checkout, persist-credentials false, workflow-level contents read). Only the literal-line and "exactly 2 run-tests.ps1 lines" checks change shape.
-- [ ] (e) `test-0000037-req-006-bash-suites-ci-job.sh` passes unchanged, and the `bash-suites` job still sets `PLANIFEST_REQUIRE_PWSH` to `"1"`.
-- [ ] (f) A run of a setup-workspace test case prints three timing lines: workspace copy, `pwsh` start-up, and `setup.ps1`. Existing assertions on helper output still pass.
-- [ ] (g) The feature PR's `windows-powershell` wall time is below the slower of today's two steps. P3 records the measured time.
-- [ ] (h) The matrix gate is no weaker: both entries must pass for the job to pass.
+- [ ] (a) Matrix and job settings hold:
+  - The job block defines a `strategy.matrix` with exactly two entries, one for each shell, and `fail-fast: false`.
+  - The job block still contains `runs-on: windows-latest`, `contents: read`, no `secrets.` reference, one `actions/checkout@` line pinned to a 40-character commit, and `persist-credentials: false`.
+  - Both shells run `planifest-zero/tests/run-tests.ps1`: the job text holds `shell: powershell` and `shell: pwsh` (as a matrix value or step), and exactly one `run-tests.ps1` invocation runs per matrix entry.
+- [ ] (b) Existing tests and timing output hold:
+  - `test-0000036-req-005-windows-ci-job.sh` is updated for the matrix. Each existing assertion keeps its check (job exists, windows-latest, contents read, no secrets, both shells, pinned checkout, persist-credentials false, workflow-level contents read). Only the literal-line and "exactly 2 run-tests.ps1 lines" checks change shape.
+  - `test-0000037-req-006-bash-suites-ci-job.sh` passes unchanged, and the `bash-suites` job still sets `PLANIFEST_REQUIRE_PWSH` to `"1"`.
+  - A run of a setup-workspace test case prints three timing lines: workspace copy, `pwsh` start-up, and `setup.ps1`. Existing assertions on helper output still pass.
+- [ ] (c) Wall time and gate strength hold:
+  - The feature PR's `windows-powershell` wall time is below the slower of today's two steps. P3 records the measured time.
+  - The matrix gate is no weaker: both entries must pass for the job to pass.
 
 ## Dependencies
 - None on other requirements in this feature.

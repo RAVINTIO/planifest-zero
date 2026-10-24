@@ -35,13 +35,16 @@ As a maintainer, I see which roadmap step spent what in telemetry, so that I can
 - The header comment of `roadmap-run.mjs` and `roadmap-standards.md` document the three labels.
 
 ## Acceptance Criteria
-- [ ] (a) With the variable unset, a stub that runs `printenv OTEL_RESOURCE_ATTRIBUTES` logs `work.kind=roadmap,planifest.roadmap=0000050-demo,planifest.step=1`.
-- [ ] (b) With the variable set to `service.name=x,team=a`, the stub logs `service.name=x,team=a,work.kind=roadmap,planifest.roadmap=0000050-demo,planifest.step=1`.
-- [ ] (c) On step 2 of a two-step run, the stub logs `planifest.step=2`.
-- [ ] (d) A call to the encoder with `a,b=c d%e` returns `a%2Cb%3Dc%20d%25e`.
-- [ ] (e) An old value that ends in a comma produces no `,,` in the result.
-- [ ] (f) The driver's own environment after the run is unchanged, and the labels reach only the child.
-- [ ] (g) No other environment variable in the child differs from the driver's environment.
+- [ ] (a) Label values are correct:
+  - With the variable unset, a stub that runs `printenv OTEL_RESOURCE_ATTRIBUTES` logs `work.kind=roadmap,planifest.roadmap=0000050-demo,planifest.step=1`.
+  - With the variable set to `service.name=x,team=a`, the stub logs `service.name=x,team=a,work.kind=roadmap,planifest.roadmap=0000050-demo,planifest.step=1`.
+  - On step 2 of a two-step run, the stub logs `planifest.step=2`.
+- [ ] (b) Encoder and edge cases are correct:
+  - A call to the encoder with `a,b=c d%e` returns `a%2Cb%3Dc%20d%25e`.
+  - An old value that ends in a comma produces no `,,` in the result.
+- [ ] (c) Environment isolation holds:
+  - The driver's own environment after the run is unchanged, and the labels reach only the child.
+  - No other environment variable in the child differs from the driver's environment.
 
 ## Dependencies
 - REQ-006 and REQ-012 change the same `spawn` call. Build them first.
