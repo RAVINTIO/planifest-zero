@@ -369,6 +369,8 @@ Record the answer and write `plan/.run-mode` (`gated` or `autonomous`). No other
 
 A roadmap step skips the run-mode question and the human confirmation, as R-C Run in `planifest-zero/standards/roadmap-standards.md` describes.
 
+In a gated run, state the context size before you ask for confirmation. See Context size at gates in Phase Invocation.
+
 **Do not proceed to plan until the human has confirmed the design.** This is the hard gate. Present it, revise on request, and once confirmed, commit `design.md` and `feature-brief.md`. The pipeline then begins.
 
 ---
@@ -401,6 +403,14 @@ Conventions for every downstream phase:
 | P2 Implement | planifest-implement | Implementation matches the spec, and docs land with code | Gated: STOP for confirmation. Autonomous: no stop. |
 | P3 Validate and Accept | planifest-validate-and-accept | CI green plus acceptance evidence | Gated: STOP for acceptance. Autonomous: no stop. The evidence goes in the PR description. |
 | P4 Ship | planifest-ship | Archive, build report, changelog, tag, and PR (or PR description) | Gated: STOP before the PR. Autonomous: no stop. Raise the PR, then end the run. |
+
+**Context size at gates.** At each phase gate in a gated run, state the approximate context size before you ask for approval. The P0 design gate counts, and so do the P1, P2, and P3 gates and the P4 ship gate.
+
+- Use the usage figure the host reports, such as the context meter in Claude Code.
+- If the host reports none, give a stated estimate, labelled as an estimate.
+- If the size passes about 150,000 tokens, recommend `/clear` or a new session before the next phase. The `plan/current/` artifacts carry the state, so a clear loses none. Tell the human to start the new session and let Resume Detection continue from the build log.
+- The statement is advisory. It never blocks, delays, or skips a gate.
+- An autonomous run or a roadmap step does not report context size. Each roadmap step already starts a fresh session.
 
 **Before P2:** check the declared stack against installed capability skills and recommend loading relevant ones. Then apply subagent decomposition for every requirement: consult `## Skill Map` in `design.md` for the best-fit skill, select the model tier, and dispatch per the dispatch standards below.
 
