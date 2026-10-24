@@ -41,6 +41,7 @@ Decisions:
 ## Deviations
 
 - In P3, `design.md` gained a `## Component Paths` section. Without it, gate-write blocked P2 subagents, and they wrote files through Bash instead. Every such commit was checked against its tests.
+- After the PR was raised, CI failed in five PowerShell suites. Their expected hook lists lacked merge-guard, and they skip on machines without `pwsh`. Commit `699d658` adds the entry. Only test files changed, and the `v0.10.0` tag predates the fix.
 - In P3, the human confirmed two design changes from the live run: chart-time schema approval (req-011) and progress markers (req-012).
 
 - In P2, the roadmap detail moved from the orchestrator and ship skills to `planifest-zero/standards/roadmap-standards.md`. The skills keep pointers. The 0000031 context-cost limit on skill text forced the move, and the tests for req-001 to req-005, req-008, and req-009 now read the standard.

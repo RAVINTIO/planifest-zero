@@ -132,3 +132,4 @@ P3: Validate and Accept complete (2026-10-24T12:19:01Z). Autonomous mode, eviden
 | Cheaper tier agent calls | `21` (sonnet 20, haiku 1). The P0 claude-code-guide agent has no recorded tier. |
 | Self-corrections | `4` (P3 review cycles 1 to 4) |
 | Phases skipped | none |
+- Post-PR CI fix (P4): five PowerShell suites lacked merge-guard in their expected hook lists. Fixed in 699d658, test files only. CI green on PR #21.
