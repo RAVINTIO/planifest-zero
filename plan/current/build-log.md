@@ -85,3 +85,19 @@ P1 Plan: Complete: 6 requirements, 4 ADRs, scope, risk register, glossary, execu
 - Note: REQ-005 wrote its helpers before its tests, because a safety check refused its first command. The archive step added later went test first.
 - Full Bash suite: 114 passed, 0 failed. 13 PowerShell suites skipped, `pwsh` not installed. CI runs them.
 - In progress: batch 3 living docs (2026-10-24T19:56:29Z)
+- Done: batch 3 living docs (2026-10-24T19:57:18Z). Decisions index rows and supersessions, the architecture overview rename upgrade, and the stamps.
+P2 Implement: Complete: 6 requirements built, Bash suite 114 of 114. Autonomous, no gate stop.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T19:57:18Z` |
+| Model tier | primary orchestrator, primary security review, cheaper verification and coverage |
+| Skills loaded | planifest-validate-and-accept |
+| Agents spawned | `3` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | `pwsh` is absent locally, so a draft PR runs the PowerShell suites in CI. |
+
+- In progress: P3 batch 1, security review, execution verification, coverage audit, CI (2026-10-24T19:57:18Z)
