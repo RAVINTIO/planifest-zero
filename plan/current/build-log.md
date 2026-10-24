@@ -76,3 +76,6 @@ P1 Plan: Complete: 6 requirements, 4 ADRs, scope, risk register, glossary, execu
 | Notes | Batch 1 is one scripted pass by the orchestrator. Every other unit depends on it, so it cannot split. |
 
 - In progress: batch 1 mechanical rename (2026-10-24T19:22:38Z)
+- Done: batch 1 mechanical rename (2026-10-24T19:37:22Z). 287 files changed by one byte-exact perl pass. Paths moved with `git mv`. Protected names: the 0000031 and 0000037 feature ids, the sibling repo names, and `docs/decisions-index.md` past-decision rows.
+- Self-correction: four suites named pre-rename history (the v0.4.0 tag folder, a 0000151 byte fixture, and sibling repo allowlist entries). Fixed each to name the history it reads. Avoidable: partly, the plan did not list tests that read git history.
+- Local reinstall: `ravintio-zero/setup.sh claude-code` set `core.hooksPath` to `ravintio-zero/hooks` and installed `ravintio-*` skills.
