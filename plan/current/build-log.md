@@ -116,3 +116,15 @@ Resolved: bash-suites still fails after 5 attempts (2026-10-24T21:10:45Z, human 
 - P3 cycle 6, human approved (2026-10-24T21:18:40Z). Fix: the 0000042 wording allowlist covers the brand guard's own allowlist line. Local check used Bash 3.2-safe copies of every suite with the `done < <(` pattern, and all passed.
 - Done: P3 batch 1 (2026-10-24T21:28:48Z). CI run 40133961149 on 10228a6 passed 5 of 5 jobs. Feature 129 of 129, regression 19 of 19, PowerShell 13 of 13 on both Windows hosts.
 P3 Validate and Accept: Complete: CI green, security low, 18 of 18 criteria verified or covered. Evidence in `acceptance-evidence.md`. Autonomous, no gate stop.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-24T21:29:18Z` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Each step reads the output of the step before, so P4 runs in sequence. PR #25 exists as a draft, so Step 9 edits it and marks it ready. |
