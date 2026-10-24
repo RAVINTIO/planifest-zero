@@ -269,8 +269,8 @@ function Write-SettingsAtomic {
 function Write-SettingsOrExit {
     # Write-SettingsAtomic, with any fault turned into one fixed line on
     # stderr and exit 1, as setup.sh prints it (0000151 req-005). The line holds
-    # no absolute path and no PowerShell error text. The telemetry cleanup calls
-    # Write-SettingsAtomic directly, so it keeps its own warning.
+    # no absolute path and no PowerShell error text. Remove-LegacyTelemetryWiring
+    # calls Write-SettingsAtomic directly, so it keeps its own warning.
     param(
         [string]$Path,
         [string]$Json,
@@ -603,6 +603,8 @@ $TelemetryHookModules = @(
     'phase-enum'
 )
 $TelemetryMcpMatcher = 'mcp__structured-telemetry-mcp__emit_event'
+# Remove-RetiredHooks prunes installed hooks by this list (0000151 ADR-007).
+$RetiredHookNames = $TelemetryHookModules
 
 function Remove-LegacyTelemetryWiring {
     # Mirror of remove_legacy_telemetry_wiring in setup.sh (0000033 req-004,
@@ -699,12 +701,12 @@ function Remove-LegacyTelemetryWiring {
 
 function Remove-RetiredHooks {
     # Mirror of prune_retired_hooks in setup.sh (0000151 req-004, ADR-007).
-    # Deletes each installed hook whose base name is on $TelemetryHookModules,
+    # Deletes each installed hook whose base name is on $RetiredHookNames,
     # checks the whole hooks tree, and prints one line per removal.
     param([string]$HooksRootRel)
     $root = Join-Path $ProjectRoot $HooksRootRel
     if (-not (Test-Path -LiteralPath $root -PathType Container)) { return }
-    foreach ($name in $TelemetryHookModules) {
+    foreach ($name in $RetiredHookNames) {
         $found = @(Get-ChildItem -LiteralPath $root -Recurse -File -Filter "$name.mjs" -ErrorAction SilentlyContinue |
             Where-Object { $_.Name -ceq "$name.mjs" })
         foreach ($file in $found) {

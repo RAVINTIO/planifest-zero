@@ -30,7 +30,8 @@ echo "=== (b) model frontmatter and installed copies ==="
 for s in test-writer implementer refactor; do
   assert_equals "yes" "$(sed -n '1,8p' "$ZERO_DIR/skills/planifest-$s/SKILL.md" | grep -q '^model: haiku$' && echo yes || echo no)" "planifest-$s sets model: haiku"
 done
-BL=$(grep -c 'skill-level `model`' "$ROOT_DIR/plan/current/build-log.md")
+# Ship archives plan/current/, so read the build log from either place.
+BL=$(cat "$ROOT_DIR"/plan/current/build-log.md "$ROOT_DIR"/plan/_archive/0000151-*/build-log.md 2>/dev/null | grep -c 'skill-level `model`')
 assert_equals "yes" "$([ "$BL" -ge 1 ] && echo yes || echo no)" "build log records the skill-level model check"
 DIFFS=0
 for f in "$ROOT_DIR"/.claude/skills/*/references/agent-dispatch-standards.md; do
