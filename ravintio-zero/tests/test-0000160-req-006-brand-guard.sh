@@ -104,8 +104,6 @@ ALLOWLIST=(
   "^ravintio-zero/migrations/0004-ravintio-rename\\.md\$${TAB}."
   # The helpers move the old paths to the new ones.
   "^ravintio-zero/migrations/migrate-ravintio-rename\\.(sh|ps1)\$${TAB}."
-  # The REQ-005 tests exercise the migration against old-named fixtures.
-  "^ravintio-zero/tests/test-0000160-req-005-.*\$${TAB}."
 
   # --- This guard ---
   # This test and its regression copy, which must name the word to match it.

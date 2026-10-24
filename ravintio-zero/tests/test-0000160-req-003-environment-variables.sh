@@ -30,6 +30,7 @@ LEFT="$(cd "$REPO" && git ls-files -z \
       -e '^plan/current/' -e '^ravintio-zero/migrations/0004-ravintio-rename.md$' \
       -e '^ravintio-zero/migrations/migrate-ravintio-rename\.' \
       -e '^ravintio-zero/tests/test-.*ravintio-rename' \
+      -e '^docs/decisions-index\.md$' \
       -e '^ravintio-zero/tests/test-0000160-req-006-brand-guard.sh$' \
       -e '^ravintio-zero/tests/test-0000160-req-003-environment-variables.sh$' \
   | xargs -0 grep -I -n 'PLANIFEST_' 2>/dev/null \

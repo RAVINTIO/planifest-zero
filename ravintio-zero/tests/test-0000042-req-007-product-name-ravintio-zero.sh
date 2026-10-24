@@ -3,7 +3,8 @@
 # name RAVINTIO Zero.
 #
 # product.yml and ravintio-zero/component.yml set name "RAVINTIO Zero" and
-# keep id "ravintio-zero". README.md names no product "RAVINTIO Framework".
+# keep id "ravintio-zero". README.md names "RAVINTIO Framework" only as the
+# separate sibling product (0000160 ADR-001).
 
 set -uo pipefail
 
@@ -40,8 +41,8 @@ assert_equals "ravintio-zero" "$(field id "$COMPONENT")" \
 echo ""
 echo "=== req-007 (b): no RAVINTIO Framework name ==="
 
-assert_equals "no" "$(has 'RAVINTIO Framework' "$README")" \
-  "req-007 (b): README.md holds no RAVINTIO Framework string"
+assert_equals "" "$(grep 'RAVINTIO Framework' "$README" | grep -v 'distinct from RAVINTIO Framework' || true)" \
+  "req-007 (b): README.md names RAVINTIO Framework only as the sibling product"
 assert_equals "no" "$(has 'RAVINTIO Framework' "$PRODUCT")" \
   "req-007 (b): product.yml holds no RAVINTIO Framework string"
 assert_equals "no" "$(has 'RAVINTIO Framework' "$COMPONENT")" \
