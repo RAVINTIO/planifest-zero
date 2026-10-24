@@ -67,3 +67,4 @@ P0: Discovery: Complete: design confirmed, 15 requirements, autonomous run.
 - Done: P1 Claude Code fact check (2026-10-24T14:31:55Z). Both CLI flags exist and --max-turns exits with an error at the cap (exact code unconfirmed). Exit 2 shows stderr, or a valid JSON reason. Skills accept a model field. An Agent call without model inherits the main model.
 - Done: P1 REQ-003 REQ-004 REQ-015 requirements (2026-10-24T14:31:55Z)
 - Done: P1 REQ-007 REQ-008 REQ-010 requirements (2026-10-24T14:32:06Z)
+- Done: P1 REQ-009 REQ-011 requirements (2026-10-24T14:32:15Z)
