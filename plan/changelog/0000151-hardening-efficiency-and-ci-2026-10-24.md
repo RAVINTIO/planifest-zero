@@ -2,7 +2,7 @@
 
 **Feature:** hardening-efficiency-and-ci
 **Version:** 0.11.0
-**PR:** {pending, updated at Step 9}
+**PR:** [#23](https://github.com/planifest/planifest-zero/pull/23)
 
 ## What changed
 
