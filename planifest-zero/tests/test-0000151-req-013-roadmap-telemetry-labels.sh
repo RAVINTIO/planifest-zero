@@ -79,6 +79,9 @@ R="$(make_fixture c-iso)"
 grep -v -e '^PATH=' -e '^STUB_LOG=' -e '^OLDPWD=' -e '^__CF_' "$R/parent.env" > "$R/p.env"
 grep -v -e '^PATH=' -e '^STUB_LOG=' -e '^OLDPWD=' -e '^__CF_' "$R/stub.log.env" > "$R/c.env"
 assert_equals "0" "$(diff "$R/p.env" "$R/c.env" | grep -c '^[<>]')" "req-013 (c): no other child variable differs"
+# The driver passes the labels through spawn's env option and never assigns
+# to its own process.env, so its environment stays as it was.
+assert_equals "0" "$(grep -cE 'process\.env(\.[A-Z_]+|\[[^]]+\])? *=[^=]' "$DRIVER" || true)" "req-013 (c): the driver never assigns to its own environment"
 
 echo ""
 echo "=== req-013 (c): documentation ==="

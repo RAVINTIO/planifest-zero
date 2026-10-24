@@ -53,6 +53,8 @@ POUT=$(env -u PLANIFEST_TEST_QUIET bash "$TMP/test-pass.sh" 2>&1)
 assert_contains "  PASS: equal case" "$POUT" "normal mode prints PASS lines"
 assert_equals "0" "$(printf '%s\n' "$POUT" | grep -c -- '--- test-pass.sh ---')" "normal mode adds no suite line from the helper"
 assert_contains "  FAIL: unequal case" "$NOUT" "normal mode prints FAIL lines"
+assert_contains "needle:   needle-x" "$NOUT" "normal mode keeps the needle"
+assert_contains "haystack: hay-y" "$NOUT" "normal mode keeps the haystack"
 
 echo "=== (c) runner quiet mode ==="
 RT="$TMP/rt"; mkdir -p "$RT/helpers" "$RT/regression"
