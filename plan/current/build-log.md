@@ -68,3 +68,19 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 1. (2026-10-25T03
 - Done: P1 ADRs and execution plan, written inline while batch 1 ran (2026-10-25T03:30:19Z)
 - Consistency check clean on the first run. (2026-10-25T03:30:19Z)
 P1 Plan: Complete: six requirements, four ADRs, execution plan, scope, risk register, and glossary. Autonomous run, no gate stop. (2026-10-25T03:30:19Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T03:30:39Z` |
+| Model tier | primary (sonnet TDD tracks) |
+| Skills loaded | ravintio-implement, ravintio-test-writer, ravintio-implementer, ravintio-refactor |
+| Agents spawned | `4` |
+| MCP calls | `0` |
+| Parallel task batches | `2` |
+| Notes | Batch 1: three TDD tracks on disjoint files. Batch 2: one track, because REQ-003 and REQ-006 share the ship skill and both workflow files. Each track runs red, green, and refactor inline. |
+
+- In progress: track A REQ-002, REQ-001 attribution check and ban text (2026-10-25T03:30:39Z)
+- In progress: track B REQ-004 setup attribution setting (2026-10-25T03:30:39Z)
+- In progress: track C REQ-005 release tag script (2026-10-25T03:30:39Z)
