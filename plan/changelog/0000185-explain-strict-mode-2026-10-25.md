@@ -2,7 +2,7 @@
 
 **Feature:** explain-strict-mode
 **Version:** 0.18.1
-**PR:** pending, updated at Step 9
+**PR:** [#35](https://github.com/RAVINTIO/ravintio-zero/pull/35)
 
 ## What changed
 
