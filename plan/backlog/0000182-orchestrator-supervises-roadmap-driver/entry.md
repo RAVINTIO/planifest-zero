@@ -24,7 +24,7 @@ During roadmap 0000168, the parent session ran without the orchestrator and with
 
 The human also had no regular view of progress. During step 4, the child's build log stayed unchanged for 25 minutes while it kept committing. The log's `In progress:` lines gave no sign of how close P2 was to complete.
 
-Backlog entries filed by the parent while a step ran had nowhere safe to go. The working tree was on the child's feature branch. Entries 0000179 to 0000182 rode into the step 4 PR as a result. On the same day, two sessions gave the same Framework backlog ids to different entries.
+Backlog entries filed by the parent while a step ran had nowhere safe to go. The working tree was on the child's feature branch. Entries 0000179 to 0000182 rode into the step 4 PR as a result. On the same day, two sessions gave the same RAVINTIO Framework backlog ids to different entries.
 
 The driver also showed three bugs during roadmap 0000168:
 
