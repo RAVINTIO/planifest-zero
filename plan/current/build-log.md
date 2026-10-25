@@ -39,3 +39,10 @@ Pending migration `0004-ravintio-rename.md` skipped. Its `Applies when:` conditi
 Backlog pull-in (roadmap row): 0000166, 0000167.
 Version: 0.14.0 (minor, roadmap `Bump`, from 0.13.0)
 Run mode: autonomous (2026-10-25T03:27:05Z, roadmap step)
+Scope Lock (happy path): Ship scans the PR body clean and raises the PR without a tag. After the human merges, CI tags the squash commit on `main` and pushes the tag. [source: draft-accepted (roadmap)]
+Scope Lock (first-run path): On a repo with no `attribution` key, setup adds it. On a repo with no tag for the current version, the first push to `main` creates it. [source: draft-accepted (roadmap)]
+Scope Lock (error path): If a PR body holds an attribution line, ship stops and CI fails `validate-branch`. If the tag exists, the tag job skips with exit 0. [source: draft-accepted (roadmap)]
+Scope Lock (cross-session continuity): Every step is idempotent. A rerun of setup, the check, or the tag job changes nothing that the last run already did. [source: draft-accepted (roadmap)]
+Scope Lock complete. All four scenario paths captured.
+P0 exchange (design): Q: Confirm the design? / A: draft-accepted (roadmap). (2026-10-25T03:35:00Z)
+P0 Discovery: Complete: design self-confirmed for roadmap step 1. (2026-10-25T03:35:00Z)
