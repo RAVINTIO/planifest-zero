@@ -14,7 +14,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Pipeline start | `2026-10-25T11:34:57Z` |
 | Tool | `claude-code` |
 | Primary model | `opus` |
-| Cheaper model | `sonnet` |
+| Cheaper model | `haiku` |
+| Run speed | `standard` (the run predates `plan/.run-speed`) |
 | Roadmap | `0000168-backlog-clearance`, step 4 of 5 |
 
 ---
@@ -26,6 +27,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T11:34:57Z` |
+| End | `2026-10-25T11:35:52Z` |
+| Wall clock | `1 min` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | `0` |
@@ -52,6 +55,8 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 4. (2026-10-25T11
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T11:36:06Z` |
+| End | `2026-10-25T11:37:49Z` |
+| Wall clock | `2 min` |
 | Model tier | primary orchestrator, cheaper scope agent |
 | Skills loaded | ravintio-plan |
 | Agents spawned | `1` |
@@ -88,3 +93,18 @@ P1 Plan: Complete: three requirements, three ADRs, story map, execution plan, sc
 - Full suite under `env -i`: 151 feature and 19 regression suites pass. (2026-10-25T12:03:36Z)
 - Commit 6148266 (backlog 0000179 and 0000180) landed on this branch from outside the run. The run left it in place. (2026-10-25T12:03:36Z)
 P2 Implement: Complete: three requirements, tests green, docs updated. Autonomous run, no gate stop. (2026-10-25T12:03:36Z)
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T12:03:53Z` |
+| Model tier | primary orchestrator, primary verification and security agents |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: execution verification and security review run in parallel. The full suite already passed at the end of P2 on the same tree. |
+
+- In progress: P3 execution verification (2026-10-25T12:03:53Z)
+- In progress: P3 security review (2026-10-25T12:03:53Z)
