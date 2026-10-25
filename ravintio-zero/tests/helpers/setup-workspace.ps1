@@ -75,6 +75,10 @@ function Invoke-Setup {
         $output = & $global:HostExe -NoProfile -ExecutionPolicy Bypass -File $setup @SetupArgs 2>&1 | Out-String
         $code = $LASTEXITCODE
         Write-Host ("[timing] setup.ps1: {0} ms" -f $setupTimer.ElapsedMilliseconds)
+        # The runner totals these lines from the file it names (0000171 req-003).
+        if ($env:RAVINTIO_TIMING_FILE) {
+            [System.IO.File]::AppendAllText($env:RAVINTIO_TIMING_FILE, ("{0}`r`n" -f $setupTimer.ElapsedMilliseconds), [System.Text.Encoding]::ASCII)
+        }
     }
     finally {
         $env:GIT_CEILING_DIRECTORIES = $savedCeiling
