@@ -107,6 +107,44 @@ for (const f of reqFiles) {
   }
 }
 
+// ---- 7: story map (feature 0000170) -----------------------------------------
+if (reqFiles.length > 0) {
+  const mapText = read(join(dir, "story-map.md"));
+  if (mapText === null) {
+    findings.push("story-map.md: missing — requirement files exist but no story map maps them");
+  } else {
+    for (const f of reqFiles) {
+      const us = (read(join(reqDir, f)) ?? "").match(/\*\*Source:\*\*\s*(US-\d+)/)?.[1];
+      if (us && !new RegExp(`\\b${us}\\b`).test(mapText)) {
+        findings.push(`story-map.md: ${us} (Source of ${f}) does not appear in the story map`);
+      }
+    }
+    let col = -1;
+    for (const line of mapText.split(/\r?\n/)) {
+      if (!line.trim().startsWith("|")) continue;
+      const cells = line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      if (cells.some((c) => /^-+:?$|^:-+:?$/.test(c))) continue; // separator row
+      if (cells.some((c) => c.toLowerCase() === "requirement")) {
+        col = cells.findIndex((c) => c.toLowerCase() === "requirement");
+        continue;
+      }
+      if (col === -1) continue;
+      const label = cells[1] || cells[0] || "(unnamed row)";
+      const cell = cells[col] ?? "";
+      if (cell === "") {
+        findings.push(`story-map.md: row "${label}" has an empty Requirement cell`);
+        continue;
+      }
+      for (const ref of new Set(cell.match(/REQ-\d+/g) ?? [])) {
+        const prefix = `${ref.toLowerCase()}-`;
+        if (!reqFiles.some((f) => f.startsWith(prefix))) {
+          findings.push(`story-map.md: row "${label}" names ${ref} but no ${prefix}*.md file exists`);
+        }
+      }
+    }
+  }
+}
+
 // ---- 3: orphaned ADR references -------------------------------------------
 const adrDir = join(dir, "adr");
 const adrIds = new Set(
