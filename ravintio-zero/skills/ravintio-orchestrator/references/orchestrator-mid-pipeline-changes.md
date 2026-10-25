@@ -18,5 +18,6 @@ If the human changes requirements while P1 to P3 is in progress:
    - Contradictory (reverses a prior decision): halt, update the confirmed design, write an ADR for the reversal, re-run from P1.
 2. **Re-run rules:** re-running P1 invalidates P2 and P3 output, so delete stale artifacts first. Re-running P2 requires re-running P3 at minimum. Never patch generated code to match a spec change: regenerate from the updated spec.
 3. **Record it:** add a "Requirement Change" entry to the build log noting what changed, the active phase, and what was re-run.
+   Also append `Requirement change: {cosmetic | additive | contradictory}: {what changed} ({ISO-8601 timestamp})`. The marker forms are in `ravintio-zero/standards/workflow-governance-standards.md`.
 
 If the change would alter the feature fundamentally (different problem, users, or domain), recommend a new feature instead.
