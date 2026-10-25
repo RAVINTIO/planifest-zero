@@ -115,7 +115,7 @@ function Copy-RavintioSkills {
 
             # Rewrite relative paths to match bundled directory structure
             $skillMdPath = Join-Path $destDir "SKILL.md"
-            $skillContent = Get-Content -Path $skillMdPath -Raw
+            $skillContent = Get-Content -Path $skillMdPath -Raw -Encoding UTF8
             $skillContent = $skillContent -replace '\.\./templates/', './assets/templates/'
             $skillContent = $skillContent -replace '\.\./standards/reference/', './references/reference/'
             $skillContent = $skillContent -replace '\.\./standards/', './references/'
@@ -132,7 +132,7 @@ function Copy-RavintioSkills {
             }
 
             # Parse bundle_templates and bundle_standards from SKILL.md frontmatter
-            $rawContent = Get-Content -Path $srcSkillMd -Raw
+            $rawContent = Get-Content -Path $srcSkillMd -Raw -Encoding UTF8
             $bundleTemplates = @()
             $bundleStandards = @()
             if ($rawContent -match '(?m)^bundle_templates:\s*\[([^\]]*)\]') {
@@ -1010,7 +1010,7 @@ out/
         Write-Host "  + $ignoreFile (created)"
     }
     else {
-        $existing = Get-Content -Path $ignorePath -Raw
+        $existing = Get-Content -Path $ignorePath -Raw -Encoding UTF8
         if ($existing -notmatch "RAVINTIO - Token Reduction") {
             Add-Content -Path $ignorePath -Value $ignoreContent -Encoding UTF8
             Write-Host "  + $ignoreFile (appended RAVINTIO ignore rules)"
@@ -1054,7 +1054,7 @@ function Append-OverrideInstructions {
     $endMarker   = '<!-- ravintio-overrides:instructions:end -->'
 
     # Strip any existing override block from a previous run
-    $current = Get-Content -Path $bootPath -Raw
+    $current = Get-Content -Path $bootPath -Raw -Encoding UTF8
     if ($current -match [regex]::Escape($startMarker)) {
         $pattern = "(?s)\r?\n$([regex]::Escape($startMarker)).*?$([regex]::Escape($endMarker))\r?\n?"
         $current = [regex]::Replace($current, $pattern, '')
@@ -1071,7 +1071,7 @@ function Append-OverrideInstructions {
 
     $block = "`n`n$startMarker`n"
     foreach ($file in $files) {
-        $block += "`n" + (Get-Content -Path $file.FullName -Raw).TrimEnd() + "`n"
+        $block += "`n" + (Get-Content -Path $file.FullName -Raw -Encoding UTF8).TrimEnd() + "`n"
         Write-Host "  + $($file.Name)"
     }
     $block += "`n$endMarker"
@@ -1140,7 +1140,7 @@ function Invoke-RavintioSetup {
     $manifest = Join-Path $skillsDir ".ravintio-manifest"
     if (Test-Path $manifest) {
         Write-Host "  Re-run detected — removing previously installed directories"
-        Get-Content -Path $manifest | Where-Object { $_ -ne '' } | ForEach-Object {
+        Get-Content -Path $manifest -Encoding UTF8 | Where-Object { $_ -ne '' } | ForEach-Object {
             if (Test-Path $_) {
                 Remove-Item -Path $_ -Recurse -Force
                 Write-Host "  - removed: $(Split-Path -Leaf $_)"
@@ -1171,7 +1171,7 @@ function Invoke-RavintioSetup {
         $bootContent = $toolConfig.BootContent
         if (-not $bootContent -and $toolConfig.BootTemplate) {
             $bootContentPath = Join-Path $ProjectRoot $toolConfig.BootTemplate
-            $bootContent = Get-Content -Raw -Path $bootContentPath
+            $bootContent = Get-Content -Raw -Path $bootContentPath -Encoding UTF8
         }
         Write-RavintioBootFile -RelPath $toolConfig.BootFile -Content $bootContent
     }
