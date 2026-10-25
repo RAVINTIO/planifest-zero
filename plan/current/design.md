@@ -70,7 +70,7 @@ Unchanged: `roadmap-standards.md`, `ravintio.step`, historical test file names, 
   - The driver stops and names the new variable when an old `RAVINTIO_ROADMAP_*` variable is set.
   - A search test for old names outside an allowlist.
   - New wording in the open backlog entries.
-  - Refreshing `.claude/skills/` from `ravintio-zero/skills/`. The agent stops and asks the human before setup runs, in any run mode.
+  - Refreshing `.claude/skills/` from `ravintio-zero/skills/`. The human pre-approved setup at P0, so the run refreshes it without stopping. The run stops instead when it recommends a context clear.
 - Out:
   - The `ravintio-initiative` skill and its progress reports (backlog 0000182).
   - New prefix enforcement (backlog 0000181).
@@ -85,7 +85,7 @@ Unchanged: `roadmap-standards.md`, `ravintio.step`, historical test file names, 
 
 ## Risks
 - A missed reference breaks the driver or `merge-guard` at the next activation. Likelihood medium, impact high. Mitigation: the search test, and a dry run of the driver against a stub initiative.
-- `.claude/skills/` drifts from `ravintio-zero/skills/`. Likelihood high, impact medium. Mitigation: after P2, stop for the human to run or approve setup, then check the copies match.
+- `.claude/skills/` drifts from `ravintio-zero/skills/`. Likelihood high, impact medium. Mitigation: run setup after P2 (pre-approved at P0), then check the copies match.
 - A rename breaks a Windows-only test path. Likelihood low, impact medium. Mitigation: run the PowerShell suites locally with `pwsh`, and treat Windows PowerShell 5.1 as CI-only.
 
 ## Dependencies
@@ -118,4 +118,4 @@ P1 sets the final requirement list.
 - custom-005-delete-redundant-local-branches: delete merged or upstream-gone local branches with `git branch -D`. Never delete the current branch, `main`, or a branch with unpushed commits.
 
 ## Confirmation
-Human confirmed this design before proceeding: pending
+Human confirmed this design before proceeding: yes // Date and Time confirmed: 25 Oct 2026 @ 09:54 p.m. GMT

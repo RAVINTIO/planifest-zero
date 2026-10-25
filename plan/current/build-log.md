@@ -26,7 +26,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T21:39:48Z` |
-| End | `pending` |
+| End | `2026-10-25T21:54:37Z` |
 | Wall clock | `pending` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
@@ -50,3 +50,5 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Run mode: autonomous (2026-10-25T21:53:43Z)
 - Run speed: fast (2026-10-25T21:53:43Z)
 - P0 exchange (setup): Q: (human, unprompted) / A: Stop and ask before setup runs, even in autonomous mode.
+- P0 exchange (setup, revised): Q: Confirm the design? / A: "Or just run it. You have my permission. Perhaps just stop when you want context clearing." Setup is pre-approved. The run stops when it recommends a context clear, in place of the setup stop.
+- Design confirmed by the human (2026-10-25T21:54:37Z).
