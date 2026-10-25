@@ -1,8 +1,6 @@
 ---
 name: ravintio-orchestrator
 description: Owns discovery and routing for the five-phase RAVINTIO pipeline. Coaches a human from feature brief to confirmed design, then invokes the plan, implement, validate-and-accept, and ship phase skills in sequence.
-bundle_templates: [feature-brief.template.md, design.template.md, discovery.template.md, build-log.template.md, backlog-entry.template.md, roadmap-entry.template.md, pause.template.md, park.template.md]
-bundle_standards: [stack-summary.md, monorepo-standards.md, api-design-standards.md, observability-standards.md, agent-dispatch-standards.md, pack-update-policy.md]
 ---
 
 # RAVINTIO Orchestrator
@@ -279,7 +277,7 @@ After the human acts, the run resumes in the same mode from `plan/.run-mode`.
 | Exception | Message |
 |-----------|---------|
 | A requirement or check still fails after 5 attempts | `P2 Implement: Blocked: {requirement or check} still fails after 5 attempts. Review the escalation and choose the next step.` (P3 uses `P3 Validate:`) |
-| P2 needs a schema change, unless a roadmap step matches a chart-approved row (see `roadmap-standards.md`) | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
+| P2 needs a schema change, unless a roadmap step matches a chart-approved row (see `ravintio-zero/standards/roadmap-standards.md`) | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
 | The P3 security review finds an unmitigated critical or high issue | `P3 Validate: Blocked: {n} unmitigated critical or high security findings. Approve a mitigation or accept the risk.` |
 | A push or `gh pr create` fails | `P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.` (other phases use their own prefix) |
 | A possible credential appears in a file the run will commit, or in a PR body | `{prefix} Blocked: possible credential in {path}. Remove it or confirm it is not a secret.` Stop before the commit and before any push. Never print the value. |

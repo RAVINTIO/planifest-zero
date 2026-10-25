@@ -1,7 +1,6 @@
 ---
 name: ravintio-migrator
 description: Executes a pending RAVINTIO Zero migration interactively. Reads a migration file, presents findings to the human, applies confirmed changes, and archives the migration on completion. Invoked by the orchestrator when pending migrations are detected.
-bundle_standards: [formatting-standards.md]
 ---
 
 # RAVINTIO Migrator
@@ -71,4 +70,4 @@ When uncertain whether a match is prose or code, present it with a note: `(uncer
 
 ## Response Style
 
-Follow `formatting-standards.md` § Response Verbosity.
+Follow `ravintio-zero/standards/formatting-standards.md` § Response Verbosity.

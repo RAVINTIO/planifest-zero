@@ -1,7 +1,6 @@
 ---
 name: ravintio-optimise-agent
 description: Reviews ravintio-zero/skills/ for superfluous content and presents one suggestion at a time for human confirmation. Never modifies files.
-bundle_standards: [language-quirks-en-gb.md]
 ---
 
 # RAVINTIO: optimise-agent
