@@ -2,7 +2,7 @@
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
 feature: "0000169-release-hygiene"
-version: "0.13.0"
+version: "0.14.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
