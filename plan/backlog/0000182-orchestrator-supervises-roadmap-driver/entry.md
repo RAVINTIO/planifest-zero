@@ -46,6 +46,9 @@ The driver also showed three bugs during roadmap 0000168:
   - the commits since the last report
   - any stop
   If nothing changed, say so and give the time since the last change.
+- Answer a progress request at any time, and close each phase end with the same report. It has two parts:
+  - **Roadmap:** steps merged out of the total, and backlog entries done out of the total, with a table of each step's feature, entries, version, and status.
+  - **Current step:** the phase, progress within it (units done out of planned, and criteria verified out of total once P3 starts), and what comes next. Add highlights: what the step changes for the user, and any risk, such as criteria verified only by text search.
 - Report at once, without waiting for the next 5-minute report, when the build log gains a phase `Complete:`, a `Blocked:`, or a `Resolved:` line.
 - In Claude Code, a read-only background monitor does this. It checks every 30 seconds and prints one line per event and one heartbeat line every 5 minutes. A monitor expires after 30 minutes, so the supervisor starts a new one each time until the driver exits.
 - Make each heartbeat show whether the driver process is still running, so a stopped driver never looks like a quiet one.
@@ -60,7 +63,7 @@ The driver also showed three bugs during roadmap 0000168:
 
 ## Wanted outcome
 
-The session that starts the driver runs as the orchestrator in supervisor mode throughout. The supervisor reports progress at least once every 5 minutes and reports each phase end or stop at once. The driver stops on a `Blocked:` line in an archived build log, advances a step only after its merge, and keeps child subagents running. The strict-mode hook stays quiet in both the supervisor and child sessions. When the driver exits, the supervisor reports every step's result and the roadmap PR URL. A test runs the driver with a stub child and checks that the supervisor report names each step. Further tests cover each driver fix.
+The session that starts the driver runs as the orchestrator in supervisor mode throughout. On request and at each phase end, the supervisor reports roadmap completion and the current step's phase, progress, and highlights. It also reports progress at least once every 5 minutes and reports each phase end or stop at once. The driver stops on a `Blocked:` line in an archived build log, advances a step only after its merge, and keeps child subagents running. The strict-mode hook stays quiet in both the supervisor and child sessions. When the driver exits, the supervisor reports every step's result and the roadmap PR URL. A test runs the driver with a stub child and checks that the supervisor report names each step. Further tests cover each driver fix.
 
 ## Why Deferred
 
