@@ -95,3 +95,18 @@ P1 Plan: Complete: six requirements, four ADRs, execution plan, scope, risk regi
 - Deviation: track A's ban text names the footer line in the ship skill, so `test-0000025-req-001` now fails only on a line that starts with the footer. Three more suites (0000037-req-005, 0000042-req-011, 0000043-req-005) and 0000151-req-002 follow the moved ship text. No regression suite changed in track D. (2026-10-25T03:41:13Z)
 - Done: P2 living docs, change record, and component.yml close-out. Full Bash suite under env -i: 125 feature and 19 regression suites pass, 13 PowerShell suites left to CI. (2026-10-25T03:45:29Z)
 P2 Implement: Complete: 6 requirements built across 4 tracks in 2 batches. Autonomous, no gate stop. (2026-10-25T03:45:29Z)
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T03:46:05Z` |
+| Model tier | primary (verification and security agents) |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: execution verification with the coverage table, and the security review, in parallel. CI runs on the step PR at R-D Advance, as roadmap-standards.md sets out. |
+
+- In progress: P3 execution verification and coverage (2026-10-25T03:46:05Z)
+- In progress: P3 security review (2026-10-25T03:46:05Z)
