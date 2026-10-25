@@ -36,3 +36,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | `Fresh start on feat/0000189-name-the-roadmap-initiative, cut from main at 6c948a7 after PR #36 merged. Context reset skipped: the human was mid-conversation charting the initiative this feature precedes. Migration 0004 stays pending: its Applies-when condition is false in the pack source.` |
 
 - Backlog pickup: pull in 0000188 (name the roadmap initiative). Leave 0000174 to 0000186 for the roadmap initiative charted on 2026-10-25.
+- P0 exchange (initiative storage): Q: Keep each initiative in plan/roadmap/ throughout, or keep a move on activation? / A: Keep the move, to plan/current-initiative/, because a fixed path helps manage state as sessions change.
