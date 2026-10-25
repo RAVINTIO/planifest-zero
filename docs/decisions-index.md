@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000172-subagent-acceleration
+Last updated: 0000173-workflow-governance-gates
 
 ---
 
@@ -18,6 +18,14 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000173: workflow-governance-gates
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as declared | accepted | `workflow-metrics.mjs` uses Node built-in modules only. The pack gains no dependency. |
+| ADR-002 | Fixed marker lines are the only metric source | accepted | The script counts `Rework:`, `Blocked:`, `Requirement change:`, and `Gate revised:` lines in the build log and loop-state files. It never reads free text. |
+| ADR-003 | Thresholds live in a pack standard, and the gate only reports | accepted | `standards/workflow-governance-standards.md` holds the thresholds table. A breach shows in the build report and the PR description and never stops ship. |
+
 ### Feature 0000172: subagent-acceleration
 
 | ADR | Title | Status | Summary |

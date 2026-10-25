@@ -64,6 +64,8 @@ Read the archived `build-log.md`. It is now the only copy. Write `build-report.m
 - Self-corrections, with whether each was avoidable.
 - One improvement suggestion per phase where warranted.
 
+Then run `node ravintio-zero/scripts/workflow-metrics.mjs "{archive-folder}"` and append its output to `build-report.md`. If it exits non-zero, write `Workflow governance: not measured ({reason})` instead. The reason is `build log unreadable` or `thresholds invalid`, never a path or error text. A breach does not stop ship in either run mode.
+
 Source every metric from the build log. Never infer or fabricate. If routing or parallelism is not evidenced, treat it as not applied.
 
 ### Step 6: Version bump
@@ -95,7 +97,7 @@ Should I raise the PR, or will you?
 
 In `autonomous`, take option [1] without asking.
 
-Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution. Leave out `Generated with [Claude Code]` lines (with or without a robot emoji), `Co-Authored-By:` lines that name an AI tool, and `Claude-Session:` lines or claude.ai/code session links.
+Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. Add the same `## Workflow governance` section from `build-report.md`, or the `Workflow governance: not measured ({reason})` line, in both run modes and for both PR options. A breach does not stop ship. PR bodies carry no AI attribution. Leave out `Generated with [Claude Code]` lines (with or without a robot emoji), `Co-Authored-By:` lines that name an AI tool, and `Claude-Session:` lines or claude.ai/code session links.
 
 Before `gh pr create`, write the PR body to a temporary file and run `node ravintio-zero/scripts/check-attribution.mjs <file>` on it. If it fails, remove the attribution lines and rerun. If it still fails, stop in both run modes:
 

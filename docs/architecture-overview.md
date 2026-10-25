@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000172-subagent-acceleration
+Last updated: 0000173-workflow-governance-gates
 
 ## What this repo is
 
@@ -79,6 +79,12 @@ No mode merges a PR or commits to `main`. The human merges every PR.
 Discovery sizes each release against a budget. The optional `releaseSize` field in `product.yml` sets it to `small`, `medium`, or `large`, and the default is `medium`. Discovery gives each candidate requirement a size class from the files it touches, then recommends a fill up to the budget.
 
 **Park.** When the human says "park", the orchestrator shelves the feature on its branch. It writes `plan/current/park.md`, pushes the branch, and raises a `chore/park-{feature-id}` PR. That PR files a backlog entry with status `parked`. The working tree then returns to `main`. The git and `gh` steps live in the orchestrator's `scripts/park.mjs`. If a local add or commit fails on the chore branch, park unstages and deletes the entry, then returns to the feature branch. Park refuses an `--entry` that is the target path, so that cleanup never deletes the only copy. Park also refuses any symlink in the entry path. It checks each part with `lstat` and the real path against the real `plan/backlog/`, before it creates, writes, or removes anything. At a later discovery, backlog pickup offers resume or discard for a parked entry. Park and pickup never merge a PR, never commit to `main`, and never force-push.
+
+### Workflow governance
+
+The pipeline measures its own workflow as well as the product. Phase skills write four fixed marker lines to the build log: `Rework:`, `Blocked:`, `Requirement change:`, and `Gate revised:`. At ship, `scripts/workflow-metrics.mjs` counts them in the archived build log and loop-state files. It compares each count against a threshold in `standards/workflow-governance-standards.md`.
+
+Ship adds the resulting `## Workflow governance` section to `build-report.md` and the PR description. A breach shows in both places and never stops ship. If the script fails, ship writes `Workflow governance: not measured` with the reason.
 
 ### Roadmaps
 

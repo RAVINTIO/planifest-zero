@@ -141,6 +141,17 @@ The assessment is adversarial, not a summary. It asks:
 - **Self-corrections**: how many occurred, and were they avoidable?
 - **Build log integrity**: are all phases represented with populated fields?
 
+### Workflow governance
+
+The build report also carries a `## Workflow governance` section from `scripts/workflow-metrics.mjs`. The script counts four marker lines in the archived build log and loop-state files:
+
+- `Rework:` lines per requirement
+- `Blocked:` stops
+- `Requirement change:` lines
+- `Gate revised:` lines
+
+It compares each count against a threshold in `standards/workflow-governance-standards.md`. Ship copies the section into the PR description. A breach never stops ship.
+
 ---
 
 ## Model Tier Routing
