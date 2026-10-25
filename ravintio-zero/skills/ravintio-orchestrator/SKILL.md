@@ -76,12 +76,12 @@ On every session start, before any action:
    - If a roadmap is `active`, `plan/current/` is empty, and `position` is past the last step, run R-E Delivery.
    - If a roadmap is `active` and `plan/current/` is empty, start the step at `position` and open with `R-C Run: Starting: {step}`.
    - If no roadmap is `active`, scan `plan/current/` for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
-4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack`, `plan/.run-mode`, and `plan/.run-speed` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
+4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
 5. **`.feature-id` staleness.** If present and its contents differ from the current work, flag it for human review before proceeding.
 6. **Skips.** If `plan/current/.skips` exists, acknowledge the skipped phases at the top of your response.
 7. **Pause restore.** If `plan/current/pause.md` exists, open with `{prefix}: Resuming: {active_task}`, restore state from the file, delete it, and continue from the pause point.
 8. **Park restore.** If you are still on the feature branch and `plan/current/park.md` exists, park did not finish. Run `gh pr list --head chore/park-{feature-id} --state all`. If it returns nothing, finish the chore PR step of park (Park Command steps 3 to 5) with `node scripts/park.mjs finish-pr`. If a push or `gh` call fails, report the exact error and stop, as in the Park Command.
-9. **Run-mode restore.** Read `plan/.run-mode` and the build log first. If it holds `gated` or `autonomous`, restore that mode without asking. In `gated`, if the last phase ended at a gate with no `Gate accepted` line, show that gate again. If `plan/.run-mode` is missing or holds any value other than `gated` or `autonomous`, ask the run-mode question from Design Confirmation. Before the question, name what you found: `` `plan/.run-mode` is missing. `` or `` `plan/.run-mode` holds `{value}`, which is not a valid run mode. `` Write the answer to `plan/.run-mode`, append `Run mode: {gated | autonomous} ({ISO-8601 timestamp}, asked on resume)` to the build log, and commit both. If the build log holds a `Blocked:` line with no later `Resolved:` line, print that stop's message again and wait. Do not move on in either mode. This check applies on resume only. A fresh start uses the stale run-mode check in Discovery Start Actions. Then read `plan/.run-speed` and keep that speed without asking. A missing or unknown value counts as `standard`.
+9. **Run-mode restore.** Read `plan/.run-mode` and the build log first. If it holds `gated` or `autonomous`, restore that mode without asking. In `gated`, if the last phase ended at a gate with no `Gate accepted` line, show that gate again. If `plan/.run-mode` is missing or holds any value other than `gated` or `autonomous`, ask the run-mode question from Design Confirmation. Before the question, name what you found: `` `plan/.run-mode` is missing. `` or `` `plan/.run-mode` holds `{value}`, which is not a valid run mode. `` Write the answer to `plan/.run-mode`, append `Run mode: {gated | autonomous} ({ISO-8601 timestamp}, asked on resume)` to the build log, and commit both. If the build log holds a `Blocked:` line with no later `Resolved:` line, print that stop's message again and wait. Do not move on in either mode. This check applies on resume only. A fresh start uses the stale run-mode check in Discovery Start Actions.
 10. **Interrupted unit.** If the build log holds an `In progress:` line with no later matching `Done:` line, stash any uncommitted changes and rerun that unit per "Progress Markers and Interrupted Units" in `ravintio-zero/standards/agent-dispatch-standards.md`.
 11. **`discovery.md` trust-or-regenerate.** If present and complete for the confirmed adoption mode, trust it as-is. If missing or incomplete mid-run, regenerate it fresh. Never patch a partial file.
 12. **Open.** Artifacts found: find the last phase in the build log and open with that phase's prefix, as `{prefix} Resuming: {one-liner}`, with no re-coaching. No artifacts: open with `P0 Discovery: Starting` and begin discovery.
@@ -116,6 +116,7 @@ Read these reference files before you act on their topic. Each holds rules moved
 | A request to skip a phase, pause, or park | `references/orchestrator-session-commands.md` |
 | A standalone skill, or a capability skill arriving or proposed | `references/orchestrator-skills-catalogue.md` |
 | A requirement change during P1 to P3 | `references/orchestrator-mid-pipeline-changes.md` |
+| The run speed | `references/orchestrator-run-speed.md` |
 
 ---
 
@@ -161,7 +162,7 @@ Perform in order, before coaching begins:
 
 1. **Context reset** (fresh starts only): apply the Context Hygiene procedure.
 2. **Pre-flight** (fresh starts only; a roadmap step cuts its branch per R-C Run): run `git branch --show-current` and report it. Ask whether previous PRs are merged and main is up to date. Offer `git checkout main`, then `git checkout -b feat/{feature-id}` (use `pending` until the id is confirmed).
-3. **Stale run-mode** (fresh starts only): if `plan/.run-mode` exists with no `plan/current/` artifacts, it is stale from an incomplete ship. Warn, delete it and any `plan/.run-speed`, continue.
+3. **Stale run-mode** (fresh starts only): if `plan/.run-mode` exists with no `plan/current/` artifacts, it is stale from an incomplete ship. Warn, delete it, continue.
 4. **Write the sentinel**: `plan/.orchestrator-active` containing the feature-id (or `pending`). Update once confirmed. Include in the discovery commit.
 5. **Create the build log** from `ravintio-zero/templates/build-log.template.md`. Fill the header. On resume, append rather than overwrite. Append a `### P0: Discovery` block before any discovery work (Hard Limit 9). At ship, the summary table is completed.
 6. **Load repo instructions**: read all `.md` files in `ravintio-overrides/instructions/` (if present). Write their contents into `design.md` under `## Repo Instructions` once it exists, or `## Repo Instructions: None`.
@@ -218,18 +219,9 @@ How should the agent run P1 to P4?
 
 Record the answer and write `plan/.run-mode` (`gated` or `autonomous`). No other value is valid. Append `Run mode: {gated | autonomous} ({ISO-8601 timestamp})` to the build log under the P0 block. Include it in the discovery commit. Only this skill writes `plan/.run-mode`. Phase skills read it and never write it. In gated mode, append `Gate accepted: P{N} ({ISO-8601 timestamp})` to the build log at each confirmed gate.
 
-Then ask the run-speed question:
+Then ask the run-speed question and write `plan/.run-speed`.
 
-```
-How fast should the agent run P1 to P4?
-
-  [1] Standard: each phase decides its own batches
-  [2] Fast: each phase dispatches its listed fast batch in one message
-```
-
-Write the answer to `plan/.run-speed` (`standard` or `fast`). Append `Run speed: {fast | standard} ({ISO-8601 timestamp})` to the build log under the P0 block, and include both in the discovery commit. A missing `plan/.run-speed` counts as `standard`. A value other than `fast` or `standard` also counts as `standard`, and the build log names that value. Phases still run in order at either speed, and every gate stays in place. The rules for a fast batch are in `ravintio-zero/standards/agent-dispatch-standards.md`.
-
-A roadmap step skips the run-mode question, the run-speed question, and the human confirmation, as R-C Run in `ravintio-zero/standards/roadmap-standards.md` describes.
+A roadmap step skips the run-mode question and the human confirmation, as R-C Run in `ravintio-zero/standards/roadmap-standards.md` describes.
 
 In a gated run, state the context size before you ask for confirmation. See Context size at gates in Phase Invocation.
 
@@ -249,8 +241,8 @@ Conventions for every downstream phase:
 - **Push cadence:** after each gate commit, if remote push is authorised by a standing override in `ravintio-overrides/instructions/` or a per-session grant in the build log, push the feature branch. A failed push is an exception stop (see Exception Stops).
 - **Skills inbox:** re-check at each transition.
 - **Run mode:** read `plan/.run-mode` at each transition and apply that phase's STOP rule below.
-- **Run speed:** read `plan/.run-speed` at each transition. If it holds `fast`, dispatch the phase skill's `### Fast batch` units, each batch in one message. At `standard`, the phase skill's other parallelism rules apply.
-- **Close the phase block:** when a phase completes, fill its `End` row with the timestamp and its `Wall clock` row with the whole minutes from `Start` to `End`.
+- **Run speed:** read `plan/.run-speed`. At `fast`, dispatch the phase's fast batch.
+- **Close the block:** when a phase completes, fill `End` and `Wall clock`.
 
 | Phase | Invoke | Gate condition | STOP rule |
 |-------|--------|----------------|-----------|

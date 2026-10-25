@@ -70,7 +70,7 @@ No mode merges a PR or commits to `main`. The human merges every PR.
 
 **Ship order.** P4 creates no tag. Step 8 reads the run mode, then clears the pipeline sentinels in a commit. Step 9 checks the PR body with `scripts/check-attribution.mjs`, pushes the branch, and raises the PR. Step 10 is the final gate. So the sentinels never reach `main` through the PR.
 
-**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Seven files under `skills/ravintio-orchestrator/references/` hold the rarely used sections word for word: adoption modes, discovery coaching, discovery records, mid-pipeline changes, scope lock, session commands, and the skills catalogue. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
+**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Eight files under `skills/ravintio-orchestrator/references/` hold the rarely used sections: adoption modes, discovery coaching, discovery records, mid-pipeline changes, run speed, scope lock, session commands, and the skills catalogue. Seven hold moved sections word for word. The run speed file holds the 0000172 run-speed rules, because `SKILL.md` has a size budget. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
 
 **Model tiers.** Every Agent call passes `model`, set to `sonnet` or `haiku`. The three TDD skills set `model: haiku`. A haiku unit that fails twice retries on sonnet. A WebFetch of a full reference page goes through a sonnet or haiku subagent that returns an extract.
 

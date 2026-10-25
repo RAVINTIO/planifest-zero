@@ -22,28 +22,33 @@ check() {
 
 section() { awk -v h="$2" 'index($0,h)==1{f=1;next} f&&/^#{1,3} /{f=0} f' "$1"; }
 
-# AC-1: Design Confirmation asks the speed question and records it
+# AC-1: Design Confirmation points to the run-speed question, and the
+# reference file holds it and the build-log line. The question lives in a
+# reference file because SKILL.md has a size budget (0000151 req-011).
+REF="$ZERO_DIR/skills/ravintio-orchestrator/references/orchestrator-run-speed.md"
 sec="$(section "$ORCH" '### Design Confirmation')"
 ok=1
-if printf '%s\n' "$sec" | grep -qF 'Standard:' \
-  && printf '%s\n' "$sec" | grep -qF 'Fast:' \
-  && printf '%s\n' "$sec" | grep -qF '`plan/.run-speed`' \
-  && printf '%s\n' "$sec" | grep -qF 'Run speed: {fast | standard}'; then ok=0; fi
-check "req-001 AC-1: Design Confirmation asks for and records the run speed" "$ok"
+if printf '%s\n' "$sec" | grep -qF '`plan/.run-speed`' \
+  && grep -qF '`references/orchestrator-run-speed.md`' "$ORCH" \
+  && grep -qF 'Standard:' "$REF" && grep -qF 'Fast:' "$REF" \
+  && grep -qF 'Run speed: {fast | standard}' "$REF"; then ok=0; fi
+check "req-001 AC-1: orchestrator asks for and records the run speed" "$ok"
 
 # AC-2: missing or unknown counts as standard, roadmap Speed field
 ok=1
-if printf '%s\n' "$sec" | grep -qi 'missing' \
-  && printf '%s\n' "$sec" | grep -qi 'counts as `standard`' \
+if grep -qi 'missing `plan/.run-speed` counts as `standard`' "$REF" \
+  && grep -qi 'also counts as `standard`' "$REF" \
   && section "$ROAD" '### R-C Run' | grep -qF '**Speed:**' \
   && grep -qF '**Speed:**' "$TPL"; then ok=0; fi
 check "req-001 AC-2: missing or unknown is standard, roadmap names Speed" "$ok"
 
 # AC-3: ship Step 8 and the orchestrator cleanup rules delete the file
+csec="$(section "$REF" '## Cleanup')"
 ok=1
 if section "$SHIP" '### Step 8' | grep -qF '`plan/.run-speed`' \
-  && grep -F '**Interrupted-ship cleanup.**' "$ORCH" | grep -qF '`plan/.run-speed`' \
-  && grep -F '**Stale run-mode**' "$ORCH" | grep -qF '`plan/.run-speed`'; then ok=0; fi
+  && printf '%s\n' "$csec" | grep -qF 'interrupted-ship cleanup' \
+  && printf '%s\n' "$csec" | grep -qF 'stale run-mode check' \
+  && printf '%s\n' "$csec" | grep -qF 'Ship Step 8'; then ok=0; fi
 check "req-001 AC-3: ship and cleanup rules delete plan/.run-speed" "$ok"
 
 # plan/.run-mode keeps its two values
