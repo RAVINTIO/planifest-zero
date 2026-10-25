@@ -1,6 +1,6 @@
 ---
-version: "0.14.0"
-feature: "0000169-release-hygiene"
+version: "0.15.0"
+feature: "0000170-story-mapping-and-gherkin"
 updated: "25 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "25 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.14.0` |
-| Last feature | `0000169-release-hygiene` |
+| Version | `0.15.0` |
+| Last feature | `0000170-story-mapping-and-gherkin` |
 | Updated | `25 Oct 2026` |
 
 ## What this is
