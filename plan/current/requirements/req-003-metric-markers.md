@@ -41,4 +41,4 @@ As a phase agent, I write one fixed line for each rework loop, design change, an
 - REQ-002 defines the standard the skills point at.
 
 ## Deviations
-- The orchestrator skill holds the short line ``On a gate change, append `Gate revised: P{N}`.`` It leaves out the `({ISO-8601 timestamp}, {what changed})` part. The 0000151 size budget allows 57 more bytes for `SKILL.md` and `CLAUDE.md` together. The full form lives in the governance standard. AC-2 still holds, because the line holds `Gate revised: P{N}`.
+- The orchestrator skill holds the short line ``On a gate change, append `Gate revised: P{N}`.`` It leaves out the `({ISO-8601 timestamp}, {what changed})` part. The 0000151 size budget allows 57 more bytes for `SKILL.md` and `CLAUDE.md` together. The full form lives in the governance standard. AC-2 still holds, because the line holds `Gate revised: P{N}`. The same budget leaves no room to name the standard in the orchestrator skill. The standard lists every marker, and the other skills point at it.
