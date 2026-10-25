@@ -87,10 +87,12 @@ The run speed is in `plan/.run-speed`. It holds `fast` or `standard`. A missing 
 
 At `fast`, a phase dispatches every unit of its fast batch in one message. It makes one `Agent` call per unit and passes `model` on each.
 
-- Units in one batch write disjoint files.
+- Units in one batch write disjoint files. A dependency manifest or lock file counts as shared, so at most one unit in a batch may add a dependency.
+- Units share one working tree, so they commit one at a time. Each unit stages its own files by path, never with `git add -A` or `git add .`. If a commit meets `.git/index.lock`, wait and retry it.
 - The Cannot parallelise table still applies.
 - Phases run in order. No unit of phase N+1 starts before phase N ends.
 - Gates, exception stops, and progress markers stay as they are. Write one `In progress:` line per unit in a single commit before the batch.
+- If one unit takes an exception stop, start no further unit. Let running units finish and commit their work, then take the stop.
 - A unit with fewer than two independent pieces stays inline.
 
 At `standard`, each phase keeps the parallelism rules above. Each phase skill lists its fast batch under `### Fast batch`. The build log records the agent count and wall-clock time for each phase.

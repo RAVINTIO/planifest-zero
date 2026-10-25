@@ -28,9 +28,9 @@ The diff adds no script, hook, dependency, network call, or `eval`. A scan of th
 
 | ID | Severity | Category | Location | Description | Mitigation | Status |
 |----|----------|----------|----------|-------------|------------|--------|
-| S-001 | medium | governance | `ravintio-zero/standards/agent-dispatch-standards.md:93`; `ravintio-zero/skills/ravintio-implement/SKILL.md:140-141` | The rules say exception stops "stay as they are". They do not say what a parallel sibling does when one unit hits a stop, such as a schema proposal or a destructive schema operation. The other units in the batch can keep writing while the human has not yet decided. A track could then build on a schema that the human later rejects. | Not mitigated. Add a line that any unit reporting a stop halts the batch, and the parent stops before it dispatches the next batch. | open |
-| S-002 | medium | governance | `ravintio-zero/skills/ravintio-implement/SKILL.md:140`; `ravintio-zero/standards/agent-dispatch-standards.md:90` | The disjoint-write rule covers each track's own files. Parallel tracks also add libraries to the shared manifest and lock file. Two tracks can both add a dependency, and the dependency stop and the library audit see each change out of order. | Not mitigated in text. The CI library audit step catches an avoided library afterwards. Add the manifest and lock file to the shared-file list, so the parent applies dependency changes inline. | open |
-| S-003 | medium | governance | `ravintio-zero/skills/ravintio-ship/SKILL.md:169`; `ravintio-zero/standards/agent-dispatch-standards.md:93` | "Each unit commits its own files" lets two agents run `git commit` at once in one working tree. The second commit can fail on `.git/index.lock` or stage the other unit's files. A failed commit leaves the unit uncommitted, which breaks the commit-continuously rule. No data leaves the repository. | Partly mitigated. The `In progress:` and `Done:` markers show an interrupted unit on resume (`agent-dispatch-standards.md:150`). Add a rule that the parent commits after the batch, or that units retry on a lock. | open |
+| S-001 | medium | governance | `ravintio-zero/standards/agent-dispatch-standards.md:93`; `ravintio-zero/skills/ravintio-implement/SKILL.md:140-141` | The rules say exception stops "stay as they are". They do not say what a parallel sibling does when one unit hits a stop, such as a schema proposal or a destructive schema operation. The other units in the batch can keep writing while the human has not yet decided. A track could then build on a schema that the human later rejects. | Not mitigated. Add a line that any unit reporting a stop halts the batch, and the parent stops before it dispatches the next batch. | mitigated in P3 |
+| S-002 | medium | governance | `ravintio-zero/skills/ravintio-implement/SKILL.md:140`; `ravintio-zero/standards/agent-dispatch-standards.md:90` | The disjoint-write rule covers each track's own files. Parallel tracks also add libraries to the shared manifest and lock file. Two tracks can both add a dependency, and the dependency stop and the library audit see each change out of order. | Not mitigated in text. The CI library audit step catches an avoided library afterwards. Add the manifest and lock file to the shared-file list, so the parent applies dependency changes inline. | mitigated in P3 |
+| S-003 | medium | governance | `ravintio-zero/skills/ravintio-ship/SKILL.md:169`; `ravintio-zero/standards/agent-dispatch-standards.md:93` | "Each unit commits its own files" lets two agents run `git commit` at once in one working tree. The second commit can fail on `.git/index.lock` or stage the other unit's files. A failed commit leaves the unit uncommitted, which breaks the commit-continuously rule. No data leaves the repository. | Partly mitigated. The `In progress:` and `Done:` markers show an interrupted unit on resume (`agent-dispatch-standards.md:150`). Add a rule that the parent commits after the batch, or that units retry on a lock. | mitigated in P3 |
 | S-004 | low | governance | `ravintio-zero/skills/ravintio-validate-and-accept/SKILL.md:126-131` | The security review runs in parallel with the inline CI checks and self-correct cycles. A fix can change code after the review read it. The report may then describe code that no longer exists. The unmitigated critical or high stop at `:93` still applies to the report as written. | Partly mitigated. The review and the CI result share one commit range. Add a line that the review reads the final commit, or re-checks changed files after the last cycle. | open |
 | S-005 | low | governance | `ravintio-zero/standards/agent-dispatch-standards.md:84-96`; `:122` | The Fast batches section does not restate the backlog id rule. Two units in the validate batch (execution verification and security review) can both file a discovery. Line 122 already requires a distinct pre-assigned id per unit, so the rule holds if the dispatcher follows it. | Mitigated by `agent-dispatch-standards.md:122`. Optionally add a pointer in the Fast batches section. | accepted |
 | S-006 | low | governance | `ravintio-zero/skills/ravintio-orchestrator/references/orchestrator-run-speed.md:30` | On resume, the file keeps the stored speed without asking. A `plan/.run-speed` left by an earlier aborted feature sets `fast` for the new run. The cleanup list (`:33-38`) deletes the file on the interrupted-ship and stale run-mode paths, which narrows the case. A `fast` run weakens no gate. | Mitigated. Cleanup covers the known paths. The build log records the speed at `:16`. | accepted |
@@ -70,7 +70,7 @@ The diff adds no script, hook, dependency, network call, or `eval`. A scan of th
 | R-002 | `plan/.run-speed` reaches a roadmap branch | mitigated | Ship Step 8 deletes it before any push (`ravintio-ship/SKILL.md:79`). Cleanup paths cover aborted runs. See S-006 and S-007. |
 | A-001 | Phase agents follow a listed fast batch more reliably than a general rule | open | Tests check the text only (S-011). The build report shows the agent count. |
 
-New risks this review adds to the register: S-001 to S-003 as medium risks. Each is open.
+New risks this review adds to the register: S-001 to S-003 as medium risks. P3 mitigated each one. See Mitigations applied.
 
 ## Top actions
 
@@ -83,7 +83,16 @@ New risks this review adds to the register: S-001 to S-003 as medium risks. Each
 
 - Critical: 0
 - High: 0
-- Medium: 3 (all open)
+- Medium: 3 (all mitigated in P3)
 - Low: 5
 - Informational: 3
 - Unmitigated Critical or High: 0
+
+## Mitigations applied
+
+The orchestrator applied these changes after the review. The fast batch suites, the prose guards, and the dispatch tier suite pass afterwards.
+
+- S-001: `## Fast batches` in `agent-dispatch-standards.md` now says a stop in one unit starts no further unit. Running units finish and commit, then the phase takes the stop.
+- S-002: the same section counts a dependency manifest or lock file as shared. At most one unit in a batch may add a dependency.
+- S-003: units commit one at a time and stage their own files by path. A commit that meets `.git/index.lock` waits and retries. Ship's fast batch points to the rule.
+- R-001 is now mitigated by these rules. A-001 stays open, because the tests check text only.

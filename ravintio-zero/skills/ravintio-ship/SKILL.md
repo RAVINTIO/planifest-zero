@@ -166,7 +166,7 @@ When `plan/.run-speed` holds `fast`, run one batch after Step 4 in one message. 
 1. Step 5, the build assessment, in a cheaper-tier subagent. It writes only `build-report.md` in the archive folder.
 2. Step 6, the version bump, inline. It writes only `docs/about.md`, `product.yml`, and `component.yml`.
 
-Each unit commits its own files. Step 7 starts after both land. At `standard`, run Steps 5 and 6 in order.
+Each unit commits its own files by path, one commit at a time, per `## Fast batches` in `ravintio-zero/standards/agent-dispatch-standards.md`. Step 7 starts after both land. At `standard`, run Steps 5 and 6 in order.
 
 ## Roadmap steps
 
