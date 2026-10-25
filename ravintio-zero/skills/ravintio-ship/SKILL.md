@@ -45,7 +45,7 @@ If `plan/current/.skips` exists, record its contents in the changelog under `## 
 
 ### Step 3: Build-log summary
 
-Fill the Summary table in `plan/current/build-log.md`: one row per phase with agent counts, parallel batches, and self-corrections.
+Fill the Summary table in `plan/current/build-log.md`: one row per phase with agent counts, parallel batches, wall-clock time, and self-corrections. First fill the P4 block's `End` and `Wall clock` rows, then the `Total wall clock` row.
 
 ### Step 4: Archive
 
@@ -58,7 +58,8 @@ Fill the Summary table in `plan/current/build-log.md`: one row per phase with ag
 
 Read the archived `build-log.md`. It is now the only copy. Write `build-report.md` into the same archive folder:
 
-- Agent counts and model tiers per phase.
+- The run speed from the build-log header.
+- Agent counts, model tiers, and wall-clock time per phase. A phase with no `End` row reads `not recorded`.
 - Parallelism used, and multi-task phases that ran sequentially.
 - Self-corrections, with whether each was avoidable.
 - One improvement suggestion per phase where warranted.
@@ -75,7 +76,7 @@ Create no tag. After the human merges the PR, the CI `release-tag` job tags the 
 
 ### Step 8: Clear sentinels
 
-Read `plan/.run-mode` first and keep the value for Step 10. Delete `plan/.orchestrator-active`, `plan/.orchestrator-ack`, and `plan/.run-mode` if present. Stage the deletions and commit. Confirm with `git ls-files` that none remain tracked.
+Read `plan/.run-mode` first and keep the value for Step 10. Delete `plan/.orchestrator-active`, `plan/.orchestrator-ack`, `plan/.run-mode`, and `plan/.run-speed` if present. Stage the deletions and commit. Confirm with `git ls-files` that none remain tracked.
 
 Do this before any push, in every run mode and for both PR options, so no PR carries the sentinels.
 
@@ -153,6 +154,19 @@ P4 Ship: Complete: PR #{n} ready for your review
 ```
 
 Use the run mode read in Step 8, because Step 8 deletes `plan/.run-mode`. Merging the PR is human-only in every mode, no exception.
+
+## Parallelism
+
+Ship steps run in order, because most steps read the one before.
+
+### Fast batch
+
+When `plan/.run-speed` holds `fast`, run one batch after Step 4 in one message. It has two units with disjoint files:
+
+1. Step 5, the build assessment, in a cheaper-tier subagent. It writes only `build-report.md` in the archive folder.
+2. Step 6, the version bump, inline. It writes only `docs/about.md`, `product.yml`, and `component.yml`.
+
+Each unit commits its own files. Step 7 starts after both land. At `standard`, run Steps 5 and 6 in order.
 
 ## Roadmap steps
 

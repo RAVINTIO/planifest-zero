@@ -114,6 +114,7 @@ Run executes one roadmap step from `position`. Ship owns the merge that ends it 
 
 - Cut the step's feature branch from the roadmap branch, not from `main`.
 - P0 writes `autonomous` to `plan/.run-mode` without asking the run-mode question.
+- P0 writes the roadmap's `**Speed:**` field, `fast` or `standard`, to `plan/.run-speed` without asking the run-speed question. If the field is absent or holds another value, P0 writes `standard`.
 - P0 builds `feature-brief.md` from the backlog entries that the step's row lists. It pulls each entry in and deletes its folder in the same commit. It does not ask pull-in, leave, or discard.
 - P0 self-confirms the design and the Scope Lock Challenge. Each scope lock line ends with `[source: draft-accepted (roadmap)]`. The design confirmation records `draft-accepted (roadmap)` in place of a human confirmation.
 - A schema change that matches a chart-approved row does not stop the step. See Chart-time schema approval.
