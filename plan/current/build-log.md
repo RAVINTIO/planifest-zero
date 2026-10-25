@@ -104,3 +104,31 @@ P2 Implement: Complete: three requirements, tests green, docs updated. REQ-001 A
 - Done: P3 security review, overall low, 0 unmitigated critical or high (2026-10-25T05:41:21Z)
 - Full suite under `env -i`: 145 feature and 19 regression suites pass. 0 self-correction cycles. (2026-10-25T05:41:21Z)
 P3 Validate and Accept: Complete: checks green, security low, evidence in acceptance-evidence.md. Autonomous run, no gate stop. (2026-10-25T05:41:21Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T05:41:59Z` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Roadmap step. Steps 1 to 6 run as written, then R-D Advance. The steps are sequential, so no subagent applies. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `5` (P0 0, P1 1, P2 2, P3 2, P4 0) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P1, P2, P3) |
+| Primary tier agent calls | `0` |
+| Sonnet agent calls | `5` (P1 scope, P2 two TDD tracks, P3 verification and security) |
+| Self-corrections | `1` (P2, `setup.ps1` comment wording) |
+| Deviations recorded | `0` |
+| Phases skipped | none |
