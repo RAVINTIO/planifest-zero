@@ -108,3 +108,31 @@ P2 Implement: Complete: five requirements, tests green, docs updated. Autonomous
 - Full suite under `env -i`: 143 feature and 19 regression suites pass. 0 self-correction cycles. (2026-10-25T05:09:18Z)
 - Filed backlog 0000176 for security findings S-001 and S-002. (2026-10-25T05:09:18Z)
 P3 Validate and Accept: Complete: checks green, security low, evidence in acceptance-evidence.md. Autonomous run, no gate stop. (2026-10-25T05:09:18Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T05:09:50Z` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Roadmap step. Steps 1 to 6 run as written, then R-D Advance. The steps are sequential, so no subagent applies. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `6` (P0 0, P1 2, P2 2, P3 2, P4 0) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P1, P2, P3) |
+| Primary tier agent calls | `1` (P1 requirements) |
+| Sonnet agent calls | `5` (P1 scope, P2 two TDD tracks, P3 verification and security) |
+| Self-corrections | `1` (P2, backlog 0000175 wording) |
+| Deviations recorded | `0` |
+| Phases skipped | none |
