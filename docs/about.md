@@ -1,6 +1,6 @@
 ---
-version: "0.17.0"
-feature: "0000172-subagent-acceleration"
+version: "0.18.0"
+feature: "0000173-workflow-governance-gates"
 updated: "25 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "25 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.17.0` |
-| Last feature | `0000172-subagent-acceleration` |
+| Version | `0.18.0` |
+| Last feature | `0000173-workflow-governance-gates` |
 | Updated | `25 Oct 2026` |
 
 ## What this is
