@@ -144,3 +144,4 @@ P3 Validate: Complete: 18 criteria verified or left to CI for PowerShell, no cri
 | Deviations recorded | `4` (P2 3, P3 1) |
 | Phases skipped | none |
 Blocked: CI failed on PR #30. `bash-suites` fails `test-0000169-req-004-setup-attribution-setting.ps1` case "req-004 (a): other settings are kept" under pwsh on Linux. 137 feature suites pass, 1 fails. (2026-10-25T04:01:27Z)
+- Resolved: CI failed on PR #30 (2026-10-25T04:33:11Z, human chose to install `pwsh` and fix locally). Cause: `Merge-AllowedTools` in `setup.ps1` assigned an `if` expression, so PowerShell unrolled a one-entry `allowedTools` array to a string and `["Read"]` became `"ReadAgent"`. The bug predates 0000169. The new req-004 (a) case exposed it. Fix: wrap the expression in `@()`. All 13 PowerShell suites pass locally under `pwsh` 7.6.8.

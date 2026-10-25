@@ -576,10 +576,12 @@ function Merge-AllowedTools {
         $settings = $parsed
     }
 
-    # A non-array allowedTools counts as empty, as in setup.sh.
-    $existing = if ($settings.PSObject.Properties['allowedTools'] -and $settings.allowedTools -is [System.Array]) {
-        @($settings.allowedTools)
-    } else { @() }
+    # A non-array allowedTools counts as empty, as in setup.sh. The outer @()
+    # stops PowerShell unrolling a one-entry array to a string, which would
+    # turn ["Read"] into "ReadAgent" below.
+    $existing = @(if ($settings.PSObject.Properties['allowedTools'] -and $settings.allowedTools -is [System.Array]) {
+        $settings.allowedTools
+    })
 
     $addAgent = $existing -cnotcontains 'Agent'
     # An absent attribution key gets empty strings, so the host writes no
