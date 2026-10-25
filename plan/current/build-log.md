@@ -122,11 +122,28 @@ P3 Validate and Accept: Complete: checks green, security low, evidence in accept
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T13:14:39Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-25T13:14:56Z` |
+| Wall clock | `1 min` |
 | Model tier | primary |
 | Skills loaded | ravintio-ship |
 | Agents spawned | `0` |
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Notes | Roadmap step at `standard` speed. Steps 1 to 6 run as written, then R-D Advance. The steps are sequential, so no subagent applies. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `19 min` (P0 3, P1 4, P2 6, P3 5, P4 to Step 3 1) |
+| Total agents spawned | `1` (P0 0, P1 0, P2 0, P3 1, P4 0) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `1` (P3) |
+| Primary tier agent calls | `1` (sonnet: P3 execution verification) |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `0` |
+| Deviations recorded | `1` (ADR-001 rewrote the existing section instead of adding one) |
+| Phases skipped | none |
