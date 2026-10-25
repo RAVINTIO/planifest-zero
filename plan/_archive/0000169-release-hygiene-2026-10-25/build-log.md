@@ -143,3 +143,4 @@ P3 Validate: Complete: 18 criteria verified or left to CI for PowerShell, no cri
 | Self-corrections | `2` (P2 1, P3 1) |
 | Deviations recorded | `4` (P2 3, P3 1) |
 | Phases skipped | none |
+Blocked: CI failed on PR #30. `bash-suites` fails `test-0000169-req-004-setup-attribution-setting.ps1` case "req-004 (a): other settings are kept" under pwsh on Linux. 137 feature suites pass, 1 fails. (2026-10-25T04:01:27Z)
