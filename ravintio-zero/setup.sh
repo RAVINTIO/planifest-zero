@@ -100,32 +100,38 @@ copy_skills() {
 }
 
 prune_bundled_files() {
-  # Removes the pack copies an older install bundled into a skill's assets/
-  # and references/ folders (0000171 req-004). A file or folder in the
-  # skill's own source folder always stays. find never follows a link, so a
-  # planted symlink is removed, never its target.
-  local src_dir="$1" dest_dir="$2" sub path rel
-  for sub in assets references; do
-    if [ -L "$dest_dir/$sub" ]; then
-      [ -e "$src_dir/$sub" ] || rm -f "$dest_dir/$sub"
-      continue
+  # Removes the pack copies an older install bundled into a skill (0000171
+  # req-004). It deletes only the paths where that install put a pack file:
+  # assets/templates/{name}, assets/schemas/{name}, and references/{name}.
+  # It never walks the folder, never deletes a path the skill source holds,
+  # and skips any linked path, so it can't reach outside the install.
+  local src_dir="$1" dest_dir="$2" from to f rel
+  [ -L "$dest_dir" ] && return 0
+  for from in templates schemas standards; do
+    case "$from" in
+      templates) to="assets/templates" ;;
+      schemas) to="assets/schemas" ;;
+      *) to="references" ;;
+    esac
+    [ -L "$dest_dir/${to%%/*}" ] || [ -L "$dest_dir/$to" ] && continue
+    [ -d "$dest_dir/$to" ] || continue
+    while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      rel="$to/$(basename "$f")"
+      [ -e "$src_dir/$rel" ] && continue
+      if [ -f "$dest_dir/$rel" ] && [ ! -L "$dest_dir/$rel" ]; then
+        rm -f "$dest_dir/$rel"
+      fi
+    done <<EOF
+$(find "$SCRIPT_DIR/$from" -type f)
+EOF
+  done
+  # Deepest first, so a parent is empty when its turn comes. rmdir keeps
+  # any folder that still holds a user file.
+  for rel in assets/templates assets/schemas assets references; do
+    if [ -d "$dest_dir/$rel" ] && [ ! -L "$dest_dir/$rel" ] && [ ! -e "$src_dir/$rel" ]; then
+      rmdir "$dest_dir/$rel" 2>/dev/null || true
     fi
-    [ -d "$dest_dir/$sub" ] || continue
-    while IFS= read -r path; do
-      [ -n "$path" ] || continue
-      rel="${path#"$dest_dir"/}"
-      [ -e "$src_dir/$rel" ] || rm -f "$path"
-    done <<EOF
-$(find "$dest_dir/$sub" \( -type f -o -type l \))
-EOF
-    # Deepest folders come first, so a parent is empty when its turn comes.
-    while IFS= read -r path; do
-      [ -n "$path" ] || continue
-      rel="${path#"$dest_dir"/}"
-      [ -d "$src_dir/$rel" ] || rmdir "$path" 2>/dev/null || true
-    done <<EOF
-$(find "$dest_dir/$sub" -depth -type d)
-EOF
   done
 }
 

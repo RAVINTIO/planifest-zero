@@ -117,39 +117,58 @@ function Copy-RavintioSkills {
 
             Write-Host "  + $skillName/SKILL.md"
 
-            foreach ($sub in @('assets', 'references')) {
-                Remove-BundledFiles $srcDir $destDir $sub
-            }
+            Remove-BundledFiles $srcDir $destDir
         }
     }
 }
 
-# Removes the pack copies an older install bundled into a skill's assets/ and
-# references/ folders (0000171 req-004). Walks the named installed folder and
-# deletes each file and folder its source folder lacks. A file in the source
-# always stays. A link is removed, never followed.
-function Remove-BundledFiles {
-    param([string]$SourceDir, [string]$DestDir, [string]$Name)
-    $dir = [System.IO.Path]::Combine($DestDir, $Name)
-    if (-not [System.IO.Directory]::Exists($dir)) {
-        $file = [System.IO.Path]::Combine($DestDir, $Name)
-        if ([System.IO.File]::Exists($file) -and -not [System.IO.File]::Exists([System.IO.Path]::Combine($SourceDir, $Name))) {
-            [System.IO.File]::Delete($file)
-        }
-        return
-    }
-    $srcSub = [System.IO.Path]::Combine($SourceDir, $Name)
-    $inSource = [System.IO.Directory]::Exists($srcSub)
+# True when the path exists and is a link or junction.
+function Test-RavintioLink {
+    param([string]$Path)
+    if (-not ([System.IO.File]::Exists($Path) -or [System.IO.Directory]::Exists($Path))) { return $false }
     $link = [System.IO.FileAttributes]::ReparsePoint
-    if (([System.IO.File]::GetAttributes($dir) -band $link) -eq $link) {
-        if (-not $inSource) { [System.IO.Directory]::Delete($dir) }
-        return
+    return (([System.IO.File]::GetAttributes($Path) -band $link) -eq $link)
+}
+
+# Removes the pack copies an older install bundled into a skill (0000171
+# req-004). It deletes only the paths where that install put a pack file:
+# assets/templates/{name}, assets/schemas/{name}, and references/{name}.
+# It never walks the folder, never deletes a path the skill source holds,
+# and skips any linked path, so it can't reach outside the install.
+function Remove-BundledFiles {
+    param([string]$SourceDir, [string]$DestDir)
+    if (Test-RavintioLink $DestDir) { return }
+    $all = [System.IO.SearchOption]::AllDirectories
+    foreach ($pair in @(@('templates', 'assets', 'templates'), @('schemas', 'assets', 'schemas'), @('standards', 'references', ''))) {
+        $top = [System.IO.Path]::Combine($DestDir, $pair[1])
+        $to = if ($pair[2]) { [System.IO.Path]::Combine($top, $pair[2]) } else { $top }
+        if ((Test-RavintioLink $top) -or (Test-RavintioLink $to)) { continue }
+        if (-not [System.IO.Directory]::Exists($to)) { continue }
+        $rel = if ($pair[2]) { [System.IO.Path]::Combine($pair[1], $pair[2]) } else { $pair[1] }
+        foreach ($f in [System.IO.Directory]::GetFiles([System.IO.Path]::Combine($ScriptDir, $pair[0]), '*', $all)) {
+            $name = [System.IO.Path]::GetFileName($f)
+            if ([System.IO.File]::Exists([System.IO.Path]::Combine($SourceDir, $rel, $name))) { continue }
+            $target = [System.IO.Path]::Combine($to, $name)
+            if ([System.IO.File]::Exists($target) -and -not (Test-RavintioLink $target)) {
+                [System.IO.File]::Delete($target)
+            }
+        }
     }
-    foreach ($entry in [System.IO.Directory]::GetFileSystemEntries($dir)) {
-        Remove-BundledFiles $srcSub $dir ([System.IO.Path]::GetFileName($entry))
-    }
-    if (-not $inSource -and [System.IO.Directory]::GetFileSystemEntries($dir).Length -eq 0) {
-        [System.IO.Directory]::Delete($dir)
+    # Deepest first, so a parent is empty when its turn comes. A folder that
+    # still holds a user file stays.
+    $folders = @(
+        [System.IO.Path]::Combine('assets', 'templates'),
+        [System.IO.Path]::Combine('assets', 'schemas'),
+        'assets',
+        'references'
+    )
+    foreach ($rel in $folders) {
+        $dir = [System.IO.Path]::Combine($DestDir, $rel)
+        if (-not [System.IO.Directory]::Exists($dir) -or (Test-RavintioLink $dir)) { continue }
+        if ([System.IO.Directory]::Exists([System.IO.Path]::Combine($SourceDir, $rel))) { continue }
+        if ([System.IO.Directory]::GetFileSystemEntries($dir).Length -eq 0) {
+            [System.IO.Directory]::Delete($dir)
+        }
     }
 }
 
