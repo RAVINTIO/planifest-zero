@@ -16,7 +16,7 @@ status: "open"
 
 RAVINTIO Zero installs for Claude Code only. `setup.sh` sets `VALID_TOOLS="claude-code"`, and `setup.ps1` matches it. The boot file, the skills folder, and the enforcement hooks all target `.claude/`. A team that uses another agent harness can't install the pipeline.
 
-Feature 0000030 removed eight tool targets on purpose, to cut the framework down to Claude Code. The removed targets were Cursor, Windsurf, Cline, Codex, Copilot, Roo Code, OpenCode, and Antigravity. The 0000030 design shows what the old adapters covered, under `plan/_archive/0000030-framework-cut-down-2026-08-22/`.
+Feature 0000030 removed eight tool targets on purpose, to cut the pack down to Claude Code. The removed targets were Cursor, Windsurf, Cline, Codex, Copilot, Roo Code, OpenCode, and Antigravity. The 0000030 design in `plan/_archive/` shows what the old adapters covered.
 
 ## Suggested Action
 
