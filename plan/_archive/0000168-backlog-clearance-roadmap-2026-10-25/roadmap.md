@@ -1,13 +1,13 @@
 ---
 title: "Roadmap: 0000168 - backlog clearance"
 summary: "Clears the six open backlog entries in five feature releases, plus a docs fix as step 6."
-status: "active"
+status: "done"
 ---
 # Roadmap: 0000168 - backlog clearance
 
 **Goal:** Clear every open backlog entry from 2026-10-25, one feature release per step. The evaluation suite split from 0000100 stays in the backlog as 0000174.
 **Branch:** roadmap/0000168-backlog-clearance
-**Status:** active
+**Status:** done
 **Position:** 7
 
 The human charted this roadmap and confirmed it on 2026-10-25. The confirmation sharpened backlog entries 0000159, 0000110, and 0000100 with a **Wanted outcome** section each.
