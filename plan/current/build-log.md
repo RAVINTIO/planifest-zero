@@ -64,3 +64,18 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 4. (2026-10-25T11
 - Done: P1 story map, three requirements, three ADRs, and execution plan, written inline while batch 1 ran (2026-10-25T11:37:49Z)
 - Consistency check clean. (2026-10-25T11:37:49Z)
 P1 Plan: Complete: three requirements, three ADRs, story map, execution plan, scope, risk register, and glossary. Autonomous run, no gate stop. (2026-10-25T11:37:49Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T11:38:22Z` |
+| Model tier | primary orchestrator (sonnet TDD tracks) |
+| Skills loaded | ravintio-implement, ravintio-test-writer, ravintio-implementer, ravintio-refactor |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: two TDD tracks on disjoint files. Each track runs red, green, and refactor inline. The orchestrator writes REQ-001 and the orchestrator and ship skill lines meanwhile. |
+
+- In progress: track A REQ-002 fast batches in the dispatch standard and three phase skills (2026-10-25T11:38:22Z)
+- In progress: track B REQ-003 timing rows in the build-log template (2026-10-25T11:38:22Z)
