@@ -19,11 +19,15 @@ version: "0.1.0"
 - `Invoke-Setup` appends each `setup.ps1` time in milliseconds to the file named by `RAVINTIO_TIMING_FILE`.
 - `run-tests.ps1` sets that variable and prints a `[timing] setup.ps1 total` line with the milliseconds and the case count.
 - Total `setup.ps1` time across both Windows CI jobs falls under 105 s, from 210 s.
+- Requirement change 2026-10-25 (REQ-004 to REQ-006, ADR-004): `setup.sh` and `setup.ps1` stop bundling templates, standards, and schemas into each skill. Setup installs only each skill's own files.
+- The `bundle_templates` and `bundle_standards` frontmatter fields leave every SKILL.md.
+- Every skill names a pack template, standard, or schema by its full `ravintio-zero/...` path.
+- A test fails when a skill names one by a short path or a bare name, or when the full path does not exist.
 - Version 0.15.1. This roadmap 0000168 step 3 closes backlog 0000159.
 
 ## Out of Scope
 
-- `setup.sh` and the Bash suites.
+- `setup.sh` changes other than the bundling removal in REQ-004.
 - Sharing one setup run across test cases. Few cases share a starting state.
 - The workspace copy in the test helper.
 - Other backlog entries.

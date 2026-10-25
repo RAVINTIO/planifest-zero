@@ -139,3 +139,11 @@ P3 Validate and Accept: Complete: checks green, security low, evidence in accept
 - CI run `40166556373`: `windows-powershell (powershell)` failed. `test-0000171-req-002-install-tree-parity.ps1` found 6 SKILL.md files that differ from source. `setup.ps1:118` reads SKILL.md with no `-Encoding`, so Windows PowerShell 5.1 decodes UTF-8 as ANSI. The 6 files are the ones that hold non-ASCII characters. The bug predates this run. (2026-10-25T05:48:49Z)
 - REQ-001 AC-1 failed: the `setup.ps1` totals are 85002 ms (5.1) and 73486 ms (7) over 53 cases each, 158.5 s in all against a 105 s target. Per case, setup fell from about 1.89 s to about 1.50 s. (2026-10-25T05:48:49Z)
 Blocked: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-25T05:48:49Z)
+
+### Requirement Change (2026-10-25T09:28:13Z)
+
+- What changed: the human chose to drop skill bundling on all platforms and to name pack files by full path (REQ-004 to REQ-006, ADR-004). REQ-002's bundle rule now points to REQ-004. Scope moves the `setup.sh` bundling removal in.
+- Active phase: P4 Ship, R-D Advance, blocked on PR #32 CI.
+- Why: the Windows profile run on PR #32 showed the skill copy takes about 720 ms per install. 511 of 535 installed files are bundled copies that no skill reads.
+- Earlier fixes on this branch: `setup.ps1` now reads text as UTF-8 (commit `9a9a4c8`), and the Windows PowerShell 5.1 parity check passes. A temporary profile suite (`test-0000171-zz-profile-setup-ps1.ps1`) is on the branch and leaves before merge.
+- Re-run: P2 for REQ-004 to REQ-006 and the REQ-002 test, then P3 in full, then P4.
