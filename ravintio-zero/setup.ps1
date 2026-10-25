@@ -68,6 +68,39 @@ $ValidTools = @('claude-code')
 
 # --- Shared functions ---
 
+# Copy helpers built on System.IO calls. Per-file cmdlets cost far more than
+# these on Windows PowerShell and PowerShell 7 (0000171 ADR-002). Both use
+# only .NET Framework 4.5 APIs and overwrite existing files.
+
+# Copies a file into a folder, or makes the named folder for a folder source
+# (the same as Copy-Item without -Recurse). Makes the destination folder first.
+function Copy-RavintioItem {
+    param([string]$Source, [string]$DestDir)
+    [System.IO.Directory]::CreateDirectory($DestDir) | Out-Null
+    $leaf = [System.IO.Path]::GetFileName($Source)
+    if ([System.IO.Directory]::Exists($Source)) {
+        [System.IO.Directory]::CreateDirectory([System.IO.Path]::Combine($DestDir, $leaf)) | Out-Null
+    }
+    else {
+        [System.IO.File]::Copy($Source, [System.IO.Path]::Combine($DestDir, $leaf), $true)
+    }
+}
+
+# Copies the children of a folder into another folder, keeping every file
+# (dot files included) and every subfolder, empty ones too.
+function Copy-RavintioTree {
+    param([string]$SourceDir, [string]$DestDir)
+    $all = [System.IO.SearchOption]::AllDirectories
+    [System.IO.Directory]::CreateDirectory($DestDir) | Out-Null
+    $prefix = $SourceDir.TrimEnd('\', '/').Length + 1
+    foreach ($dir in [System.IO.Directory]::GetDirectories($SourceDir, '*', $all)) {
+        [System.IO.Directory]::CreateDirectory([System.IO.Path]::Combine($DestDir, $dir.Substring($prefix))) | Out-Null
+    }
+    foreach ($file in [System.IO.Directory]::GetFiles($SourceDir, '*', $all)) {
+        [System.IO.File]::Copy($file, [System.IO.Path]::Combine($DestDir, $file.Substring($prefix)), $true)
+    }
+}
+
 function Copy-RavintioSkills {
     param($TargetDir)
 
@@ -77,9 +110,8 @@ function Copy-RavintioSkills {
         $destDir = Join-Path $TargetDir $skillName
         
         $srcSkillMd = Join-Path $srcDir "SKILL.md"
-        if (Test-Path $srcSkillMd) {
-            New-Item -ItemType Directory -Path $destDir -Force | Out-Null
-            Copy-Item -Path $srcSkillMd -Destination $destDir -Force
+        if ([System.IO.File]::Exists($srcSkillMd)) {
+            Copy-RavintioItem $srcSkillMd $destDir
 
             # Rewrite relative paths to match bundled directory structure
             $skillMdPath = Join-Path $destDir "SKILL.md"
@@ -94,8 +126,8 @@ function Copy-RavintioSkills {
             
             foreach ($optDir in @('scripts', 'assets', 'references')) {
                 $srcOptDir = Join-Path $srcDir $optDir
-                if (Test-Path $srcOptDir) {
-                    Copy-Item -Path $srcOptDir -Destination $destDir -Recurse -Force
+                if ([System.IO.Directory]::Exists($srcOptDir)) {
+                    Copy-RavintioTree $srcOptDir (Join-Path $destDir $optDir)
                 }
             }
 
@@ -112,50 +144,49 @@ function Copy-RavintioSkills {
 
             # Bundle only declared templates (or all if no manifest found)
             $templatesSrc = Join-Path $ScriptDir "templates"
-            if (Test-Path $templatesSrc) {
+            if ([System.IO.Directory]::Exists($templatesSrc)) {
                 $destTemplates = Join-Path $destDir "assets\templates"
-                New-Item -ItemType Directory -Path $destTemplates -Force | Out-Null
+                [System.IO.Directory]::CreateDirectory($destTemplates) | Out-Null
                 if ($bundleTemplates.Count -gt 0) {
                     foreach ($tpl in $bundleTemplates) {
                         $tplPath = Join-Path $templatesSrc $tpl
-                        if (Test-Path $tplPath) {
-                            Copy-Item -Path $tplPath -Destination $destTemplates -Force
+                        if ([System.IO.File]::Exists($tplPath) -or [System.IO.Directory]::Exists($tplPath)) {
+                            Copy-RavintioItem $tplPath $destTemplates
                         }
                     }
                     Write-Host "    templates: selective ($($bundleTemplates.Count) files)"
                 }
                 else {
-                    Copy-Item -Path "$templatesSrc\*" -Destination $destTemplates -Recurse -Force
+                    Copy-RavintioTree $templatesSrc $destTemplates
                     Write-Host "    templates: all (no manifest)"
                 }
             }
 
             # Always bundle schemas (small, universally needed)
             $schemasSrc = Join-Path $ScriptDir "schemas"
-            if (Test-Path $schemasSrc) {
+            if ([System.IO.Directory]::Exists($schemasSrc)) {
                 $destSchemas = Join-Path $destDir "assets\schemas"
-                New-Item -ItemType Directory -Path $destSchemas -Force | Out-Null
-                Copy-Item -Path "$schemasSrc\*" -Destination $destSchemas -Recurse -Force
+                Copy-RavintioTree $schemasSrc $destSchemas
             }
 
             # Bundle only declared standards (or all top-level if no manifest found)
             $standardsSrc = Join-Path $ScriptDir "standards"
-            if (Test-Path $standardsSrc) {
+            if ([System.IO.Directory]::Exists($standardsSrc)) {
                 $destRefs = Join-Path $destDir "references"
-                New-Item -ItemType Directory -Path $destRefs -Force | Out-Null
+                [System.IO.Directory]::CreateDirectory($destRefs) | Out-Null
                 if ($bundleStandards.Count -gt 0) {
                     foreach ($std in $bundleStandards) {
                         $stdPath = Join-Path $standardsSrc $std
-                        if (Test-Path $stdPath) {
-                            Copy-Item -Path $stdPath -Destination $destRefs -Force
+                        if ([System.IO.File]::Exists($stdPath) -or [System.IO.Directory]::Exists($stdPath)) {
+                            Copy-RavintioItem $stdPath $destRefs
                         }
                     }
                     Write-Host "    standards: selective ($($bundleStandards.Count) files)"
                 }
                 else {
                     # No manifest - copy all top-level standards (skip reference/ subdirectory)
-                    Get-ChildItem -Path $standardsSrc -File | ForEach-Object {
-                        Copy-Item -Path $_.FullName -Destination $destRefs -Force
+                    foreach ($stdFile in [System.IO.Directory]::GetFiles($standardsSrc)) {
+                        Copy-RavintioItem $stdFile $destRefs
                     }
                     Write-Host "    standards: all top-level (no manifest)"
                 }
@@ -687,7 +718,7 @@ function Install-EnforcementHooks {
     $dest     = Join-Path $ProjectRoot $HooksDirRel
     $settings = Join-Path $ProjectRoot $SettingsRel
 
-    if (-not (Test-Path $src)) {
+    if (-not [System.IO.Directory]::Exists($src)) {
         Write-Host "  ! Warning: enforcement hook scripts not found at $src — skipping"
         return
     }
@@ -695,11 +726,10 @@ function Install-EnforcementHooks {
     Write-Host ""
     Write-Host "  Installing RAVINTIO enforcement hooks"
 
-    New-Item -ItemType Directory -Path $dest -Force | Out-Null
+    [System.IO.Directory]::CreateDirectory($dest) | Out-Null
 
     Get-ChildItem -Path $src -Filter '*.mjs' | ForEach-Object {
-        $destFile = Join-Path $dest $_.Name
-        Copy-Item -Path $_.FullName -Destination $destFile -Force
+        Copy-RavintioItem $_.FullName $dest
         Write-Host "  + $HooksDirRel/$($_.Name)"
     }
 
