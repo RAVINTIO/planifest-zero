@@ -37,6 +37,5 @@ Total wall clock to Step 3 of P4 was 41 minutes. Times round down to whole minut
 ## Improvement suggestions
 
 - P0: a hand-written timestamp ran ahead of the clock and needed a fix commit. Take each timestamp from `date -u` or the commit time.
-- P2: 18 minutes of the 25 went to the two tracks' full-suite runs, each run alone. One shared full-suite run after both tracks finish would save time.
 - P2: another session committed backlog entries on the feature branch while the step ran. Backlog 0000182 covers where those entries should go.
 - P4: a fast run would batch Steps 5 and 6. This run was `standard`, so it ran them in order.

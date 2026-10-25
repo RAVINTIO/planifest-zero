@@ -1,6 +1,6 @@
 ---
-version: "0.16.0"
-feature: "0000171-faster-setup-ps1-tests"
+version: "0.17.0"
+feature: "0000172-subagent-acceleration"
 updated: "25 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "25 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
-| Last feature | `0000171-faster-setup-ps1-tests` |
+| Version | `0.17.0` |
+| Last feature | `0000172-subagent-acceleration` |
 | Updated | `25 Oct 2026` |
 
 ## What this is

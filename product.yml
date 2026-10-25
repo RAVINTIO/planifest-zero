@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.16.0"
-feature: "0000171-faster-setup-ps1-tests"
+version: "0.17.0"
+feature: "0000172-subagent-acceleration"
 
 versionPolicy: "max-component-version"
 
