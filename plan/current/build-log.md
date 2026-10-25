@@ -116,3 +116,17 @@ P2 Implement: Complete: four requirements, tests green, docs updated. Autonomous
 - REQ-003 deviation note extended: the orchestrator skill does not name the standard, for the same size budget. (2026-10-25T12:53:32Z)
 - Full suite under `env -i`: 155 feature and 19 regression suites pass, after the fix. 0 self-correction cycles. (2026-10-25T12:53:32Z)
 P3 Validate and Accept: Complete: checks green, security low, evidence in acceptance-evidence.md. Autonomous run, no gate stop. (2026-10-25T12:53:32Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T12:53:53Z` |
+| End | `{{timestamp, filled when the phase completes}}` |
+| Wall clock | `{{whole minutes from Start to End}}` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Roadmap step at `standard` speed. Steps 1 to 6 run as written, then R-D Advance. The steps are sequential, so no subagent applies. |
