@@ -2,7 +2,7 @@
 
 **Feature:** workflow-governance-gates
 **Version:** 0.18.0
-**PR:** pending, updated at Step 9
+**PR:** [#34](https://github.com/RAVINTIO/ravintio-zero/pull/34)
 
 ## What changed
 
