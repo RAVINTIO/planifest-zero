@@ -28,7 +28,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 |-------|-------|
 | Start | `2026-10-25T11:34:57Z` |
 | End | `2026-10-25T11:35:52Z` |
-| Wall clock | `1 min` |
+| Wall clock | `0 min` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | `0` |
@@ -56,7 +56,7 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 4. (2026-10-25T11
 |-------|-------|
 | Start | `2026-10-25T11:36:06Z` |
 | End | `2026-10-25T11:37:49Z` |
-| Wall clock | `2 min` |
+| Wall clock | `1 min` |
 | Model tier | primary orchestrator, cheaper scope agent |
 | Skills loaded | ravintio-plan |
 | Agents spawned | `1` |
@@ -138,7 +138,7 @@ P3 Validate and Accept: Complete: checks green, security low, evidence in accept
 | Metric | Value |
 |--------|-------|
 | Total phases completed | `5` |
-| Total wall clock | `41 min` (P0 1, P1 2, P2 25, P3 12, P4 to Step 3 0) |
+| Total wall clock | `41 min` (P0 0, P1 1, P2 25, P3 12, P4 to Step 3 0) |
 | Total agents spawned | `5` (P0 0, P1 1, P2 2, P3 2, P4 0) |
 | Total MCP calls | `0` |
 | Phases using parallelism | `3` (P1, P2, P3) |
