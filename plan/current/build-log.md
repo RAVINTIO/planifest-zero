@@ -52,3 +52,18 @@ Scope Lock complete. All four scenario paths captured.
 Design deviation from the entry: the entry asked for a new subsection, but `## Strict Orchestrator Mode` already follows the sentinel section. The run rewrites that section instead.
 P0 exchange (design): Q: Confirm the design? / A: draft-accepted (roadmap). (2026-10-25T13:04:00Z)
 P0 Discovery: Complete: design self-confirmed for roadmap step 6. (2026-10-25T13:04:00Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T13:02:38Z` |
+| End | |
+| Wall clock | |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Two short requirements and one ADR. Each artifact runs to a few lines, so subagent overhead would exceed the work. |
+
