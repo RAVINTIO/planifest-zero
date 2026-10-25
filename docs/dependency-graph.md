@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000169-release-hygiene
+Last updated: 0000170-story-mapping-and-gherkin
 
 ## Component dependency diagram
 

@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000169-release-hygiene
+Last updated: 0000170-story-mapping-and-gherkin
 
 ---
 
@@ -18,6 +18,15 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000170: story-mapping-and-gherkin
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack unchanged | accepted | The consistency check and the ratchet hook parse Gherkin with Node.js built-ins and regular expressions. No Gherkin parser library joins the pack. |
+| ADR-002 | P1 owns the story mapping pass | accepted | P1 maps stories first and writes `plan/current/story-map.md`. A gap the brief states or implies becomes a story and a requirement. Any other gap goes out of scope. |
+| ADR-003 | A criterion stays one checkbox line | accepted | Each criterion is `- [ ] AC-{n}: {name}` with indented `Given`, `When`, and `Then` bullets. The limit of three counts checkbox lines. |
+| ADR-004 | The ratchet guards step lines | accepted | Each `Given`, `When`, `Then`, `And`, or `But` bullet in `## Acceptance Criteria` is a guarded line. Removing or rewording one blocks unless a human approval marker names the file. |
+
 ### Feature 0000169: release-hygiene
 
 | ADR | Title | Status | Summary |
