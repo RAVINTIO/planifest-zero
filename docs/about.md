@@ -1,7 +1,7 @@
 ---
-version: "1.0.0"
-feature: "0000160-ravintio-rebrand"
-updated: "24 Oct 2026"
+version: "0.13.0"
+feature: "0000164-hardening-and-backlog-skill"
+updated: "25 Oct 2026"
 ---
 # About
 
@@ -10,9 +10,9 @@ updated: "24 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `1.0.0` |
-| Last feature | `0000160-ravintio-rebrand` |
-| Updated | `24 Oct 2026` |
+| Version | `0.13.0` |
+| Last feature | `0000164-hardening-and-backlog-skill` |
+| Updated | `25 Oct 2026` |
 
 ## What this is
 

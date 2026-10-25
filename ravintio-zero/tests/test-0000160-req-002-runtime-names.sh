@@ -69,7 +69,7 @@ guard_rc() {
 DASH="$(printf '\xe2\x80\x94')"
 assert_equals "2" "$(guard_rc "a $DASH b")" "em dash without a sentinel is blocked"
 assert_equals "0" "$(guard_rc "a $DASH b <!-- ravintio-em-dash-allow -->")" "new sentinel allows the write"
-assert_equals "0" "$(guard_rc "a $DASH b <!-- planifest-em-dash-allow -->")" "legacy sentinel allows the write in 1.x"
+assert_equals "0" "$(guard_rc "a $DASH b <!-- planifest-em-dash-allow -->")" "legacy sentinel allows the write in 0.x"
 
 echo ""
 echo "=== req-002: setup.sh writes ravintio markers and clears old ones ==="

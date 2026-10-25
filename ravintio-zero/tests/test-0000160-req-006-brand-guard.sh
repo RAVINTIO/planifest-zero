@@ -81,7 +81,7 @@ ALLOWLIST=(
   # It also allowlists this guard's own entry for that pattern.
   "^ravintio-zero/tests/(regression/)?test-0000042-req-010-pack-wording-allowlist\\.sh\$${TAB}test-0000160-req-006-brand-guard"
 
-  # --- 1.x legacy aliases, removed at 2.0.0 ---
+  # --- 0.x legacy aliases, removed at 1.0.0 ---
   # The roadmap runner reads the old environment variable names as a fallback.
   "^ravintio-zero/scripts/roadmap-run\\.mjs\$${TAB}PLANIFEST_ROADMAP_(MODEL|MAX_TURNS)|legacy PLANIFEST_\\*"
   # The dependency graph documents the fallback.

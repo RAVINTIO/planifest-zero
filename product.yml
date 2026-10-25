@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "1.0.0"
-feature: "0000160-ravintio-rebrand"
+version: "0.13.0"
+feature: "0000164-hardening-and-backlog-skill"
 
 versionPolicy: "max-component-version"
 

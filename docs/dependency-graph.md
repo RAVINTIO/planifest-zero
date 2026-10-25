@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000160-ravintio-rebrand
+Last updated: 0000164-hardening-and-backlog-skill
 
 ## Component dependency diagram
 
@@ -70,7 +70,7 @@ graph TD
 
 **The driver depends on `claude` and `gh`.** `roadmap-run.mjs` uses Node built-ins, `roadmap-labels.mjs`, the `claude` command, and `gh`. It reads `plan/current-roadmap/roadmap.md` and `plan/current/build-log.md`. It never edits the working tree.
 
-**The driver passes a model and labels to each child.** It passes `--model` from `RAVINTIO_ROADMAP_MODEL`, which defaults to `sonnet`. It passes `--max-turns` only when `RAVINTIO_ROADMAP_MAX_TURNS` is set. If a `RAVINTIO_*` name is unset, the driver reads the legacy `PLANIFEST_ROADMAP_MODEL` or `PLANIFEST_ROADMAP_MAX_TURNS` in 1.x, and the `RAVINTIO_*` value wins if both are set. It appends `work.kind`, `ravintio.roadmap`, and `ravintio.step` labels to `OTEL_RESOURCE_ATTRIBUTES` in the child environment.
+**The driver passes a model and labels to each child.** It passes `--model` from `RAVINTIO_ROADMAP_MODEL`, which defaults to `sonnet`. It passes `--max-turns` only when `RAVINTIO_ROADMAP_MAX_TURNS` is set. If a `RAVINTIO_*` name is unset, the driver reads the legacy `PLANIFEST_ROADMAP_MODEL` or `PLANIFEST_ROADMAP_MAX_TURNS` in 0.x, and the `RAVINTIO_*` value wins if both are set. It appends `work.kind`, `ravintio.roadmap`, and `ravintio.step` labels to `OTEL_RESOURCE_ATTRIBUTES` in the child environment.
 
 **The driver writes one log per step.** Each step writes stdout and stderr to `plan/.roadmap-logs/step-{position}.log`. The driver excludes the folder through `.git/info/exclude` and leaves `.gitignore` alone. Every stop line names the log.
 
