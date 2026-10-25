@@ -542,14 +542,22 @@ merge_allowed_tools() {
         }
       }
       const existing = Array.isArray(s.allowedTools) ? s.allowedTools : [];
-      if (!existing.includes("Agent")) {
-        s.allowedTools = existing.concat(["Agent"]);
+      const addAgent = !existing.includes("Agent");
+      // An absent attribution key gets empty strings, so the host writes no
+      // attribution lines. A present key stays as it is (0000169 req-004).
+      const addAttribution = !Object.prototype.hasOwnProperty.call(s, "attribution");
+      if (addAgent) s.allowedTools = existing.concat(["Agent"]);
+      if (addAttribution) s.attribution = {commit:"", pr:""};
+      if (addAgent || addAttribution) {
         fs.mkdirSync(path.dirname(sf),{recursive:true});
         writeSettings(sf, JSON.stringify(s,null,2)+"\n");
-        console.log("  ~ .claude/settings.json (Agent added to allowedTools)");
-      } else {
-        console.log("  - .claude/settings.json (Agent already in allowedTools)");
       }
+      console.log(addAgent
+        ? "  ~ .claude/settings.json (Agent added to allowedTools)"
+        : "  - .claude/settings.json (Agent already in allowedTools)");
+      console.log(addAttribution
+        ? "  ~ .claude/settings.json (attribution set to empty commit and pr)"
+        : "  - .claude/settings.json (attribution already set)");
     ' || exit 1
   else
     echo "  ! Warning: node not found — skipping allowedTools update"

@@ -1,6 +1,6 @@
 ---
-version: "0.13.0"
-feature: "0000164-hardening-and-backlog-skill"
+version: "0.14.0"
+feature: "0000169-release-hygiene"
 updated: "25 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "25 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.13.0` |
-| Last feature | `0000164-hardening-and-backlog-skill` |
+| Version | `0.14.0` |
+| Last feature | `0000169-release-hygiene` |
 | Updated | `25 Oct 2026` |
 
 ## What this is

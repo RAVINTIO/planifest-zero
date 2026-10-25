@@ -46,8 +46,8 @@ assert_contains "option [1]" "$BODY" \
   "req-005 (c): the override still takes option [1]"
 assert_contains "Never merge the pull request" "$BODY" \
   "req-005 (c): the override still says never to merge"
-assert_contains "release tag" "$BODY" \
-  "req-005 (c): the override still pushes the release tag"
+assert_contains "CI tags the merge commit" "$BODY" \
+  "req-005 (c): the override says CI tags the release (0000169 req-006)"
 assert_contains "report the exact error and stop" "$BODY" \
   "req-005 (c): the override still stops on a failed push"
 

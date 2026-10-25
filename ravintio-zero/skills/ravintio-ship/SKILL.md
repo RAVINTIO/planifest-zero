@@ -1,13 +1,13 @@
 ---
 name: ravintio-ship
-description: Archive, build assessment, changelog, version, tag, and PR, behind the final gate in a gated run.
+description: Archive, build assessment, changelog, version, and PR, behind the final gate in a gated run.
 bundle_templates: []
 bundle_standards: []
 ---
 
 # RAVINTIO - ship
 
-> You close the run. You write the changelog, archive the plan, assess the build, bump the version, create the tag, and hand off the PR. You do not add features or fix bugs. Your job is a clean, complete handoff.
+> You close the run. You write the changelog, archive the plan, assess the build, bump the version, and hand off the PR. You do not add features or fix bugs. Your job is a clean, complete handoff.
 
 ## Hard Limits
 
@@ -71,13 +71,9 @@ Source every metric from the build log. Never infer or fabricate. If routing or 
 
 Derive the current product version with `node ravintio-zero/scripts/product-version.mjs`, then apply the release version to `docs/about.md`, `product.yml`, and `component.yml`. The version must match `[0-9]+\.[0-9]+(\.[0-9]+)?` and must not be lower than the last release tag. If it fails validation, ask the human for the value. Never tag a fabricated version.
 
-### Step 7: Git tag
+### Step 7: Release tag
 
-```bash
-git tag v{version} -m "{feature-id}"
-```
-
-Create the tag locally. The PR choice in Step 9 decides who pushes it. In option [1], Step 9 pushes the tag with the branch. In option [2], the human pushes the tag. For a roadmap step: Local only. Do not push the tag.
+Create no tag. After the human merges the PR, the CI `release-tag` job tags the merge commit on `main` with `v{version}`. A squash merge leaves a branch tag off `main`. For a roadmap step: R-D Advance tags the squash commit.
 
 ### Step 8: Clear sentinels
 
@@ -92,7 +88,7 @@ If a local-git-only override is active in `ravintio-overrides/instructions/`, sk
 In `gated`, ask the human:
 
 ```
-P4 Ship: Git tag v{version} created locally.
+P4 Ship: Version v{version} set. CI tags the merge commit on main.
 Should I raise the PR, or will you?
   [1] Agent pushes + creates PR (git push + gh pr create)
   [2] I'll do it: give me the PR title and description
@@ -100,25 +96,37 @@ Should I raise the PR, or will you?
 
 In `autonomous`, take option [1] without asking.
 
-The sentinel commit from Step 8 comes first. In option [1], push the branch and the tag, then raise the PR:
+Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution. Leave out `Generated with [Claude Code]` lines (with or without a robot emoji), `Co-Authored-By:` lines that name an AI tool, and `Claude-Session:` lines or claude.ai/code session links.
 
-```bash
-git push origin {branch}
-git push origin v{version}
-gh pr create
+Before `gh pr create`, write the PR body to a temporary file and run `node ravintio-zero/scripts/check-attribution.mjs <file>` on it. If it fails, remove the attribution lines and rerun. If it still fails, stop in both run modes:
+
+```
+P4 Ship: Blocked: attribution line in the PR body.
 ```
 
-In option [2], print the PR title and description. The human pushes the branch and the tag later.
-
-Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution.
-
-Before `gh pr create`, scan the PR body for credential patterns, such as `ghp_`, `github_pat_`, `AKIA`, `sk-`, `xox`, and `-----BEGIN` private-key headers. If one matches, stop in both run modes, and never print the value:
+Also scan the PR body for credential patterns, such as `ghp_`, `github_pat_`, `AKIA`, `sk-`, `xox`, and `-----BEGIN` private-key headers. If one matches, stop in both run modes, and never print the value:
 
 ```
 P4 Ship: Blocked: possible credential in {path}. Remove it or confirm it is not a secret.
 ```
 
-Use `the PR body` as `{path}`. For option 1, capture the PR number and URL, and update the changelog's `**PR:**` field.
+Use `the PR body` as `{path}`.
+
+The sentinel commit from Step 8 comes first. In option [1], push the branch only, then raise the PR:
+
+```bash
+git push origin {branch}
+gh pr create
+```
+
+In option [1], capture the PR number and URL, and update the changelog's `**PR:**` field.
+
+In option [2], print the PR title and description. The human pushes the branch later. CI tags the merge commit on `main`. In the local-git-only case, also print the tag commands for the human to run on the merge commit after merging, or note that the CI `release-tag` job does it:
+
+```bash
+git tag v{version} -m "{feature-id}" {merge-commit}
+git push origin v{version}
+```
 
 If a push or `gh pr create` fails, stop in both run modes. Report the exact error and do not retry with force:
 
@@ -136,7 +144,7 @@ P4 Ship: Complete: {feature-id} shipped.
 Archive: plan/_archive/{feature-id}-{YYYY-MM-DD}/
 Changelog: plan/changelog/{feature-id}-{YYYY-MM-DD}.md
 Build report: plan/_archive/{feature-id}-{YYYY-MM-DD}/build-report.md
-Tag: v{version}
+Tag: v{version} (CI tags the merge commit on main)
 PR: {URL, or "see description above"}
 ```
 
@@ -150,4 +158,4 @@ Use the run mode read in Step 8, because Step 8 deletes `plan/.run-mode`. Mergin
 
 ## Roadmap steps
 
-When `plan/current-roadmap/roadmap.md` has `status: active`, read `ravintio-zero/standards/roadmap-standards.md` first. Steps 7 and 9 give way to its R-D Advance stage, and R-E Delivery follows the last step. Outside a roadmap, ignore this section.
+When `plan/current-roadmap/roadmap.md` has `status: active`, read `ravintio-zero/standards/roadmap-standards.md` first. Step 9 gives way to its R-D Advance stage, and R-E Delivery follows the last step. Outside a roadmap, ignore this section.

@@ -29,14 +29,16 @@ fix(auth-service): correct token expiry calculation
 
 ### 3. No AI attribution
 
-Commit messages MUST NOT attribute authorship or co-development to any AI tool or LLM. Prohibited:
+Commit messages and PR descriptions MUST NOT attribute authorship or co-development to any AI tool or LLM. Prohibited:
 
-- `Co-Authored-By: Claude <...>`
+- `Co-Authored-By: Claude <...>`, or any `Co-Authored-By:` line that names an AI tool
+- `Generated with [Claude Code]`, with or without a robot emoji
+- A `Claude-Session:` line or a claude.ai/code session link
 - `co-developed with Claude / Copilot / Cursor / Windsurf / Cline`
 - `AI-assisted`, `LLM-generated`, `with the help of [tool name]`
 - Any model name (Claude, GPT, Gemini, etc.) in an authorship context
 
-The commit is owned by the **human practitioner**. The AI tool is an instrument, not a contributor of record.
+The commit or PR is owned by the **human practitioner**. The AI tool is an instrument, not a contributor of record.
 
 ### 4. No affirmatory or confirmatory language
 

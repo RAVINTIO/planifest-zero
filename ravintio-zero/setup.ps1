@@ -576,19 +576,37 @@ function Merge-AllowedTools {
         $settings = $parsed
     }
 
-    # A non-array allowedTools counts as empty, as in setup.sh.
-    $existing = if ($settings.PSObject.Properties['allowedTools'] -and $settings.allowedTools -is [System.Array]) {
-        @($settings.allowedTools)
-    } else { @() }
+    # A non-array allowedTools counts as empty, as in setup.sh. The outer @()
+    # stops PowerShell unrolling a one-entry array to a string, which would
+    # turn ["Read"] into "ReadAgent" below.
+    $existing = @(if ($settings.PSObject.Properties['allowedTools'] -and $settings.allowedTools -is [System.Array]) {
+        $settings.allowedTools
+    })
 
-    if ($existing -cnotcontains 'Agent') {
+    $addAgent = $existing -cnotcontains 'Agent'
+    # An absent attribution key gets empty strings, so the host writes no
+    # attribution lines. A present key stays as it is (0000169 req-004).
+    $addAttribution = -not $settings.PSObject.Properties['attribution']
+    if ($addAgent) {
         $settings | Add-Member -NotePropertyName 'allowedTools' -NotePropertyValue ($existing + @('Agent')) -Force
+    }
+    if ($addAttribution) {
+        $settings | Add-Member -NotePropertyName 'attribution' -NotePropertyValue ([PSCustomObject]@{ commit = ''; pr = '' }) -Force
+    }
+    if ($addAgent -or $addAttribution) {
         $dir = Split-Path -Parent $SettingsPath
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
         Write-SettingsOrExit -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100)
+    }
+    if ($addAgent) {
         Write-Host "  ~ .claude/settings.json (Agent added to allowedTools)"
     } else {
         Write-Host "  - .claude/settings.json (Agent already in allowedTools)"
+    }
+    if ($addAttribution) {
+        Write-Host "  ~ .claude/settings.json (attribution set to empty commit and pr)"
+    } else {
+        Write-Host "  - .claude/settings.json (attribution already set)"
     }
 }
 

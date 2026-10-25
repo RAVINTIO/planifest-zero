@@ -22,7 +22,7 @@ Every agent response begins with a phase prefix. You always know where you are.
 | `P1 Plan:` | P1 Plan | Writing requirements, scope, glossary, risk register, and ADRs behind one confirmation gate |
 | `P2 Implement:` | P2 Implement | Generating code, tests, and documentation together |
 | `P3 Validate:` | P3 Validate and Accept | Running CI checks, self-correcting, security review, human acceptance |
-| `P4 Ship:` | P4 Ship | Changelog, archive, build assessment, git tag, PR |
+| `P4 Ship:` | P4 Ship | Changelog, archive, build assessment, PR |
 
 Messages shorten P3 to "Validate". Skills and the build log keep the full name "Validate and Accept".
 
@@ -113,7 +113,7 @@ Ship is the terminal phase. It runs three steps in order.
 
 1. **Archive.** The changelog entry is written to `plan/changelog/{feature-id}-{YYYY-MM-DD}.md`, then `plan/current/` is archived to `plan/_archive/{feature-id}-{date}/` and cleared. The orchestrator sentinel is deleted last, after the archive is confirmed complete.
 2. **Build assessment.** An assessment sub-agent reads the archived `build-log.md` and produces a structured efficiency report at `plan/_archive/{feature-id}-{date}/build-report.md`.
-3. **Tag and PR.** The agent reads the version from `component.yml`, creates a local git tag (`v{version}`), then raises the PR. In a gated run, it first asks the human whether to push and raise the PR or output a PR description for manual use. If `local-git-only` is active in `ravintio-overrides/instructions/`, the agent skips the prompt and outputs a PR description directly.
+3. **Tag and PR.** The agent reads the version from `component.yml`, checks the PR body for attribution lines, then raises the PR. It creates no tag. After the human merges, the CI `release-tag` job tags the merge commit on `main` with `v{version}`. In a gated run, it first asks the human whether to push and raise the PR or output a PR description for manual use. If `local-git-only` is active in `ravintio-overrides/instructions/`, the agent skips the prompt and outputs a PR description directly.
    - **Roadmap step.** When `plan/current-roadmap/roadmap.md` has `status: active`, the order differs. The agent raises the PR with `--base roadmap/{id}-{slug}`, waits for green CI, squash-merges, fetches, then tags the squash commit and pushes the tag. After the last step, R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The agent never merges that PR. See the ship skill's Roadmap steps section.
 
 ### Build Log
@@ -183,7 +183,8 @@ The setup script activates RAVINTIO's **Progressive Guardrail System**, a three-
 |------|------|--------------|
 | **1: Advisory pre-commit** | Every local commit | Checks whether code was staged without docs. Prints a warning if so. Commit **succeeds** regardless. |
 | **2: Branch pre-push** | Every `git push` | Checks the cumulative branch diff. Push **fails** if `src/` was changed with no corresponding update to `plan/`, `docs/`, or `component.yml`. |
-| **3: CI/CD pipeline** | Every pull request | Same check in GitHub Actions. Blocks the merge button if the rule is violated. |
+| **3: CI/CD pipeline** | Every pull request | Same check in GitHub Actions. Blocks the merge button if the rule is violated. Also fails a PR description that holds an AI attribution line. |
+| **Release tag** | Every push to `main` or `master` | The `release-tag` job tags the merge commit with `v{version}`. |
 
 One parity check applies to every diff. There is no relaxed rule for any commit prefix.
 
