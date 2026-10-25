@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000171-faster-setup-ps1-tests
+Last updated: 0000172-subagent-acceleration
 
 ---
 
@@ -18,6 +18,14 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000172: subagent-acceleration
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as declared | accepted | The release changes skill, standard, and template text and adds Bash text suites. No script, hook, or library joins the pack. |
+| ADR-002 | The run speed lives in its own sentinel file | accepted | `plan/.run-speed` holds `fast` or `standard`. `plan/.run-mode` keeps its two values. A missing or unknown value counts as `standard`. |
+| ADR-003 | Each phase skill lists its own fast batch | accepted | The dispatch standard holds the fast batch rules. Each phase skill lists its units under `### Fast batch`. Phases still run in order. |
+
 ### Feature 0000171: faster-setup-ps1-tests
 
 | ADR | Title | Status | Summary |

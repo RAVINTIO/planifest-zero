@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000171-faster-setup-ps1-tests
+Last updated: 0000172-subagent-acceleration
 
 ## What this repo is
 
@@ -45,6 +45,13 @@ At the end of P0, the orchestrator asks how to run P1 to P4. It writes the answe
 - **Autonomous.** The run stops at none of those gates. P3 writes its evidence to `plan/current/acceptance-evidence.md`. P4 copies it into the PR body and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
 
 On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the question again and name the value it found.
+
+**Run speed.** After the run mode, the orchestrator asks for a run speed and writes `standard` or `fast` to `plan/.run-speed`. A missing or unknown value counts as `standard`. A roadmap step takes the roadmap's `**Speed:**` field.
+
+- **Standard.** Each phase applies its own parallelism rules.
+- **Fast.** Each phase skill dispatches the units in its `### Fast batch` list, each batch in one message. The rules sit in `## Fast batches` of the dispatch standard.
+
+Phases run in order at either speed, and the gates and exception stops stay the same. Each build-log phase block records `End` and `Wall clock`, and the build report lists them with the agent count. Ship Step 8 deletes `plan/.run-speed` with the other sentinels.
 
 **Exception stops.** Both modes stop and print `{prefix} Blocked: {action needed}` in these cases:
 
