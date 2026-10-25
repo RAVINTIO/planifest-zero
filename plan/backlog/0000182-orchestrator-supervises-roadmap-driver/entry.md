@@ -22,6 +22,16 @@ The session that starts `ravintio-zero/scripts/roadmap-run.mjs` has no orchestra
 
 During roadmap 0000168, the parent session ran without the orchestrator and without phase prefixes (see 0000181).
 
+The human also had no regular view of progress. During step 4, the child's build log stayed unchanged for 25 minutes while it kept committing. The log's `In progress:` lines gave no sign of how close P2 was to complete.
+
+Backlog entries filed by the parent while a step ran had nowhere safe to go. The working tree was on the child's feature branch. Entries 0000179 to 0000182 rode into the step 4 PR as a result. On the same day, two sessions gave the same Framework backlog ids to different entries.
+
+The driver also showed three bugs during roadmap 0000168:
+
+1. **Missed stop.** Step 1's ship archived the plan before its CI run failed. The `Blocked:` line went to the archived build log, and the driver read only `plan/current/build-log.md`. It started step 2, and the step 2 session found the stop.
+2. **Early advance.** R-D Advance marked step 1 `merged` and moved `position` before the merge took place. The roadmap then showed a step as merged with its PR still open.
+3. **Lost subagents.** A `claude -p` child stops its background subagents after 10 minutes by default. Step 2 lost work this way until the parent set `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0`. The driver doesn't set it.
+
 ## Suggested Action
 
 - Define a supervisor mode in the orchestrator for the session that runs the driver. In that mode, resume detection skips `plan/current/` while the driver holds its lock, and the session doesn't edit the working tree.
@@ -36,12 +46,21 @@ During roadmap 0000168, the parent session ran without the orchestrator and with
   - the commits since the last report
   - any stop
   If nothing changed, say so and give the time since the last change.
+- Report at once, without waiting for the next 5-minute report, when the build log gains a phase `Complete:`, a `Blocked:`, or a `Resolved:` line.
+- In Claude Code, a read-only background monitor does this. It checks every 30 seconds and prints one line per event and one heartbeat line every 5 minutes. A monitor expires after 30 minutes, so the supervisor starts a new one each time until the driver exits.
+- Make each heartbeat show whether the driver process is still running, so a stopped driver never looks like a quiet one.
+- Flag a stale build log. If the child keeps committing but its build log hasn't changed for 15 minutes, say so in the report.
+- Give the supervisor a safe place to file backlog entries while a step runs. One option is to hold them in a queue outside the working tree and commit them to the roadmap branch after the step merges. Allocate each id against every branch, so two sessions can't take the same id.
+- Fix the three driver bugs:
+  1. Read the newest archived build log as well as `plan/current/build-log.md`, and stop on an unresolved `Blocked:` line in either.
+  2. Mark a step `merged` and move `position` only after the merge commit exists.
+  3. Set `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0` in each child's environment, unless the human has set it.
 - Give supervisor messages a prefix, such as `R-C Run:` while steps run and `R-E Delivery:` for the final report.
 - Have R-B Activate start the driver from the orchestrator in supervisor mode, rather than offering it as a separate step.
 
 ## Wanted outcome
 
-The session that starts the driver runs as the orchestrator in supervisor mode throughout. The supervisor reports progress at least once every 5 minutes. The strict-mode hook stays quiet in both the supervisor and child sessions. When the driver exits, the supervisor reports every step's result and the roadmap PR URL. A test runs the driver with a stub child and checks that the supervisor report names each step.
+The session that starts the driver runs as the orchestrator in supervisor mode throughout. The supervisor reports progress at least once every 5 minutes and reports each phase end or stop at once. The driver stops on a `Blocked:` line in an archived build log, advances a step only after its merge, and keeps child subagents running. The strict-mode hook stays quiet in both the supervisor and child sessions. When the driver exits, the supervisor reports every step's result and the roadmap PR URL. A test runs the driver with a stub child and checks that the supervisor report names each step. Further tests cover each driver fix.
 
 ## Why Deferred
 
