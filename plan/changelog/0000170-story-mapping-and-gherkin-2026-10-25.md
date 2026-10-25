@@ -2,7 +2,7 @@
 
 **Feature:** story-mapping-and-gherkin
 **Version:** 0.15.0
-**PR:** pending
+**PR:** [#31](https://github.com/RAVINTIO/ravintio-zero/pull/31)
 
 ## What changed
 
