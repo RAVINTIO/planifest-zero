@@ -56,8 +56,8 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 5. (2026-10-25T12
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T12:30:23Z` |
-| End | `{{timestamp, filled when the phase completes}}` |
-| Wall clock | `{{whole minutes from Start to End}}` |
+| End | `2026-10-25T12:32:19Z` |
+| Wall clock | `1 min` |
 | Model tier | primary orchestrator, cheaper scope agent |
 | Skills loaded | ravintio-plan |
 | Agents spawned | `1` |
@@ -67,3 +67,23 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 5. (2026-10-25T12
 
 - In progress: P1 scope, risk register, and glossary (2026-10-25T12:30:23Z)
 - Done: P1 scope, risk register, and glossary, commit 8c98045 (2026-10-25T12:31:23Z)
+- Done: P1 story map, four requirements, three ADRs, and execution plan, written inline while batch 1 ran (2026-10-25T12:32:19Z)
+- Consistency check clean. (2026-10-25T12:32:19Z)
+P1 Plan: Complete: four requirements, three ADRs, story map, execution plan, scope, risk register, and glossary. Autonomous run, no gate stop. (2026-10-25T12:32:19Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T12:32:19Z` |
+| End | `{{timestamp, filled when the phase completes}}` |
+| Wall clock | `{{whole minutes from Start to End}}` |
+| Model tier | primary orchestrator (sonnet TDD tracks) |
+| Skills loaded | ravintio-implement, ravintio-test-writer, ravintio-implementer, ravintio-refactor |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: two TDD tracks on disjoint files. Track A owns the script and the standard. Track B owns the skill text. Each track runs red, green, and refactor inline. The orchestrator updates the manifest and docs afterwards. |
+
+- In progress: track A REQ-001 and REQ-002 metrics script and governance standard (2026-10-25T12:32:19Z)
+- In progress: track B REQ-003 and REQ-004 marker rules and ship report (2026-10-25T12:32:19Z)

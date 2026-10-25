@@ -34,7 +34,7 @@
 
 Batch 1 runs two tracks in parallel. Each track owns its files.
 
-1. **Track A:** REQ-001 and REQ-002. Files: `scripts/workflow-metrics.mjs`, `standards/workflow-governance-standards.md`, test fixtures under `tests/fixtures/0000173/`, and new suites `tests/test-0000173-req-001-workflow-metrics-script.sh` and `tests/test-0000173-req-002-thresholds-gate.sh`.
+1. **Track A:** REQ-001 and REQ-002. Files: `scripts/workflow-metrics.mjs`, `standards/workflow-governance-standards.md`, and new suites `tests/test-0000173-req-001-workflow-metrics-script.sh` and `tests/test-0000173-req-002-thresholds-gate.sh`. Each suite builds its fixture run folders in a temporary directory.
 2. **Track B:** REQ-003 and REQ-004. Files: the implement, validate-and-accept, orchestrator, and ship skills, `references/orchestrator-mid-pipeline-changes.md`, and new suites `tests/test-0000173-req-003-metric-markers.sh` and `tests/test-0000173-req-004-ship-governance-report.sh`.
 
 The orchestrator then updates `component.yml`, `pipeline-reference.md`, and the docs that list the scripts and standards.
