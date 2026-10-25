@@ -165,7 +165,7 @@ Setup wires the enforcement hooks into `.claude/settings.json` on every install.
 | Hook | Trigger | What it does |
 |------|---------|--------------|
 | `gate-write` | PreToolUse (Write, Edit) | Gates every in-project path that is not always permitted. Blocks the write unless `plan/current/design.md` exists and the target path matches a declared component. Writes to `plan/current/` also need the `plan/.orchestrator-active` sentinel. Targets outside the project pass |
-| `ratchet-check` | PreToolUse (Write, Edit) | While a loop or reversal is active, blocks edits that weaken acceptance criteria or in-scope lines in `plan/current/` |
+| `ratchet-check` | PreToolUse (Write, Edit) | While a loop or reversal is active, blocks edits that weaken acceptance criteria (checkbox and Gherkin step lines) or in-scope lines in `plan/current/` |
 | `em-dash-guard` | PreToolUse (Write, Edit) | Rejects U+2014 in scoped prose paths |
 | `check-design` | UserPromptSubmit | Injects active component scope from `design.md`, or a hard STOP when no brief or sentinel exists |
 | `check-orchestrator-presence` | UserPromptSubmit | Injects a reminder banner while a pipeline is active. Hard-blocks under strict mode |
