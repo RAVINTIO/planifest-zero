@@ -64,12 +64,11 @@ echo ""
 echo "=== req-004 AC-2: a rerun removes bundled files from an older install ==="
 SK="$WS/.claude/skills"
 mkdir -p "$SK/ravintio-plan/assets/templates" "$SK/ravintio-plan/assets/schemas" \
-  "$SK/ravintio-plan/references/reference" \
+  "$SK/ravintio-plan/references" \
   "$SK/ravintio-orchestrator/assets/templates" "$SK/ravintio-orchestrator/references"
 echo "old" >"$SK/ravintio-plan/assets/templates/requirement.template.md"
-echo "old" >"$SK/ravintio-plan/assets/schemas/component.schema.json"
+echo "old" >"$SK/ravintio-plan/assets/schemas/shared.schema.json"
 echo "old" >"$SK/ravintio-plan/references/formatting-standards.md"
-echo "old" >"$SK/ravintio-plan/references/reference/old-reference.md"
 echo "old" >"$SK/ravintio-orchestrator/assets/templates/park.template.md"
 echo "old" >"$SK/ravintio-orchestrator/references/code-quality-standards.md"
 # Without the manifest, the rerun cannot wipe the skill folders first, so
@@ -95,5 +94,36 @@ echo "old" >"$SK/ravintio-ship/assets/templates/changelog.template.md"
 run_setup "$WS"
 assert_exit_zero "$?" "AC-2: the rerun with the manifest exits 0"
 assert_equals "" "$(tree_diff "$WS")" "AC-2: each installed skill matches its source folder"
+
+echo ""
+echo "=== req-004 security: the prune deletes only pack copies inside the install ==="
+WS="$(new_workspace)"
+run_setup "$WS"
+SK="$WS/.claude/skills"
+rm -f "$SK/.ravintio-manifest"
+# S-010: a user file in references/ that no pack file names stays.
+mkdir -p "$SK/ravintio-plan/references"
+echo "mine" >"$SK/ravintio-plan/references/my-notes.md"
+# S-008: a planted name holding a newline cannot aim the prune at a file in
+# the folder setup runs from.
+echo "keep" >"$WS/victim.txt"
+mkdir -p "$SK/ravintio-plan/assets/templates"
+touch "$SK/ravintio-plan/assets/templates/x
+victim.txt"
+# S-009: a linked skill folder is never pruned, so pack-named files at its
+# target stay.
+OUT="$(mktemp -d -t ravintio_0000171_req004_out_XXXXXX)"
+WORKSPACES+=("$OUT")
+mkdir -p "$OUT/assets/templates" "$OUT/references"
+echo "theirs" >"$OUT/assets/templates/requirement.template.md"
+echo "theirs" >"$OUT/references/formatting-standards.md"
+rm -rf "$SK/ravintio-refactor"
+ln -s "$OUT" "$SK/ravintio-refactor"
+run_setup "$WS"
+assert_exit_zero "$?" "security: the rerun exits 0"
+assert_equals "yes" "$([ -f "$SK/ravintio-plan/references/my-notes.md" ] && echo yes || echo no)" "S-010: a user file in references stays"
+assert_equals "yes" "$([ -f "$WS/victim.txt" ] && echo yes || echo no)" "S-008: a newline name cannot delete a file outside the skill"
+assert_equals "yes" "$([ -f "$OUT/assets/templates/requirement.template.md" ] && echo yes || echo no)" "S-009: a linked skill folder keeps its template"
+assert_equals "yes" "$([ -f "$OUT/references/formatting-standards.md" ] && echo yes || echo no)" "S-009: a linked skill folder keeps its standard"
 
 print_summary

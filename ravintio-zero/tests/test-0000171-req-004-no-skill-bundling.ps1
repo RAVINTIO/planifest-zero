@@ -64,9 +64,8 @@ Write-Host "=== req-004 AC-2: a rerun removes bundled files from an older instal
 $sk = Join-Path $ws '.claude\skills'
 $planned = @(
     'ravintio-plan\assets\templates\requirement.template.md',
-    'ravintio-plan\assets\schemas\component.schema.json',
+    'ravintio-plan\assets\schemas\shared.schema.json',
     'ravintio-plan\references\formatting-standards.md',
-    'ravintio-plan\references\reference\old-reference.md',
     'ravintio-orchestrator\assets\templates\park.template.md',
     'ravintio-orchestrator\references\code-quality-standards.md'
 )
@@ -83,6 +82,30 @@ Assert-True (-not [System.IO.File]::Exists((Join-Path $sk 'ravintio-orchestrator
 Assert-True ([System.IO.File]::Exists((Join-Path $sk 'ravintio-orchestrator\assets\.gitkeep'))) "AC-2: the orchestrator's own assets file remains"
 Assert-True ([System.IO.File]::Exists((Join-Path $sk 'ravintio-orchestrator\references\orchestrator-scope-lock.md'))) "AC-2: the orchestrator's own reference file remains"
 Assert-Equal '' (Get-TreeDiff $ws) "AC-2: each installed skill matches its source folder after the rerun"
+
+Write-Host ""
+Write-Host "=== req-004 security: the prune deletes only pack copies inside the install ==="
+$ws = New-SetupWorkspace
+$null = Invoke-Setup $ws @('claude-code')
+$sk = Join-Path $ws '.claude\skills'
+[System.IO.File]::Delete((Join-Path $sk '.ravintio-manifest'))
+# S-010: a user file in references/ that no pack file names stays.
+Write-OldFile (Join-Path $sk 'ravintio-plan\references\my-notes.md')
+# S-009: a linked skill folder is never pruned, so pack-named files at its
+# target stay. Windows gets a junction, which needs no admin rights.
+$out = Join-Path ([System.IO.Path]::GetTempPath()) ("ravintio_0000171_out_" + [guid]::NewGuid().ToString('N'))
+$global:Workspaces += $out
+Write-OldFile (Join-Path $out 'assets\templates\requirement.template.md')
+Write-OldFile (Join-Path $out 'references\formatting-standards.md')
+$linked = Join-Path $sk 'ravintio-refactor'
+[System.IO.Directory]::Delete($linked, $true)
+$kind = if ($env:OS -eq 'Windows_NT') { 'Junction' } else { 'SymbolicLink' }
+New-Item -ItemType $kind -Path $linked -Value $out | Out-Null
+$run = Invoke-Setup $ws @('claude-code')
+Assert-Equal 0 $run.Code "security: the rerun exits 0"
+Assert-True ([System.IO.File]::Exists((Join-Path $sk 'ravintio-plan\references\my-notes.md'))) "S-010: a user file in references stays"
+Assert-True ([System.IO.File]::Exists((Join-Path $out 'assets\templates\requirement.template.md'))) "S-009: a linked skill folder keeps its template"
+Assert-True ([System.IO.File]::Exists((Join-Path $out 'references\formatting-standards.md'))) "S-009: a linked skill folder keeps its standard"
 
 }
 finally {
