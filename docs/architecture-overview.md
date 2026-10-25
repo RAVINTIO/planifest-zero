@@ -10,7 +10,7 @@ RAVINTIO Zero is not a service. It has no runtime of its own. It ships these thi
 
 1. **Skills.** Markdown instructions that Claude Code auto-discovers from `.claude/skills/`. Thirteen skills drive the five-phase pipeline and its support work.
 2. **Hooks.** Node `.mjs` scripts that Claude Code invokes synchronously at tool-call boundaries. Enforcement hooks block or annotate. Git hooks guard commits and pushes. No hook makes an outbound network call.
-3. **Standards, templates, and schemas.** The reference material that skills bundle at install time.
+3. **Standards, templates, and schemas.** The reference material that skills read from `ravintio-zero/` by full path.
 4. **Setup scripts.** `setup.sh` and `setup.ps1` copy the above into a target project and wire `.claude/settings.json`.
 
 The repo runs its own pipeline on the `ravintio-zero/` it ships. Git reads its hooks from `ravintio-zero/hooks` through `core.hooksPath`.
@@ -96,14 +96,14 @@ Setup targets Claude Code only. It copies skills and hooks into `.claude/`, prun
 ```
 ravintio-zero/          setup.sh claude-code          target project
 ├── skills/          ──────────────────────────────────▶   .claude/skills/
-├── templates/       ── bundled per skill frontmatter ──▶   .claude/skills/*/assets/
-├── standards/       ── bundled per skill frontmatter ──▶   .claude/skills/*/references/
+├── templates/       ── stays in place, read by full path
+├── standards/       ── stays in place, read by full path
 ├── workflows/       ──────────────────────────────────▶   .claude/commands/
 ├── hooks/enforcement/ ────────── always ──────────────▶   .claude/hooks/enforcement/
 └── templates/standard-boot.md ───────────────────────▶   CLAUDE.md
 ```
 
-Skills bundle selectively. Each `SKILL.md` declares `bundle_templates` and `bundle_standards` in its frontmatter, and setup copies only those files. A skill with no manifest gets everything.
+Setup installs only each skill's own folder. Skills read templates, standards, and schemas from the one copy in `ravintio-zero/`, named by full path, such as `ravintio-zero/templates/requirement.template.md` (0000171 ADR-004). A suite fails when a skill names a pack file by a short path or names one that does not exist. A rerun removes bundled files that an older install left.
 
 Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from the template, then re-appends the contents of `ravintio-overrides/instructions/` between sentinel markers. Durable local customisation lives in the overrides directory, never in the boot file.
 
@@ -183,7 +183,7 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 **JSON depth.** `setup.ps1` writes `settings.json` with `ConvertTo-Json -Depth 100`, so a deeply nested user value survives a rewrite.
 
-**File copy.** `setup.ps1` copies skill and hook files with `System.IO` calls through `Copy-RavintioItem` and `Copy-RavintioTree`. A cmdlet call per file cost about 4 times as much. The folder copy keeps dot files and empty folders. The SKILL.md path rewrite keeps `Set-Content`, so each host keeps its own BOM rule. A tree suite checks the installed skills against the bundle rules, file by file.
+**File copy.** `setup.ps1` copies skill and hook files with `System.IO` calls through `Copy-RavintioItem` and `Copy-RavintioTree`. A cmdlet call per file cost about 4 times as much. The folder copy keeps dot files and empty folders. The SKILL.md path rewrite keeps `Set-Content`, so each host keeps its own BOM rule. A tree suite checks each installed skill against its source folder, file by file.
 
 ---
 
