@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000170-story-mapping-and-gherkin
+Last updated: 0000171-faster-setup-ps1-tests
 
 ## Component dependency diagram
 

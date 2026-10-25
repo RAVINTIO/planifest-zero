@@ -1,7 +1,7 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000170-story-mapping-and-gherkin"
+feature: "0000171-faster-setup-ps1-tests"
 version: "0.15.0"
 status: "active"
 type: "component-pack"
@@ -20,6 +20,7 @@ responsibilities:
   - "Direct model tier selection for all spawned subagents"
   - "Enforce parallelism directives across all phase skills"
   - "Track installed skill directories via .ravintio-manifest for safe re-runs"
+  - "Copy skill and hook files in setup.ps1 with System.IO calls, and check the installed tree against the bundle rules"
   - "Record the active setup flags in plan/state/{tool}.md, tracked, and retract any legacy setup-config record on the next run"
   - "Accept retired setup flags with one warning each, so a refresh of an older install completes"
   - "Write settings.json through a same-folder temporary file and a rename, so a failed write never truncates it"

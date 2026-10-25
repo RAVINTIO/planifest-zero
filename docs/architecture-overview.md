@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000170-story-mapping-and-gherkin
+Last updated: 0000171-faster-setup-ps1-tests
 
 ## What this repo is
 
@@ -183,6 +183,8 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 **JSON depth.** `setup.ps1` writes `settings.json` with `ConvertTo-Json -Depth 100`, so a deeply nested user value survives a rewrite.
 
+**File copy.** `setup.ps1` copies skill and hook files with `System.IO` calls through `Copy-RavintioItem` and `Copy-RavintioTree`. A cmdlet call per file cost about 4 times as much. The folder copy keeps dot files and empty folders. The SKILL.md path rewrite keeps `Set-Content`, so each host keeps its own BOM rule. A tree suite checks the installed skills against the bundle rules, file by file.
+
 ---
 
 ## Tests
@@ -193,7 +195,7 @@ A wording test greps every tracked file outside history for the retired word tha
 
 Set `RAVINTIO_TEST_QUIET=1` to hide PASS lines and banners. The runner then keeps every FAIL line with its detail, the failing suite name, the summary, and the exit codes. A quiet full run prints about 3 KB. Skills that run the full suite set it.
 
-The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `RAVINTIO_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
+The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. `run-tests.ps1` also prints `[timing] setup.ps1 total: {ms} ms over {n} cases` before its summary. Suites append each setup time to the file that `RAVINTIO_TIMING_FILE` names, and the runner deletes it at the end. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `RAVINTIO_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
 
 The workflow guards each of those jobs to `pull_request` events. On a pull request, `validate-branch` also runs `scripts/check-attribution.mjs` on the PR description, which it reads from an `env:` entry. On a push to `main` or `master`, only the `release-tag` job runs. It holds `contents: write` and runs `scripts/release-tag.mjs`, which tags `HEAD` with `v{version}` from `product.yml` and skips a tag that exists. The consumer template `hooks/ravintio.yml` carries `validate-branch` and `release-tag` only.
 

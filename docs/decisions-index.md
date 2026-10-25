@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000170-story-mapping-and-gherkin
+Last updated: 0000171-faster-setup-ps1-tests
 
 ---
 
@@ -18,6 +18,14 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000171: faster-setup-ps1-tests
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack unchanged | accepted | The faster copy uses .NET types that both PowerShell hosts load. No module or tool such as `robocopy` joins the pack. |
+| ADR-002 | setup.ps1 copies files with System.IO calls | accepted | `Copy-RavintioSkills` and `Install-EnforcementHooks` copy through `System.IO` helpers in place of per-file cmdlets. The SKILL.md rewrite keeps `Set-Content`. |
+| ADR-003 | Suites report setup time through a file the runner names | accepted | `Invoke-Setup` appends each time to `RAVINTIO_TIMING_FILE`. `run-tests.ps1` prints the total and case count, then deletes the file. |
+
 ### Feature 0000170: story-mapping-and-gherkin
 
 | ADR | Title | Status | Summary |
