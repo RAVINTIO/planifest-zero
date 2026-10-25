@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000164-hardening-and-backlog-skill
+Last updated: 0000169-release-hygiene
 
 ## What this repo is
 
@@ -53,7 +53,7 @@ No mode merges a PR or commits to `main`. The human merges every PR.
 
 **Context size.** At each gate in a gated run, the orchestrator reports the context size. Past about 150,000 tokens, it recommends `/clear`.
 
-**Ship order.** P4 creates the tag locally at Step 7. Step 8 reads the run mode, then clears the pipeline sentinels in a commit. Step 9 pushes the branch and the tag and raises the PR. Step 10 is the final gate. So the sentinels never reach `main` through the PR.
+**Ship order.** P4 creates no tag. Step 8 reads the run mode, then clears the pipeline sentinels in a commit. Step 9 checks the PR body with `scripts/check-attribution.mjs`, pushes the branch, and raises the PR. Step 10 is the final gate. So the sentinels never reach `main` through the PR.
 
 **Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Seven files under `skills/ravintio-orchestrator/references/` hold the rarely used sections word for word: adoption modes, discovery coaching, discovery records, mid-pipeline changes, scope lock, session commands, and the skills catalogue. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
 
@@ -72,7 +72,7 @@ A roadmap is a chain of feature steps that the human approves once. The standard
 - **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/roadmap.md` on any branch. The one active roadmap lives in `plan/current-roadmap/roadmap.md` on the branch `roadmap/{id}-{slug}`. Roadmap ids share the backlog sequence.
 - **Chart and activate.** R-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the roadmap's `## Schema changes` table. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
 - **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the roadmap branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
-- **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the tag still comes before the PR.
+- **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the CI `release-tag` job tags the merge commit after the human merges.
 - **Delivery.** R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The human merges it.
 - **Driver.** `ravintio-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `R-C Run: Blocked:`. Each step writes `plan/.roadmap-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.roadmap`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/roadmap-labels.mjs`.
 - **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `roadmap/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
@@ -186,6 +186,8 @@ A wording test greps every tracked file outside history for the retired word tha
 Set `RAVINTIO_TEST_QUIET=1` to hide PASS lines and banners. The runner then keeps every FAIL line with its detail, the failing suite name, the summary, and the exit codes. A quiet full run prints about 3 KB. Skills that run the full suite set it.
 
 The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `RAVINTIO_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
+
+The workflow guards each of those jobs to `pull_request` events. On a pull request, `validate-branch` also runs `scripts/check-attribution.mjs` on the PR description, which it reads from an `env:` entry. On a push to `main` or `master`, only the `release-tag` job runs. It holds `contents: write` and runs `scripts/release-tag.mjs`, which tags `HEAD` with `v{version}` from `product.yml` and skips a tag that exists. The consumer template `hooks/ravintio.yml` carries `validate-branch` and `release-tag` only.
 
 ---
 

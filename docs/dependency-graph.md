@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000164-hardening-and-backlog-skill
+Last updated: 0000169-release-hygiene
 
 ## Component dependency diagram
 
@@ -16,6 +16,8 @@ graph TD
         VERSION["scripts/product-version.mjs"]
         DRIVER["scripts/roadmap-run.mjs"]
         LABELS["scripts/roadmap-labels.mjs"]
+        ATTRIB["scripts/check-attribution.mjs"]
+        RELTAG["scripts/release-tag.mjs"]
         REFS["skills/ravintio-orchestrator/references/\n(seven orchestrator-*.md files)"]
         LOGS["plan/.roadmap-logs/step-N.log"]
     end
@@ -56,6 +58,8 @@ graph TD
 
     VERSION -->|"reads components[]"| PRODUCT
     VERSION -->|"reads version"| MANIFEST
+    RELTAG -->|"reads version and feature"| PRODUCT
+    SKILLS -->|"ship checks the PR body"| ATTRIB
 ```
 
 ---

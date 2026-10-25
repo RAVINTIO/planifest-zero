@@ -1,7 +1,7 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000164-hardening-and-backlog-skill"
+feature: "0000169-release-hygiene"
 version: "0.13.0"
 status: "active"
 type: "component-pack"
@@ -28,6 +28,8 @@ responsibilities:
   - "Repair the hook entries setup owns: remove RAVINTIO PreToolUse entries on any matcher, and replace a non-array hook event value with a warning"
   - "Detect and recommend adoption mode at discovery, and state standard-iterative mode without asking when it is the only signal"
   - "Suggest and confirm the version number at discovery"
+  - "Reject AI attribution lines in PR descriptions at ship and in CI, and turn off host attribution in setup when unset"
+  - "Tag the merge commit on main from CI with the product version, never a feature-branch commit"
   - "Run the Scope Lock Challenge before design confirmation, drafted inline"
   - "Enforce one question at a time across all phase skills"
   - "Run an approved roadmap as a chain of feature steps, with the merge-guard hook limiting agent merges to squash merges into roadmap branches"
@@ -109,6 +111,8 @@ risk:
     - "Setup prunes a retired hook only if its name is on the retired list, so a retirement without a list entry leaves a stale copy in .claude/hooks/."
     - "The PowerShell suites changed in 0000151 were not run locally because pwsh was absent. CI runs them on Windows PowerShell 5.1 and PowerShell 7."
     - "Moving orchestrator text to references/ means a test that greps SKILL.md for a moved rule fails until it reads the reference file."
+    - "The 0000169 PowerShell setup suite was not run locally because pwsh was absent. CI runs it."
+    - "A consumer with an existing .github/workflows/ravintio.yml gets no release-tag job until the human copies it from the template."
 
 quality:
   testCoverage:
@@ -126,6 +130,8 @@ quality:
     - "ratchet-check treats a reworded criterion as remove plus add and blocks it. The .ratchet-approve marker is the intended path for legitimate rewording."
     - "ratchet-check cannot verify who wrote .ratchet-approve. Marker forgery is audit-detected via ratchet-log.md and the ship-phase build assessment, not prevented."
     - "product-version.mjs parses only the constrained product.template.yml shape, not arbitrary YAML"
+    - "release-tag.mjs reads only top-level version and feature scalars, the same constrained shape."
+    - "The commit-msg hook and check-attribution.mjs hold separate pattern lists. A test checks that both hold the host lines."
     - "read-stdin.mjs lives in hooks/enforcement/, which installs unconditionally, so every enforcement hook can import it."
     - "The em dash guard only matches the Write and Edit tools and only inspects paths resolving under 5 relative prefixes. A write made through Bash is not inspected. This is a style rule, not an authorisation control."
 
@@ -136,7 +142,7 @@ pipeline:
 
 metadata:
   createdAt: "2026-05-02"
-  updatedAt: "2026-10-24"
+  updatedAt: "2026-10-25"
   createdBy: "agent"
   lastModifiedBy: "agent"
   skill: "ravintio-implement"

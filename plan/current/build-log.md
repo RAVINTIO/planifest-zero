@@ -93,3 +93,5 @@ P1 Plan: Complete: six requirements, four ADRs, execution plan, scope, risk regi
 - Deviation: `test-0000037-req-003` pinned an empty flags array in `plan/state/claude-code.md`. Roadmap activation (`38fe055`) recorded the human's `--strict-orchestrator`, so the suite failed on the roadmap base too. The suite now checks the array's shape and runs setup in its copy with the tracked flags. (2026-10-25T03:38:07Z)
 - Done: track D REQ-003, REQ-006 ship and CI (2026-10-25T03:41:13Z)
 - Deviation: track A's ban text names the footer line in the ship skill, so `test-0000025-req-001` now fails only on a line that starts with the footer. Three more suites (0000037-req-005, 0000042-req-011, 0000043-req-005) and 0000151-req-002 follow the moved ship text. No regression suite changed in track D. (2026-10-25T03:41:13Z)
+- Done: P2 living docs, change record, and component.yml close-out. Full Bash suite under env -i: 125 feature and 19 regression suites pass, 13 PowerShell suites left to CI. (2026-10-25T03:45:29Z)
+P2 Implement: Complete: 6 requirements built across 4 tracks in 2 batches. Autonomous, no gate stop. (2026-10-25T03:45:29Z)

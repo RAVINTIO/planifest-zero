@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000164-hardening-and-backlog-skill
+Last updated: 0000169-release-hygiene
 
 ## Registry
 

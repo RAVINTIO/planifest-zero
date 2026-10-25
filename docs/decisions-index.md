@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000164-hardening-and-backlog-skill
+Last updated: 0000169-release-hygiene
 
 ---
 
@@ -18,6 +18,15 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000169: release-hygiene
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack unchanged | accepted | Two new scripts use Node.js built-ins only. No library, service, or third-party action joins the pack. |
+| ADR-002 | CI tags the merge commit on main | accepted | A `release-tag` job on a push to `main` or `master` tags `HEAD` with the product version and skips a tag that exists. Ship creates no tag before the merge. Only that job holds `contents: write`. |
+| ADR-003 | One attribution check serves ship and CI | accepted | `scripts/check-attribution.mjs` checks a PR body in ship and in `validate-branch`. The body reaches CI through `env:` only. The `commit-msg` hook keeps its own list and gains the host lines. |
+| ADR-004 | Setup turns off host attribution when unset | accepted | Setup writes empty `attribution.commit` and `attribution.pr` strings to `.claude/settings.json` when the key is absent, and leaves a set key alone. |
+
 
 ### Feature 0000030: framework-cut-down
 
