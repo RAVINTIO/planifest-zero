@@ -114,3 +114,4 @@ P2 Implement: Complete: 6 requirements built across 4 tracks in 2 batches. Auton
 - Done: P3 security review. No critical or high findings. 1 medium, 6 low, 2 informational. (2026-10-25T03:54:49Z)
 - P3 cycle 1: check security review / finding S-001 floating checkout ref in the template's write-token job / fix pin the SHA and add the S-003 comment in both files / result workflow suites pass (2026-10-25T03:54:49Z)
 - Deviation: REQ-004 criterion b said the whole settings file stays byte-identical. Setup also writes hooks and `allowedTools`, so the criterion now says the `attribution` value stays byte for byte. (2026-10-25T03:54:49Z)
+P3 Validate: Complete: 18 criteria verified or left to CI for PowerShell, no critical or high findings. Evidence in `acceptance-evidence.md`. Autonomous, no gate stop. (2026-10-25T03:55:05Z)
