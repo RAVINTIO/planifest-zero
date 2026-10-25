@@ -131,7 +131,10 @@ countMarkers(readText(join(folder, "build-log.md")), tally);
 
 let loopFiles = [];
 try {
-  loopFiles = readdirSync(folder).filter((f) => /^loop-state-.*\.md$/.test(f)).sort();
+  loopFiles = readdirSync(folder, { withFileTypes: true })
+    .filter((e) => e.isFile() && /^loop-state-.*\.md$/.test(e.name))
+    .map((e) => e.name)
+    .sort();
 } catch {
   loopFiles = [];
 }
