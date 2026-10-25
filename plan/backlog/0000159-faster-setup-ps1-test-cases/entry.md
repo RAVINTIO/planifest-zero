@@ -28,6 +28,10 @@ The 0000151 timing lines measured each PowerShell test case in CI run `401065082
 
 Profile one `setup.ps1` run under each host and find its slowest step. Then decide whether to speed that step up, or to share one setup run across the cases that need the same starting state.
 
+## Wanted outcome
+
+Total `setup.ps1` time across both Windows jobs falls by at least half, from 210 s to under 105 s. The existing CI timing lines measure it.
+
 ## Why Deferred
 
 0000151 scope deferred batching until timing showed start-up dominates. Timing shows `setup.ps1` dominates instead, which is a different change.

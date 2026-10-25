@@ -8,7 +8,7 @@
 ```json
 {
   "tool": "claude-code",
-  "flags": [],
-  "writtenAt": "2026-10-24T14:56:52Z"
+  "flags": ["--strict-orchestrator"],
+  "writtenAt": "2026-10-25T03:20:40Z"
 }
 ```

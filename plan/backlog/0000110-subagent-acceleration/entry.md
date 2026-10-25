@@ -25,6 +25,10 @@ The phases also wait on each other more than they need to. For example, P1 write
 3. Let independent requirements move through spec, code, and validation as separate subagent streams, joined at the review gates.
 4. Record the subagent count and wall-clock time per phase in the build log, so the build assessment can measure the gain.
 
+## Wanted outcome
+
+In a `fast` run mode, each phase dispatches its listed parallel work units in one batch. Phases still run in order and every gate stays in place. The build log records the subagent count and wall-clock time for each phase.
+
 ## Why Deferred
 
 The change needs its own design decision about how far phases may overlap and how the gates stay intact. It touches the orchestrator, the dispatch standards, and each phase skill in `ravintio-zero/`. It fits with the pipeline-governance group in 0000098 to 0000101.
