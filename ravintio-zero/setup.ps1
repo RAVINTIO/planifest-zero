@@ -111,87 +111,45 @@ function Copy-RavintioSkills {
         
         $srcSkillMd = Join-Path $srcDir "SKILL.md"
         if ([System.IO.File]::Exists($srcSkillMd)) {
-            Copy-RavintioItem $srcSkillMd $destDir
-
-            # Rewrite relative paths to match bundled directory structure
-            $skillMdPath = Join-Path $destDir "SKILL.md"
-            $skillContent = Get-Content -Path $skillMdPath -Raw -Encoding UTF8
-            $skillContent = $skillContent -replace '\.\./templates/', './assets/templates/'
-            $skillContent = $skillContent -replace '\.\./standards/reference/', './references/reference/'
-            $skillContent = $skillContent -replace '\.\./standards/', './references/'
-            $skillContent = $skillContent -replace '\.\./schemas/', './assets/schemas/'
-            Set-Content -Path $skillMdPath -Value $skillContent -NoNewline -Encoding UTF8
+            # Install the skill's own folder only, byte for byte (0000171 req-004,
+            # ADR-004). Pack templates, standards, and schemas stay in ravintio-zero/.
+            Copy-RavintioTree $srcDir $destDir
 
             Write-Host "  + $skillName/SKILL.md"
-            
-            foreach ($optDir in @('scripts', 'assets', 'references')) {
-                $srcOptDir = Join-Path $srcDir $optDir
-                if ([System.IO.Directory]::Exists($srcOptDir)) {
-                    Copy-RavintioTree $srcOptDir (Join-Path $destDir $optDir)
-                }
-            }
 
-            # Parse bundle_templates and bundle_standards from SKILL.md frontmatter
-            $rawContent = Get-Content -Path $srcSkillMd -Raw -Encoding UTF8
-            $bundleTemplates = @()
-            $bundleStandards = @()
-            if ($rawContent -match '(?m)^bundle_templates:\s*\[([^\]]*)\]') {
-                $bundleTemplates = $Matches[1].Trim() -split '\s*,\s*' | Where-Object { $_ }
-            }
-            if ($rawContent -match '(?m)^bundle_standards:\s*\[([^\]]*)\]') {
-                $bundleStandards = $Matches[1].Trim() -split '\s*,\s*' | Where-Object { $_ }
-            }
-
-            # Bundle only declared templates (or all if no manifest found)
-            $templatesSrc = Join-Path $ScriptDir "templates"
-            if ([System.IO.Directory]::Exists($templatesSrc)) {
-                $destTemplates = Join-Path $destDir "assets\templates"
-                [System.IO.Directory]::CreateDirectory($destTemplates) | Out-Null
-                if ($bundleTemplates.Count -gt 0) {
-                    foreach ($tpl in $bundleTemplates) {
-                        $tplPath = Join-Path $templatesSrc $tpl
-                        if ([System.IO.File]::Exists($tplPath) -or [System.IO.Directory]::Exists($tplPath)) {
-                            Copy-RavintioItem $tplPath $destTemplates
-                        }
-                    }
-                    Write-Host "    templates: selective ($($bundleTemplates.Count) files)"
-                }
-                else {
-                    Copy-RavintioTree $templatesSrc $destTemplates
-                    Write-Host "    templates: all (no manifest)"
-                }
-            }
-
-            # Always bundle schemas (small, universally needed)
-            $schemasSrc = Join-Path $ScriptDir "schemas"
-            if ([System.IO.Directory]::Exists($schemasSrc)) {
-                $destSchemas = Join-Path $destDir "assets\schemas"
-                Copy-RavintioTree $schemasSrc $destSchemas
-            }
-
-            # Bundle only declared standards (or all top-level if no manifest found)
-            $standardsSrc = Join-Path $ScriptDir "standards"
-            if ([System.IO.Directory]::Exists($standardsSrc)) {
-                $destRefs = Join-Path $destDir "references"
-                [System.IO.Directory]::CreateDirectory($destRefs) | Out-Null
-                if ($bundleStandards.Count -gt 0) {
-                    foreach ($std in $bundleStandards) {
-                        $stdPath = Join-Path $standardsSrc $std
-                        if ([System.IO.File]::Exists($stdPath) -or [System.IO.Directory]::Exists($stdPath)) {
-                            Copy-RavintioItem $stdPath $destRefs
-                        }
-                    }
-                    Write-Host "    standards: selective ($($bundleStandards.Count) files)"
-                }
-                else {
-                    # No manifest - copy all top-level standards (skip reference/ subdirectory)
-                    foreach ($stdFile in [System.IO.Directory]::GetFiles($standardsSrc)) {
-                        Copy-RavintioItem $stdFile $destRefs
-                    }
-                    Write-Host "    standards: all top-level (no manifest)"
-                }
+            foreach ($sub in @('assets', 'references')) {
+                Remove-BundledFiles $srcDir $destDir $sub
             }
         }
+    }
+}
+
+# Removes the pack copies an older install bundled into a skill's assets/ and
+# references/ folders (0000171 req-004). Walks the named installed folder and
+# deletes each file and folder its source folder lacks. A file in the source
+# always stays. A link is removed, never followed.
+function Remove-BundledFiles {
+    param([string]$SourceDir, [string]$DestDir, [string]$Name)
+    $dir = [System.IO.Path]::Combine($DestDir, $Name)
+    if (-not [System.IO.Directory]::Exists($dir)) {
+        $file = [System.IO.Path]::Combine($DestDir, $Name)
+        if ([System.IO.File]::Exists($file) -and -not [System.IO.File]::Exists([System.IO.Path]::Combine($SourceDir, $Name))) {
+            [System.IO.File]::Delete($file)
+        }
+        return
+    }
+    $srcSub = [System.IO.Path]::Combine($SourceDir, $Name)
+    $inSource = [System.IO.Directory]::Exists($srcSub)
+    $link = [System.IO.FileAttributes]::ReparsePoint
+    if (([System.IO.File]::GetAttributes($dir) -band $link) -eq $link) {
+        if (-not $inSource) { [System.IO.Directory]::Delete($dir) }
+        return
+    }
+    foreach ($entry in [System.IO.Directory]::GetFileSystemEntries($dir)) {
+        Remove-BundledFiles $srcSub $dir ([System.IO.Path]::GetFileName($entry))
+    }
+    if (-not $inSource -and [System.IO.Directory]::GetFileSystemEntries($dir).Length -eq 0) {
+        [System.IO.Directory]::Delete($dir)
     }
 }
 
@@ -1149,7 +1107,7 @@ function Invoke-RavintioSetup {
         Remove-Item -Path $manifest -Force
     }
 
-    # Copy skills (now automatically bundles supporting files)
+    # Copy each skill's own folder
     Copy-RavintioSkills -TargetDir $skillsDir
 
     # Prune folders that no longer exist in the skills/ source set
