@@ -22,8 +22,15 @@ As a [role], I [action], so that [outcome].
 - {{specific, testable requirement 2}}
 
 ## Acceptance Criteria
-- [ ] {{criterion 1}}
-- [ ] {{criterion 2}}
+<!-- Each criterion is one checkbox line with indented Given, When, and Then bullets. And and But continue the step above. The limit of three criteria counts checkbox lines, not steps. -->
+- [ ] AC-{n}: {short name}
+  - Given {starting state}
+  - When {action}
+  - Then {observable outcome}
+- [ ] AC-{n}: {short name}
+  - Given {starting state}
+  - When {action}
+  - Then {observable outcome}
 
 ## Dependencies
 - {{Any other components or requirements this depends on}}

@@ -65,6 +65,7 @@ In a gated run, ask the human about a gap of the second kind. Ask one question a
 
 - Derive requirements directly from user stories in the brief. Do not invent requirements not stated or implied.
 - One file per story at `plan/current/requirements/{req-id}-{slug}.md`, from `templates/requirement.template.md`. No monolithic list in the execution plan.
+- Write each acceptance criterion as a checkbox line `- [ ] AC-{n}: {short name}` with indented `Given`, `When`, and `Then` bullets. `And` and `But` continue the step above. The limit of three criteria counts checkbox lines, not steps.
 - Non-functional requirements state specific, measurable targets. No vague qualifiers. If the design defers an NFR, note it in scope and do not fabricate a target.
 - The OpenAPI spec covers every endpoint implied by the requirements. No more, no less. Use OpenAPI 3.1 with JSON Schema bodies. Produce it early, since everything downstream implements against it.
 - Never invent domain language. If a concept has no clear name, flag it for the human. In a retrofit, include terms the codebase already uses.
