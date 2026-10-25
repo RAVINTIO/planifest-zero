@@ -76,8 +76,8 @@ P1 Plan: Complete: four requirements, three ADRs, story map, execution plan, sco
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T12:32:19Z` |
-| End | `{{timestamp, filled when the phase completes}}` |
-| Wall clock | `{{whole minutes from Start to End}}` |
+| End | `2026-10-25T12:44:26Z` |
+| Wall clock | `12 min` |
 | Model tier | primary orchestrator (sonnet TDD tracks) |
 | Skills loaded | ravintio-implement, ravintio-test-writer, ravintio-implementer, ravintio-refactor |
 | Agents spawned | `2` |
@@ -87,3 +87,9 @@ P1 Plan: Complete: four requirements, three ADRs, story map, execution plan, sco
 
 - In progress: track A REQ-001 and REQ-002 metrics script and governance standard (2026-10-25T12:32:19Z)
 - In progress: track B REQ-003 and REQ-004 marker rules and ship report (2026-10-25T12:32:19Z)
+- Done: track A REQ-001 and REQ-002 metrics script and governance standard, commits 025a28e and 0747b29 (2026-10-25T12:44:26Z)
+- Done: track B REQ-003 and REQ-004 marker rules and ship report, commits 6a514d0 and 745de32 (2026-10-25T12:44:26Z)
+- Done: living docs, component manifest, and pipeline reference inline while batch 1 ran, commits b159eaf and 685cbc6 (2026-10-25T12:44:26Z)
+- The orchestrator `Gate revised:` line is shorter than REQ-003 asked, to fit the 0000151 size budget. Deviation recorded in REQ-003. Track A deviations recorded in REQ-001. (2026-10-25T12:44:26Z)
+- Full suite under `env -i`: 155 feature and 19 regression suites pass. (2026-10-25T12:44:26Z)
+P2 Implement: Complete: four requirements, tests green, docs updated. Autonomous run, no gate stop. (2026-10-25T12:44:26Z)

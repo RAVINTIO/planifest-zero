@@ -43,3 +43,8 @@ As a maintainer, I run one script on a run's folder and get four workflow metric
 
 ## Dependencies
 - REQ-002 supplies the thresholds the section compares against.
+
+## Deviations
+- The governance standard lists the marker forms as bullets, not in the metrics table. The `|` characters in the `Requirement change:` form would break a table cell.
+- If two requirements tie on the highest rework count, the report names the lower requirement id.
+- An unreadable standard file exits 1 with a stderr line naming the path.
