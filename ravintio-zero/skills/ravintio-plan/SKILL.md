@@ -1,7 +1,7 @@
 ---
 name: ravintio-plan
 description: Produces the plan-phase artifact set (requirements, ADRs, scope, risks, glossary) behind one human gate. Invoked by the orchestrator during the plan phase.
-bundle_templates: [requirement.template.md, adr.template.md, execution-plan.template.md, scope.template.md, risk-register.template.md, domain-glossary.template.md, component.template.yml, component-guide.md, data-contract.template.md, data-contract-guide.md]
+bundle_templates: [story-map.template.md, requirement.template.md, adr.template.md, execution-plan.template.md, scope.template.md, risk-register.template.md, domain-glossary.template.md, component.template.yml, component-guide.md, data-contract.template.md, data-contract-guide.md]
 bundle_standards: [formatting-standards.md, agent-dispatch-standards.md]
 ---
 
@@ -28,6 +28,7 @@ Write each artifact to disk as you complete it. Do not accumulate artifacts in m
 | Artifact | Path |
 |---|---|
 | Execution plan | `plan/current/execution-plan.md` - NFRs plus API and data summary |
+| Story map | `plan/current/story-map.md` - activities, steps, and gaps, from `templates/story-map.template.md` |
 | Functional requirements | `plan/current/requirements/` - one granular file per user story |
 | Scope | `plan/current/scope.md` - in, out, and deferred all stated explicitly |
 | Risk register | `plan/current/risk-register.md` |
@@ -44,6 +45,21 @@ Write each artifact to disk as you complete it. Do not accumulate artifacts in m
 | Cost model | `plan/current/cost-model.md` | New or materially changed compute, storage, or third-party spend |
 | Component manifest | `src/{component-id}/component.yml` | One per component. Populate purpose, scope, risk, and contract from the requirements set. Never modify the pre-seeded `stack` section. `purpose.notResponsibleFor` is mandatory. Leave `contract.consumedBy` empty |
 | Data contract | `src/{component-id}/docs/data-contract.md` | One per data-owning component |
+
+## Story mapping pass
+
+Run this pass before you write any requirement file. Write `plan/current/story-map.md` from `templates/story-map.template.md`.
+
+1. List the activities a user performs in the feature, then the steps under each.
+2. Match each step to a user story in the brief. Put `REQ-nnn` in its Requirement cell.
+3. Record a step with no story as a gap.
+
+Resolve each gap by this rule:
+
+- If the brief states or implies the step, add a new story and a new requirement. Write `gap: added as US-nnn`.
+- Otherwise add the step to the out-of-scope list in `scope.md`. Write `gap: out of scope`.
+
+In a gated run, ask the human about a gap of the second kind. Ask one question at a time.
 
 ## Requirements rules
 
