@@ -44,14 +44,14 @@ Scope Lock (first-run path): A run with no `plan/.run-speed` runs at `standard` 
 Scope Lock (error path): A `plan/.run-speed` with any value other than `fast` or `standard` counts as `standard`, and the orchestrator names the value in the build log. [source: draft-accepted (roadmap)]
 Scope Lock (cross-session continuity): A resumed session reads `plan/.run-speed` and keeps the speed without asking. Ship deletes the file with the other sentinels. [source: draft-accepted (roadmap)]
 Scope Lock complete. All four scenario paths captured.
-P0 exchange (design): Q: Confirm the design? / A: draft-accepted (roadmap). (2026-10-25T11:40:00Z)
-P0 Discovery: Complete: design self-confirmed for roadmap step 4. (2026-10-25T11:40:00Z)
+P0 exchange (design): Q: Confirm the design? / A: draft-accepted (roadmap). (2026-10-25T11:35:52Z)
+P0 Discovery: Complete: design self-confirmed for roadmap step 4. (2026-10-25T11:35:52Z)
 
 ### P1: Plan
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-25T11:42:00Z` |
+| Start | `2026-10-25T11:36:06Z` |
 | Model tier | primary orchestrator, cheaper scope agent |
 | Skills loaded | ravintio-plan |
 | Agents spawned | `1` |
@@ -59,8 +59,8 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 4. (2026-10-25T11
 | Parallel task batches | `1` |
 | Notes | Batch 1: scope, risk register, and glossary in one cheaper agent. The orchestrator writes the story map, three requirements, ADRs, and execution plan meanwhile. The requirements share one design, so one writer keeps them in step. |
 
-- In progress: P1 scope, risk register, and glossary (2026-10-25T11:42:00Z)
-- Done: P1 scope, risk register, and glossary, commit b7371c7 (2026-10-25T11:46:00Z)
+- In progress: P1 scope, risk register, and glossary (2026-10-25T11:36:06Z)
+- Done: P1 scope, risk register, and glossary, commit b7371c7 (2026-10-25T11:36:47Z)
 - Done: P1 story map, three requirements, three ADRs, and execution plan, written inline while batch 1 ran (2026-10-25T11:37:49Z)
 - Consistency check clean. (2026-10-25T11:37:49Z)
 P1 Plan: Complete: three requirements, three ADRs, story map, execution plan, scope, risk register, and glossary. Autonomous run, no gate stop. (2026-10-25T11:37:49Z)
