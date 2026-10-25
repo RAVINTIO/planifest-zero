@@ -18,9 +18,10 @@ P2 fixed one suite failure before the first P3. A new `setup.ps1` comment used a
 | Measure | Before | After |
 |---------|--------|-------|
 | `Copy-RavintioSkills`, macOS `pwsh` 7, 5 runs | about 1368 ms | about 18 ms |
-| Both Windows CI jobs, `setup.ps1` total | 210.1 s (run `40106508296`) | 98.2 s (run `40182095593`) |
+| Both Windows CI jobs, `setup.ps1` total | 210.1 s over 111 cases (run `40106508296`) | 105.5 s over 114 cases (run `40183923397`) |
+| Both Windows CI jobs, mean per case | 1893 ms | 926 ms |
 
-REQ-001 AC-1 passes. Run `40182095593` totals 53244 ms on Windows PowerShell 5.1 and 44930 ms on `pwsh` 7, over 55 cases each. The sum is under the 105 s target.
+REQ-001 AC-1 passes. Run `40183923397` totals 41086 ms on Windows PowerShell 5.1 and 64441 ms on `pwsh` 7, over 57 cases each. The mean is 926 ms per case, under the 946 ms target. The earlier run `40182095593` gave 892 ms per case.
 
 ## Security
 

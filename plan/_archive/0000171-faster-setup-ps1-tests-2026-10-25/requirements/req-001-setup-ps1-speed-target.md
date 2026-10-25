@@ -1,8 +1,8 @@
 ---
 title: "Requirement: REQ-001 - setup-ps1-speed-target"
-summary: "Total setup.ps1 time across both Windows CI jobs falls from 210 s to under 105 s."
+summary: "Mean setup.ps1 time per case across both Windows CI jobs falls to under half of 1893 ms."
 status: "active"
-version: "0.1.0"
+version: "0.2.0"
 ---
 # Requirement: REQ-001 - setup-ps1-speed-target
 
@@ -17,16 +17,17 @@ As a maintainer, I wait less for the Windows CI jobs, so that a pull request get
 
 ## Functional Requirements
 - CI run `40106508296` measured 210.1 s of `setup.ps1` time over 111 cases across both Windows jobs.
-- The total across both jobs falls under 105 s for the step's pull request CI run.
+- That is 1893 ms per case. The mean time per case across both jobs falls under 946 ms, half the baseline, for the step's pull request CI run.
+- The target is per case, so adding PowerShell suites does not count against it. The human changed it from a 105 s total on 2026-10-25.
 - The `[timing] setup.ps1` lines and the REQ-003 total measure it. The measured span stays the same: one child host start plus the setup run.
 - The gain comes from REQ-002, the move of the per-file copy away from cmdlet calls (ADR-002).
 - A local profile on `pwsh` 7 shows the skill copy falls by at least half of its 427 ms baseline.
 
 ## Acceptance Criteria
-- [ ] AC-1: CI total under half
+- [ ] AC-1: CI time per case under half
   - Given the step pull request's CI run with both Windows jobs green
-  - When the maintainer adds the two `[timing] setup.ps1 total` values from the job logs
-  - Then the sum is under 105000 ms
+  - When the maintainer divides the sum of the two `[timing] setup.ps1 total` values by the sum of their case counts
+  - Then the result is under 946 ms
 - [ ] AC-2: Local skill copy at least halves
   - Given a fresh workspace on macOS `pwsh` 7
   - When a profile run times `Copy-RavintioSkills` before and after the change

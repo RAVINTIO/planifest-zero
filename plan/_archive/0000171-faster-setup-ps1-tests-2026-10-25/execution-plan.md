@@ -25,7 +25,7 @@
 
 | File | Requirement | Source |
 |------|------------|--------|
-| [req-001-setup-ps1-speed-target.md](requirements/req-001-setup-ps1-speed-target.md) | CI `setup.ps1` total under 105 s | US-001 |
+| [req-001-setup-ps1-speed-target.md](requirements/req-001-setup-ps1-speed-target.md) | CI `setup.ps1` time per case under 946 ms | US-001 |
 | [req-002-install-tree-parity.md](requirements/req-002-install-tree-parity.md) | `System.IO` copies with an unchanged installed tree | US-002 |
 | [req-003-timing-total.md](requirements/req-003-timing-total.md) | Runner prints the `setup.ps1` total | US-003 |
 
@@ -42,7 +42,7 @@ Batch 2 runs REQ-001 AC-2 as a local profile, then the full suite on both shells
 
 | ID | Category | Requirement | Target | Measurement |
 |----|----------|------------|--------|-------------|
-| NFR-001 | Performance | `setup.ps1` time across both Windows CI jobs | Under 105 s, from 210 s | REQ-003 total lines in the step PR's CI logs |
+| NFR-001 | Performance | Mean `setup.ps1` time per case across both Windows CI jobs | Under 946 ms, from 1893 ms | REQ-003 total lines in the step PR's CI logs |
 | NFR-002 | Regression | Existing suites on every shell | All pass on Bash 3.2, Bash 5, Windows PowerShell 5.1, and PowerShell 7 | CI matrix and a local `env -i` run |
 | NFR-003 | Compatibility | Pack install footprint | 0 new dependencies | ADR-001 |
 
@@ -69,7 +69,7 @@ flowchart LR
 
 | ID | Assumption | Impact if Wrong |
 |----|-----------|----------------|
-| A-001 | Cmdlet overhead per file on Windows is at least as high as on macOS | The CI total misses 105 s and the step stops before merge |
+| A-001 | Cmdlet overhead per file on Windows is at least as high as on macOS | The CI time per case misses 946 ms and the step stops before merge |
 
 ## Open Questions
 

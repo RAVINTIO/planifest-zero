@@ -89,7 +89,7 @@ The diff adds no dependency, no network call, and no new external program call. 
 | ID | Risk | Result | Evidence |
 |----|------|--------|----------|
 | R-001 | The .NET copy differs from `Copy-Item` on dot files or an existing target folder | mitigated | Both scripts install the same tree, dot files included. The REQ-002 and REQ-004 suites check it under both hosts. |
-| R-002 | The CI total misses the 105 s target | mitigated | CI run `40182095593` totals 98.2 s, under the target. |
+| R-002 | The CI time per case misses the 946 ms target | mitigated | CI run `40183923397` gives 926 ms per case, under the target. |
 | R-003 | Windows PowerShell 5.1 lacks an API the copy uses | mitigated | Every call is a .NET Framework 4.5 API. CI run `40182095593` passed the 5.1 job. |
 | R-004 | The timing file stays in the temp folder after a run | mitigated | `tests/run-tests.ps1:64` removes it in a `finally` block. See S-005 for the hard-stop case. |
 | A-001 | Cmdlet overhead per file is at least as high on Windows as on macOS | closed | The CI total met the target. |

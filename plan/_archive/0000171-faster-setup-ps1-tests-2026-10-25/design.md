@@ -25,7 +25,7 @@ summary: "Confirmed design for a faster setup.ps1 skill copy and a CI timing tot
 - Integrations: none
 
 ## Architecture Layer
-- Latency target: total `setup.ps1` time across both Windows CI jobs under 105 s, from 210 s. The CI timing lines measure it.
+- Latency target: mean `setup.ps1` time per case across both Windows CI jobs under 946 ms, half the 1893 ms baseline. It was a 105 s total until the 2026-10-25 change to REQ-001. The CI timing lines measure it.
 - Availability target: not applicable
 - Scalability target: not applicable
 - Security: the copy reads only the pack folder and writes only under the project root, as before. It adds no shell calls.
@@ -66,7 +66,7 @@ summary: "Confirmed design for a faster setup.ps1 skill copy and a CI timing tot
   - Nothing deferred.
 
 ## Assumptions
-- Cmdlet overhead per file is at least as high on Windows as on macOS, so the local 8x copy gain carries over. Impact if wrong: the CI total misses 105 s, and the step stops with `Blocked:` before merge.
+- Cmdlet overhead per file is at least as high on Windows as on macOS, so the local 8x copy gain carries over. Impact if wrong: the CI time per case misses 946 ms, and the step stops with `Blocked:` before merge.
 
 ## Risks
 - The .NET copy differs from `Copy-Item` on a case such as dot files or an existing target folder. Likelihood medium, impact medium. Mitigation: the tree test compares every file against the bundle rules under both hosts.

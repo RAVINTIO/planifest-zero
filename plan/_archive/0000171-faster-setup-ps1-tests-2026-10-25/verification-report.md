@@ -21,14 +21,14 @@ This is the second P3 run. The first covered REQ-001 to REQ-003 before the requi
 Total: 15 criteria across REQ-001 to REQ-006. Three points need a reader's attention:
 
 - **Windows PowerShell 5.1.** It is unavailable on this Mac. Every local PowerShell check ran under `pwsh` 7. CI run `40182095593` ran every suite under 5.1, and all five CI jobs passed.
-- **CI total.** REQ-001 AC-1 reads the CI logs of run `40182095593`. I did not re-measure it.
+- **CI total.** REQ-001 AC-1 reads the CI logs of run `40183923397`. I did not re-measure it.
 - **Prune defect.** The Bash prune step splits file names on a newline. A planted name can delete a file in the caller's folder. No criterion covers it. See S-008 in `security-report.md`.
 
 ## Outcome per criterion
 
 | REQ | AC | Outcome | Method |
 |---|---|---|---|
-| REQ-001 | AC-1 | verified | Read the two `[timing] setup.ps1 total` values from CI run `40182095593` |
+| REQ-001 | AC-1 | verified | Read the two `[timing] setup.ps1 total` values from CI run `40183923397` and divided by the case count |
 | REQ-001 | AC-2 | verified | Timed `Copy-RavintioSkills` in the old and new `setup.ps1`, 5 runs each |
 | REQ-002 | AC-1 | verified | Ran `setup.ps1 claude-code` in a fresh workspace and compared the tree with the skill sources |
 | REQ-002 | AC-2 | verified | Edited an installed file by hand and reran setup, with and without the manifest |
@@ -46,7 +46,7 @@ Total: 15 criteria across REQ-001 to REQ-006. Three points need a reader's atten
 
 ## REQ-001
 
-- **AC-1: verified.** CI run `40182095593` printed `[timing] setup.ps1 total` lines of 53244 ms on Windows PowerShell 5.1 and 44930 ms on `pwsh` 7. Each covered 55 cases. The sum is 98174 ms, under the 105000 ms limit. The baseline was 210.1 s in run `40106508296`. All five CI jobs passed on run `40182095593`.
+- **AC-1: verified.** CI run `40183923397` printed `[timing] setup.ps1 total` lines of 41086 ms on Windows PowerShell 5.1 and 64441 ms on `pwsh` 7. Each covered 57 cases. The mean is 105527 ms over 114 cases, or 926 ms per case, under the 946 ms limit. The baseline was 210.1 s over 111 cases in run `40106508296`, or 1893 ms per case. All five CI jobs passed on run `40183923397`.
 - **AC-2: verified.** I copied each `setup.ps1` into a fresh workspace and wrapped the `Copy-RavintioSkills` call in a `Stopwatch` that prints to stderr. The "before" script came from `b52b209`. Each run used a fresh workspace with no `.claude` folder.
 
 | Script | Run times (ms) | Average (ms) |

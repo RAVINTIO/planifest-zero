@@ -170,3 +170,11 @@ Blocked: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-2
 - In progress: P3 re-run, verification and security review (2026-10-25T09:51:27Z)
 - Done: P3 re-run. All 15 acceptance criteria pass. Security found S-008 and S-009 (medium) and S-010 to S-012 (low) in the new prune. Commit `d22c8ff` limits the prune to named pack paths and skips links, which fixes S-008 to S-011. S-012 is accepted. Full Bash runner 148 and 19 regression pass, PowerShell 16 of 16. (2026-10-25T10:13:35Z)
 - Resolved: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-25T10:13:56Z, human chose to fix the encoding, profile on Windows, and drop skill bundling on all platforms). The 5.1 parity check passes and the total is 98.2 s.
+
+### Requirement Change (2026-10-25T10:40:00Z)
+
+- What changed: REQ-001 AC-1 now measures the mean `setup.ps1` time per case, under 946 ms, half the 1893 ms baseline. It was a sum under 105000 ms. The human approved the change.
+- Active phase: P4 Ship, R-D Advance, before the PR #32 merge.
+- Why: CI run `40183923397` totalled 105.5 s, 0.5 s over the old target. This step added 4 PowerShell cases per job, and the `pwsh` 7 job varied from 44.9 s to 64.4 s between runs. A fixed total counts new tests against the target.
+- REQ-001 AC-1 met in CI run `40183923397`: 41086 ms (5.1) and 64441 ms (7) over 57 cases each, 926 ms per case. Run `40182095593` gave 892 ms per case.
+- The feature brief keeps the original wording from backlog entry 0000159.
