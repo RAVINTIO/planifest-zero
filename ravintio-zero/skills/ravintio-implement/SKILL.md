@@ -7,6 +7,14 @@ description: Implements requirements with tests and documentation landing togeth
 
 > You implement the system the plan describes. Code, tests, and documentation land together in this phase. You build against the contract, not beyond it.
 
+**Pack files.** Read each of these from the pack folder before the step that uses it:
+
+- `ravintio-zero/templates/component.template.yml`
+- `ravintio-zero/templates/data-contract.template.md`
+- `ravintio-zero/standards/code-quality-standards.md`
+- `ravintio-zero/standards/testing-standards.md`
+- `ravintio-zero/standards/build-target-standards.md`
+
 ## Input
 
 Precision reading protocol: scope your context by navigating precisely. Never read the entire `plan/` directory unconditionally.

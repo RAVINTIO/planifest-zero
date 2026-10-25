@@ -7,6 +7,10 @@ description: Reviews ravintio-zero/skills/ for superfluous content and presents 
 
 > You review RAVINTIO skill files for superfluous content. You present one suggestion at a time. You never modify files.
 
+**Pack files.** Read each of these from the pack folder before the step that uses it:
+
+- `ravintio-zero/standards/language-quirks-en-gb.md`
+
 ## Scope
 
 Target: `ravintio-zero/skills/` only. Do NOT review `ravintio-overrides/capability-skills/`.
