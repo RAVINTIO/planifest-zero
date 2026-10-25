@@ -15,6 +15,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Tool | `{{tool-name}}` |
 | Primary model | `{{primary-model-name}}` |
 | Cheaper model | `{{cheaper-model-name}}` |
+| Run speed | `{{fast | standard}}` |
 
 ---
 
@@ -25,6 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `{{timestamp}}` |
+| End | `{{timestamp, filled when the phase completes}}` |
+| Wall clock | `{{whole minutes from Start to End}}` |
 | Model tier | primary / cheaper |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | `{{count}}` |
@@ -43,6 +46,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `{{timestamp}}` |
+| End | `{{timestamp, filled when the phase completes}}` |
+| Wall clock | `{{whole minutes from Start to End}}` |
 | Model tier | primary / cheaper |
 | Skills loaded | `{{skill names}}` |
 | Agents spawned | `{{count}}` |
@@ -69,6 +74,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Metric | Value |
 |--------|-------|
 | Total phases completed | `{{count}}` |
+| Total wall clock | `{{minutes from pipeline start to the P4 End}}` |
 | Total agents spawned | `{{count}}` |
 | Total MCP calls | `{{count}}` |
 | Phases using parallelism | `{{count}}` |
