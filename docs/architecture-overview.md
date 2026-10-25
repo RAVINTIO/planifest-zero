@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000169-release-hygiene
+Last updated: 0000170-story-mapping-and-gherkin
 
 ## What this repo is
 
@@ -28,6 +28,14 @@ The pipeline runs five phases, numbered P0 to P4. There is one route: every chan
 | Implement | `P2 Implement:` | ravintio-implement |
 | Validate and accept | `P3 Validate:` | ravintio-validate-and-accept |
 | Ship | `P4 Ship:` | ravintio-ship |
+
+### Story map and Gherkin criteria
+
+P1 starts with a story mapping pass. It writes `plan/current/story-map.md` from `templates/story-map.template.md`, with the user's activities along the top and the stories under each one. A gap that the brief states or implies becomes a new story and a requirement. Any other gap goes to the out-of-scope list.
+
+Each acceptance criterion is one checkbox line, `- [ ] AC-{n}: {name}`, with indented `Given`, `When`, and `Then` bullets under it. `And` and `But` continue the step above. The limit of three criteria counts checkbox lines.
+
+`scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2.
 
 ### Run modes
 

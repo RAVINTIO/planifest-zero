@@ -17,6 +17,14 @@
  *      Mitigation column
  *   5. Design scope — design.md declares a Scope (or Component Paths) section
  *      so gate-write has component paths to enforce
+ *   6. Gherkin criteria (feature 0000170, ADR-003) — each checkbox criterion in
+ *      "## Acceptance Criteria" holds indented Given, When, and Then step lines
+ *      in that order. And and But continue any step. A finding names the file
+ *      and the criterion's AC-n, or its line number if it has no AC-n.
+ *   7. Story map (feature 0000170) — when requirement files exist, plan/current/
+ *      story-map.md exists, every requirement Source US-nnn appears in it, and
+ *      every Backbone row has a Requirement cell. The cell names a REQ-nnn that
+ *      has a req-nnn-*.md file, or reads "gap: {disposition}".
  *
  * Exit codes: 0 = clean, 1 = findings (listed on stdout).
  */
@@ -46,6 +54,34 @@ if (!existsSync(dir)) {
   process.exit(1);
 }
 
+/** Gherkin check (check 6): one finding per malformed criterion. */
+function checkGherkin(file, text, ac) {
+  const base = text.slice(0, text.indexOf(ac)).split(/\r?\n/).length - 1;
+  const lines = ac.split(/\r?\n/);
+  let cur = null;
+  const crits = [];
+  lines.forEach((line, i) => {
+    if (/^\s*-\s*\[[ x]\]/i.test(line)) {
+      cur = { id: line.match(/\bAC-\d+/)?.[0] ?? `line ${base + i + 1}`, steps: [] };
+      crits.push(cur);
+      return;
+    }
+    const step = line.match(/^\s+-\s*(Given|When|Then|And|But)\b/);
+    if (cur && step) cur.steps.push(step[1]);
+  });
+  for (const { id, steps } of crits) {
+    const g = steps.indexOf("Given");
+    const w = steps.indexOf("When");
+    const t = steps.indexOf("Then");
+    const missing = [["Given", g], ["When", w], ["Then", t]].filter(([, i]) => i === -1).map(([n]) => n);
+    if (missing.length > 0) {
+      findings.push(`${file}: ${id} has no ${missing.join(", ")} step (Gherkin: Given, When, Then)`);
+    } else if (!(g < w && w < t)) {
+      findings.push(`${file}: ${id} steps are out of order (Gherkin: Given, When, Then)`);
+    }
+  }
+}
+
 // ---- 1 + 2: requirement files --------------------------------------------
 const reqDir = join(dir, "requirements");
 const reqFiles = existsSync(reqDir)
@@ -66,6 +102,45 @@ for (const f of reqFiles) {
     const count = (ac.match(/^\s*-\s*\[[ x]\]/gim) ?? []).length;
     if (count > 3) {
       findings.push(`${f}: ${count} acceptance criteria (max 3 per requirement — split the story)`);
+    }
+    checkGherkin(f, text, ac);
+  }
+}
+
+// ---- 7: story map (feature 0000170) -----------------------------------------
+if (reqFiles.length > 0) {
+  const mapText = read(join(dir, "story-map.md"));
+  if (mapText === null) {
+    findings.push("story-map.md: missing — requirement files exist but no story map maps them");
+  } else {
+    for (const f of reqFiles) {
+      const us = (read(join(reqDir, f)) ?? "").match(/\*\*Source:\*\*\s*(US-\d+)/)?.[1];
+      if (us && !new RegExp(`\\b${us}\\b`).test(mapText)) {
+        findings.push(`story-map.md: ${us} (Source of ${f}) does not appear in the story map`);
+      }
+    }
+    let col = -1;
+    for (const line of mapText.split(/\r?\n/)) {
+      if (!line.trim().startsWith("|")) continue;
+      const cells = line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      if (cells.some((c) => /^-+:?$|^:-+:?$/.test(c))) continue; // separator row
+      if (cells.some((c) => c.toLowerCase() === "requirement")) {
+        col = cells.findIndex((c) => c.toLowerCase() === "requirement");
+        continue;
+      }
+      if (col === -1) continue;
+      const label = cells[1] || cells[0] || "(unnamed row)";
+      const cell = cells[col] ?? "";
+      if (cell === "") {
+        findings.push(`story-map.md: row "${label}" has an empty Requirement cell`);
+        continue;
+      }
+      for (const ref of new Set(cell.match(/REQ-\d+/g) ?? [])) {
+        const prefix = `${ref.toLowerCase()}-`;
+        if (!reqFiles.some((f) => f.startsWith(prefix))) {
+          findings.push(`story-map.md: row "${label}" names ${ref} but no ${prefix}*.md file exists`);
+        }
+      }
     }
   }
 }
