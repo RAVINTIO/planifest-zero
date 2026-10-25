@@ -61,6 +61,15 @@ The driver also showed three bugs during roadmap 0000168:
 - Give supervisor messages a prefix, such as `R-C Run:` while steps run and `R-E Delivery:` for the final report.
 - Have R-B Activate start the driver from the orchestrator in supervisor mode, rather than offering it as a separate step.
 
+## Decision at P0
+
+Should one orchestrator skill run both the roadmap workflow and the feature pipeline, or should they split into two skills?
+
+- **One skill.** The orchestrator keeps the R-A to R-E stages and adds supervisor mode. It keeps one entry point, and the auto-trigger hook needs no change. The cost is a larger skill with two resume paths. Resume detection must also tell a supervisor from a step session.
+- **Two skills.** A roadmap skill owns charting, the driver, supervision, progress reports, and governance across steps. The orchestrator keeps one feature run, P0 onwards. Each session then loads one skill with one resume path and its own ack. The cost is a second entry point. The auto-trigger hook must also pick the right skill, and the shared hard limits must stay in step across both.
+
+The recommendation is two skills. The supervisor and the step session differ in resume detection, ack, prefixes, and reporting duty. A split keeps the orchestrator to one run, and gives roadmap reporting and governance one owner.
+
 ## Wanted outcome
 
 The session that starts the driver runs as the orchestrator in supervisor mode throughout. On request and at each phase end, the supervisor reports roadmap completion and the current step's phase, progress, and highlights. It also reports progress at least once every 5 minutes and reports each phase end or stop at once. The driver stops on a `Blocked:` line in an archived build log, advances a step only after its merge, and keeps child subagents running. The strict-mode hook stays quiet in both the supervisor and child sessions. When the driver exits, the supervisor reports every step's result and the roadmap PR URL. A test runs the driver with a stub child and checks that the supervisor report names each step. Further tests cover each driver fix.
