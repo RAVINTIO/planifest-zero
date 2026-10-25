@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000172-subagent-acceleration
+Last updated: 0000173-workflow-governance-gates
 
 ## Component dependency diagram
 
@@ -18,6 +18,7 @@ graph TD
         LABELS["scripts/roadmap-labels.mjs"]
         ATTRIB["scripts/check-attribution.mjs"]
         RELTAG["scripts/release-tag.mjs"]
+        METRICS["scripts/workflow-metrics.mjs"]
         REFS["skills/ravintio-orchestrator/references/\n(seven orchestrator-*.md files)"]
         LOGS["plan/.roadmap-logs/step-N.log"]
     end
@@ -55,6 +56,9 @@ graph TD
     DRIVER -->|"imports the label encoder"| LABELS
     DRIVER -->|"writes one log per step"| LOGS
     SKILLS -->|"orchestrator loads on demand"| REFS
+    SKILLS -->|"ship runs at Steps 5 and 9"| METRICS
+    METRICS -->|"reads thresholds"| STANDARDS
+    METRICS --> NODE
 
     VERSION -->|"reads components[]"| PRODUCT
     VERSION -->|"reads version"| MANIFEST

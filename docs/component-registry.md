@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000172-subagent-acceleration
+Last updated: 0000173-workflow-governance-gates
 
 ## Registry
 
