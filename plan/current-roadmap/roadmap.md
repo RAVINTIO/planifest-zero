@@ -8,7 +8,7 @@ status: "active"
 **Goal:** Clear every open backlog entry from 2026-10-25, one feature release per step. The evaluation suite split from 0000100 stays in the backlog as 0000174.
 **Branch:** roadmap/0000168-backlog-clearance
 **Status:** active
-**Position:** 1
+**Position:** 2
 
 The human charted this roadmap and confirmed it on 2026-10-25. The confirmation sharpened backlog entries 0000159, 0000110, and 0000100 with a **Wanted outcome** section each.
 
@@ -44,7 +44,7 @@ The human charted this roadmap and confirmed it on 2026-10-25. The confirmation 
 
 | Step | Feature id | Backlog entries | Bump | Version | Status |
 |------|------------|-----------------|------|---------|--------|
-| 1 | 0000169-release-hygiene | 0000166, 0000167 | minor | | pending |
+| 1 | 0000169-release-hygiene | 0000166, 0000167 | minor | 0.14.0 | merged |
 | 2 | 0000170-story-mapping-and-gherkin | 0000165 | minor | | pending |
 | 3 | 0000171-faster-setup-ps1-tests | 0000159 | patch | | pending |
 | 4 | 0000172-subagent-acceleration | 0000110 | minor | | pending |
