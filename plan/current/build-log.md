@@ -38,3 +38,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Backlog pickup: pull in 0000188 (name the roadmap initiative). Leave 0000174 to 0000186 for the roadmap initiative charted on 2026-10-25.
 - P0 exchange (initiative storage): Q: Keep each initiative in plan/roadmap/ throughout, or keep a move on activation? / A: Keep the move, to plan/current-initiative/, because a fixed path helps manage state as sessions change.
 - P0 exchange (names): Q: Short form 'initiative' or long form 'roadmap-initiative' in file, branch, script, env var, and telemetry names? / A: Short form, per the proposed table. roadmap-standards.md, the R-A to R-E prefixes, historical test names, and plan/_archive/ and plan/changelog/ stay unchanged.
+- P0 exchange (prefixes): Q: Keep R-A to R-E or move to I-A to I-E? / A: Move to I-A Chart, I-B Activate, I-C Run, I-D Advance, I-E Delivery.
