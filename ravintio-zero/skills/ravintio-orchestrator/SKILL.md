@@ -116,6 +116,7 @@ Read these reference files before you act on their topic. Each holds rules moved
 | A request to skip a phase, pause, or park | `references/orchestrator-session-commands.md` |
 | A standalone skill, or a capability skill arriving or proposed | `references/orchestrator-skills-catalogue.md` |
 | A requirement change during P1 to P3 | `references/orchestrator-mid-pipeline-changes.md` |
+| The run speed | `references/orchestrator-run-speed.md` |
 
 ---
 
@@ -218,6 +219,8 @@ How should the agent run P1 to P4?
 
 Record the answer and write `plan/.run-mode` (`gated` or `autonomous`). No other value is valid. Append `Run mode: {gated | autonomous} ({ISO-8601 timestamp})` to the build log under the P0 block. Include it in the discovery commit. Only this skill writes `plan/.run-mode`. Phase skills read it and never write it. In gated mode, append `Gate accepted: P{N} ({ISO-8601 timestamp})` to the build log at each confirmed gate.
 
+Then ask the run-speed question and write `plan/.run-speed`.
+
 A roadmap step skips the run-mode question and the human confirmation, as R-C Run in `ravintio-zero/standards/roadmap-standards.md` describes.
 
 In a gated run, state the context size before you ask for confirmation. See Context size at gates in Phase Invocation.
@@ -238,6 +241,8 @@ Conventions for every downstream phase:
 - **Push cadence:** after each gate commit, if remote push is authorised by a standing override in `ravintio-overrides/instructions/` or a per-session grant in the build log, push the feature branch. A failed push is an exception stop (see Exception Stops).
 - **Skills inbox:** re-check at each transition.
 - **Run mode:** read `plan/.run-mode` at each transition and apply that phase's STOP rule below.
+- **Run speed:** read `plan/.run-speed`. At `fast`, dispatch the phase's fast batch.
+- **Close the block:** when a phase completes, fill `End` and `Wall clock`.
 
 | Phase | Invoke | Gate condition | STOP rule |
 |-------|--------|----------------|-----------|

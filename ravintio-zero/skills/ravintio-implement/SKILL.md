@@ -133,6 +133,17 @@ Independent requirements MUST be dispatched in parallel per `ravintio-zero/stand
 
 Per-component docs for independent components also parallelise. The registry and dependency graph wait until all component docs exist. If a dispatched subagent finds an out-of-scope bug or gap, it files a `plan/backlog/` entry directly per the dispatch standards.
 
+### Fast batch
+
+When `plan/.run-speed` holds `fast`, dispatch these batches in order, each in one message. Within a batch, every unit writes its own files.
+
+1. One TDD track per leaf requirement whose files no other track writes. Each track runs test-writer, implementer, and refactor in sequence.
+2. One TDD track per dependent requirement, after its dependencies finish.
+3. One unit per independent living doc and per-component doc set, while the full test suite runs in the background.
+4. Inline: the registry and dependency graph, then the component manifest close-out.
+
+At `standard`, the steps above apply. The five-attempt escalation is unchanged.
+
 ## Commit cadence
 
 Commit after every requirement's completed TDD cycle at minimum, and after every meaningful artifact write. Never batch changes to the phase gate. Each commit carries the code and the docs that describe it together.

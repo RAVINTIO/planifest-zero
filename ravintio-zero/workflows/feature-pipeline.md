@@ -89,6 +89,11 @@ the answer in `plan/.run-mode` and logs it in the build log.
 - **Autonomous**: the pipeline stops at none of those gates. It runs to a
   raised PR and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
 
+The orchestrator then asks for a run speed and records it in `plan/.run-speed`.
+At `fast`, each phase dispatches its listed fast batch in one message. At
+`standard`, or when the file is missing, each phase applies its own rules.
+Phases run in order at either speed, and every gate stays in place.
+
 Both modes stop for escalations. Each stop prints `{prefix} Blocked:` and names
 the action the human needs to take. The five escalations are:
 

@@ -121,6 +121,16 @@ Dispatch subagents per `ravintio-zero/standards/agent-dispatch-standards.md`.
 | ADRs for independent decisions | An ADR that builds on another ADR's decision |
 | Component manifest drafts | Data contract and data-ownership ADRs before ownership is settled |
 
+### Fast batch
+
+When `plan/.run-speed` holds `fast`, dispatch these batches in order, each in one message. Within a batch, every unit writes its own files.
+
+1. After the story map pass: one unit per requirement file for an independent story, plus one unit for scope, risk register, and domain glossary.
+2. After the requirements: one unit per ADR for an independent decision, plus one unit per component manifest draft.
+3. Inline: the execution plan, then the consistency check and the gate.
+
+At `standard`, the table above applies.
+
 Out-of-scope discoveries by a dispatched subagent go straight to `plan/backlog/` per the dispatch standard's filing clause.
 
 ## Waved features

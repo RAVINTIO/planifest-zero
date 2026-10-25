@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000171-faster-setup-ps1-tests
+Last updated: 0000172-subagent-acceleration
 
 ## Component dependency diagram
 

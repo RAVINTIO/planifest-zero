@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000171-faster-setup-ps1-tests
+Last updated: 0000172-subagent-acceleration
 
 ## What this repo is
 
@@ -46,6 +46,13 @@ At the end of P0, the orchestrator asks how to run P1 to P4. It writes the answe
 
 On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the question again and name the value it found.
 
+**Run speed.** After the run mode, the orchestrator asks for a run speed and writes `standard` or `fast` to `plan/.run-speed`. A missing or unknown value counts as `standard`. A roadmap step takes the roadmap's `**Speed:**` field.
+
+- **Standard.** Each phase applies its own parallelism rules.
+- **Fast.** Each phase skill dispatches the units in its `### Fast batch` list, each batch in one message. The rules sit in `## Fast batches` of the dispatch standard.
+
+Phases run in order at either speed, and the gates and exception stops stay the same. Each build-log phase block records `End` and `Wall clock`, and the build report lists them with the agent count. Ship Step 8 deletes `plan/.run-speed` with the other sentinels.
+
 **Exception stops.** Both modes stop and print `{prefix} Blocked: {action needed}` in these cases:
 
 - A requirement or check still fails after 5 attempts.
@@ -63,7 +70,7 @@ No mode merges a PR or commits to `main`. The human merges every PR.
 
 **Ship order.** P4 creates no tag. Step 8 reads the run mode, then clears the pipeline sentinels in a commit. Step 9 checks the PR body with `scripts/check-attribution.mjs`, pushes the branch, and raises the PR. Step 10 is the final gate. So the sentinels never reach `main` through the PR.
 
-**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Seven files under `skills/ravintio-orchestrator/references/` hold the rarely used sections word for word: adoption modes, discovery coaching, discovery records, mid-pipeline changes, scope lock, session commands, and the skills catalogue. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
+**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Eight files under `skills/ravintio-orchestrator/references/` hold the rarely used sections: adoption modes, discovery coaching, discovery records, mid-pipeline changes, run speed, scope lock, session commands, and the skills catalogue. Seven hold moved sections word for word. The run speed file holds the 0000172 run-speed rules, because `SKILL.md` has a size budget. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
 
 **Model tiers.** Every Agent call passes `model`, set to `sonnet` or `haiku`. The three TDD skills set `model: haiku`. A haiku unit that fails twice retries on sonnet. A WebFetch of a full reference page goes through a sonnet or haiku subagent that returns an extract.
 

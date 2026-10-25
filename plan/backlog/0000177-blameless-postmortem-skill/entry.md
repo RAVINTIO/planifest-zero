@@ -20,7 +20,7 @@ Roadmap 0000168 shows the pattern. Step 1 stopped on a `setup.ps1` bug that P3 p
 
 ## Suggested Action
 
-Add a `ravintio-postmortem` skill. Port Framework backlog entry 0000085 and keep its method:
+Add a `ravintio-postmortem` skill. Port RAVINTIO Framework backlog entry 0000085 and keep its method:
 
 - **Trigger:** a failed CI run, a `Blocked:` stop, a P2 self-correction that a test should have caught, an escaped defect, or a human request.
 - **Method:** blameless rules, a timeline with evidence, and 5 whys. The whys stop at a gap in a process, check, standard, or tool, never at a person or agent.
@@ -36,4 +36,4 @@ After a run with a CI failure or a `Blocked:` stop, `plan/postmortems/` holds on
 
 ## Why Deferred
 
-The human asked for it while roadmap 0000168 was running. Framework holds the same request as backlog entry 0000085.
+The human asked for it while roadmap 0000168 was running. RAVINTIO Framework holds the same request as backlog entry 0000085.

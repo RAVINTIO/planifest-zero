@@ -25,6 +25,7 @@ status: "draft"  # draft | active | blocked | done
 **Branch:** roadmap/{{id}}-{{slug}}
 **Status:** {{draft | active | blocked | done}}
 **Position:** {{number of the next step to run, for example 1}}
+**Speed:** {{standard | fast, optional, a missing field means standard}}
 
 ## Stop conditions
 

@@ -120,6 +120,18 @@ Rollbacks are human-initiated, never automatic.
 
 Batch 1 (parallel): lint + typecheck, library audit + semantic check. Batch 2 (after Batch 1 passes): tests. Batch 3: build. Security analyses (dependency audit, secrets scan, input validation scan) run in parallel with each other. Never run tests before typecheck passes, the summary risk rating before all findings are in, or cycle N+1 before N's fix is verified. File out-of-scope discoveries to `plan/backlog/` per `ravintio-zero/standards/agent-dispatch-standards.md`.
 
+### Fast batch
+
+When `plan/.run-speed` holds `fast`, dispatch batch 1 in one message:
+
+- Execution verification in one unit.
+- The security review in one unit.
+- The full test suite in the background.
+
+Then run inline: CI checks in order, self-correct cycles one at a time, and the acceptance gate or evidence.
+
+At `standard`, the paragraph above applies.
+
 ## Commit cadence
 
 Commit fix batches as they land. Do not batch changes waiting for the gate.

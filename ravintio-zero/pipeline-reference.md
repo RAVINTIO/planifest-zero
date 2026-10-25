@@ -105,6 +105,15 @@ Each stop adds a `Blocked:` line to the build log, and the human's answer adds a
 
 The phase skills are the single source for gate behaviour. Merging the PR is human-only in every mode.
 
+### Run speed
+
+After the run mode, the orchestrator asks for a run speed and writes `standard` or `fast` to `plan/.run-speed`. A missing or unknown value counts as `standard`. A roadmap step takes the speed from the roadmap's `**Speed:**` field.
+
+- **Standard**: each phase applies its own parallelism rules.
+- **Fast**: each phase dispatches the units in its `### Fast batch` list, each batch in one message.
+
+Phases run in order at either speed, and every gate and escalation stays in place. Each build-log phase block records its `End` and `Wall clock` time, and the build report lists them with the agent count.
+
 ---
 
 ## Ship Phase
