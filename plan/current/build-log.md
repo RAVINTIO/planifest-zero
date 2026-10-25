@@ -151,3 +151,4 @@ Blocked: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-2
 - In progress: track B REQ-005 full pack paths, REQ-006 path check (2026-10-25T09:28:28Z)
 - Version change (2026-10-25T09:31:46Z): the human chose a minor bump, 0.16.0 in place of 0.15.1, because REQ-004 changes what setup installs. Roadmap step 3 `Bump` is now `minor`.
 - Done: track A REQ-004 setup scripts stop bundling, REQ-002 test update. New req-004 suites pass on Bash 3.2 and `pwsh` 7. `run-tests.ps1` 17 of 17. Removed the `bundle_templates` check from the 0000040 park suite. (2026-10-25T09:40:21Z)
+- Done: track B REQ-005 full pack paths, REQ-006 path check. 16 path mentions rewritten in 6 skills, 13 bundle lines removed. The orchestrator then added a full-path pack file list to 4 skills, so no skill loses a pointer its bundle list gave. Full Bash runner 149 and 19 regression, all pass. (2026-10-25T09:46:57Z)
