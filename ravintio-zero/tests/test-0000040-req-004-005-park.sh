@@ -59,8 +59,6 @@ done
 assert_equals "" "$(grep -n '—' "$PARK_TPL" 2>/dev/null)" "req-004: park.template.md has no em dash"
 assert_contains '| A park record | `ravintio-zero/templates/park.template.md` |' "$S" \
   "req-004: the Pack Index names the park template"
-BUNDLE=$(grep '^bundle_templates:' "$ORCH")
-assert_contains 'park.template.md' "$BUNDLE" "req-004: bundle_templates lists park.template.md"
 
 echo "=== req-004: the backlog entry template allows parked ==="
 E=$(cat "$ENTRY_TPL")

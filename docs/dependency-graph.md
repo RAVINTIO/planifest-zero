@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000170-story-mapping-and-gherkin
+Last updated: 0000171-faster-setup-ps1-tests
 
 ## Component dependency diagram
 
@@ -40,7 +40,7 @@ graph TD
     SETUP -->|"installs"| SKILLS
     SETUP -->|"copies + wires"| ENFORCE
     SETUP -->|"wires via core.hooksPath"| GITHOOKS
-    SKILLS -->|"bundles at install time"| STANDARDS
+    SKILLS -->|"reads by full path"| STANDARDS
 
     CC -->|"plans a tool call"| HookRunner
     HookRunner -->|"stdin JSON"| ENFORCE

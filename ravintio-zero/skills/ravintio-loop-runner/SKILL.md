@@ -1,8 +1,6 @@
 ---
 name: ravintio-loop-runner
 description: Canonical loop mechanics for every pipeline loop: state file conventions, stop rules, escalation format, toggle protocol. Loaded by any phase agent entering a loop.
-bundle_templates: [loop-state.template.md, loop-toggles.template.yml]
-bundle_standards: []
 ---
 
 # RAVINTIO - loop-runner
@@ -18,7 +16,7 @@ bundle_standards: []
 
 ## Toggle Protocol
 
-Before arming any loop, read `ravintio-overrides/loop-toggles.yml` (see `templates/loop-toggles.template.yml`):
+Before arming any loop, read `ravintio-overrides/loop-toggles.yml` (see `ravintio-zero/templates/loop-toggles.template.yml`):
 
 - Absent file, absent key, or unreadable/invalid value → the loop is **off**. Emit a one-line warning only for an invalid value on a known key.
 - `report-only` → run the loop, write findings/verdicts, block nothing, mutate nothing.
@@ -28,7 +26,7 @@ The pipeline never creates `ravintio-overrides/loop-toggles.yml`. Enabling a loo
 
 ## Loop State (per instance)
 
-Create `plan/current/loop-state-{loop-id}.md` from `templates/loop-state.template.md` when the loop arms. Update and **commit after every iteration**: the state file is how an interrupted session resumes mid-loop (the `{phase-prefix}: Resuming` convention), and how budget counters survive resume.
+Create `plan/current/loop-state-{loop-id}.md` from `ravintio-zero/templates/loop-state.template.md` when the loop arms. Update and **commit after every iteration**: the state file is how an interrupted session resumes mid-loop (the `{phase-prefix}: Resuming` convention), and how budget counters survive resume.
 
 While any loop-state file has `status: active`, the `ratchet-check.mjs` hook is armed for `plan/current/` artifact writes. Set `status: done` or `status: escalated` when the loop exits. Never leave a dead loop armed.
 

@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.15.0"
-feature: "0000170-story-mapping-and-gherkin"
+version: "0.16.0"
+feature: "0000171-faster-setup-ps1-tests"
 
 versionPolicy: "max-component-version"
 

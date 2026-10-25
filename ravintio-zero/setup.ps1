@@ -68,6 +68,39 @@ $ValidTools = @('claude-code')
 
 # --- Shared functions ---
 
+# Copy helpers built on System.IO calls. Per-file cmdlets cost far more than
+# these on Windows PowerShell and PowerShell 7 (0000171 ADR-002). Both use
+# only APIs that Windows PowerShell 5.1 has, and overwrite existing files.
+
+# Copies a file into a folder, or makes the named folder for a folder source
+# (the same as Copy-Item without -Recurse). Makes the destination folder first.
+function Copy-RavintioItem {
+    param([string]$Source, [string]$DestDir)
+    [System.IO.Directory]::CreateDirectory($DestDir) | Out-Null
+    $leaf = [System.IO.Path]::GetFileName($Source)
+    if ([System.IO.Directory]::Exists($Source)) {
+        [System.IO.Directory]::CreateDirectory([System.IO.Path]::Combine($DestDir, $leaf)) | Out-Null
+    }
+    else {
+        [System.IO.File]::Copy($Source, [System.IO.Path]::Combine($DestDir, $leaf), $true)
+    }
+}
+
+# Copies the children of a folder into another folder, keeping every file
+# (dot files included) and every subfolder, empty ones too.
+function Copy-RavintioTree {
+    param([string]$SourceDir, [string]$DestDir)
+    $all = [System.IO.SearchOption]::AllDirectories
+    [System.IO.Directory]::CreateDirectory($DestDir) | Out-Null
+    $prefix = $SourceDir.TrimEnd('\', '/').Length + 1
+    foreach ($dir in [System.IO.Directory]::GetDirectories($SourceDir, '*', $all)) {
+        [System.IO.Directory]::CreateDirectory([System.IO.Path]::Combine($DestDir, $dir.Substring($prefix))) | Out-Null
+    }
+    foreach ($file in [System.IO.Directory]::GetFiles($SourceDir, '*', $all)) {
+        [System.IO.File]::Copy($file, [System.IO.Path]::Combine($DestDir, $file.Substring($prefix)), $true)
+    }
+}
+
 function Copy-RavintioSkills {
     param($TargetDir)
 
@@ -77,89 +110,64 @@ function Copy-RavintioSkills {
         $destDir = Join-Path $TargetDir $skillName
         
         $srcSkillMd = Join-Path $srcDir "SKILL.md"
-        if (Test-Path $srcSkillMd) {
-            New-Item -ItemType Directory -Path $destDir -Force | Out-Null
-            Copy-Item -Path $srcSkillMd -Destination $destDir -Force
-
-            # Rewrite relative paths to match bundled directory structure
-            $skillMdPath = Join-Path $destDir "SKILL.md"
-            $skillContent = Get-Content -Path $skillMdPath -Raw
-            $skillContent = $skillContent -replace '\.\./templates/', './assets/templates/'
-            $skillContent = $skillContent -replace '\.\./standards/reference/', './references/reference/'
-            $skillContent = $skillContent -replace '\.\./standards/', './references/'
-            $skillContent = $skillContent -replace '\.\./schemas/', './assets/schemas/'
-            Set-Content -Path $skillMdPath -Value $skillContent -NoNewline -Encoding UTF8
+        if ([System.IO.File]::Exists($srcSkillMd)) {
+            # Install the skill's own folder only, byte for byte (0000171 req-004,
+            # ADR-004). Pack templates, standards, and schemas stay in ravintio-zero/.
+            Copy-RavintioTree $srcDir $destDir
 
             Write-Host "  + $skillName/SKILL.md"
-            
-            foreach ($optDir in @('scripts', 'assets', 'references')) {
-                $srcOptDir = Join-Path $srcDir $optDir
-                if (Test-Path $srcOptDir) {
-                    Copy-Item -Path $srcOptDir -Destination $destDir -Recurse -Force
-                }
-            }
 
-            # Parse bundle_templates and bundle_standards from SKILL.md frontmatter
-            $rawContent = Get-Content -Path $srcSkillMd -Raw
-            $bundleTemplates = @()
-            $bundleStandards = @()
-            if ($rawContent -match '(?m)^bundle_templates:\s*\[([^\]]*)\]') {
-                $bundleTemplates = $Matches[1].Trim() -split '\s*,\s*' | Where-Object { $_ }
-            }
-            if ($rawContent -match '(?m)^bundle_standards:\s*\[([^\]]*)\]') {
-                $bundleStandards = $Matches[1].Trim() -split '\s*,\s*' | Where-Object { $_ }
-            }
+            Remove-BundledFiles $srcDir $destDir
+        }
+    }
+}
 
-            # Bundle only declared templates (or all if no manifest found)
-            $templatesSrc = Join-Path $ScriptDir "templates"
-            if (Test-Path $templatesSrc) {
-                $destTemplates = Join-Path $destDir "assets\templates"
-                New-Item -ItemType Directory -Path $destTemplates -Force | Out-Null
-                if ($bundleTemplates.Count -gt 0) {
-                    foreach ($tpl in $bundleTemplates) {
-                        $tplPath = Join-Path $templatesSrc $tpl
-                        if (Test-Path $tplPath) {
-                            Copy-Item -Path $tplPath -Destination $destTemplates -Force
-                        }
-                    }
-                    Write-Host "    templates: selective ($($bundleTemplates.Count) files)"
-                }
-                else {
-                    Copy-Item -Path "$templatesSrc\*" -Destination $destTemplates -Recurse -Force
-                    Write-Host "    templates: all (no manifest)"
-                }
-            }
+# True when the path exists and is a link or junction.
+function Test-RavintioLink {
+    param([string]$Path)
+    if (-not ([System.IO.File]::Exists($Path) -or [System.IO.Directory]::Exists($Path))) { return $false }
+    $link = [System.IO.FileAttributes]::ReparsePoint
+    return (([System.IO.File]::GetAttributes($Path) -band $link) -eq $link)
+}
 
-            # Always bundle schemas (small, universally needed)
-            $schemasSrc = Join-Path $ScriptDir "schemas"
-            if (Test-Path $schemasSrc) {
-                $destSchemas = Join-Path $destDir "assets\schemas"
-                New-Item -ItemType Directory -Path $destSchemas -Force | Out-Null
-                Copy-Item -Path "$schemasSrc\*" -Destination $destSchemas -Recurse -Force
+# Removes the pack copies an older install bundled into a skill (0000171
+# req-004). It deletes only the paths where that install put a pack file:
+# assets/templates/{name}, assets/schemas/{name}, and references/{name}.
+# It never walks the folder, never deletes a path the skill source holds,
+# and skips any linked path, so it can't reach outside the install.
+function Remove-BundledFiles {
+    param([string]$SourceDir, [string]$DestDir)
+    if (Test-RavintioLink $DestDir) { return }
+    $all = [System.IO.SearchOption]::AllDirectories
+    foreach ($pair in @(@('templates', 'assets', 'templates'), @('schemas', 'assets', 'schemas'), @('standards', 'references', ''))) {
+        $top = [System.IO.Path]::Combine($DestDir, $pair[1])
+        $to = if ($pair[2]) { [System.IO.Path]::Combine($top, $pair[2]) } else { $top }
+        if ((Test-RavintioLink $top) -or (Test-RavintioLink $to)) { continue }
+        if (-not [System.IO.Directory]::Exists($to)) { continue }
+        $rel = if ($pair[2]) { [System.IO.Path]::Combine($pair[1], $pair[2]) } else { $pair[1] }
+        foreach ($f in [System.IO.Directory]::GetFiles([System.IO.Path]::Combine($ScriptDir, $pair[0]), '*', $all)) {
+            $name = [System.IO.Path]::GetFileName($f)
+            if ([System.IO.File]::Exists([System.IO.Path]::Combine($SourceDir, $rel, $name))) { continue }
+            $target = [System.IO.Path]::Combine($to, $name)
+            if ([System.IO.File]::Exists($target) -and -not (Test-RavintioLink $target)) {
+                [System.IO.File]::Delete($target)
             }
-
-            # Bundle only declared standards (or all top-level if no manifest found)
-            $standardsSrc = Join-Path $ScriptDir "standards"
-            if (Test-Path $standardsSrc) {
-                $destRefs = Join-Path $destDir "references"
-                New-Item -ItemType Directory -Path $destRefs -Force | Out-Null
-                if ($bundleStandards.Count -gt 0) {
-                    foreach ($std in $bundleStandards) {
-                        $stdPath = Join-Path $standardsSrc $std
-                        if (Test-Path $stdPath) {
-                            Copy-Item -Path $stdPath -Destination $destRefs -Force
-                        }
-                    }
-                    Write-Host "    standards: selective ($($bundleStandards.Count) files)"
-                }
-                else {
-                    # No manifest - copy all top-level standards (skip reference/ subdirectory)
-                    Get-ChildItem -Path $standardsSrc -File | ForEach-Object {
-                        Copy-Item -Path $_.FullName -Destination $destRefs -Force
-                    }
-                    Write-Host "    standards: all top-level (no manifest)"
-                }
-            }
+        }
+    }
+    # Deepest first, so a parent is empty when its turn comes. A folder that
+    # still holds a user file stays.
+    $folders = @(
+        [System.IO.Path]::Combine('assets', 'templates'),
+        [System.IO.Path]::Combine('assets', 'schemas'),
+        'assets',
+        'references'
+    )
+    foreach ($rel in $folders) {
+        $dir = [System.IO.Path]::Combine($DestDir, $rel)
+        if (-not [System.IO.Directory]::Exists($dir) -or (Test-RavintioLink $dir)) { continue }
+        if ([System.IO.Directory]::Exists([System.IO.Path]::Combine($SourceDir, $rel))) { continue }
+        if ([System.IO.Directory]::GetFileSystemEntries($dir).Length -eq 0) {
+            [System.IO.Directory]::Delete($dir)
         }
     }
 }
@@ -687,7 +695,7 @@ function Install-EnforcementHooks {
     $dest     = Join-Path $ProjectRoot $HooksDirRel
     $settings = Join-Path $ProjectRoot $SettingsRel
 
-    if (-not (Test-Path $src)) {
+    if (-not [System.IO.Directory]::Exists($src)) {
         Write-Host "  ! Warning: enforcement hook scripts not found at $src — skipping"
         return
     }
@@ -695,11 +703,10 @@ function Install-EnforcementHooks {
     Write-Host ""
     Write-Host "  Installing RAVINTIO enforcement hooks"
 
-    New-Item -ItemType Directory -Path $dest -Force | Out-Null
+    [System.IO.Directory]::CreateDirectory($dest) | Out-Null
 
     Get-ChildItem -Path $src -Filter '*.mjs' | ForEach-Object {
-        $destFile = Join-Path $dest $_.Name
-        Copy-Item -Path $_.FullName -Destination $destFile -Force
+        Copy-RavintioItem $_.FullName $dest
         Write-Host "  + $HooksDirRel/$($_.Name)"
     }
 
@@ -980,7 +987,7 @@ out/
         Write-Host "  + $ignoreFile (created)"
     }
     else {
-        $existing = Get-Content -Path $ignorePath -Raw
+        $existing = Get-Content -Path $ignorePath -Raw -Encoding UTF8
         if ($existing -notmatch "RAVINTIO - Token Reduction") {
             Add-Content -Path $ignorePath -Value $ignoreContent -Encoding UTF8
             Write-Host "  + $ignoreFile (appended RAVINTIO ignore rules)"
@@ -1024,7 +1031,7 @@ function Append-OverrideInstructions {
     $endMarker   = '<!-- ravintio-overrides:instructions:end -->'
 
     # Strip any existing override block from a previous run
-    $current = Get-Content -Path $bootPath -Raw
+    $current = Get-Content -Path $bootPath -Raw -Encoding UTF8
     if ($current -match [regex]::Escape($startMarker)) {
         $pattern = "(?s)\r?\n$([regex]::Escape($startMarker)).*?$([regex]::Escape($endMarker))\r?\n?"
         $current = [regex]::Replace($current, $pattern, '')
@@ -1041,7 +1048,7 @@ function Append-OverrideInstructions {
 
     $block = "`n`n$startMarker`n"
     foreach ($file in $files) {
-        $block += "`n" + (Get-Content -Path $file.FullName -Raw).TrimEnd() + "`n"
+        $block += "`n" + (Get-Content -Path $file.FullName -Raw -Encoding UTF8).TrimEnd() + "`n"
         Write-Host "  + $($file.Name)"
     }
     $block += "`n$endMarker"
@@ -1110,7 +1117,7 @@ function Invoke-RavintioSetup {
     $manifest = Join-Path $skillsDir ".ravintio-manifest"
     if (Test-Path $manifest) {
         Write-Host "  Re-run detected — removing previously installed directories"
-        Get-Content -Path $manifest | Where-Object { $_ -ne '' } | ForEach-Object {
+        Get-Content -Path $manifest -Encoding UTF8 | Where-Object { $_ -ne '' } | ForEach-Object {
             if (Test-Path $_) {
                 Remove-Item -Path $_ -Recurse -Force
                 Write-Host "  - removed: $(Split-Path -Leaf $_)"
@@ -1119,7 +1126,7 @@ function Invoke-RavintioSetup {
         Remove-Item -Path $manifest -Force
     }
 
-    # Copy skills (now automatically bundles supporting files)
+    # Copy each skill's own folder
     Copy-RavintioSkills -TargetDir $skillsDir
 
     # Prune folders that no longer exist in the skills/ source set
@@ -1141,7 +1148,7 @@ function Invoke-RavintioSetup {
         $bootContent = $toolConfig.BootContent
         if (-not $bootContent -and $toolConfig.BootTemplate) {
             $bootContentPath = Join-Path $ProjectRoot $toolConfig.BootTemplate
-            $bootContent = Get-Content -Raw -Path $bootContentPath
+            $bootContent = Get-Content -Raw -Path $bootContentPath -Encoding UTF8
         }
         Write-RavintioBootFile -RelPath $toolConfig.BootFile -Content $bootContent
     }

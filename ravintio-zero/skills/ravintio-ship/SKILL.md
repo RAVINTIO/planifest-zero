@@ -1,8 +1,6 @@
 ---
 name: ravintio-ship
 description: Archive, build assessment, changelog, version, and PR, behind the final gate in a gated run.
-bundle_templates: []
-bundle_standards: []
 ---
 
 # RAVINTIO - ship

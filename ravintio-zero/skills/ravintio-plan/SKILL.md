@@ -1,13 +1,23 @@
 ---
 name: ravintio-plan
 description: Produces the plan-phase artifact set (requirements, ADRs, scope, risks, glossary) behind one human gate. Invoked by the orchestrator during the plan phase.
-bundle_templates: [story-map.template.md, requirement.template.md, adr.template.md, execution-plan.template.md, scope.template.md, risk-register.template.md, domain-glossary.template.md, component.template.yml, component-guide.md, data-contract.template.md, data-contract-guide.md]
-bundle_standards: [formatting-standards.md, agent-dispatch-standards.md]
 ---
 
 # RAVINTIO - plan
 
 > You produce the full requirements-and-decisions artifact set for a feature behind one human gate. You work from a confirmed design and feature brief. You derive requirements. You never invent them.
+
+**Pack files.** Read each of these from the pack folder before the step that uses it:
+
+- `ravintio-zero/templates/execution-plan.template.md`
+- `ravintio-zero/templates/scope.template.md`
+- `ravintio-zero/templates/risk-register.template.md`
+- `ravintio-zero/templates/domain-glossary.template.md`
+- `ravintio-zero/templates/component.template.yml`
+- `ravintio-zero/templates/component-guide.md`
+- `ravintio-zero/templates/data-contract.template.md`
+- `ravintio-zero/templates/data-contract-guide.md`
+- `ravintio-zero/standards/formatting-standards.md`
 
 **One question at a time.** When you need human input, ask one question and wait.
 
@@ -21,14 +31,14 @@ If the adoption mode is retrofit, work from the retrofit scan recorded in `plan/
 
 ## Artifacts
 
-Write each artifact to disk as you complete it. Do not accumulate artifacts in memory. Each artifact follows its template in `templates/` where one exists.
+Write each artifact to disk as you complete it. Do not accumulate artifacts in memory. Each artifact follows its template in `ravintio-zero/templates/` where one exists.
 
 **Minimal default set - always produced, regardless of feature size:**
 
 | Artifact | Path |
 |---|---|
 | Execution plan | `plan/current/execution-plan.md` - NFRs plus API and data summary |
-| Story map | `plan/current/story-map.md` - activities, steps, and gaps, from `templates/story-map.template.md` |
+| Story map | `plan/current/story-map.md` - activities, steps, and gaps, from `ravintio-zero/templates/story-map.template.md` |
 | Functional requirements | `plan/current/requirements/` - one granular file per user story |
 | Scope | `plan/current/scope.md` - in, out, and deferred all stated explicitly |
 | Risk register | `plan/current/risk-register.md` |
@@ -48,7 +58,7 @@ Write each artifact to disk as you complete it. Do not accumulate artifacts in m
 
 ## Story mapping pass
 
-Run this pass before you write any requirement file. Write `plan/current/story-map.md` from `templates/story-map.template.md`.
+Run this pass before you write any requirement file. Write `plan/current/story-map.md` from `ravintio-zero/templates/story-map.template.md`.
 
 1. List the activities a user performs in the feature, then the steps under each.
 2. Match each step to a user story in the brief. Put `REQ-nnn` in its Requirement cell.
@@ -64,7 +74,7 @@ In a gated run, ask the human about a gap of the second kind. Ask one question a
 ## Requirements rules
 
 - Derive requirements directly from user stories in the brief. Do not invent requirements not stated or implied.
-- One file per story at `plan/current/requirements/{req-id}-{slug}.md`, from `templates/requirement.template.md`. No monolithic list in the execution plan.
+- One file per story at `plan/current/requirements/{req-id}-{slug}.md`, from `ravintio-zero/templates/requirement.template.md`. No monolithic list in the execution plan.
 - Write each acceptance criterion as a checkbox line `- [ ] AC-{n}: {short name}` with indented `Given`, `When`, and `Then` bullets. `And` and `But` continue the step above. The limit of three criteria counts checkbox lines, not steps.
 - Non-functional requirements state specific, measurable targets. No vague qualifiers. If the design defers an NFR, note it in scope and do not fabricate a target.
 - The OpenAPI spec covers every endpoint implied by the requirements. No more, no less. Use OpenAPI 3.1 with JSON Schema bodies. Produce it early, since everything downstream implements against it.
@@ -86,7 +96,7 @@ A decision needs an ADR when it meets any of these criteria:
 
 No ADR for decisions already mandated by the requirements, direct consequences of the stack declaration, or single-component implementation details. Write one ADR recording the stack choice itself, referencing the design.
 
-- Follow `templates/adr.template.md`. Be specific. Vague ADRs are useless.
+- Follow `ravintio-zero/templates/adr.template.md`. Be specific. Vague ADRs are useless.
 - Number sequentially from ADR-001.
 - Consequences include at least one positive and one negative.
 - If a decision supersedes a prior ADR, mark the prior one `Superseded by ADR-{NNN}` and reference it in the new ADR's context.
@@ -102,7 +112,7 @@ Then present the artifact set summary and stop for human confirmation.
 
 ## Parallelism
 
-Dispatch subagents per `standards/agent-dispatch-standards.md`.
+Dispatch subagents per `ravintio-zero/standards/agent-dispatch-standards.md`.
 
 | MUST parallelise | Cannot parallelise |
 |---|---|

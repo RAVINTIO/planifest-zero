@@ -59,7 +59,7 @@ chmod +x ravintio-zero/setup.sh
 Setup installs:
 
 - Skill folders with YAML frontmatter into `.claude/skills/`, auto-discovered by Claude Code. Retired skills are pruned.
-- Supporting files (templates, standards, schemas) bundled per skill.
+- No copies of templates, standards, or schemas. Skills read them from `ravintio-zero/` by full path.
 - Enforcement hooks wired into `.claude/settings.json`.
 - The `CLAUDE.md` boot file.
 - Git hooks and the orchestrator sentinel machinery, activated automatically.

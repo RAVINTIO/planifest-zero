@@ -5,6 +5,8 @@
 #
 # Environment:
 #   RAVINTIO_TEST_QUIET=1   hide PASS lines and banners, keep every failure and the summary
+#   RAVINTIO_TIMING_FILE    set by this script (0000171 req-003). Invoke-Setup appends
+#                           one setup.ps1 time per run, and the total prints before the summary.
 
 $ErrorActionPreference = 'Stop'
 
@@ -23,25 +25,43 @@ if ($suites.Count -eq 0) {
     exit 1
 }
 
+$timingFile = Join-Path ([System.IO.Path]::GetTempPath()) ("ravintio-timing-" + [guid]::NewGuid().ToString('N') + ".txt")
+[System.IO.File]::WriteAllText($timingFile, '')
+$savedTimingFile = $env:RAVINTIO_TIMING_FILE
+$env:RAVINTIO_TIMING_FILE = $timingFile
+
 $failed = @()
-foreach ($suite in $suites) {
-    if ($env:RAVINTIO_TEST_QUIET -eq '1') {
-        $suiteOut = & $hostExe -NoProfile -ExecutionPolicy Bypass -File $suite.FullName 2>&1 | Out-String
-        if ($LASTEXITCODE -ne 0) {
-            $failed += $suite.Name
-            if (-not $suiteOut.Contains("--- $($suite.Name) ---")) {
-                Write-Host ""
-                Write-Host "--- $($suite.Name) ---"
+try {
+    foreach ($suite in $suites) {
+        if ($env:RAVINTIO_TEST_QUIET -eq '1') {
+            $suiteOut = & $hostExe -NoProfile -ExecutionPolicy Bypass -File $suite.FullName 2>&1 | Out-String
+            if ($LASTEXITCODE -ne 0) {
+                $failed += $suite.Name
+                if (-not $suiteOut.Contains("--- $($suite.Name) ---")) {
+                    Write-Host ""
+                    Write-Host "--- $($suite.Name) ---"
+                }
+                Write-Host $suiteOut
             }
-            Write-Host $suiteOut
+        }
+        else {
+            Write-Host ""
+            Write-Host "--- $($suite.Name) ---"
+            & $hostExe -NoProfile -ExecutionPolicy Bypass -File $suite.FullName
+            if ($LASTEXITCODE -ne 0) { $failed += $suite.Name }
         }
     }
-    else {
-        Write-Host ""
-        Write-Host "--- $($suite.Name) ---"
-        & $hostExe -NoProfile -ExecutionPolicy Bypass -File $suite.FullName
-        if ($LASTEXITCODE -ne 0) { $failed += $suite.Name }
-    }
+
+    $values = @([System.IO.File]::ReadAllLines($timingFile) | Where-Object { $_ -match '^\d+$' })
+    $totalMs = [long]0
+    foreach ($v in $values) { $totalMs += [long]$v }
+    Write-Host ""
+    Write-Host "[timing] setup.ps1 total: $totalMs ms over $($values.Count) cases"
+}
+finally {
+    $env:RAVINTIO_TIMING_FILE = $savedTimingFile
+    if ($null -eq $savedTimingFile) { Remove-Item Env:RAVINTIO_TIMING_FILE -ErrorAction SilentlyContinue }
+    Remove-Item -LiteralPath $timingFile -Force -ErrorAction SilentlyContinue
 }
 
 Write-Host ""
