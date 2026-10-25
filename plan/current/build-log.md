@@ -46,3 +46,18 @@ Scope Lock (cross-session continuity): Both checks read only files on disk, so a
 Scope Lock complete. All four scenario paths captured.
 P0 exchange (design): Q: Confirm the design? / A: draft-accepted (roadmap). (2026-10-25T04:41:52Z)
 P0 Discovery: Complete: design self-confirmed for roadmap step 2. (2026-10-25T04:41:52Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T04:42:09Z` |
+| Model tier | primary orchestrator, primary requirements agent, cheaper scope agent |
+| Skills loaded | ravintio-plan |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: the five requirements in one agent, because they share the Gherkin format. Scope, risk, and glossary in a second agent. The orchestrator writes the story map, the ADRs, and the execution plan. |
+
+- In progress: P1 requirements REQ-001 to REQ-005 (2026-10-25T04:42:09Z)
+- In progress: P1 scope, risk register, and glossary (2026-10-25T04:42:09Z)
