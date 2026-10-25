@@ -147,3 +147,5 @@ Blocked: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-2
 - Why: the Windows profile run on PR #32 showed the skill copy takes about 720 ms per install. 511 of 535 installed files are bundled copies that no skill reads.
 - Earlier fixes on this branch: `setup.ps1` now reads text as UTF-8 (commit `9a9a4c8`), and the Windows PowerShell 5.1 parity check passes. A temporary profile suite (`test-0000171-zz-profile-setup-ps1.ps1`) is on the branch and leaves before merge.
 - Re-run: P2 for REQ-004 to REQ-006 and the REQ-002 test, then P3 in full, then P4.
+- In progress: track A REQ-004 setup scripts stop bundling, REQ-002 test update (2026-10-25T09:28:28Z)
+- In progress: track B REQ-005 full pack paths, REQ-006 path check (2026-10-25T09:28:28Z)
