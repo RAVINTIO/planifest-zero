@@ -116,3 +116,17 @@ P2 Implement: Complete: two requirements, tests green, docs updated. Autonomous 
 - Strict-mode ack rewritten with this session's id once the hook banner supplied it. (2026-10-25T13:14:26Z)
 - Full suite under `env -i`: 157 feature and 19 regression suites pass. 0 self-correction cycles. (2026-10-25T13:14:26Z)
 P3 Validate and Accept: Complete: checks green, security low, evidence in acceptance-evidence.md. Autonomous run, no gate stop. (2026-10-25T13:14:26Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T13:14:39Z` |
+| End | |
+| Wall clock | |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Roadmap step at `standard` speed. Steps 1 to 6 run as written, then R-D Advance. The steps are sequential, so no subagent applies. |
