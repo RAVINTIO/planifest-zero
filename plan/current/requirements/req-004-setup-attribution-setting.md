@@ -25,7 +25,7 @@ As a maintainer, I get setup to turn off the host's attribution lines, so that t
 
 ## Acceptance Criteria
 - [ ] After `setup.sh` and after `setup.ps1` on a claude-code project with no `attribution` key, `.claude/settings.json` holds `{"commit": "", "pr": ""}` under `attribution`.
-- [ ] A settings file that already holds an `attribution` key, with any value, is byte-identical after setup in both shells.
+- [ ] A settings file that already holds an `attribution` key, with any value, keeps that value byte for byte after setup in both shells.
 - [ ] A second setup run leaves `.claude/settings.json` byte-identical in both shells.
 
 ## Dependencies

@@ -117,6 +117,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      # Pinned to the v4 commit, because this job holds a write token
+      # (0000169 S-001). Credentials persist on purpose, so git push works
+      # (0000169 S-003).
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0

@@ -110,3 +110,7 @@ P2 Implement: Complete: 6 requirements built across 4 tracks in 2 batches. Auton
 
 - In progress: P3 execution verification and coverage (2026-10-25T03:46:05Z)
 - In progress: P3 security review (2026-10-25T03:46:05Z)
+- Done: P3 execution verification and coverage. 18 criteria have tests. 15 verified, and 3 verified in Bash with the PowerShell half left to CI. (2026-10-25T03:54:49Z)
+- Done: P3 security review. No critical or high findings. 1 medium, 6 low, 2 informational. (2026-10-25T03:54:49Z)
+- P3 cycle 1: check security review / finding S-001 floating checkout ref in the template's write-token job / fix pin the SHA and add the S-003 comment in both files / result workflow suites pass (2026-10-25T03:54:49Z)
+- Deviation: REQ-004 criterion b said the whole settings file stays byte-identical. Setup also writes hooks and `allowedTools`, so the criterion now says the `attribution` value stays byte for byte. (2026-10-25T03:54:49Z)
