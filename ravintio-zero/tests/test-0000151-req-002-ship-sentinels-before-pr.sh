@@ -27,7 +27,7 @@ line() { grep -n -F -- "$1" "$2" | head -1 | cut -d: -f1; }
 echo ""
 echo "=== req-002 (a): step order and text ==="
 
-l7="$(line '### Step 7: Git tag' "$SHIP")"
+l7="$(line '### Step 7: Release tag' "$SHIP")"
 l8="$(line '### Step 8: Clear sentinels' "$SHIP")"
 l9="$(line '### Step 9: PR' "$SHIP")"
 l10="$(line '### Step 10: Final gate' "$SHIP")"
@@ -38,16 +38,14 @@ assert_equals "yes" "$ordered" "req-002 (a): headings rise Step 7, 8, 9, 10"
 assert_equals "10" "$(grep -c '^### Step ' "$SHIP")" \
   "req-002 (a): ten step headings, none renumbered below Step 7"
 
-S7="$(section '### Step 7: Git tag' "$SHIP")"
+S7="$(section '### Step 7: Release tag' "$SHIP")"
 S8="$(section '### Step 8: Clear sentinels' "$SHIP")"
 S9="$(section '### Step 9: PR' "$SHIP")"
 S10="$(section '### Step 10: Final gate' "$SHIP")"
 
 assert_equals "yes" "$(has 'option [1]' "$S9")" "req-002 (a): Step 9 covers option [1]"
-assert_equals "yes" "$(has 'git push origin v{version}' "$S9")" "req-002 (a): Step 9 pushes the tag"
-assert_equals "yes" "$(has 'Local only. Do not push the tag.' "$S7")" "req-002 (a): Step 7 keeps the roadmap sentence"
-assert_equals "no" "$(printf '%s\n' "$S7" | grep -qE '^Local only\. Do not push the tag\.$' && echo yes || echo no)" \
-  "req-002 (a): Step 7 no longer bans every tag push"
+assert_equals "no" "$(has 'git push origin v{version}' "$(printf '%s\n' "$S9" | sed -n '/option \[1\], push/,/^```$/p')")" "req-002 (a): Step 9 option [1] pushes no tag (0000169 req-006)"
+assert_equals "yes" "$(has 'Create no tag.' "$S7")" "req-002 (a): Step 7 creates no tag (0000169 req-006)"
 assert_equals "yes" "$(has 'plan/.orchestrator-active' "$S8")" "req-002 (a): Step 8 names the active sentinel"
 assert_equals "yes" "$(has 'plan/.orchestrator-ack' "$S8")" "req-002 (a): Step 8 names the ack sentinel"
 assert_equals "yes" "$(has 'plan/.run-mode' "$S8")" "req-002 (a): Step 8 names the run-mode sentinel"

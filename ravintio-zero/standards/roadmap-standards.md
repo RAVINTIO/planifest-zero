@@ -173,9 +173,9 @@ The roadmap PR to `main` stays human-only. The agent never merges it. The `merge
 
 ## Ship stages
 
-These stages apply only when `plan/current-roadmap/roadmap.md` has `status: active`. Check the file before Step 6. Outside a roadmap, ignore this section. A normal run keeps the order in the ship skill: tag at Step 7, clear sentinels at Step 8, PR at Step 9, and no merge by the agent.
+These stages apply only when `plan/current-roadmap/roadmap.md` has `status: active`. Check the file before Step 6. Outside a roadmap, ignore this section. A normal run keeps the order in the ship skill: clear sentinels at Step 8, PR at Step 9, and no merge by the agent. Step 7 creates no tag. CI tags the merge commit on `main` after the human merges.
 
-In a roadmap step, Steps 1 to 5 run as written. Steps 7 and 9 give way to the two stages below. Step 8 (clear the sentinels) runs and its commit is pushed before the PR is raised, so the squash does not carry the sentinels onto the roadmap branch and the next step's P0 does not see a stale feature id. The step's `Bump` column in `roadmap.md` sets the version for Step 6, and the downgrade check still applies. The merge carve-out is governed by the merge rule and the merge-guard hook, which allows `gh pr merge --squash` only for a `roadmap/*` base.
+In a roadmap step, Steps 1 to 5 run as written. Step 9 gives way to the two stages below. Step 8 (clear the sentinels) runs and its commit is pushed before the PR is raised, so the squash does not carry the sentinels onto the roadmap branch and the next step's P0 does not see a stale feature id. The step's `Bump` column in `roadmap.md` sets the version for Step 6, and the downgrade check still applies. The merge carve-out is governed by the merge rule and the merge-guard hook, which allows `gh pr merge --squash` only for a `roadmap/*` base.
 
 ### R-D Advance
 

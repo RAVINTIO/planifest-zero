@@ -12,7 +12,8 @@ The setup script activates a **three-tier Progressive Guardrail System** that pr
 |------|------|--------|
 | **1: Advisory pre-commit** | Every local commit | Warns if code was staged without docs. Commit **succeeds**. |
 | **2: Branch pre-push** | Every `git push` | Fails if `src/` changed with no update to `plan/`, `docs/`, or `component.yml`. |
-| **3: CI/CD pipeline** | Every pull request | Same check in GitHub Actions. Blocks the merge button on violation. |
+| **3: CI/CD pipeline** | Every pull request | Same check in GitHub Actions. Blocks the merge button on violation. Also fails a PR description that holds an AI attribution line. |
+| **Release tag** | Every push to `main` or `master` | The `release-tag` job tags the merge commit with `v{version}`. |
 
 A `commit-msg` hook also validates every commit message. It blocks AI attribution, affirmatory language, and subjects over 72 characters.
 
