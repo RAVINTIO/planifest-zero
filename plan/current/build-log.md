@@ -46,3 +46,17 @@ Scope Lock (cross-session continuity): A resumed session reads `plan/.run-speed`
 Scope Lock complete. All four scenario paths captured.
 P0 exchange (design): Q: Confirm the design? / A: draft-accepted (roadmap). (2026-10-25T11:40:00Z)
 P0 Discovery: Complete: design self-confirmed for roadmap step 4. (2026-10-25T11:40:00Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T11:42:00Z` |
+| Model tier | primary orchestrator, cheaper scope agent |
+| Skills loaded | ravintio-plan |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: scope, risk register, and glossary in one cheaper agent. The orchestrator writes the story map, three requirements, ADRs, and execution plan meanwhile. The requirements share one design, so one writer keeps them in step. |
+
+- In progress: P1 scope, risk register, and glossary (2026-10-25T11:42:00Z)
