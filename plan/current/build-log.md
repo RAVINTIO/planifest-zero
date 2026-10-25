@@ -77,8 +77,8 @@ P1 Plan: Complete: two requirements, one ADR, story map, execution plan, scope, 
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T13:03:32Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-25T13:13:06Z` |
+| Wall clock | `6 min` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement, ravintio-test-writer, ravintio-implementer, ravintio-refactor |
 | Agents spawned | `0` |
@@ -90,3 +90,7 @@ P1 Plan: Complete: two requirements, one ADR, story map, execution plan, scope, 
 - Done: REQ-001 strict mode section, red then green, 3 of 3 checks (2026-10-25T13:04:13Z)
 - In progress: REQ-002 strict mode links (2026-10-25T13:04:13Z)
 - Done: REQ-002 strict mode links, red then green, 3 of 3 checks (2026-10-25T13:04:37Z)
+- Done: decisions index row for ADR-001, commit 4016f91 (2026-10-25T13:13:06Z)
+- Design deviation recorded in P0 and ADR-001: the run rewrote the existing section instead of adding a new one. No further deviation. (2026-10-25T13:13:06Z)
+- Full suite under `env -i` from the repo root: 157 feature and 19 regression suites pass. (2026-10-25T13:13:06Z)
+P2 Implement: Complete: two requirements, tests green, docs updated. Autonomous run, no gate stop. (2026-10-25T13:13:06Z)
