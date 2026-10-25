@@ -120,19 +120,19 @@ One wave. The changes rename the same files, so splitting them would leave the p
 
 **Happy path:**
 
-> Pending the Scope Lock Challenge.
+> A charted initiative lives at `plan/roadmap/{id}-{slug}/initiative.md` with status `charted`. `I-B Activate` cuts `initiative/{id}-{slug}` and moves the file to `plan/current-initiative/`. The driver runs each step, and `I-E Delivery` raises the PR to `main`. Only the new names and the `I-` prefixes appear.
 
 **First-run path:**
 
-> Pending the Scope Lock Challenge.
+> This repo has no draft and no active roadmap, so nothing migrates. In a consumer, migration `0005` runs once at upgrade. It renames each draft's `roadmap.md` and the CI pattern, then moves to `_done/`. A rerun changes nothing.
 
 **Error / sad path:**
 
-> Pending the Scope Lock Challenge.
+> A missed old name fails the search test in CI, which names the file and line. An old `RAVINTIO_ROADMAP_*` variable stops the driver at start. An active roadmap stops migration `0005`.
 
 **Cross-session continuity:**
 
-> Pending the Scope Lock Challenge.
+> `plan/current/` and the build log carry the state. Each rename unit lands in its own commit, so a rerun finishes a partial rename. Migration `0005` refuses to run while a roadmap is active.
 
 ## Acceptance Criteria
 
