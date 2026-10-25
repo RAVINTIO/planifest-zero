@@ -86,3 +86,5 @@ P1 Plan: Complete: five requirements, four ADRs, story map, execution plan, scop
 P2 Implement: Resuming: both tracks committed. Batch 2 is next: full suite on both shells, then living docs. (2026-10-25T04:55:06Z)
 - Full suite on macOS Bash 3.2 (the only local Bash), with and without `env -i`: one real failure. Backlog entry 0000175 named the pack with a banned word, so the wording allowlist test failed. Reworded the entry. (2026-10-25T05:02:39Z)
 - Without `env -i`, tests 0000043 req-007 and 0000151 req-006 fail because the roadmap driver exports `RAVINTIO_ROADMAP_MODEL` into this session. They pass with the variable unset. CI runs them clean. (2026-10-25T05:02:39Z)
+- Done: living docs (architecture overview, decisions index, registry and graph stamps) and component manifest (2026-10-25T05:03:16Z)
+P2 Implement: Complete: five requirements, tests green, docs updated. Autonomous run, no gate stop. (2026-10-25T05:03:16Z)
