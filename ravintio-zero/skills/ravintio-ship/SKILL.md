@@ -110,7 +110,7 @@ gh pr create
 
 In option [2], print the PR title and description. The human pushes the branch and the tag later.
 
-Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution.
+Title: `{feature-id}: {one-line summary}`. Body: summary bullets, key decisions, validation results, test plan. In `autonomous`, add an `## Acceptance evidence` section with the contents of the archived `acceptance-evidence.md`. PR bodies carry no AI attribution. Leave out `Generated with [Claude Code]` lines (with or without a robot emoji), `Co-Authored-By:` lines that name an AI tool, and `Claude-Session:` lines or claude.ai/code session links.
 
 Before `gh pr create`, scan the PR body for credential patterns, such as `ghp_`, `github_pat_`, `AKIA`, `sk-`, `xox`, and `-----BEGIN` private-key headers. If one matches, stop in both run modes, and never print the value:
 

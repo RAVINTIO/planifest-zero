@@ -15,7 +15,7 @@ This project uses RAVINTIO Zero, a confirmed-design pipeline. These rules are no
 ## Operational Directives
 
 - **Be succinct:** Minimal prose. Format answers in markdown with brevity.
-- **Commit messages:** Never add `Co-Authored-By` or any AI attribution. The `commit-msg` hook is **blocking**: commits with AI attribution, affirmatory language, or >72-char subjects will be rejected. Follow `ravintio-zero/standards/commit-standards.md`.
+- **Commit messages and PR descriptions:** Never add `Co-Authored-By`, `Generated with [Claude Code]`, `Claude-Session:` lines, or any AI attribution. The `commit-msg` hook is **blocking**: commits with AI attribution, affirmatory language, or >72-char subjects will be rejected. Follow `ravintio-zero/standards/commit-standards.md`.
 - **Do not invent APIs:** Only call endpoints that explicitly exist in the provided OpenAPI interfaces.
 
 ## Hook Enforcement
