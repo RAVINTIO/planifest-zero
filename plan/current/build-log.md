@@ -50,3 +50,19 @@ Scope Lock (cross-session continuity): The markers live in the committed build l
 Scope Lock complete. All four scenario paths captured.
 P0 exchange (design): Q: Confirm the design? / A: draft-accepted (roadmap). (2026-10-25T12:30:09Z)
 P0 Discovery: Complete: design self-confirmed for roadmap step 5. (2026-10-25T12:30:09Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T12:30:23Z` |
+| End | `{{timestamp, filled when the phase completes}}` |
+| Wall clock | `{{whole minutes from Start to End}}` |
+| Model tier | primary orchestrator, cheaper scope agent |
+| Skills loaded | ravintio-plan |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: scope, risk register, and glossary in one cheaper agent. The orchestrator writes the story map, four requirements, ADRs, and execution plan meanwhile. The requirements share one marker design, so one writer keeps them in step. |
+
+- In progress: P1 scope, risk register, and glossary (2026-10-25T12:30:23Z)
