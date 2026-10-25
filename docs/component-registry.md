@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000164-hardening-and-backlog-skill
+Last updated: 0000173-workflow-governance-gates
 
 ## Registry
 

@@ -1,13 +1,20 @@
 ---
 name: ravintio-validate-and-accept
 description: CI, security review, execution verification, and the acceptance gate or PR evidence.
-bundle_templates: [security-report.template.md, loop-state.template.md]
-bundle_standards: [code-quality-standards.md, testing-standards.md, build-target-standards.md, formatting-standards.md]
 ---
 
 # RAVINTIO - validate-and-accept
 
 > You prove the build works and get the human's acceptance. You run CI checks, review security, and verify behaviour by running the software. You then present the evidence at the acceptance gate, or in the PR description in an autonomous run. You fix real bugs. You never suppress errors or weaken tests.
+
+**Pack files.** Read each of these from the pack folder before the step that uses it:
+
+- `ravintio-zero/templates/security-report.template.md`
+- `ravintio-zero/templates/loop-state.template.md`
+- `ravintio-zero/standards/code-quality-standards.md`
+- `ravintio-zero/standards/testing-standards.md`
+- `ravintio-zero/standards/build-target-standards.md`
+- `ravintio-zero/standards/formatting-standards.md`
 
 ---
 
@@ -33,7 +40,7 @@ Run the stack's declared checks in this order:
 4. **Test**: for this pack run `RAVINTIO_TEST_QUIET=1 bash ravintio-zero/tests/run-tests.sh`, which prints only failures and the summary
 5. **Build**
 
-If a check fails, self-correct: read the error, find the root cause, fix it, re-run. Record each cycle (check, error, root cause, fix, result). Maximum **5 cycles**. Loop mechanics (state file, run-log records, stop rules, escalation format) follow `ravintio-loop-runner`, with a cap of 5. After 5 failed cycles, STOP and escalate in both run modes:
+If a check fails, self-correct: read the error, find the root cause, fix it, re-run. Record each cycle (check, error, root cause, fix, result). For each cycle whose fix touches a requirement's code or test, append `Rework: REQ-{nnn}: {reason} ({ISO-8601 timestamp})` to the build log, as `ravintio-zero/standards/workflow-governance-standards.md` defines. Maximum **5 cycles**. Loop mechanics (state file, run-log records, stop rules, escalation format) follow `ravintio-loop-runner`, with a cap of 5. After 5 failed cycles, STOP and escalate in both run modes:
 
 ```
 P3 Validate: Blocked: {check} still fails after 5 attempts. Review the cycle summary and choose the next step.
@@ -111,7 +118,19 @@ Rollbacks are human-initiated, never automatic.
 
 ## Parallelism
 
-Batch 1 (parallel): lint + typecheck, library audit + semantic check. Batch 2 (after Batch 1 passes): tests. Batch 3: build. Security analyses (dependency audit, secrets scan, input validation scan) run in parallel with each other. Never run tests before typecheck passes, the summary risk rating before all findings are in, or cycle N+1 before N's fix is verified. File out-of-scope discoveries to `plan/backlog/` per `agent-dispatch-standards.md`.
+Batch 1 (parallel): lint + typecheck, library audit + semantic check. Batch 2 (after Batch 1 passes): tests. Batch 3: build. Security analyses (dependency audit, secrets scan, input validation scan) run in parallel with each other. Never run tests before typecheck passes, the summary risk rating before all findings are in, or cycle N+1 before N's fix is verified. File out-of-scope discoveries to `plan/backlog/` per `ravintio-zero/standards/agent-dispatch-standards.md`.
+
+### Fast batch
+
+When `plan/.run-speed` holds `fast`, dispatch batch 1 in one message:
+
+- Execution verification in one unit.
+- The security review in one unit.
+- The full test suite in the background.
+
+Then run inline: CI checks in order, self-correct cycles one at a time, and the acceptance gate or evidence.
+
+At `standard`, the paragraph above applies.
 
 ## Commit cadence
 

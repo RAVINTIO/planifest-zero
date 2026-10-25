@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000164-hardening-and-backlog-skill
+Last updated: 0000185-explain-strict-mode
 
 ---
 
@@ -18,6 +18,53 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000185: explain-strict-mode
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Rewrite the existing strict mode section | accepted | The run rewrites `## Strict Orchestrator Mode` in `project-operations.md` in place, rather than adding a second section. The pack gains no dependency. |
+### Feature 0000173: workflow-governance-gates
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as declared | accepted | `workflow-metrics.mjs` uses Node built-in modules only. The pack gains no dependency. |
+| ADR-002 | Fixed marker lines are the only metric source | accepted | The script counts `Rework:`, `Blocked:`, `Requirement change:`, and `Gate revised:` lines in the build log and loop-state files. It never reads free text. |
+| ADR-003 | Thresholds live in a pack standard, and the gate only reports | accepted | `standards/workflow-governance-standards.md` holds the thresholds table. A breach shows in the build report and the PR description and never stops ship. |
+
+### Feature 0000172: subagent-acceleration
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The stack stays as declared | accepted | The release changes skill, standard, and template text and adds Bash text suites. No script, hook, or library joins the pack. |
+| ADR-002 | The run speed lives in its own sentinel file | accepted | `plan/.run-speed` holds `fast` or `standard`. `plan/.run-mode` keeps its two values. A missing or unknown value counts as `standard`. |
+| ADR-003 | Each phase skill lists its own fast batch | accepted | The dispatch standard holds the fast batch rules. Each phase skill lists its units under `### Fast batch`. Phases still run in order. |
+
+### Feature 0000171: faster-setup-ps1-tests
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack unchanged | accepted | The faster copy uses .NET types that both PowerShell hosts load. No module or tool such as `robocopy` joins the pack. |
+| ADR-002 | setup.ps1 copies files with System.IO calls | accepted | `Copy-RavintioSkills` and `Install-EnforcementHooks` copy through `System.IO` helpers in place of per-file cmdlets. The SKILL.md rewrite keeps `Set-Content`. |
+| ADR-003 | Suites report setup time through a file the runner names | accepted | `Invoke-Setup` appends each time to `RAVINTIO_TIMING_FILE`. `run-tests.ps1` prints the total and case count, then deletes the file. |
+
+### Feature 0000170: story-mapping-and-gherkin
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack unchanged | accepted | The consistency check and the ratchet hook parse Gherkin with Node.js built-ins and regular expressions. No Gherkin parser library joins the pack. |
+| ADR-002 | P1 owns the story mapping pass | accepted | P1 maps stories first and writes `plan/current/story-map.md`. A gap the brief states or implies becomes a story and a requirement. Any other gap goes out of scope. |
+| ADR-003 | A criterion stays one checkbox line | accepted | Each criterion is `- [ ] AC-{n}: {name}` with indented `Given`, `When`, and `Then` bullets. The limit of three counts checkbox lines. |
+| ADR-004 | The ratchet guards step lines | accepted | Each `Given`, `When`, `Then`, `And`, or `But` bullet in `## Acceptance Criteria` is a guarded line. Removing or rewording one blocks unless a human approval marker names the file. |
+
+### Feature 0000169: release-hygiene
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack unchanged | accepted | Two new scripts use Node.js built-ins only. No library, service, or third-party action joins the pack. |
+| ADR-002 | CI tags the merge commit on main | accepted | A `release-tag` job on a push to `main` or `master` tags `HEAD` with the product version and skips a tag that exists. Ship creates no tag before the merge. Only that job holds `contents: write`. |
+| ADR-003 | One attribution check serves ship and CI | accepted | `scripts/check-attribution.mjs` checks a PR body in ship and in `validate-branch`. The body reaches CI through `env:` only. The `commit-msg` hook keeps its own list and gains the host lines. |
+| ADR-004 | Setup turns off host attribution when unset | accepted | Setup writes empty `attribution.commit` and `attribution.pr` strings to `.claude/settings.json` when the key is absent, and leaves a set key alone. |
+
 
 ### Feature 0000030: framework-cut-down
 

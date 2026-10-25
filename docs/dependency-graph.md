@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000164-hardening-and-backlog-skill
+Last updated: 0000173-workflow-governance-gates
 
 ## Component dependency diagram
 
@@ -16,6 +16,9 @@ graph TD
         VERSION["scripts/product-version.mjs"]
         DRIVER["scripts/roadmap-run.mjs"]
         LABELS["scripts/roadmap-labels.mjs"]
+        ATTRIB["scripts/check-attribution.mjs"]
+        RELTAG["scripts/release-tag.mjs"]
+        METRICS["scripts/workflow-metrics.mjs"]
         REFS["skills/ravintio-orchestrator/references/\n(seven orchestrator-*.md files)"]
         LOGS["plan/.roadmap-logs/step-N.log"]
     end
@@ -38,7 +41,7 @@ graph TD
     SETUP -->|"installs"| SKILLS
     SETUP -->|"copies + wires"| ENFORCE
     SETUP -->|"wires via core.hooksPath"| GITHOOKS
-    SKILLS -->|"bundles at install time"| STANDARDS
+    SKILLS -->|"reads by full path"| STANDARDS
 
     CC -->|"plans a tool call"| HookRunner
     HookRunner -->|"stdin JSON"| ENFORCE
@@ -53,9 +56,14 @@ graph TD
     DRIVER -->|"imports the label encoder"| LABELS
     DRIVER -->|"writes one log per step"| LOGS
     SKILLS -->|"orchestrator loads on demand"| REFS
+    SKILLS -->|"ship runs at Steps 5 and 9"| METRICS
+    METRICS -->|"reads thresholds"| STANDARDS
+    METRICS --> NODE
 
     VERSION -->|"reads components[]"| PRODUCT
     VERSION -->|"reads version"| MANIFEST
+    RELTAG -->|"reads version and feature"| PRODUCT
+    SKILLS -->|"ship checks the PR body"| ATTRIB
 ```
 
 ---

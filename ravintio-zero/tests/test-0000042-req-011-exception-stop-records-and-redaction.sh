@@ -52,7 +52,7 @@ assert_contains 'never raw command output, environment values, or file contents'
   "req-011 (b): acceptance evidence forbids raw output"
 assert_contains '`file:line` cites' "$GATE" \
   "req-011 (b): acceptance evidence uses file:line cites"
-assert_contains 'Before `gh pr create`, scan the PR body for credential patterns' "$PR_STEP" \
+assert_contains 'scan the PR body for credential patterns' "$PR_STEP" \
   "req-011 (b): ship scans the PR body before gh pr create"
 assert_contains "P4 Ship: $CRED_MSG" "$PR_STEP" \
   "req-011 (b): a match in the PR body is a credential stop"

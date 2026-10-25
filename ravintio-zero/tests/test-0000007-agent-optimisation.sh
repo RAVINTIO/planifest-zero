@@ -58,13 +58,14 @@ CODEGEN=$(cat "$SKILLS/ravintio-implement/SKILL.md")
 assert_contains "Build target: docker"        "$CODEGEN" "req-002: implement skill has Build target: docker section"
 assert_contains "check host-installed runtimes" "$CODEGEN" "req-002: implement instructs never check host runtimes"
 assert_contains "docker build"                "$CODEGEN" "req-002: implement skill references docker build"
-assert_contains "build-target-standards.md"   "$CODEGEN" "req-002: implement skill bundles build-target-standards.md"
+# 0000171 ADR-004: skills no longer bundle pack files, so no bundle field remains.
+assert_not_contains "bundle_standards"        "$CODEGEN" "req-002: implement skill holds no bundle_standards (0000171 ADR-004)"
 
 VALIDATE=$(cat "$SKILLS/ravintio-validate-and-accept/SKILL.md")
 assert_contains "Build target: docker"        "$VALIDATE" "req-002: validate-agent has Build target: docker section"
 assert_contains "host toolchain"              "$VALIDATE" "req-002: validate-agent instructs never run host toolchain"
 assert_contains "docker build"                "$VALIDATE" "req-002: validate-agent references docker build"
-assert_contains "build-target-standards.md"   "$VALIDATE" "req-002: validate-agent bundles build-target-standards.md"
+assert_not_contains "bundle_standards"        "$VALIDATE" "req-002: validate-agent holds no bundle_standards (0000171 ADR-004)"
 
 assert_file_exists "$STANDARDS/build-target-standards.md" "req-002: build-target-standards.md exists"
 BUILD_STD=$(cat "$STANDARDS/build-target-standards.md")
@@ -84,7 +85,7 @@ OPTIMISE=$(cat "$OPTIMISE_FILE")
 FRONTMATTER_NAME=$(grep "^name:" "$OPTIMISE_FILE" | head -1 | awk '{print $2}')
 assert_equals "ravintio-optimise-agent" "$FRONTMATTER_NAME" "req-003: frontmatter name matches directory"
 
-assert_contains "bundle_standards"            "$OPTIMISE" "req-003: frontmatter has bundle_standards"
+assert_not_contains "bundle_standards"        "$OPTIMISE" "req-003: frontmatter holds no bundle_standards (0000171 ADR-004)"
 assert_contains "description:"                "$OPTIMISE" "req-003: frontmatter has description"
 assert_contains "ravintio-zero/skills/" "$OPTIMISE" "req-003: skill targets ravintio-zero/skills/"
 assert_contains "Do NOT review"              "$OPTIMISE" "req-003: skill explicitly excludes out-of-scope directories"
@@ -105,13 +106,13 @@ assert_contains "Never write"                 "$OPTIMISE" "req-003: hard limit �
 echo ""
 echo "=== req-004: skill boilerplate removal ==="
 
-# Phase skills must declare their bundled standards in frontmatter.
+# 0000171 ADR-004: phase skills hold no bundle fields in frontmatter.
 # (0000033: the telemetry-standards.md pointer assertion is gone — see below.)
 for skill in ravintio-plan ravintio-implement \
              ravintio-validate-and-accept ravintio-ship; do
   SKILL_CONTENT=$(cat "$SKILLS/$skill/SKILL.md")
-  assert_contains "bundle_standards" "$SKILL_CONTENT" "req-004: $skill has bundle_standards in frontmatter"
-  assert_not_contains "telemetry-standards.md" "$SKILL_CONTENT" "req-004: $skill no longer bundles telemetry-standards.md"
+  assert_not_contains "bundle_standards" "$SKILL_CONTENT" "req-004: $skill holds no bundle_standards in frontmatter"
+  assert_not_contains "telemetry-standards.md" "$SKILL_CONTENT" "req-004: $skill does not name telemetry-standards.md"
 done
 
 # Sub-agent skills (footer-only removal) — verify skill files still exist and are valid

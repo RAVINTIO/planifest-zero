@@ -1,8 +1,6 @@
 ---
 name: ravintio-orchestrator
 description: Owns discovery and routing for the five-phase RAVINTIO pipeline. Coaches a human from feature brief to confirmed design, then invokes the plan, implement, validate-and-accept, and ship phase skills in sequence.
-bundle_templates: [feature-brief.template.md, design.template.md, discovery.template.md, build-log.template.md, backlog-entry.template.md, roadmap-entry.template.md, pause.template.md, park.template.md]
-bundle_standards: [stack-summary.md, monorepo-standards.md, api-design-standards.md, observability-standards.md, agent-dispatch-standards.md, pack-update-policy.md]
 ---
 
 # RAVINTIO Orchestrator
@@ -118,6 +116,7 @@ Read these reference files before you act on their topic. Each holds rules moved
 | A request to skip a phase, pause, or park | `references/orchestrator-session-commands.md` |
 | A standalone skill, or a capability skill arriving or proposed | `references/orchestrator-skills-catalogue.md` |
 | A requirement change during P1 to P3 | `references/orchestrator-mid-pipeline-changes.md` |
+| The run speed | `references/orchestrator-run-speed.md` |
 
 ---
 
@@ -219,6 +218,9 @@ How should the agent run P1 to P4?
 ```
 
 Record the answer and write `plan/.run-mode` (`gated` or `autonomous`). No other value is valid. Append `Run mode: {gated | autonomous} ({ISO-8601 timestamp})` to the build log under the P0 block. Include it in the discovery commit. Only this skill writes `plan/.run-mode`. Phase skills read it and never write it. In gated mode, append `Gate accepted: P{N} ({ISO-8601 timestamp})` to the build log at each confirmed gate.
+On a gate change, append `Gate revised: P{N}`.
+
+Then ask the run-speed question and write `plan/.run-speed`.
 
 A roadmap step skips the run-mode question and the human confirmation, as R-C Run in `ravintio-zero/standards/roadmap-standards.md` describes.
 
@@ -240,6 +242,8 @@ Conventions for every downstream phase:
 - **Push cadence:** after each gate commit, if remote push is authorised by a standing override in `ravintio-overrides/instructions/` or a per-session grant in the build log, push the feature branch. A failed push is an exception stop (see Exception Stops).
 - **Skills inbox:** re-check at each transition.
 - **Run mode:** read `plan/.run-mode` at each transition and apply that phase's STOP rule below.
+- **Run speed:** read `plan/.run-speed`. At `fast`, dispatch the phase's fast batch.
+- **Close the block:** when a phase completes, fill `End` and `Wall clock`.
 
 | Phase | Invoke | Gate condition | STOP rule |
 |-------|--------|----------------|-----------|
@@ -279,7 +283,7 @@ After the human acts, the run resumes in the same mode from `plan/.run-mode`.
 | Exception | Message |
 |-----------|---------|
 | A requirement or check still fails after 5 attempts | `P2 Implement: Blocked: {requirement or check} still fails after 5 attempts. Review the escalation and choose the next step.` (P3 uses `P3 Validate:`) |
-| P2 needs a schema change, unless a roadmap step matches a chart-approved row (see `roadmap-standards.md`) | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
+| P2 needs a schema change, unless a roadmap step matches a chart-approved row (see `ravintio-zero/standards/roadmap-standards.md`) | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
 | The P3 security review finds an unmitigated critical or high issue | `P3 Validate: Blocked: {n} unmitigated critical or high security findings. Approve a mitigation or accept the risk.` |
 | A push or `gh pr create` fails | `P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.` (other phases use their own prefix) |
 | A possible credential appears in a file the run will commit, or in a PR body | `{prefix} Blocked: possible credential in {path}. Remove it or confirm it is not a secret.` Stop before the commit and before any push. Never print the value. |

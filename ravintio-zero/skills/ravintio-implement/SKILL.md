@@ -1,13 +1,19 @@
 ---
 name: ravintio-implement
 description: Implements requirements with tests and documentation landing together through the TDD loop. Invoked during the implement phase.
-bundle_templates: [component.template.yml, data-contract.template.md, iteration-log.template.md]
-bundle_standards: [code-quality-standards.md, testing-standards.md, build-target-standards.md, library-standards/_version-policy.md, agent-dispatch-standards.md]
 ---
 
 # RAVINTIO - implement
 
 > You implement the system the plan describes. Code, tests, and documentation land together in this phase. You build against the contract, not beyond it.
+
+**Pack files.** Read each of these from the pack folder before the step that uses it:
+
+- `ravintio-zero/templates/component.template.yml`
+- `ravintio-zero/templates/data-contract.template.md`
+- `ravintio-zero/standards/code-quality-standards.md`
+- `ravintio-zero/standards/testing-standards.md`
+- `ravintio-zero/standards/build-target-standards.md`
 
 ## Input
 
@@ -41,7 +47,7 @@ For each component at `src/{component-id}/`: application code, shared types and 
 
 Build multiple components in dependency order: shared packages, then data owners, then consumers. Each component is finished (code, tests, docs) before the next starts. Halt and escalate on a circular dependency.
 
-Before writing any dependency manifest, check `ravintio-overrides/library-standards/{language}/prefer-avoid.md`, then the pack's `standards/library-standards/` lists. Substitute preferred alternatives for avoided libraries. If an avoided library has no alternative, record the exception in `src/{component-id}/docs/quirks.md` and escalate. Skip the audit when the lists are stubs. Follow `standards/library-standards/_version-policy.md` for version pinning.
+Before writing any dependency manifest, check `ravintio-overrides/library-standards/{language}/prefer-avoid.md`, then the pack's `ravintio-zero/standards/library-standards/` lists. Substitute preferred alternatives for avoided libraries. If an avoided library has no alternative, record the exception in `src/{component-id}/docs/quirks.md` and escalate. Skip the audit when the lists are stubs. Follow `ravintio-zero/standards/library-standards/_version-policy.md` for version pinning.
 
 Before adding any library or service, check that it is on the approved list. The list is the `Approved dependencies` field of `design.md` in a gated run and the `## Dependencies` table of `roadmap.md` in a roadmap step. If it is not on the list, take the dependency exception stop: `{prefix} Blocked: new dependency {name} is not on the approved list. Approve it or choose an approved alternative.` This applies in every run mode.
 
@@ -67,13 +73,15 @@ Pass each dispatch the `model` from that skill's own `recommended_model` field. 
 
 After 5 failed attempts on one requirement, stop in both run modes with `P2 Implement: Blocked: {requirement} still fails after 5 attempts. Review the escalation and choose the next step.` Then report: the requirement ID, the test file, what each attempt tried and why it stayed RED, your root-cause assessment, and a recommended action. Wait for human direction.
 
+For each attempt on a requirement after the first, append `Rework: REQ-{nnn}: {reason} ({ISO-8601 timestamp})` to the build log. The marker forms are in `ravintio-zero/standards/workflow-governance-standards.md`.
+
 Every requirement must have a mapped test whose name includes the requirement ID (for example `describe('req-001-auth: login flow', ...)`). Write E2E tests for critical user flows named in the acceptance criteria. Write to disk after each subagent, and mark each one per "Progress Markers and Interrupted Units" in `ravintio-zero/standards/agent-dispatch-standards.md`. Do not accumulate work in memory across requirements.
 
 ## Rules
 
 - **One question at a time** when you need human input.
 - **Implement against the requirements.** The OpenAPI spec defines the contract. Do not add or remove endpoints. Follow the ADRs. Flag a wrong ADR rather than overriding it silently. Do not introduce technology the stack does not declare.
-- **Schema changes.** Write a migration proposal at `src/{component-id}/docs/migrations/proposed-{desc}.md` and STOP for human approval in both run modes: `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` Never modify a schema directly. Destructive operations (drop, rename) always stop. This is a hard limit. In a roadmap step, a chart-approved additive change does not stop (see `roadmap-standards.md`).
+- **Schema changes.** Write a migration proposal at `src/{component-id}/docs/migrations/proposed-{desc}.md` and STOP for human approval in both run modes: `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` Never modify a schema directly. Destructive operations (drop, rename) always stop. This is a hard limit. In a roadmap step, a chart-approved additive change does not stop (see `ravintio-zero/standards/roadmap-standards.md`).
 - **Data ownership.** Never write to data owned by another component. Create a data contract before writing any schema code for a component that owns data.
 - **Rollbacks are human-initiated, never automatic.** No agent rolls back a deployment, migration, or artifact on its own.
 - **Deviation.** If implementation deviates from the spec, plan, or design, update the affected `plan/` or `docs/` artifacts in the same commit. Record the deviation in `docs/quirks.md` and the component manifest, or stop and ask when continuing would be wasteful.
@@ -113,8 +121,8 @@ Docs rules:
 - Account for every artifact. Produce what is missing, or note a legitimate absence explicitly (for example no data contract when `ownsData: false`).
 - Keep cross-references consistent: registry links to each purpose doc, and the dependency graph matches the per-component dependency files.
 - Check for drift between spec and implementation: endpoints, glossary terms, component boundaries, data ownership, ADR compliance, and dependency direction. Flag drift, do not silently fix it.
-- Write the change record at `plan/changelog/{feature-id}-{date}.md` from `templates/iteration-log.template.md`.
-- File each deferred item and tech debt row as its own `plan/backlog/{id}-{slug}/entry.md` per `templates/backlog-entry.template.md`.
+- Write the change record at `plan/changelog/{feature-id}-{date}.md` from `ravintio-zero/templates/iteration-log.template.md`.
+- File each deferred item and tech debt row as its own `plan/backlog/{id}-{slug}/entry.md` per `ravintio-zero/templates/backlog-entry.template.md`.
 
 ## Parallel dispatch
 
@@ -126,6 +134,17 @@ Independent requirements MUST be dispatched in parallel per `ravintio-zero/stand
 4. Record the batch count in the build log. If nothing can be parallelised, state the dependency reason there.
 
 Per-component docs for independent components also parallelise. The registry and dependency graph wait until all component docs exist. If a dispatched subagent finds an out-of-scope bug or gap, it files a `plan/backlog/` entry directly per the dispatch standards.
+
+### Fast batch
+
+When `plan/.run-speed` holds `fast`, dispatch these batches in order, each in one message. Within a batch, every unit writes its own files.
+
+1. One TDD track per leaf requirement whose files no other track writes. Each track runs test-writer, implementer, and refactor in sequence.
+2. One TDD track per dependent requirement, after its dependencies finish.
+3. One unit per independent living doc and per-component doc set, while the full test suite runs in the background.
+4. Inline: the registry and dependency graph, then the component manifest close-out.
+
+At `standard`, the steps above apply. The five-attempt escalation is unchanged.
 
 ## Commit cadence
 

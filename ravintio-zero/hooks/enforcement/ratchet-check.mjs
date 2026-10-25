@@ -8,9 +8,12 @@
  * Armed only while a loop or reversal is in flight: a plan/current/loop-state-*.md
  * file with status "active" exists. When disarmed, every write passes.
  *
- * Weakening = removing a "- [ ]" checklist line from an "## Acceptance Criteria"
- * section, or removing a bullet from an "## In Scope" / "## Scope" section, of a
- * plan/current/ markdown artifact. Additions (strengthening) always pass.
+ * Weakening = removing a "- [ ]" checklist line or a Gherkin step line (a bullet
+ * starting with Given, When, Then, And, or But; feature 0000170, ADR-004) from an
+ * "## Acceptance Criteria" section, or removing a bullet from an "## In Scope" /
+ * "## Scope" section, of a plan/current/ markdown artifact. Additions
+ * (strengthening) always pass. The block message names each removed line and
+ * prints no other file content.
  *
  * Human approval path (ADR-001, amends ADR-004): plan/current/.ratchet-approve
  * holds one approval per line in the format `path | reason | timestamp`
@@ -75,11 +78,11 @@ function loopActive(planCurrent) {
   return false;
 }
 
-/** Extract guarded lines: AC checklist items + scope bullets, per section. */
+/** Extract guarded lines: AC checklist items and step lines, plus scope bullets. */
 function guardedLines(text) {
   const lines = [];
   const sections = [
-    { re: /^##\s+Acceptance Criteria\s*$/im, item: /^\s*-\s*\[[ x]\]\s*(.+)$/ },
+    { re: /^##\s+Acceptance Criteria\s*$/im, item: /^\s*-\s*(?:\[[ x]\]\s*(.+)|((?:Given|When|Then|And|But)\b.*))$/ },
     { re: /^##\s+(In Scope|Scope)\s*$/im, item: /^\s*-\s*(?!\[)(.+)$/ },
   ];
   for (const { re, item } of sections) {
@@ -90,7 +93,7 @@ function guardedLines(text) {
     const body = next === -1 ? rest : rest.slice(0, next);
     for (const line of body.split(/\r?\n/)) {
       const im = line.match(item);
-      if (im) lines.push(im[im.length - 1].trim());
+      if (im) lines.push((im[1] ?? im[2]).trim());
     }
   }
   return lines;

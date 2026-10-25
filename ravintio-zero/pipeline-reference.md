@@ -22,7 +22,7 @@ Every agent response begins with a phase prefix. You always know where you are.
 | `P1 Plan:` | P1 Plan | Writing requirements, scope, glossary, risk register, and ADRs behind one confirmation gate |
 | `P2 Implement:` | P2 Implement | Generating code, tests, and documentation together |
 | `P3 Validate:` | P3 Validate and Accept | Running CI checks, self-correcting, security review, human acceptance |
-| `P4 Ship:` | P4 Ship | Changelog, archive, build assessment, git tag, PR |
+| `P4 Ship:` | P4 Ship | Changelog, archive, build assessment, PR |
 
 Messages shorten P3 to "Validate". Skills and the build log keep the full name "Validate and Accept".
 
@@ -105,6 +105,15 @@ Each stop adds a `Blocked:` line to the build log, and the human's answer adds a
 
 The phase skills are the single source for gate behaviour. Merging the PR is human-only in every mode.
 
+### Run speed
+
+After the run mode, the orchestrator asks for a run speed and writes `standard` or `fast` to `plan/.run-speed`. A missing or unknown value counts as `standard`. A roadmap step takes the speed from the roadmap's `**Speed:**` field.
+
+- **Standard**: each phase applies its own parallelism rules.
+- **Fast**: each phase dispatches the units in its `### Fast batch` list, each batch in one message.
+
+Phases run in order at either speed, and every gate and escalation stays in place. Each build-log phase block records its `End` and `Wall clock` time, and the build report lists them with the agent count.
+
 ---
 
 ## Ship Phase
@@ -113,7 +122,7 @@ Ship is the terminal phase. It runs three steps in order.
 
 1. **Archive.** The changelog entry is written to `plan/changelog/{feature-id}-{YYYY-MM-DD}.md`, then `plan/current/` is archived to `plan/_archive/{feature-id}-{date}/` and cleared. The orchestrator sentinel is deleted last, after the archive is confirmed complete.
 2. **Build assessment.** An assessment sub-agent reads the archived `build-log.md` and produces a structured efficiency report at `plan/_archive/{feature-id}-{date}/build-report.md`.
-3. **Tag and PR.** The agent reads the version from `component.yml`, creates a local git tag (`v{version}`), then raises the PR. In a gated run, it first asks the human whether to push and raise the PR or output a PR description for manual use. If `local-git-only` is active in `ravintio-overrides/instructions/`, the agent skips the prompt and outputs a PR description directly.
+3. **Tag and PR.** The agent reads the version from `component.yml`, checks the PR body for attribution lines, then raises the PR. It creates no tag. After the human merges, the CI `release-tag` job tags the merge commit on `main` with `v{version}`. In a gated run, it first asks the human whether to push and raise the PR or output a PR description for manual use. If `local-git-only` is active in `ravintio-overrides/instructions/`, the agent skips the prompt and outputs a PR description directly.
    - **Roadmap step.** When `plan/current-roadmap/roadmap.md` has `status: active`, the order differs. The agent raises the PR with `--base roadmap/{id}-{slug}`, waits for green CI, squash-merges, fetches, then tags the squash commit and pushes the tag. After the last step, R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The agent never merges that PR. See the ship skill's Roadmap steps section.
 
 ### Build Log
@@ -131,6 +140,17 @@ The assessment is adversarial, not a summary. It asks:
 - **Phase gates**: were human confirmation gates honoured, or did the pipeline run autonomously without authorisation?
 - **Self-corrections**: how many occurred, and were they avoidable?
 - **Build log integrity**: are all phases represented with populated fields?
+
+### Workflow governance
+
+The build report also carries a `## Workflow governance` section from `scripts/workflow-metrics.mjs`. The script counts four marker lines in the archived build log and loop-state files:
+
+- `Rework:` lines per requirement
+- `Blocked:` stops
+- `Requirement change:` lines
+- `Gate revised:` lines
+
+It compares each count against a threshold in `standards/workflow-governance-standards.md`. Ship copies the section into the PR description. A breach never stops ship.
 
 ---
 
@@ -165,7 +185,7 @@ Setup wires the enforcement hooks into `.claude/settings.json` on every install.
 | Hook | Trigger | What it does |
 |------|---------|--------------|
 | `gate-write` | PreToolUse (Write, Edit) | Gates every in-project path that is not always permitted. Blocks the write unless `plan/current/design.md` exists and the target path matches a declared component. Writes to `plan/current/` also need the `plan/.orchestrator-active` sentinel. Targets outside the project pass |
-| `ratchet-check` | PreToolUse (Write, Edit) | While a loop or reversal is active, blocks edits that weaken acceptance criteria or in-scope lines in `plan/current/` |
+| `ratchet-check` | PreToolUse (Write, Edit) | While a loop or reversal is active, blocks edits that weaken acceptance criteria (checkbox and Gherkin step lines) or in-scope lines in `plan/current/` |
 | `em-dash-guard` | PreToolUse (Write, Edit) | Rejects U+2014 in scoped prose paths |
 | `check-design` | UserPromptSubmit | Injects active component scope from `design.md`, or a hard STOP when no brief or sentinel exists |
 | `check-orchestrator-presence` | UserPromptSubmit | Injects a reminder banner while a pipeline is active. Hard-blocks under strict mode |
@@ -183,7 +203,8 @@ The setup script activates RAVINTIO's **Progressive Guardrail System**, a three-
 |------|------|--------------|
 | **1: Advisory pre-commit** | Every local commit | Checks whether code was staged without docs. Prints a warning if so. Commit **succeeds** regardless. |
 | **2: Branch pre-push** | Every `git push` | Checks the cumulative branch diff. Push **fails** if `src/` was changed with no corresponding update to `plan/`, `docs/`, or `component.yml`. |
-| **3: CI/CD pipeline** | Every pull request | Same check in GitHub Actions. Blocks the merge button if the rule is violated. |
+| **3: CI/CD pipeline** | Every pull request | Same check in GitHub Actions. Blocks the merge button if the rule is violated. Also fails a PR description that holds an AI attribution line. |
+| **Release tag** | Every push to `main` or `master` | The `release-tag` job tags the merge commit with `v{version}`. |
 
 One parity check applies to every diff. There is no relaxed rule for any commit prefix.
 

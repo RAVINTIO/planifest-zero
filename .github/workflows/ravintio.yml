@@ -3,6 +3,8 @@ name: RAVINTIO Strict Pipeline
 on:
   pull_request:
     branches: [ main, master, 'roadmap/**' ]
+  push:
+    branches: [ main, master ]
 
 # Every job reads the repo and nothing more (0000036 S-006).
 permissions:
@@ -10,6 +12,7 @@ permissions:
 
 jobs:
   validate-branch:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,12 +34,20 @@ jobs:
           fi
           echo "✅ RAVINTIO pipeline passed."
 
+      - name: Check PR description for attribution
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          printf '%s' "$PR_BODY" > "$RUNNER_TEMP/pr-body.txt"
+          node ravintio-zero/scripts/check-attribution.mjs "$RUNNER_TEMP/pr-body.txt"
+
   # This job is specific to this repository's own self-description and is
   # deliberately NOT mirrored into ravintio-zero/hooks/ravintio.yml
   # (the copy setup.sh ships to consumer repos) — a consuming repo's README
   # doesn't have this repository's "## Repository structure" / "## The
   # pack" sections to validate against. See ADR-001 (feature 0000019).
   self-description-check:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,6 +58,7 @@ jobs:
   # The PowerShell suites, run under both Windows hosts (0000036 ADR-003).
   # run-tests.ps1 starts each suite with the host that runs it.
   windows-powershell:
+    if: github.event_name == 'pull_request'
     runs-on: windows-latest
     permissions:
       contents: read
@@ -80,6 +92,7 @@ jobs:
   # .ps1 suites with pwsh, which ubuntu-latest ships. RAVINTIO_REQUIRE_PWSH
   # fails the run if pwsh is missing, so no suite skips unseen.
   bash-suites:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -94,3 +107,27 @@ jobs:
         env:
           RAVINTIO_REQUIRE_PWSH: "1"
         run: bash ravintio-zero/tests/run-tests.sh
+
+  # Tags the merge commit on the default branch after the human merges
+  # (0000169 ADR-002). Only this job holds write access, and it never runs
+  # PR code.
+  release-tag:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Pinned to the v4 commit, because this job holds a write token
+      # (0000169 S-001). Credentials persist on purpose, so git push works
+      # (0000169 S-003).
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Set git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Tag the merge commit
+        run: node ravintio-zero/scripts/release-tag.mjs

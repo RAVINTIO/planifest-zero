@@ -70,7 +70,7 @@ assert_equals "yes" "$(grep_has 'Never run tests before typecheck passes' "$VALI
   "req-003: tests never run before typecheck passes"
 assert_equals "yes" "$(grep_has 'cycle N+1 before N' "$VALIDATE_SKILL")" \
   "req-003: self-correct cycle ordering is sequential"
-assert_equals "yes" "$(grep_has 'File out-of-scope discoveries to .plan/backlog/. per .agent-dispatch-standards.md.' "$VALIDATE_SKILL")" \
+assert_equals "yes" "$(grep_has 'File out-of-scope discoveries to .plan/backlog/. per .ravintio-zero/standards/agent-dispatch-standards.md.' "$VALIDATE_SKILL")" \
   "req-003: out-of-scope discoveries route to the backlog per the dispatch standards"
 
 print_summary

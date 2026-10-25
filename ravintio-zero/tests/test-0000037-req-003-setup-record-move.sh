@@ -4,7 +4,7 @@
 #
 # Covers ADR-001 decision 3. The repo keeps its setup record at
 # plan/state/claude-code.md, in the layout setup.sh writes. The record has
-# an empty flags array and no backendUrl. The old ravintio-overrides/
+# the setup flags the human chose and no backendUrl. The old ravintio-overrides/
 # setup-config/ folder is gone. The suite runs setup.sh only in a temporary
 # copy and checks that the real working tree stays unchanged.
 
@@ -54,8 +54,11 @@ assert_equals "yes" "$(file_exists "$RECORD")" \
   "req-003 (a): $RECORD exists"
 assert_equals "\"claude-code\"" "$(read_record_field "$RECORD" tool)" \
   "req-003 (a): the record names claude-code"
-assert_equals "[]" "$(read_record_field "$RECORD" flags)" \
-  "req-003 (a): the record has an empty flags array"
+# The flags array holds whatever setup flags the human last chose, such as
+# --strict-orchestrator. The suite pins its shape, not its contents.
+TRACKED_FLAGS="$(read_record_field "$RECORD" flags)"
+assert_equals "yes" "$(printf '%s' "$TRACKED_FLAGS" | grep -qE '^\[("--[a-z-]+"(, *"--[a-z-]+")*)?\]$' && echo yes || echo no)" \
+  "req-003 (a): the record has a flags array of setup flags"
 assert_equals "missing" "$(read_record_field "$RECORD" backendUrl)" \
   "req-003 (a): the record has no backendUrl key"
 WRITTEN_AT="$(read_record_field "$RECORD" writtenAt)"
@@ -88,11 +91,14 @@ mkdir -p "$WS/plan/state"
 git init "$WS" >/dev/null 2>&1
 
 cd "$WS"
-OUT="$(bash ravintio-zero/setup.sh claude-code 2>&1)"
+# Setup runs with the tracked flags, so the copy's record keeps them.
+# Word splitting is intended: each flag becomes one argument.
+FLAG_ARGS="$(printf '%s' "$TRACKED_FLAGS" | tr -d '[]",')"
+OUT="$(bash ravintio-zero/setup.sh claude-code $FLAG_ARGS 2>&1)"
 EXIT=$?
 assert_exit_zero "$EXIT" "req-003 (c): setup.sh claude-code exits 0 in the copy"
-assert_equals "[]" "$(read_record_field "$RECORD" flags)" \
-  "req-003 (c): the copy's record has an empty flags array after setup"
+assert_equals "$TRACKED_FLAGS" "$(read_record_field "$RECORD" flags)" \
+  "req-003 (c): the copy's record keeps the tracked flags after setup"
 assert_equals "missing" "$(read_record_field "$RECORD" backendUrl)" \
   "req-003 (c): the copy's record has no backendUrl after setup"
 for flag in "${RETIRED_FLAGS[@]}"; do

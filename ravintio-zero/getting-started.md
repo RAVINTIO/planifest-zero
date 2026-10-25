@@ -59,7 +59,7 @@ chmod +x ravintio-zero/setup.sh
 Setup installs:
 
 - Skill folders with YAML frontmatter into `.claude/skills/`, auto-discovered by Claude Code. Retired skills are pruned.
-- Supporting files (templates, standards, schemas) bundled per skill.
+- No copies of templates, standards, or schemas. Skills read them from `ravintio-zero/` by full path.
 - Enforcement hooks wired into `.claude/settings.json`.
 - The `CLAUDE.md` boot file.
 - Git hooks and the orchestrator sentinel machinery, activated automatically.
@@ -100,7 +100,7 @@ Every change takes this route. A small change is a small run, not a different pi
 | Topic | Where to look |
 |-------|---------------|
 | Git guardrails and how enforcement works | [project-operations.md](project-operations.md#git-guardrails) |
-| Orchestrator sentinel and strict mode | [project-operations.md](project-operations.md#orchestrator-sentinel) |
+| Orchestrator sentinel and strict mode | [project-operations.md](project-operations.md#strict-orchestrator-mode) |
 | Customising with ravintio-overrides | [project-operations.md](project-operations.md#customising-with-ravintio-overrides) |
 | Updating the pack | [project-operations.md](project-operations.md#updating-the-pack) |
 | What to commit | [project-operations.md](project-operations.md#what-to-commit) |

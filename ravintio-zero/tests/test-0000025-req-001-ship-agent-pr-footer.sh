@@ -35,7 +35,9 @@ echo "=== req-001: no AI attribution in PR bodies ==="
 assert_contains "PR bodies carry no AI attribution" "$PR_STEP" \
   "req-001: the no-attribution rule is stated in the PR step"
 
-if [[ "$SHIP_CONTENT" == *"Generated with"* ]]; then
+# 0000169 req-001: the skill names the banned line in prose, so only a line
+# that starts with the footer counts as a template.
+if printf '%s\n' "$SHIP_CONTENT" | grep -qE '^(🤖 )?Generated with'; then
   echo "  FAIL: req-001: an attribution footer template survives in ravintio-ship"
   ((FAIL++)) || true
 else

@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000164-hardening-and-backlog-skill
+Last updated: 0000173-workflow-governance-gates
 
 ## What this repo is
 
@@ -10,7 +10,7 @@ RAVINTIO Zero is not a service. It has no runtime of its own. It ships these thi
 
 1. **Skills.** Markdown instructions that Claude Code auto-discovers from `.claude/skills/`. Thirteen skills drive the five-phase pipeline and its support work.
 2. **Hooks.** Node `.mjs` scripts that Claude Code invokes synchronously at tool-call boundaries. Enforcement hooks block or annotate. Git hooks guard commits and pushes. No hook makes an outbound network call.
-3. **Standards, templates, and schemas.** The reference material that skills bundle at install time.
+3. **Standards, templates, and schemas.** The reference material that skills read from `ravintio-zero/` by full path.
 4. **Setup scripts.** `setup.sh` and `setup.ps1` copy the above into a target project and wire `.claude/settings.json`.
 
 The repo runs its own pipeline on the `ravintio-zero/` it ships. Git reads its hooks from `ravintio-zero/hooks` through `core.hooksPath`.
@@ -29,6 +29,14 @@ The pipeline runs five phases, numbered P0 to P4. There is one route: every chan
 | Validate and accept | `P3 Validate:` | ravintio-validate-and-accept |
 | Ship | `P4 Ship:` | ravintio-ship |
 
+### Story map and Gherkin criteria
+
+P1 starts with a story mapping pass. It writes `plan/current/story-map.md` from `templates/story-map.template.md`, with the user's activities along the top and the stories under each one. A gap that the brief states or implies becomes a new story and a requirement. Any other gap goes to the out-of-scope list.
+
+Each acceptance criterion is one checkbox line, `- [ ] AC-{n}: {name}`, with indented `Given`, `When`, and `Then` bullets under it. `And` and `But` continue the step above. The limit of three criteria counts checkbox lines.
+
+`scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2.
+
 ### Run modes
 
 At the end of P0, the orchestrator asks how to run P1 to P4. It writes the answer, `gated` or `autonomous`, to `plan/.run-mode` and logs it. No other value is valid.
@@ -37,6 +45,13 @@ At the end of P0, the orchestrator asks how to run P1 to P4. It writes the answe
 - **Autonomous.** The run stops at none of those gates. P3 writes its evidence to `plan/current/acceptance-evidence.md`. P4 copies it into the PR body and ends with `P4 Ship: Complete: PR #{n} ready for your review`.
 
 On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the question again and name the value it found.
+
+**Run speed.** After the run mode, the orchestrator asks for a run speed and writes `standard` or `fast` to `plan/.run-speed`. A missing or unknown value counts as `standard`. A roadmap step takes the roadmap's `**Speed:**` field.
+
+- **Standard.** Each phase applies its own parallelism rules.
+- **Fast.** Each phase skill dispatches the units in its `### Fast batch` list, each batch in one message. The rules sit in `## Fast batches` of the dispatch standard.
+
+Phases run in order at either speed, and the gates and exception stops stay the same. Each build-log phase block records `End` and `Wall clock`, and the build report lists them with the agent count. Ship Step 8 deletes `plan/.run-speed` with the other sentinels.
 
 **Exception stops.** Both modes stop and print `{prefix} Blocked: {action needed}` in these cases:
 
@@ -53,9 +68,9 @@ No mode merges a PR or commits to `main`. The human merges every PR.
 
 **Context size.** At each gate in a gated run, the orchestrator reports the context size. Past about 150,000 tokens, it recommends `/clear`.
 
-**Ship order.** P4 creates the tag locally at Step 7. Step 8 reads the run mode, then clears the pipeline sentinels in a commit. Step 9 pushes the branch and the tag and raises the PR. Step 10 is the final gate. So the sentinels never reach `main` through the PR.
+**Ship order.** P4 creates no tag. Step 8 reads the run mode, then clears the pipeline sentinels in a commit. Step 9 checks the PR body with `scripts/check-attribution.mjs`, pushes the branch, and raises the PR. Step 10 is the final gate. So the sentinels never reach `main` through the PR.
 
-**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Seven files under `skills/ravintio-orchestrator/references/` hold the rarely used sections word for word: adoption modes, discovery coaching, discovery records, mid-pipeline changes, scope lock, session commands, and the skills catalogue. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
+**Orchestrator references.** The orchestrator `SKILL.md` keeps the core rules and the Exception Stops table. Eight files under `skills/ravintio-orchestrator/references/` hold the rarely used sections: adoption modes, discovery coaching, discovery records, mid-pipeline changes, run speed, scope lock, session commands, and the skills catalogue. Seven hold moved sections word for word. The run speed file holds the 0000172 run-speed rules, because `SKILL.md` has a size budget. The Pack Index lists each file. A line-preservation test fails if a moved line is missing.
 
 **Model tiers.** Every Agent call passes `model`, set to `sonnet` or `haiku`. The three TDD skills set `model: haiku`. A haiku unit that fails twice retries on sonnet. A WebFetch of a full reference page goes through a sonnet or haiku subagent that returns an extract.
 
@@ -65,6 +80,12 @@ Discovery sizes each release against a budget. The optional `releaseSize` field 
 
 **Park.** When the human says "park", the orchestrator shelves the feature on its branch. It writes `plan/current/park.md`, pushes the branch, and raises a `chore/park-{feature-id}` PR. That PR files a backlog entry with status `parked`. The working tree then returns to `main`. The git and `gh` steps live in the orchestrator's `scripts/park.mjs`. If a local add or commit fails on the chore branch, park unstages and deletes the entry, then returns to the feature branch. Park refuses an `--entry` that is the target path, so that cleanup never deletes the only copy. Park also refuses any symlink in the entry path. It checks each part with `lstat` and the real path against the real `plan/backlog/`, before it creates, writes, or removes anything. At a later discovery, backlog pickup offers resume or discard for a parked entry. Park and pickup never merge a PR, never commit to `main`, and never force-push.
 
+### Workflow governance
+
+The pipeline measures its own workflow as well as the product. Phase skills write four fixed marker lines to the build log: `Rework:`, `Blocked:`, `Requirement change:`, and `Gate revised:`. At ship, `scripts/workflow-metrics.mjs` counts them in the archived build log and loop-state files. It compares each count against a threshold in `standards/workflow-governance-standards.md`.
+
+Ship adds the resulting `## Workflow governance` section to `build-report.md` and the PR description. A breach shows in both places and never stops ship. If the script fails, ship writes `Workflow governance: not measured` with the reason.
+
 ### Roadmaps
 
 A roadmap is a chain of feature steps that the human approves once. The standard `ravintio-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `R-A Chart:`, `R-B Activate:`, `R-C Run:`, `R-D Advance:`, and `R-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
@@ -72,7 +93,7 @@ A roadmap is a chain of feature steps that the human approves once. The standard
 - **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/roadmap.md` on any branch. The one active roadmap lives in `plan/current-roadmap/roadmap.md` on the branch `roadmap/{id}-{slug}`. Roadmap ids share the backlog sequence.
 - **Chart and activate.** R-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the roadmap's `## Schema changes` table. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
 - **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the roadmap branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
-- **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the tag still comes before the PR.
+- **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the CI `release-tag` job tags the merge commit after the human merges.
 - **Delivery.** R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The human merges it.
 - **Driver.** `ravintio-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `R-C Run: Blocked:`. Each step writes `plan/.roadmap-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.roadmap`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/roadmap-labels.mjs`.
 - **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `roadmap/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
@@ -88,14 +109,14 @@ Setup targets Claude Code only. It copies skills and hooks into `.claude/`, prun
 ```
 ravintio-zero/          setup.sh claude-code          target project
 ├── skills/          ──────────────────────────────────▶   .claude/skills/
-├── templates/       ── bundled per skill frontmatter ──▶   .claude/skills/*/assets/
-├── standards/       ── bundled per skill frontmatter ──▶   .claude/skills/*/references/
+├── templates/       ── stays in place, read by full path
+├── standards/       ── stays in place, read by full path
 ├── workflows/       ──────────────────────────────────▶   .claude/commands/
 ├── hooks/enforcement/ ────────── always ──────────────▶   .claude/hooks/enforcement/
 └── templates/standard-boot.md ───────────────────────▶   CLAUDE.md
 ```
 
-Skills bundle selectively. Each `SKILL.md` declares `bundle_templates` and `bundle_standards` in its frontmatter, and setup copies only those files. A skill with no manifest gets everything.
+Setup installs only each skill's own folder. Skills read templates, standards, and schemas from the one copy in `ravintio-zero/`, named by full path, such as `ravintio-zero/templates/requirement.template.md` (0000171 ADR-004). A suite fails when a skill names a pack file by a short path or names one that does not exist. A rerun removes bundled files that an older install left.
 
 Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from the template, then re-appends the contents of `ravintio-overrides/instructions/` between sentinel markers. Durable local customisation lives in the overrides directory, never in the boot file.
 
@@ -175,6 +196,8 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 **JSON depth.** `setup.ps1` writes `settings.json` with `ConvertTo-Json -Depth 100`, so a deeply nested user value survives a rewrite.
 
+**File copy.** `setup.ps1` copies skill and hook files with `System.IO` calls through `Copy-RavintioItem` and `Copy-RavintioTree`. A cmdlet call per file cost about 4 times as much. The folder copy keeps dot files and empty folders. The SKILL.md path rewrite keeps `Set-Content`, so each host keeps its own BOM rule. A tree suite checks each installed skill against its source folder, file by file.
+
 ---
 
 ## Tests
@@ -185,7 +208,9 @@ A wording test greps every tracked file outside history for the retired word tha
 
 Set `RAVINTIO_TEST_QUIET=1` to hide PASS lines and banners. The runner then keeps every FAIL line with its detail, the failing suite name, the summary, and the exit codes. A quiet full run prints about 3 KB. Skills that run the full suite set it.
 
-The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `RAVINTIO_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
+The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. `run-tests.ps1` also prints `[timing] setup.ps1 total: {ms} ms over {n} cases` before its summary. Suites append each setup time to the file that `RAVINTIO_TIMING_FILE` names, and the runner deletes it at the end. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `RAVINTIO_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
+
+The workflow guards each of those jobs to `pull_request` events. On a pull request, `validate-branch` also runs `scripts/check-attribution.mjs` on the PR description, which it reads from an `env:` entry. On a push to `main` or `master`, only the `release-tag` job runs. It holds `contents: write` and runs `scripts/release-tag.mjs`, which tags `HEAD` with `v{version}` from `product.yml` and skips a tag that exists. The consumer template `hooks/ravintio.yml` carries `validate-branch` and `release-tag` only.
 
 ---
 

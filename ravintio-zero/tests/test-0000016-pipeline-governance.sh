@@ -174,10 +174,24 @@ cat > "$CLEAN/requirements/req-001-demo.md" <<'MD'
 # Requirement: REQ-001 - Demo
 **Source:** US-001
 ## Acceptance Criteria
-- [ ] one
-- [ ] two
+- [ ] AC-1: one
+  - Given a fixture
+  - When the check runs
+  - Then it is clean
+- [ ] AC-2: two
+  - Given a fixture
+  - When the check runs
+  - Then it is clean
+  - And nothing is flagged
 ## Dependencies
 - None. See ADR-001.
+MD
+cat > "$CLEAN/story-map.md" <<'MD'
+# Story Map
+## Backbone
+| Activity | Step | Story | Requirement |
+|----------|------|-------|-------------|
+| Demo | Run the demo | US-001 | REQ-001 |
 MD
 cat > "$CLEAN/adr/ADR-001-demo.md" <<'MD'
 # ADR-001 - Demo
@@ -244,7 +258,13 @@ cat > "$PROJ/plan/current/requirements-doc.md" <<'MD'
 # Requirement: REQ-001 - Demo
 ## Acceptance Criteria
 - [ ] criterion alpha holds
+  - Given a fixture with an active loop
+  - When the check runs
+  - Then it holds
 - [ ] criterion beta holds
+  - Given a second fixture
+  - When the check runs
+  - Then it holds
 MD
 
 run_ratchet() {
@@ -258,12 +278,12 @@ run_ratchet() {
 }
 
 # weakening: remove criterion beta
-WEAK=$'# Requirement: REQ-001 - Demo\n## Acceptance Criteria\n- [ ] criterion alpha holds'
+WEAK=$'# Requirement: REQ-001 - Demo\n## Acceptance Criteria\n- [ ] criterion alpha holds\n  - Given a fixture with an active loop\n  - When the check runs\n  - Then it holds'
 RC=$(run_ratchet "$PROJ/plan/current/requirements-doc.md" "$WEAK" "$PROJ")
 assert_equals "2" "$RC" "req-018: weakening write (removed criterion) blocked with exit 2"
 
 # strengthening: add criterion gamma
-STRONG=$'# Requirement: REQ-001 - Demo\n## Acceptance Criteria\n- [ ] criterion alpha holds\n- [ ] criterion beta holds\n- [ ] criterion gamma holds'
+STRONG=$'# Requirement: REQ-001 - Demo\n## Acceptance Criteria\n- [ ] criterion alpha holds\n  - Given a fixture with an active loop\n  - When the check runs\n  - Then it holds\n- [ ] criterion beta holds\n  - Given a second fixture\n  - When the check runs\n  - Then it holds\n- [ ] criterion gamma holds\n  - Given a third fixture\n  - When the check runs\n  - Then it holds'
 RC=$(run_ratchet "$PROJ/plan/current/requirements-doc.md" "$STRONG" "$PROJ")
 assert_equals "0" "$RC" "req-018: strengthening write passes with exit 0"
 

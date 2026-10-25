@@ -24,7 +24,12 @@ trap 'rm -rf "$TMP"' EXIT
 # brand rewrite that 0000160 applied to SKILL.md.
 BASE_RENAMED="$TMP/base-renamed.md"
 sed -e "s/PLANIFEST/RAVINTIO/g" -e "s/Planifest\([A-Z]\)/Ravintio\1/g" \
-  -e "s/Planifest/RAVINTIO/g" -e "s/planifest/ravintio/g" "$BASE" > "$BASE_RENAMED"
+  -e "s/Planifest/RAVINTIO/g" -e "s/planifest/ravintio/g" "$BASE" > "$BASE_RENAMED.tmp"
+# 0000171 ADR-004 dropped the bundle fields and gave pack files full paths.
+# Apply the same rewrite to the base lines.
+sed -e "/^bundle_templates:/d" -e "/^bundle_standards:/d" \
+  -e 's|(see `roadmap-standards.md`)|(see `ravintio-zero/standards/roadmap-standards.md`)|' \
+  "$BASE_RENAMED.tmp" > "$BASE_RENAMED"
 
 # Print every non-blank, non-heading line of $1 that no later file holds as a
 # whole line. Usage: missing_lines base file...

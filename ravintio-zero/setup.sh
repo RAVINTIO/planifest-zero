@@ -86,81 +86,51 @@ copy_skills() {
       local skill_name
       skill_name="$(basename "$skill_dir")"
       local dest_dir="$target_dir/$skill_name"
-      
-      mkdir -p "$dest_dir"
-      cp "$skill_dir/SKILL.md" "$dest_dir/SKILL.md"
 
-      # Rewrite relative paths to match bundled directory structure
-      sed -i.bak \
-        -e 's|\.\./templates/|./assets/templates/|g' \
-        -e 's|\.\./standards/|./references/|g' \
-        -e 's|\.\./standards/reference/|./references/reference/|g' \
-        -e 's|\.\./schemas/|./assets/schemas/|g' \
-        "$dest_dir/SKILL.md" && rm -f "$dest_dir/SKILL.md.bak"
+      # Install the skill's own folder only, byte for byte (0000171 req-004,
+      # ADR-004). Pack templates, standards, and schemas stay in ravintio-zero/.
+      mkdir -p "$dest_dir"
+      cp -R "$skill_dir/." "$dest_dir/"
 
       echo "  + $skill_name/SKILL.md"
-      
-      for opt_dir in scripts assets references; do
-        if [ -d "$skill_dir/$opt_dir" ]; then
-          cp -r "$skill_dir/$opt_dir" "$dest_dir/"
-        fi
-      done
-      
-      # Selective bundling: read bundle_templates and bundle_standards from SKILL.md frontmatter
-      local skill_md="$skill_dir/SKILL.md"
-      
-      # Parse frontmatter: awk handles identical start/end --- delimiters correctly
-      local frontmatter
-      frontmatter=$(awk '/^---$/{c++; if(c==2) exit; next} c==1{print}' "$skill_md")
 
-      # Parse bundle_templates from frontmatter
-      local bundle_templates
-      bundle_templates=$(echo "$frontmatter" | grep '^bundle_templates:' | sed 's/bundle_templates: *\[//;s/\]//;s/,/ /g;s/^ *//;s/ *$//' || true)
+      prune_bundled_files "$skill_dir" "$dest_dir"
+    fi
+  done
+}
 
-      # Parse bundle_standards from frontmatter
-      local bundle_standards
-      bundle_standards=$(echo "$frontmatter" | grep '^bundle_standards:' | sed 's/bundle_standards: *\[//;s/\]//;s/,/ /g;s/^ *//;s/ *$//' || true)
-      
-      # Bundle only declared templates (or all if no manifest found)
-      if [ -d "$SCRIPT_DIR/templates" ]; then
-        mkdir -p "$dest_dir/assets/templates"
-        if [ -n "$bundle_templates" ]; then
-          for tpl in $bundle_templates; do
-            local tpl_path="$SCRIPT_DIR/templates/$tpl"
-            if [ -f "$tpl_path" ]; then
-              cp "$tpl_path" "$dest_dir/assets/templates/"
-            fi
-          done
-          echo "    templates: selective ($(echo $bundle_templates | wc -w | tr -d ' ') files)"
-        else
-          cp -r "$SCRIPT_DIR/templates"/* "$dest_dir/assets/templates/"
-          echo "    templates: all (no manifest)"
-        fi
+prune_bundled_files() {
+  # Removes the pack copies an older install bundled into a skill (0000171
+  # req-004). It deletes only the paths where that install put a pack file:
+  # assets/templates/{name}, assets/schemas/{name}, and references/{name}.
+  # It never walks the folder, never deletes a path the skill source holds,
+  # and skips any linked path, so it can't reach outside the install.
+  local src_dir="$1" dest_dir="$2" from to f rel
+  [ -L "$dest_dir" ] && return 0
+  for from in templates schemas standards; do
+    case "$from" in
+      templates) to="assets/templates" ;;
+      schemas) to="assets/schemas" ;;
+      *) to="references" ;;
+    esac
+    [ -L "$dest_dir/${to%%/*}" ] || [ -L "$dest_dir/$to" ] && continue
+    [ -d "$dest_dir/$to" ] || continue
+    while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      rel="$to/$(basename "$f")"
+      [ -e "$src_dir/$rel" ] && continue
+      if [ -f "$dest_dir/$rel" ] && [ ! -L "$dest_dir/$rel" ]; then
+        rm -f "$dest_dir/$rel"
       fi
-      
-      # Always bundle schemas (small, universally needed)
-      if [ -d "$SCRIPT_DIR/schemas" ]; then
-        mkdir -p "$dest_dir/assets/schemas"
-        cp -r "$SCRIPT_DIR/schemas"/* "$dest_dir/assets/schemas/"
-      fi
-      
-      # Bundle only declared standards (or all if no manifest found)
-      if [ -d "$SCRIPT_DIR/standards" ]; then
-        mkdir -p "$dest_dir/references"
-        if [ -n "$bundle_standards" ]; then
-          for std in $bundle_standards; do
-            local std_path="$SCRIPT_DIR/standards/$std"
-            if [ -f "$std_path" ]; then
-              cp "$std_path" "$dest_dir/references/"
-            fi
-          done
-          echo "    standards: selective ($(echo $bundle_standards | wc -w | tr -d ' ') files)"
-        else
-          # No manifest - copy all top-level standards (skip reference/ subdirectory)
-          find "$SCRIPT_DIR/standards" -maxdepth 1 -type f -exec cp {} "$dest_dir/references/" \;
-          echo "    standards: all top-level (no manifest)"
-        fi
-      fi
+    done <<EOF
+$(find "$SCRIPT_DIR/$from" -type f)
+EOF
+  done
+  # Deepest first, so a parent is empty when its turn comes. rmdir keeps
+  # any folder that still holds a user file.
+  for rel in assets/templates assets/schemas assets references; do
+    if [ -d "$dest_dir/$rel" ] && [ ! -L "$dest_dir/$rel" ] && [ ! -e "$src_dir/$rel" ]; then
+      rmdir "$dest_dir/$rel" 2>/dev/null || true
     fi
   done
 }
@@ -542,14 +512,22 @@ merge_allowed_tools() {
         }
       }
       const existing = Array.isArray(s.allowedTools) ? s.allowedTools : [];
-      if (!existing.includes("Agent")) {
-        s.allowedTools = existing.concat(["Agent"]);
+      const addAgent = !existing.includes("Agent");
+      // An absent attribution key gets empty strings, so the host writes no
+      // attribution lines. A present key stays as it is (0000169 req-004).
+      const addAttribution = !Object.prototype.hasOwnProperty.call(s, "attribution");
+      if (addAgent) s.allowedTools = existing.concat(["Agent"]);
+      if (addAttribution) s.attribution = {commit:"", pr:""};
+      if (addAgent || addAttribution) {
         fs.mkdirSync(path.dirname(sf),{recursive:true});
         writeSettings(sf, JSON.stringify(s,null,2)+"\n");
-        console.log("  ~ .claude/settings.json (Agent added to allowedTools)");
-      } else {
-        console.log("  - .claude/settings.json (Agent already in allowedTools)");
       }
+      console.log(addAgent
+        ? "  ~ .claude/settings.json (Agent added to allowedTools)"
+        : "  - .claude/settings.json (Agent already in allowedTools)");
+      console.log(addAttribution
+        ? "  ~ .claude/settings.json (attribution set to empty commit and pr)"
+        : "  - .claude/settings.json (attribution already set)");
     ' || exit 1
   else
     echo "  ! Warning: node not found — skipping allowedTools update"
@@ -861,7 +839,7 @@ setup_tool() {
     rm -f "$manifest"
   fi
 
-  # Copy skills (now automatically bundles supporting files)
+  # Copy each skill's own folder
   copy_skills "$skills_dir"
 
   # Prune folders that no longer exist in the skills/ source set
