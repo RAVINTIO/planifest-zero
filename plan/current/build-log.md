@@ -15,7 +15,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Tool | `claude-code` |
 | Primary model | `claude-opus-5-5` |
 | Cheaper model | `claude-sonnet-5-5` |
-| Run speed | `pending` |
+| Run speed | `fast` |
 
 ---
 
@@ -47,3 +47,5 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock (error path): A missed old name fails the search test in CI with file and line; an old RAVINTIO_ROADMAP_* variable stops the driver at start, and an active roadmap stops migration 0005. [source: draft-accepted]
 - Scope Lock (cross-session continuity): plan/current/ and the build log carry state, renames land one unit per commit so a rerun finishes a partial rename, and migration 0005 refuses a consumer upgrade while a roadmap runs. [source: draft-accepted]
 - Scope Lock complete. All four scenario paths captured. The human accepted each of the four drafts by name with "Accept all".
+- Run mode: autonomous (2026-10-25T21:53:43Z)
+- Run speed: fast (2026-10-25T21:53:43Z)
