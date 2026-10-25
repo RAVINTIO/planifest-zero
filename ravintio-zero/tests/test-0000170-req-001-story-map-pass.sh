@@ -23,11 +23,12 @@ ok=1
   && grep -qxF '| Activity | Step | Story | Requirement |' "$TPL" && ok=0
 check "req-001 AC-1: template holds Backbone heading and header row" "$ok"
 
-# AC-2: bundle_templates and artifact table name the map
+# AC-2: the skill names the template by full path (0000171 ADR-004) and the
+# artifact table names the map
 ok=1
-grep '^bundle_templates:' "$SKILL" | grep -qF 'story-map.template.md' \
+grep -qF '`ravintio-zero/templates/story-map.template.md`' "$SKILL" \
   && grep '^|' "$SKILL" | grep -qF 'plan/current/story-map.md' && ok=0
-check "req-001 AC-2: skill lists template in bundle_templates and map in artifact table" "$ok"
+check "req-001 AC-2: skill names template by full path and map in artifact table" "$ok"
 
 # AC-3: story mapping pass text states order, dispositions, and one question
 sec="$(awk '/^## Story mapping pass/{f=1;next} /^## /{f=0} f' "$SKILL")"

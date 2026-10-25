@@ -67,8 +67,8 @@ echo "=== req-004: implement-phase library-standards wiring ==="
 # ravintio-plan bundle.
 IMPLEMENT=$(cat "$SKILLS/ravintio-implement/SKILL.md")
 PLAN=$(cat "$SKILLS/ravintio-plan/SKILL.md")
-assert_contains "formatting-standards.md"       "$PLAN" "req-004: formatting-standards.md in ravintio-plan bundle_standards"
-assert_contains "library-standards/_version-policy.md" "$IMPLEMENT" "req-004: _version-policy.md in ravintio-implement bundle_standards"
+assert_equals "" "$(printf "%s\n" "$PLAN" | grep -E "^bundle_(templates|standards):")" "req-004: ravintio-plan holds no bundle field (0000171 ADR-004)"
+assert_contains "ravintio-zero/standards/library-standards/_version-policy.md" "$IMPLEMENT" "req-004: ravintio-implement names _version-policy.md by full path"
 assert_contains "prefer-avoid.md"                "$IMPLEMENT" "req-004: library audit references prefer-avoid.md"
 assert_contains "ravintio-overrides/library-standards" "$IMPLEMENT" "req-004: references ravintio-overrides path"
 
@@ -78,11 +78,11 @@ echo ""
 echo "=== req-005: validate-and-accept library audit wiring ==="
 
 # 0000030: validate-agent is retired. The library audit now lives in
-# ravintio-validate-and-accept. _version-policy.md is bundled by
-# ravintio-implement rather than the validate phase.
+# ravintio-validate-and-accept. ravintio-implement, not the validate phase,
+# names _version-policy.md by its full path (0000171 ADR-004).
 VALIDATE=$(cat "$SKILLS/ravintio-validate-and-accept/SKILL.md")
-assert_contains "formatting-standards.md"       "$VALIDATE" "req-005: formatting-standards.md in bundle_standards"
-assert_contains "library-standards/_version-policy.md" "$IMPLEMENT" "req-005: _version-policy.md bundled by ravintio-implement"
+assert_equals "" "$(printf "%s\n" "$VALIDATE" | grep -E "^bundle_(templates|standards):")" "req-005: ravintio-validate-and-accept holds no bundle field (0000171 ADR-004)"
+assert_contains "ravintio-zero/standards/library-standards/_version-policy.md" "$IMPLEMENT" "req-005: ravintio-implement names _version-policy.md by full path"
 assert_contains "Library audit"                 "$VALIDATE" "req-005: Library audit step present"
 assert_contains "avoided library"               "$VALIDATE" "req-005: avoided library check present"
 
@@ -93,12 +93,11 @@ echo "=== req-006: pipeline standards wiring ==="
 
 # 0000030: the orchestrator no longer bundles these standards. The
 # underlying rule, that both standards are wired into the pipeline,
-# now lives in the phase skills. ravintio-plan bundles
-# formatting-standards.md and ravintio-implement bundles
-# library-standards/_version-policy.md.
+# now lives in the phase skills. 0000171 ADR-004 drops the bundle fields.
+# ravintio-implement names library-standards/_version-policy.md by full path.
 ORCH=$(cat "$(orch_combined "$SKILLS/ravintio-orchestrator")")
-assert_contains "formatting-standards.md"       "$PLAN" "req-006: formatting-standards.md in ravintio-plan bundle_standards"
-assert_contains "library-standards/_version-policy.md" "$IMPLEMENT" "req-006: _version-policy.md in ravintio-implement bundle_standards"
+assert_equals "" "$(printf "%s\n" "$PLAN" | grep -E "^bundle_(templates|standards):")" "req-006: ravintio-plan holds no bundle field (0000171 ADR-004)"
+assert_contains "ravintio-zero/standards/library-standards/_version-policy.md" "$IMPLEMENT" "req-006: ravintio-implement names _version-policy.md by full path"
 
 # -----------------------------------------------------------------------
 
