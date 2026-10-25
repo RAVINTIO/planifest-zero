@@ -169,3 +169,4 @@ Blocked: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-2
 
 - In progress: P3 re-run, verification and security review (2026-10-25T09:51:27Z)
 - Done: P3 re-run. All 15 acceptance criteria pass. Security found S-008 and S-009 (medium) and S-010 to S-012 (low) in the new prune. Commit `d22c8ff` limits the prune to named pack paths and skips links, which fixes S-008 to S-011. S-012 is accepted. Full Bash runner 148 and 19 regression pass, PowerShell 16 of 16. (2026-10-25T10:13:35Z)
+- Resolved: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-25T10:13:56Z, human chose to fix the encoding, profile on Windows, and drop skill bundling on all platforms). The 5.1 parity check passes and the total is 98.2 s.
