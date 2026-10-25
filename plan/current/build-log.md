@@ -71,3 +71,21 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 6. (2026-10-25T13
 - Done: P1 ADR, scope, risk register, glossary, and execution plan (2026-10-25T13:03:12Z)
 - Consistency check clean. (2026-10-25T13:03:12Z)
 P1 Plan: Complete: two requirements, one ADR, story map, execution plan, scope, risk register, and glossary. Autonomous run, no gate stop. (2026-10-25T13:03:12Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T13:03:32Z` |
+| End | |
+| Wall clock | |
+| Model tier | primary |
+| Skills loaded | ravintio-implement, ravintio-test-writer, ravintio-implementer, ravintio-refactor |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | One inline track. REQ-002 links to the anchor that REQ-001 keeps, and the change is under 40 lines, so a subagent per phase would cost more than the work. |
+
+- In progress: REQ-001 strict mode section (2026-10-25T13:03:32Z)
+- Done: REQ-001 strict mode section, red then green, 3 of 3 checks (2026-10-25T13:04:13Z)
+- In progress: REQ-002 strict mode links (2026-10-25T13:04:13Z)
