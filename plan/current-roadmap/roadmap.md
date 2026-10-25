@@ -1,6 +1,6 @@
 ---
 title: "Roadmap: 0000168 - backlog clearance"
-summary: "Clears the six open backlog entries in five feature releases."
+summary: "Clears the six open backlog entries in five feature releases, plus a docs fix as step 6."
 status: "active"
 ---
 # Roadmap: 0000168 - backlog clearance
@@ -11,6 +11,8 @@ status: "active"
 **Position:** 4
 
 The human charted this roadmap and confirmed it on 2026-10-25. The confirmation sharpened backlog entries 0000159, 0000110, and 0000100 with a **Wanted outcome** section each.
+
+On 2026-10-25, during step 4, the human added step 6 to explain strict mode and its acknowledgement file (backlog 0000184).
 
 ## Stop conditions
 
@@ -29,6 +31,7 @@ The human charted this roadmap and confirmed it on 2026-10-25. The confirmation 
 | 3 | none | none | none |
 | 4 | none | none | none |
 | 5 | none | none | none |
+| 6 | none | none | none |
 
 ## Dependencies
 
@@ -39,6 +42,7 @@ The human charted this roadmap and confirmed it on 2026-10-25. The confirmation 
 | 3 | none | none | none |
 | 4 | none | none | none |
 | 5 | none | none | none |
+| 6 | none | none | none |
 
 ## Steps
 
@@ -49,3 +53,4 @@ The human charted this roadmap and confirmed it on 2026-10-25. The confirmation 
 | 3 | 0000171-faster-setup-ps1-tests | 0000159 | minor | 0.16.0 | merged |
 | 4 | 0000172-subagent-acceleration | 0000110 | minor | | pending |
 | 5 | 0000173-workflow-governance-gates | 0000100 | minor | | pending |
+| 6 | 0000185-explain-strict-mode | 0000184 | patch | | pending |
