@@ -81,3 +81,6 @@ P1 Plan: Complete: five requirements, four ADRs, story map, execution plan, scop
 
 - In progress: track A REQ-001, REQ-002 plan skill and templates (2026-10-25T04:43:48Z)
 - In progress: track B REQ-003, REQ-004, REQ-005 consistency check and ratchet (2026-10-25T04:43:48Z)
+- Done: track A REQ-001, REQ-002 plan skill and templates, commits 350db47 and d859d92 (found on resume, 2026-10-25T04:55:06Z)
+- Done: track B REQ-003, REQ-004, REQ-005 consistency check and ratchet, commits 71bd140, 29f239d, and bfc3766 (found on resume, 2026-10-25T04:55:06Z)
+P2 Implement: Resuming: both tracks committed. Batch 2 is next: full suite on both shells, then living docs. (2026-10-25T04:55:06Z)
