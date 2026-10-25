@@ -2,7 +2,7 @@
 
 **Feature:** faster-setup-ps1-tests
 **Version:** 0.15.1
-**PR:** pending
+**PR:** [#32](https://github.com/RAVINTIO/ravintio-zero/pull/32)
 
 ## What changed
 
