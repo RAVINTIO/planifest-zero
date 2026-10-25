@@ -61,3 +61,23 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 2. (2026-10-25T04
 
 - In progress: P1 requirements REQ-001 to REQ-005 (2026-10-25T04:42:09Z)
 - In progress: P1 scope, risk register, and glossary (2026-10-25T04:42:09Z)
+- Done: P1 requirements REQ-001 to REQ-005 (2026-10-25T04:43:48Z)
+- Done: P1 scope, risk register, and glossary (2026-10-25T04:43:48Z)
+- Done: P1 story map, ADRs, and execution plan, written inline while batch 1 ran (2026-10-25T04:43:48Z)
+- Consistency check clean on the first run. This run's own criteria use the new Gherkin format. (2026-10-25T04:43:48Z)
+P1 Plan: Complete: five requirements, four ADRs, story map, execution plan, scope, risk register, and glossary. Autonomous run, no gate stop. (2026-10-25T04:43:48Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T04:43:48Z` |
+| Model tier | primary (sonnet TDD tracks) |
+| Skills loaded | ravintio-implement, ravintio-test-writer, ravintio-implementer, ravintio-refactor |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: two TDD tracks on disjoint files. Each track runs red, green, and refactor inline. |
+
+- In progress: track A REQ-001, REQ-002 plan skill and templates (2026-10-25T04:43:48Z)
+- In progress: track B REQ-003, REQ-004, REQ-005 consistency check and ratchet (2026-10-25T04:43:48Z)
