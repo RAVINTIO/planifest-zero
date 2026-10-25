@@ -70,7 +70,7 @@ $ValidTools = @('claude-code')
 
 # Copy helpers built on System.IO calls. Per-file cmdlets cost far more than
 # these on Windows PowerShell and PowerShell 7 (0000171 ADR-002). Both use
-# only .NET Framework 4.5 APIs and overwrite existing files.
+# only APIs that Windows PowerShell 5.1 has, and overwrite existing files.
 
 # Copies a file into a folder, or makes the named folder for a folder source
 # (the same as Copy-Item without -Recurse). Makes the destination folder first.
