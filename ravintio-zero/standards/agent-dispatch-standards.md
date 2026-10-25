@@ -81,6 +81,22 @@ A small page that the parent needs in full may run in the main session.
 
 ---
 
+## Fast batches
+
+The run speed is in `plan/.run-speed`. It holds `fast` or `standard`. A missing or unknown value counts as `standard`. See the orchestrator skill.
+
+At `fast`, a phase dispatches every unit of its fast batch in one message. It makes one `Agent` call per unit and passes `model` on each.
+
+- Units in one batch write disjoint files.
+- The Cannot parallelise table still applies.
+- Phases run in order. No unit of phase N+1 starts before phase N ends.
+- Gates, exception stops, and progress markers stay as they are. Write one `In progress:` line per unit in a single commit before the batch.
+- A unit with fewer than two independent pieces stays inline.
+
+At `standard`, each phase keeps the parallelism rules above. Each phase skill lists its fast batch under `### Fast batch`. The build log records the agent count and wall-clock time for each phase.
+
+---
+
 ## Agent Dispatch Template
 
 Agent spawning is level-2 parallelism (the Agent tool for independent sub-tasks that each need their own tool access and context); level-1 (multiple native tool calls in one message) is covered by Parallelism Rules above. Spawn when a task is self-contained enough to brief to a colleague in one paragraph; stay inline when it needs ongoing dialogue, shared mutable state, or is too small to justify the overhead.
