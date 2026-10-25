@@ -80,6 +80,12 @@ LONG="feat(scope): boundary test subject line padded to length 73!!!!!!!!!!!!!!"
 code=$(exit_of "$LONG")
 assert_equals "1" "$code" "73-char subject exits 1 (over limit)"
 
+code=$(exit_of "$(printf 'feat(x): ok\n\nGenerated with [Claude Code](https://claude.com/claude-code)')")
+assert_equals "1" "$code" "Generated with [Claude Code] line exits 1"
+
+code=$(exit_of "$(printf 'feat(x): ok\n\nClaude-Session: abc')")
+assert_equals "1" "$code" "Claude-Session line exits 1"
+
 # ── Blocking message printed ──────────────────────────────────────────────
 echo ""
 echo "--- Block output includes guidance ---"
