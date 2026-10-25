@@ -2,7 +2,7 @@
 
 **Feature:** subagent-acceleration
 **Version:** 0.17.0
-**PR:** pending, updated at Step 9
+**PR:** [#33](https://github.com/RAVINTIO/ravintio-zero/pull/33)
 
 ## What changed
 
