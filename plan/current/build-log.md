@@ -46,3 +46,19 @@ Scope Lock (cross-session continuity): Every step is idempotent. A rerun of setu
 Scope Lock complete. All four scenario paths captured.
 P0 exchange (design): Q: Confirm the design? / A: draft-accepted (roadmap). (2026-10-25T03:35:00Z)
 P0 Discovery: Complete: design self-confirmed for roadmap step 1. (2026-10-25T03:35:00Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T03:28:28Z` |
+| Model tier | primary orchestrator, primary requirements agents, cheaper scope agent |
+| Skills loaded | ravintio-plan |
+| Agents spawned | `3` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: requirements in two agents, scope, risk, and glossary in one. The orchestrator then writes the ADRs and the execution plan. |
+
+- In progress: P1 requirements REQ-001 to REQ-003 (2026-10-25T03:28:28Z)
+- In progress: P1 requirements REQ-004 to REQ-006 (2026-10-25T03:28:28Z)
+- In progress: P1 scope, risk register, and glossary (2026-10-25T03:28:28Z)
