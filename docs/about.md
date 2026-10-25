@@ -1,5 +1,5 @@
 ---
-version: "0.15.1"
+version: "0.16.0"
 feature: "0000171-faster-setup-ps1-tests"
 updated: "25 Oct 2026"
 ---
@@ -10,7 +10,7 @@ updated: "25 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.15.1` |
+| Version | `0.16.0` |
 | Last feature | `0000171-faster-setup-ps1-tests` |
 | Updated | `25 Oct 2026` |
 

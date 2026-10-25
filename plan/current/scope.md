@@ -8,7 +8,7 @@ version: "0.1.0"
 
 **Skill:** plan
 **Feature:** 0000171-faster-setup-ps1-tests
-**Version:** 0.15.1
+**Version:** 0.16.0
 
 ## In Scope
 
@@ -23,7 +23,7 @@ version: "0.1.0"
 - The `bundle_templates` and `bundle_standards` frontmatter fields leave every SKILL.md.
 - Every skill names a pack template, standard, or schema by its full `ravintio-zero/...` path.
 - A test fails when a skill names one by a short path or a bare name, or when the full path does not exist.
-- Version 0.15.1. This roadmap 0000168 step 3 closes backlog 0000159.
+- Version 0.16.0. This roadmap 0000168 step 3 closes backlog 0000159.
 
 ## Out of Scope
 

@@ -8,7 +8,7 @@ version: "0.1.0"
 
 **Skill:** plan
 **Feature:** 0000171-faster-setup-ps1-tests
-**Version:** 0.15.1
+**Version:** 0.16.0
 **Overall Risk Level:** medium
 
 ## Risks

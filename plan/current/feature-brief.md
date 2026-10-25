@@ -2,7 +2,7 @@
 title: "Feature Brief - faster setup.ps1 tests"
 summary: "One backlog entry: cut setup.ps1 time in the PowerShell CI suites by at least half."
 status: "approved"
-version: "0.15.1"
+version: "0.16.0"
 ---
 # Feature Brief - faster setup.ps1 tests
 

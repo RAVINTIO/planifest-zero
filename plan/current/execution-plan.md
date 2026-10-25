@@ -4,7 +4,7 @@
 
 **Skill:** plan
 **Feature:** 0000171-faster-setup-ps1-tests
-**Version:** 0.15.1
+**Version:** 0.16.0
 **Status:** active
 
 ## Active Skills

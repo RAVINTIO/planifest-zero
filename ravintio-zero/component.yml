@@ -2,7 +2,7 @@
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
 feature: "0000171-faster-setup-ps1-tests"
-version: "0.15.1"
+version: "0.16.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"

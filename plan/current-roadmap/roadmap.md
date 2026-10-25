@@ -46,6 +46,6 @@ The human charted this roadmap and confirmed it on 2026-10-25. The confirmation 
 |------|------------|-----------------|------|---------|--------|
 | 1 | 0000169-release-hygiene | 0000166, 0000167 | minor | 0.14.0 | merged |
 | 2 | 0000170-story-mapping-and-gherkin | 0000165 | minor | 0.15.0 | merged |
-| 3 | 0000171-faster-setup-ps1-tests | 0000159 | patch | 0.15.1 | merged |
+| 3 | 0000171-faster-setup-ps1-tests | 0000159 | minor | 0.16.0 | merged |
 | 4 | 0000172-subagent-acceleration | 0000110 | minor | | pending |
 | 5 | 0000173-workflow-governance-gates | 0000100 | minor | | pending |

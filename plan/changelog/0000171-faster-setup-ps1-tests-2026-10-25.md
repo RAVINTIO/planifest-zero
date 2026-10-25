@@ -1,7 +1,7 @@
 # Changelog (0000171-faster-setup-ps1-tests, 25 Oct 2026)
 
 **Feature:** faster-setup-ps1-tests
-**Version:** 0.15.1
+**Version:** 0.16.0
 **PR:** [#32](https://github.com/RAVINTIO/ravintio-zero/pull/32)
 
 ## What changed

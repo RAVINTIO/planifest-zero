@@ -8,7 +8,7 @@ version: "0.1.0"
 
 **Skill:** plan
 **Feature:** 0000171-faster-setup-ps1-tests
-**Version:** 0.15.1
+**Version:** 0.16.0
 
 > The ubiquitous language for this feature. If the glossary says "Timing total", the code says the `setup.ps1 total` line, not "sum line" or "run time". Never invent new terms without adding them here.
 

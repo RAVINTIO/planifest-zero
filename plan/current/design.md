@@ -38,7 +38,7 @@ summary: "Confirmed design for a faster setup.ps1 skill copy and a CI timing tot
 - Components: `ravintio-zero`, the drop-in pipeline pack.
 - Data ownership: none
 - Deployment: consumers copy the pack folder and run setup
-- API versioning: semantic versioning in 0.x. 0.15.1 is a patch release.
+- API versioning: semantic versioning in 0.x. 0.16.0 is a minor release.
 
 ## Component Paths
 - `ravintio-zero/`
@@ -56,7 +56,7 @@ summary: "Confirmed design for a faster setup.ps1 skill copy and a CI timing tot
   - `Install-EnforcementHooks` copies hook modules the same way.
   - A test checks the installed skill tree against the bundle rules, file by file and byte for byte, under both hosts.
   - `Invoke-Setup` appends each `setup.ps1` time to a file that `run-tests.ps1` names. The runner prints the total and case count.
-  - Version 0.15.1.
+  - Version 0.16.0.
 - Out:
   - `setup.sh` and the Bash suites.
   - Sharing one setup run across test cases. Few cases share a starting state.
