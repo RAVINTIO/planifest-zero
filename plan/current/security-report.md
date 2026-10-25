@@ -1,46 +1,71 @@
 ---
 title: "Security Report - faster-setup-ps1-tests"
-summary: "Security review of the System.IO copy helpers in setup.ps1 and the timing file in the PowerShell test runner."
+summary: "Security review of the System.IO copy helpers, the bundled-file prune step in setup.sh and setup.ps1, the pack path check, and the timing file in the PowerShell test runner."
 status: "draft"
-version: "0.1.0"
+version: "0.2.0"
 ---
 # Security Report - faster-setup-ps1-tests
 
 **Skill:** validate-and-accept
 **Feature:** 0000171-faster-setup-ps1-tests
-**Version:** 0.1.0
+**Version:** 0.2.0
 
 > It is advisory. No code changes are made. All findings require human review before action.
 
 ## Summary
 
-**Overall risk assessment:** low
-**Components reviewed:** ravintio-zero (`setup.ps1`, `tests/run-tests.ps1`, `tests/helpers/setup-workspace.ps1`, two new `test-0000171-*.ps1` suites, `component.yml`)
-**Review scope:** code review | dependency audit | threat model
+**Overall risk assessment:** medium
+**Components reviewed:** ravintio-zero (`setup.sh`, `setup.ps1`, `tests/run-tests.ps1`, `tests/helpers/setup-workspace.ps1`, five new `test-0000171-*` suites, skill sources, `component.yml`), `docs/`
+**Review scope:** code review | dependency audit | threat model | execution tests of the prune step
 
-The review covers `git diff b52b209 HEAD -- ravintio-zero/`. No Critical or High finding exists. Four Low findings and three informational notes remain. Three of the four Low findings describe behaviour that `Copy-Item` already had, so the diff adds little new exposure.
+The review covers `git diff b52b209..HEAD -- ravintio-zero/ docs/` at `82d886a`. This second review adds the requirement change of 2026-10-25 (REQ-004 to REQ-006) and the UTF-8 read fix in `setup.ps1`.
 
-The diff adds no dependency, no external process call, and no network call. A scan of the diff for credential patterns found none. The timing file holds only millisecond counts.
+No Critical or High finding exists. Two Medium findings sit in the new prune step, and neither is mitigated:
+
+- S-008: the Bash prune splits names on a newline, so a planted name deletes a file in the caller's folder.
+- S-009: both scripts prune through a symlinked skill folder and delete user files outside the project.
+
+Both need prior write access to `.claude/skills/`, and a fresh clone with no manifest runs the prune. Six Low findings and four informational notes remain. Execution tests in temporary workspaces confirmed each prune finding (see `verification-report.md`, REQ-004).
+
+The diff adds no dependency, no network call, and no new external program call. A scan of the diff for credential patterns found none. The timing file holds only millisecond counts.
 
 ## Findings
 
 | ID | Severity | Category | Location | Description | Mitigation | Status |
 |----|----------|----------|----------|-------------|------------|--------|
-| S-001 | low | path traversal | `ravintio-zero/setup.ps1:96`, `:99` | `Directory.GetDirectories` and `Directory.GetFiles` with `AllDirectories` enumerate the pack source tree. On Windows PowerShell 5.1 (.NET Framework) the enumeration follows directory junctions. A junction planted inside `skills/*/scripts`, `assets`, `references`, `templates`, or `schemas` would copy files from outside the pack into the install. `Copy-Item -Recurse` followed links in the same way, so this is unchanged behaviour. I did not run the enumeration on PowerShell 7 here, so I make no claim about how it treats links. The attacker needs write access to the pack, which already allows editing the hooks that `setup.ps1` installs. | None in the helpers. The pack comes from a checkout the user trusts. Optionally skip entries with the `ReparsePoint` attribute, as `Copy-RavintioWorkflow` does at `setup.ps1:265`. | open |
-| S-002 | low | path traversal | `ravintio-zero/setup.ps1:85`, `:100` | `File.Copy` with overwrite follows a symlink or hard link at the destination. If `.claude/skills/{name}/` or a file in it is a link to a location outside the project, the write lands there. `Copy-Item -Force` also followed destination links, so this is unchanged. A write path under `.claude/skills` needs prior write access to the project, and a person with that access can edit the files directly. | None added. `Remove-RetiredHooks` guards reparse points at `setup.ps1:677` and `:692` for deletes only. Optionally apply the same test to the destination folder before copying. | open |
-| S-003 | low | path traversal | `ravintio-zero/setup.ps1:97`, `:100` | `Copy-RavintioTree` builds each destination with `$dir.Substring($prefix)` and `$file.Substring($prefix)`. The code assumes the enumerated path starts with `$SourceDir` plus a separator. The .NET enumeration returns paths under the root it received, so a `..` segment cannot appear in a result. The assumption breaks if a caller passes a `$SourceDir` that is not in the form the enumeration echoes back, for example a relative path. Both callers pass `Join-Path $ScriptDir` values, so no break occurs today. | None needed. Keep callers on absolute paths. | accepted |
-| S-004 | low | injection | `ravintio-zero/tests/helpers/setup-workspace.ps1:79-80` | `Invoke-Setup` appends to whatever file `RAVINTIO_TIMING_FILE` names. If the variable holds a planted path in the caller's environment, the helper appends a line of digits and `CRLF` to that file. Only `ElapsedMilliseconds` is written, so the person who sets the variable cannot choose the content. The append can corrupt a text file or grow one. This is new behaviour, and only a person who already controls the test environment can use it. The runner always overwrites the variable with its own path at `tests/run-tests.ps1:31`. | None needed for CI. Optionally check that the path sits under the temp folder before the append. | open |
-| S-005 | informational | data exposure | `ravintio-zero/tests/run-tests.ps1:28-29` | The timing file lives in the shared temp folder. Its name carries a random GUID (`NewGuid().ToString('N')`), so another local account cannot guess it. On Windows the temp folder is per user (`%TEMP%`), and the file inherits the user's ACL. On Linux and macOS the mode follows the umask, so it may be world-readable. The contents are millisecond counts, which carry no secret. The runner removes the file at `tests/run-tests.ps1:64`, including after a failed suite. A hard stop of the process leaves the file behind. This matches R-004. | Accepted, as R-004 records. | accepted |
-| S-006 | informational | injection | `ravintio-zero/tests/run-tests.ps1:55-58` | The total parses untrusted lines safely. `Where-Object { $_ -match '^\d+$' }` keeps only digit lines and drops everything else. The cast `[long]$v` can overflow on a line of 19 or more digits. In that case PowerShell throws a terminating error under `$ErrorActionPreference = 'Stop'`, and the `finally` block still removes the file and restores the variable. The failure is loud and the run does not continue silently. The source is the helper in the same run, so no outside party writes these lines. | None needed. Optionally limit the pattern to `^\d{1,9}$`. | accepted |
-| S-007 | informational | injection | `ravintio-zero/tests/test-0000171-req-003-timing-total.ps1:35`, `:78` | The suite builds fixture script text with string interpolation and writes it to a GUID-named folder under the temp path. The interpolated values are constants and paths the suite creates, so no external input reaches the generated code. The suite removes the folder and restores the variable in a `finally` block (`:88-89`). | None needed. | accepted |
+| S-008 | medium | path traversal | `ravintio-zero/setup.sh:114-119`, `:122-127` | `prune_bundled_files` reads `find` output one line at a time. A file name that holds a newline splits into two lines. The second part stays relative, because the `${path#"$dest_dir"/}` strip does not match it. `[ -e "$src_dir/$rel" ]` then fails and `rm -f "$path"` deletes that name in the caller's current folder. `setup.sh` never changes folder, so that is usually the project root. A test planted `x`, a newline, then `victim.txt` under `ravintio-plan/assets/`. `setup.sh claude-code` deleted `victim.txt` from the project root. `setup.ps1` kept it. Reach is one file name per planted entry, in the current folder only, because a name cannot hold `/`. The attacker needs to create a file under `.claude/skills/*/assets` or `references`. | Not mitigated. Use `find -print0` with `read -r -d ''`, or `find ... -exec`. Also skip any `path` that does not start with `$dest_dir/`. | open |
+| S-009 | medium | path traversal | `ravintio-zero/setup.sh:97`, `:102-131`; `ravintio-zero/setup.ps1:120-122`, `:131-155` | The prune checks for a link at `{skill}/assets` and `{skill}/references` but not at `.claude/skills/{skill}` itself. If the skill folder is a symlink or junction to a folder outside the project, the prune walks the target. It deletes every file there under `assets/` and `references/` that the skill source lacks. A test linked `.claude/skills/ravintio-plan` to an outside folder holding `assets/user.md` and `references/user.md`, then deleted the manifest. Both scripts deleted both files. The copy step already wrote through such a link before this change (S-002). The delete is new. With a manifest present, the manifest cleanup removes the link first, so nothing outside is touched. | Not mitigated. Skip the prune when `$dest_dir` is a link, as `Remove-RetiredSkills` does at `setup.ps1:168`. | open |
+| S-010 | low | data exposure | `ravintio-zero/setup.sh:117`; `ravintio-zero/setup.ps1:137` | The prune deletes every file in an installed `assets/` or `references/` folder that the skill source lacks, not only the pack copies an older install bundled. It prints no line for a deleted file. A test confirmed that a user note in `ravintio-plan/references/` is deleted. A rerun with a manifest already removes each whole skill folder, so the prune adds deletion only to a rerun without a manifest. REQ-004 keeps every file of the skill's own source folder, and the test confirmed it. | Accepted for review. `.claude/skills/` is a setup-managed folder. Optionally limit the prune to names that exist in `templates/`, `standards/`, or `schemas/`, or print each removal. | open |
+| S-011 | low | path traversal | `ravintio-zero/setup.ps1:134-139`; `ravintio-zero/setup.sh:109-113` | The two scripts differ when a skill root holds a plain file named `assets` or `references`. `setup.ps1` deletes it. `setup.sh` keeps it. A test confirmed both results. REQ-004 asks both scripts to produce the same tree. The difference touches only a name that no install creates. | Not needed for security. Align the two scripts on one rule. | open |
+| S-012 | low | injection | `ravintio-zero/tests/test-0000171-req-006-pack-path-check.sh:41`, `:83` | `check_pack_paths` passes `$files` to `awk` unquoted. A skill file name with a space or a glob character splits into words or expands. The worst result is a wrong pass or fail of the check. The input is the pack's own `skills/` folder, which no outside party writes. | None needed. Optionally use `find -print0` with `xargs -0`. | accepted |
+| S-001 | low | path traversal | `ravintio-zero/setup.ps1:96`, `:99` | `Directory.GetDirectories` and `Directory.GetFiles` with `AllDirectories` enumerate the pack source tree. On Windows PowerShell 5.1 (.NET Framework) the enumeration follows directory junctions. A junction planted inside a skill source folder would copy files from outside the pack into the install. `Copy-Item -Recurse` followed links in the same way, so this is unchanged behaviour. The attacker needs write access to the pack, which already allows editing the hooks that `setup.ps1` installs. `setup.sh` uses `cp -R`, which copies a source link as a link. | None in the helpers. The pack comes from a checkout the user trusts. Optionally skip entries with the `ReparsePoint` attribute. | open |
+| S-002 | low | path traversal | `ravintio-zero/setup.ps1:85`, `:100`; `ravintio-zero/setup.sh:93` | `File.Copy` with overwrite and `cp -R` follow a symlink at the destination. If `.claude/skills/{name}/` or a file in it links outside the project, the write lands there. The old copy code did the same, so this is unchanged. A write path under `.claude/skills` needs prior write access to the project. S-009 adds a delete to the same precondition. | None added. Apply the S-009 link check before the copy too. | open |
+| S-003 | low | path traversal | `ravintio-zero/setup.ps1:97`, `:100` | `Copy-RavintioTree` builds each destination with `$dir.Substring($prefix)` and `$file.Substring($prefix)`. The code assumes the enumerated path starts with `$SourceDir` plus a separator. A relative `$SourceDir` would break that. The one caller, `setup.ps1:116`, passes `Get-ChildItem` `FullName` values, so no break occurs today. | None needed. Keep the caller on absolute paths. | accepted |
+| S-004 | low | injection | `ravintio-zero/tests/helpers/setup-workspace.ps1:79-80` | `Invoke-Setup` appends to whatever file `RAVINTIO_TIMING_FILE` names. A planted path gets a line of digits and `CRLF` appended. The person who sets the variable cannot choose the content. Only a person who already controls the test environment can use it. The runner always overwrites the variable with its own path at `tests/run-tests.ps1:31`. | None needed for CI. Optionally check that the path sits under the temp folder before the append. | open |
+| S-005 | informational | data exposure | `ravintio-zero/tests/run-tests.ps1:28-29` | The timing file lives in the shared temp folder under a random GUID name. On Linux and macOS the mode follows the umask, so it may be world-readable. The contents are millisecond counts, which carry no secret. The runner removes the file at `tests/run-tests.ps1:64`, including after a failed suite. A hard stop of the process leaves the file behind. This matches R-004. | Accepted, as R-004 records. | accepted |
+| S-006 | informational | injection | `ravintio-zero/tests/run-tests.ps1:55-58` | The total keeps only digit lines. The cast `[long]$v` can overflow on a line of 19 or more digits. PowerShell then throws a terminating error, and the `finally` block still removes the file. The source is the helper in the same run. | None needed. Optionally limit the pattern to `^\d{1,9}$`. | accepted |
+| S-007 | informational | injection | `ravintio-zero/tests/test-0000171-req-003-timing-total.ps1:35`, `:78` | The suite builds fixture script text with string interpolation. The interpolated values are constants and paths the suite creates, so no outside input reaches the generated code. The suite cleans up in a `finally` block (`:88-89`). | None needed. | accepted |
+| S-013 | informational | path traversal | `ravintio-zero/setup.ps1:1101-1103`; `ravintio-zero/setup.sh:826-829` | The UTF-8 fix makes Windows PowerShell 5.1 decode `.ravintio-manifest` as UTF-8. Before, a project path with non-ASCII characters decoded wrongly, and the rerun cleanup skipped it. The cleanup now removes those folders, which matches `setup.sh`. Both scripts delete each manifest path recursively and trust the manifest. That trust predates this diff. Setup adds `.claude/` to `.gitignore`, so a clone does not carry a manifest by default. | None in this diff. Consider limiting manifest paths to the skills folder in a later change. | accepted |
 
 ## Checks with no finding
 
+### Prune step and links
+
+- In `setup.sh`, `find` runs without `-L` and lists links with `-type l`. `rm -f` on a link removes the link and never its target. A test confirmed this for a folder link, a file link, and an `assets` folder replaced by a link.
+- In `setup.ps1`, `Remove-BundledFiles` checks `ReparsePoint` on each folder before it walks into it (`setup.ps1:143-146`). It deletes a linked folder with a non-recursive `Directory.Delete`, which removes the link only. The same tests passed under `pwsh` 7.
+- Neither script follows a dangling link. Both remove it when the source lacks it.
+- Each delete compares against the skill's own source folder. A test confirmed every file of `ravintio-orchestrator`, including `assets/.gitkeep` and `references/`, stayed after a prune.
+- Outside S-008 and S-009, each delete stays inside `.claude/skills/{skill}/assets` or `references`.
+
+### Pack path check
+
+- The new Bash suites run no `eval` and no network call. `check_pack_paths` passes data to `awk` as files, never as program text. Fixtures live in a `mktemp -d` folder that an `EXIT` trap removes.
+
 ### Injection and external calls
 
-- The diff adds no `Invoke-Expression`, no `Start-Process`, and no call to an external program. The existing child-host call in the test runner is unchanged in form.
-- `Copy-RavintioItem` and `Copy-RavintioTree` pass paths as typed `[string]` parameters to .NET methods. No path goes through a shell or a wildcard parser. This removes the wildcard expansion that `Copy-Item -Path` applied to names with `[` or `*`. That change narrows the surface.
-- `[System.IO.Path]::Combine` at `setup.ps1:82`, `:85` drops the first argument when the second is rooted. The second argument is `GetFileName` output, so it holds no separator and cannot be rooted. The manifest entries (`$tpl`, `$std`) pass through `Join-Path` first and then `GetFileName`, so a `..\` entry in a manifest copies by leaf name only and lands inside the destination folder.
+- The diff adds no `Invoke-Expression`, no `Start-Process`, and no new call to an external program. `setup.sh` already called `cp`, `find`, and `rm`.
+- `Copy-RavintioItem` and `Copy-RavintioTree` pass paths as typed `[string]` parameters to .NET methods. No path goes through a shell or a wildcard parser.
+- The removal of the SKILL.md path rewrite removes one regex replace over skill text. That narrows the surface.
 
 ### Credentials
 
@@ -49,34 +74,36 @@ The diff adds no dependency, no external process call, and no network call. A sc
 
 ### Dependencies
 
-- No package manager file changes. The helpers use .NET APIs that Windows PowerShell 5.1 ships. The diff adds no module import.
-- `component.yml` changes by one line and adds no executable surface.
+- No package manager file changes. The PowerShell helpers use .NET APIs that Windows PowerShell 5.1 ships. The diff adds no module import.
+- `component.yml` and `docs/` changes add no executable surface.
 
 ### Data exposure
 
 - The `[timing]` output goes to the host and not into captured data. It prints millisecond counts and a case count.
-- The install tree stays the same as before, as `test-0000171-req-002-install-tree-parity.ps1` checks. No file gains a wider scope than `Copy-Item` gave it.
+- An install now writes 24 skill files in place of 544, and no pack copy leaves `ravintio-zero/`.
 
 ## Risk-register cross-reference
 
 | ID | Risk | Result | Evidence |
 |----|------|--------|----------|
-| R-001 | The .NET copy differs from `Copy-Item` on dot files or an existing target folder | mitigated | The tree parity suite compares installed files. Review of `setup.ps1:91-102` found no gap. The one difference is the link-following note in S-001. |
-| R-002 | The CI total misses the 105 s target | open | An operational risk with no security effect. The P3 CI logs hold the totals. |
-| R-003 | Windows PowerShell 5.1 lacks an API the copy uses | mitigated | Every call is a .NET Framework 4.5 API. The review found none outside that set. |
+| R-001 | The .NET copy differs from `Copy-Item` on dot files or an existing target folder | mitigated | Both scripts install the same tree, dot files included. The REQ-002 and REQ-004 suites check it under both hosts. |
+| R-002 | The CI total misses the 105 s target | mitigated | CI run `40182095593` totals 98.2 s, under the target. |
+| R-003 | Windows PowerShell 5.1 lacks an API the copy uses | mitigated | Every call is a .NET Framework 4.5 API. CI run `40182095593` passed the 5.1 job. |
 | R-004 | The timing file stays in the temp folder after a run | mitigated | `tests/run-tests.ps1:64` removes it in a `finally` block. See S-005 for the hard-stop case. |
-| A-001 | Cmdlet overhead per file is at least as high on Windows as on macOS | open | A performance assumption with no security effect. |
+| A-001 | Cmdlet overhead per file is at least as high on Windows as on macOS | closed | The CI total met the target. |
 
-New risks this review adds to the register: S-001, S-002, and S-004 as low security risks. Each is open and needs no action before merge.
+New risks this review adds to the register: S-008 and S-009 as medium security risks, and S-010 and S-011 as low ones. Each is open.
 
 ## Top actions
 
-1. Skip reparse points in `Copy-RavintioTree` if the pack could ever hold links (S-001). This matches the guard at `setup.ps1:265`.
-2. Check that `RAVINTIO_TIMING_FILE` sits under the temp folder before the append (S-004).
-3. Keep both callers of `Copy-RavintioTree` on absolute paths (S-003).
+1. Make `prune_bundled_files` safe for any file name: `find -print0` with `read -r -d ''`, and a `$dest_dir/` prefix check before `rm` (S-008).
+2. Skip the prune in both scripts when `.claude/skills/{skill}` is a link or junction (S-009). Apply the same check before the copy (S-002).
+3. Align `setup.sh` and `setup.ps1` on a plain file named `assets` or `references` (S-011).
+4. Limit the prune to pack file names, or print each removal (S-010).
 
 ## Counts
 
 - Critical: 0
 - High: 0
+- Medium: 2 (both open)
 - Unmitigated Critical or High: 0
