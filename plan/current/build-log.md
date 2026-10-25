@@ -79,3 +79,9 @@ P1 Plan: Complete: three requirements, three ADRs, story map, execution plan, sc
 
 - In progress: track A REQ-002 System.IO copy in setup.ps1 (2026-10-25T05:30:00Z)
 - In progress: track B REQ-003 timing total in run-tests.ps1 (2026-10-25T05:30:00Z)
+- Done: track A REQ-002 System.IO copy in setup.ps1, commits 9a00289 and 8e6c018 (2026-10-25T05:35:07Z)
+- Done: track B REQ-003 timing total in run-tests.ps1, commits 5c0d3f4 and c0acc36 (2026-10-25T05:35:07Z)
+- REQ-001 AC-2 local profile on macOS `pwsh` 7, five runs each: `Copy-RavintioSkills` fell from about 474 ms to 101 ms. The whole run fell from about 966 ms to 571 ms. (2026-10-25T05:35:07Z)
+- Full suite under `env -i`: one real failure. A new `setup.ps1` comment used the retired word in a .NET version name, so the 0000042 wording tests failed. Reworded it, and both suites pass. (2026-10-25T05:35:07Z)
+- Done: living docs (architecture overview, decisions index, registry and graph stamps) and component manifest (2026-10-25T05:35:07Z)
+P2 Implement: Complete: three requirements, tests green, docs updated. REQ-001 AC-1 waits for the step PR's CI. Autonomous run, no gate stop. (2026-10-25T05:35:07Z)
