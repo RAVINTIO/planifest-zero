@@ -21,13 +21,17 @@ The build report at ship lists metrics and a few notes, but no step reviews what
 Add a blameless retrospective at two points:
 
 - **Run:** at ship, after the build report. Review what helped, what slowed the run, and what to try next. Read the build log, the self-corrections, the stops, and any postmortems from backlog entry 0000177.
-- **Roadmap:** at R-E Delivery, across every step. Compare the charted plan with what shipped, and look for friction that repeated across steps.
+- **Roadmap, after delivery:** a post-roadmap retrospective across every step, once the last step has merged. It runs before the roadmap pull request to `main`, so the record ships with the roadmap. It covers these questions:
+  - How did the charted steps, bumps, and versions compare with what shipped?
+  - Which friction repeated across steps?
+  - What happened at each stop, and how long did each step take?
+  - Which roadmap tooling gaps showed up, such as driver bugs?
 
 Each improvement becomes a backlog entry or a repo instruction, with its source retrospective named. Store retrospectives outside `plan/current/`, for example in `plan/retrospectives/`, so a later run can read them at P0.
 
 ## Wanted outcome
 
-Every shipped run and every delivered roadmap has a retrospective record. Each record names at least one thing to keep and one to change, and each change links to a filed action. P0 discovery reads the latest retrospectives.
+Every shipped run has a retrospective record. Every delivered roadmap has a post-roadmap retrospective in its pull request to `main`. Each record names at least one thing to keep and one to change, and each change links to a filed action. P0 discovery and roadmap charting read the latest retrospectives. Backlog 0000186 turns past stops into chart-time decisions.
 
 ## Why Deferred
 

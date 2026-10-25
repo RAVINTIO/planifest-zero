@@ -51,6 +51,7 @@ The driver also showed three bugs during roadmap 0000168:
   - **Current step:** the phase, progress within it (units done out of planned, and criteria verified out of total once P3 starts), and what comes next. Add highlights: what the step changes for the user, and any risk, such as criteria verified only by text search.
 - Report at once, without waiting for the next 5-minute report, when the build log gains a phase `Complete:`, a `Blocked:`, or a `Resolved:` line.
 - In Claude Code, a read-only background monitor does this. It checks every 30 seconds and prints one line per event and one heartbeat line every 5 minutes. A monitor expires after 30 minutes, so the supervisor starts a new one each time until the driver exits.
+- When the monitor switches to a new build log, report the `Complete:` lines already in it. During roadmap 0000168, the monitor counted them as seen and missed step 6's P0 and P1 ends.
 - Make each heartbeat show whether the driver process is still running, so a stopped driver never looks like a quiet one.
 - Flag a stale build log. If the child keeps committing but its build log hasn't changed for 15 minutes, say so in the report.
 - Give the supervisor a safe place to file backlog entries while a step runs. One option is to hold them in a queue outside the working tree and commit them to the roadmap branch after the step merges. Allocate each id against every branch, so two sessions can't take the same id.
