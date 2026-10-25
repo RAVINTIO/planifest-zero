@@ -8,7 +8,7 @@ status: "active"
 **Goal:** Clear every open backlog entry from 2026-10-25, one feature release per step. The evaluation suite split from 0000100 stays in the backlog as 0000174.
 **Branch:** roadmap/0000168-backlog-clearance
 **Status:** active
-**Position:** 6
+**Position:** 7
 
 The human charted this roadmap and confirmed it on 2026-10-25. The confirmation sharpened backlog entries 0000159, 0000110, and 0000100 with a **Wanted outcome** section each.
 
@@ -53,4 +53,4 @@ On 2026-10-25, during step 4, the human added step 6 to explain strict mode and 
 | 3 | 0000171-faster-setup-ps1-tests | 0000159 | minor | 0.16.0 | merged |
 | 4 | 0000172-subagent-acceleration | 0000110 | minor | 0.17.0 | merged |
 | 5 | 0000173-workflow-governance-gates | 0000100 | minor | 0.18.0 | merged |
-| 6 | 0000185-explain-strict-mode | 0000184 | patch | | pending |
+| 6 | 0000185-explain-strict-mode | 0000184 | patch | 0.18.1 | merged |

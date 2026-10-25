@@ -1,6 +1,6 @@
 ---
-version: "0.18.0"
-feature: "0000173-workflow-governance-gates"
+version: "0.18.1"
+feature: "0000185-explain-strict-mode"
 updated: "25 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "25 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.18.0` |
-| Last feature | `0000173-workflow-governance-gates` |
+| Version | `0.18.1` |
+| Last feature | `0000185-explain-strict-mode` |
 | Updated | `25 Oct 2026` |
 
 ## What this is

@@ -45,7 +45,7 @@ The sentinel is deleted last during ship, after the archive is confirmed complet
 
 ## Strict Orchestrator Mode
 
-By default, `check-orchestrator-presence` is advisory. It injects a reminder banner but never blocks. Enable **strict mode** for stronger enforcement:
+Strict mode makes every session prove that it loaded the orchestrator. By default, `check-orchestrator-presence` is advisory: it prints a reminder banner and never blocks. Turn strict mode on with the `--strict-orchestrator` flag:
 
 ```bash
 # macOS / Linux
@@ -57,9 +57,24 @@ By default, `check-orchestrator-presence` is advisory. It injects a reminder ban
 .\ravintio-zero\setup.ps1 claude-code --strict-orchestrator
 ```
 
-This writes `plan/.orchestrator-strict`. When present, the hook injects a **hard-block banner** on every new session until the orchestrator loads and writes a session acknowledgement to `plan/.orchestrator-ack`. Subsequent prompts in the same session pass silently. The ack file is deleted during ship so each new pipeline starts clean.
+Setup then writes `plan/.orchestrator-strict`.
 
-→ [Strict mode internals, ack file lifecycle, and session_id protocol](pipeline-reference.md#strict-orchestrator-mode)
+### Strict mode and the session acknowledgement
+
+The hook acts only while a pipeline is active, that is while `plan/.orchestrator-active` exists. Proof then works as a handshake:
+
+1. On each prompt, the `check-orchestrator-presence` hook reads the session id that Claude Code passes to it.
+2. If `plan/.orchestrator-ack` is missing or holds a different id, the hook prints a `RAVINTIO STRICT MODE` banner. The banner names the session id and asks the agent to load the orchestrator.
+3. When the orchestrator loads, it writes that id to `plan/.orchestrator-ack`. The write acknowledges the banner, which is where the file gets its name.
+4. While the file holds the current session's id, the hook stays quiet.
+
+`plan/.orchestrator-ack` holds one line: the id of the session that last loaded the orchestrator. If the hook gets no session id, the banner asks for the current timestamp instead. The file is not a log or a lock. A new session finds an old id there and sees the banner again until its orchestrator loads.
+
+Ship deletes the file with the other sentinels, before it raises the pull request. You never write it by hand.
+
+In a roadmap run, each step session writes its own id. The session that started the driver then sees the banner on every prompt. Leave the file alone, because writing your own id replaces the step session's id. Backlog entry 0000182 covers this case.
+
+→ [Strict mode internals and the session_id protocol](pipeline-reference.md#strict-orchestrator-mode)
 
 ---
 

@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000173-workflow-governance-gates
+Last updated: 0000185-explain-strict-mode
 
 ---
 
@@ -18,6 +18,11 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000185: explain-strict-mode
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Rewrite the existing strict mode section | accepted | The run rewrites `## Strict Orchestrator Mode` in `project-operations.md` in place, rather than adding a second section. The pack gains no dependency. |
 ### Feature 0000173: workflow-governance-gates
 
 | ADR | Title | Status | Summary |

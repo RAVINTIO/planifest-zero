@@ -93,7 +93,7 @@ One optional flag:
 
 | Flag | Effect |
 |------|--------|
-| `--strict-orchestrator` | Writes `plan/.orchestrator-strict`, so the orchestrator must acknowledge each new session before work proceeds. |
+| `--strict-orchestrator` | Writes `plan/.orchestrator-strict`, so the orchestrator must acknowledge each new session before work proceeds. See [strict mode](ravintio-zero/project-operations.md#strict-orchestrator-mode). |
 
 ---
 
