@@ -15,7 +15,7 @@ This project uses RAVINTIO Zero, a confirmed-design pipeline. These rules are no
 ## Operational Directives
 
 - **Be succinct:** Minimal prose. Format answers in markdown with brevity.
-- **Commit messages and PR descriptions:** Never add `Co-Authored-By`, `Generated with [Claude Code]`, `Claude-Session:` lines, or any AI attribution. The `commit-msg` hook is **blocking**: commits with AI attribution, affirmatory language, or >72-char subjects will be rejected. Follow `ravintio-zero/standards/commit-standards.md`.
+- **Commit messages and PR descriptions:** Never add `Co-Authored-By`, `Generated with [Claude Code]`, `Claude-Session:`, or any AI attribution. The `commit-msg` hook is **blocking**: it rejects AI attribution, affirmatory language, and >72-char subjects. Follow `ravintio-zero/standards/commit-standards.md`.
 - **Do not invent APIs:** Only call endpoints that explicitly exist in the provided OpenAPI interfaces.
 
 ## Hook Enforcement
@@ -25,7 +25,7 @@ RAVINTIO installs these deterministic enforcement hooks via `setup.sh`:
 - **gate-write** (PreToolUse: Write, Edit): Gates every in-project path that is not always permitted. The write needs `plan/current/design.md` AND a declared component match. `plan/current/` also needs `plan/.orchestrator-active`. `plan/` (with `plan/backlog/` and `plan/roadmap/`), `docs/`, and permitted basenames pass. Targets outside the project pass.
 - **auto-trigger-orchestrator** (UserPromptSubmit): At the start of every session in a RAVINTIO project (`ravintio-zero/` present and `plan/.orchestrator-active` absent), automatically loads the `ravintio-orchestrator` skill before the first prompt is processed. This is the primary trigger mechanism for Claude Code.
 - **check-design** (UserPromptSubmit): Injects active component scope from `design.md` as additional context.
-- **commit-msg** (git hook): Blocks commits with AI attribution, affirmatory language, or >72-char subjects. Exit 1 on violation; use `git commit --no-verify` to bypass intentionally.
+- **commit-msg** (git hook): Blocks commits that break `commit-standards.md`. Exit 1 on violation; use `git commit --no-verify` to bypass intentionally.
 - **ratchet-check** (PreToolUse: Write, Edit): While a loop is active (a `plan/current/loop-state-*.md` with `status: active`), blocks writes that remove acceptance-criteria or in-scope lines from `plan/current/` artifacts. Strengthening passes; intentional weakening needs a human-written `plan/current/.ratchet-approve` line (single-use). Agents must never write that marker.
 
 Enforcement failures exit 2 and surface a human-readable message. All unexpected errors exit 0; hooks never block your session unexpectedly.
