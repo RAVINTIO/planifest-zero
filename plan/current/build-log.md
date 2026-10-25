@@ -49,3 +49,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock complete. All four scenario paths captured. The human accepted each of the four drafts by name with "Accept all".
 - Run mode: autonomous (2026-10-25T21:53:43Z)
 - Run speed: fast (2026-10-25T21:53:43Z)
+- P0 exchange (setup): Q: (human, unprompted) / A: Stop and ask before setup runs, even in autonomous mode.
