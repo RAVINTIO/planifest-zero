@@ -84,3 +84,4 @@ P1 Plan: Complete: six requirements, four ADRs, execution plan, scope, risk regi
 - In progress: track A REQ-002, REQ-001 attribution check and ban text (2026-10-25T03:30:39Z)
 - In progress: track B REQ-004 setup attribution setting (2026-10-25T03:30:39Z)
 - In progress: track C REQ-005 release tag script (2026-10-25T03:30:39Z)
+- Done: track C REQ-005 release tag script, suite 24 of 24 under Bash 3.2 and 5 (2026-10-25T03:32:28Z)
