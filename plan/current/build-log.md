@@ -116,3 +116,17 @@ P2 Implement: Complete: three requirements, tests green, docs updated. Autonomou
 - Backlog entry 0000182, committed from outside the run, named the other product as "Framework" alone. Commit e410655 rewords it. (2026-10-25T12:16:17Z)
 - Full suite under `env -i`: 150 feature and 19 regression suites pass. `test-0000037-req-008-non-array-hook-events.ps1` hit a .NET culture error at `pwsh` start-up once, then passed 3 runs out of 3. 0 self-correction cycles. (2026-10-25T12:16:17Z)
 P3 Validate and Accept: Complete: checks green, security low, evidence in acceptance-evidence.md. Autonomous run, no gate stop. (2026-10-25T12:16:17Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T12:16:28Z` |
+| End | `{{filled at Step 3}}` |
+| Wall clock | `{{filled at Step 3}}` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | Roadmap step at `standard` speed. Steps 1 to 6 run as written, then R-D Advance. The steps are sequential, so no subagent applies. |
