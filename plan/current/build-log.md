@@ -89,3 +89,4 @@ P1 Plan: Complete: two requirements, one ADR, story map, execution plan, scope, 
 - In progress: REQ-001 strict mode section (2026-10-25T13:03:32Z)
 - Done: REQ-001 strict mode section, red then green, 3 of 3 checks (2026-10-25T13:04:13Z)
 - In progress: REQ-002 strict mode links (2026-10-25T13:04:13Z)
+- Done: REQ-002 strict mode links, red then green, 3 of 3 checks (2026-10-25T13:04:37Z)
