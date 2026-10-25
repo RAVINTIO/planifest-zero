@@ -174,10 +174,24 @@ cat > "$CLEAN/requirements/req-001-demo.md" <<'MD'
 # Requirement: REQ-001 - Demo
 **Source:** US-001
 ## Acceptance Criteria
-- [ ] one
-- [ ] two
+- [ ] AC-1: one
+  - Given a fixture
+  - When the check runs
+  - Then it is clean
+- [ ] AC-2: two
+  - Given a fixture
+  - When the check runs
+  - Then it is clean
+  - And nothing is flagged
 ## Dependencies
 - None. See ADR-001.
+MD
+cat > "$CLEAN/story-map.md" <<'MD'
+# Story Map
+## Backbone
+| Activity | Step | Story | Requirement |
+|----------|------|-------|-------------|
+| Demo | Run the demo | US-001 | REQ-001 |
 MD
 cat > "$CLEAN/adr/ADR-001-demo.md" <<'MD'
 # ADR-001 - Demo
