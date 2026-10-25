@@ -127,3 +127,19 @@ P3 Validate: Complete: 18 criteria verified or left to CI for PowerShell, no cri
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Notes | Ship runs in sequence by design. Roadmap step, so R-D Advance replaces Steps 7 and 9. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total agents spawned | `9` (P0 0, P1 3, P2 4, P3 2, P4 0) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P1, P2, P3) |
+| Primary tier agent calls | `8` (sonnet) |
+| Cheaper tier agent calls | `1` (haiku, P1 scope, risk, and glossary) |
+| Self-corrections | `2` (P2 1, P3 1) |
+| Deviations recorded | `4` (P2 3, P3 1) |
+| Phases skipped | none |
