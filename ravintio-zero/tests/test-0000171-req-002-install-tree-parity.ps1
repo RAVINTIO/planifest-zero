@@ -1,8 +1,9 @@
 # Tests for feature 0000171-faster-setup-ps1-tests, req-002, in setup.ps1
-# under whichever host runs this file. Setup installs the same skill tree and
-# hook modules as the bundle rules name, a rerun overwrites a changed file,
-# the output keeps one "+ {skill}/SKILL.md" line per skill in source order,
-# and the copy code uses System.IO calls in place of Copy-Item (ADR-002).
+# under whichever host runs this file. Setup installs each skill's own source
+# folder byte for byte (REQ-004) and the hook modules. A rerun overwrites a
+# changed file. The output keeps one "+ {skill}/SKILL.md" line per skill in
+# source order, and the copy code uses System.IO calls in place of Copy-Item
+# (ADR-002).
 # Keep this file ASCII.
 
 . (Join-Path $PSScriptRoot 'helpers\assert.ps1')
@@ -11,24 +12,6 @@
 function Get-FileBase64 {
     param([string]$Path)
     return [Convert]::ToBase64String([System.IO.File]::ReadAllBytes($Path))
-}
-
-# SKILL.md text with a leading BOM removed, so the two hosts compare equal.
-function Get-SkillText {
-    param([string]$Path)
-    $text = [System.IO.File]::ReadAllText($Path)
-    return $text.TrimStart([char]0xFEFF)
-}
-
-# The rewrite setup applies to an installed SKILL.md.
-function Get-RewrittenSkillText {
-    param([string]$Path)
-    $text = Get-SkillText $Path
-    $text = $text -replace '\.\./templates/', './assets/templates/'
-    $text = $text -replace '\.\./standards/reference/', './references/reference/'
-    $text = $text -replace '\.\./standards/', './references/'
-    $text = $text -replace '\.\./schemas/', './assets/schemas/'
-    return $text
 }
 
 function Get-RelativePath {
@@ -49,8 +32,9 @@ function Add-ExpectedTree {
     }
 }
 
-# Computes the files and folders the bundle rules name for every skill, keyed
-# by path relative to .claude/skills. Returns the maps and the skill order.
+# Computes the files and folders each skill's own source folder holds,
+# keyed by path relative to .claude/skills (REQ-004). Returns the maps and
+# the skill order.
 function Get-ExpectedSkillTree {
     param([string]$Zero)
     $files = @{}
@@ -59,54 +43,9 @@ function Get-ExpectedSkillTree {
     $skillsSrc = Join-Path $Zero 'skills'
     foreach ($skill in (Get-ChildItem -Path $skillsSrc -Directory)) {
         $name = $skill.Name
-        $skillMd = Join-Path $skill.FullName 'SKILL.md'
-        if (-not [System.IO.File]::Exists($skillMd)) { continue }
+        if (-not [System.IO.File]::Exists((Join-Path $skill.FullName 'SKILL.md'))) { continue }
         $skills += $name
-        $dirs[$name] = $true
-        $files["$name/SKILL.md"] = $skillMd
-        foreach ($opt in @('scripts', 'assets', 'references')) {
-            $optSrc = Join-Path $skill.FullName $opt
-            if ([System.IO.Directory]::Exists($optSrc)) {
-                Add-ExpectedTree $files $dirs $optSrc "$name/$opt"
-            }
-        }
-        $raw = [System.IO.File]::ReadAllText($skillMd)
-        $tpls = @()
-        $stds = @()
-        if ($raw -match '(?m)^bundle_templates:\s*\[([^\]]*)\]') {
-            $tpls = @($Matches[1].Trim() -split '\s*,\s*' | Where-Object { $_ })
-        }
-        if ($raw -match '(?m)^bundle_standards:\s*\[([^\]]*)\]') {
-            $stds = @($Matches[1].Trim() -split '\s*,\s*' | Where-Object { $_ })
-        }
-        $tplSrc = Join-Path $Zero 'templates'
-        $dirs["$name/assets"] = $true
-        $dirs["$name/assets/templates"] = $true
-        if ($tpls.Count -gt 0) {
-            foreach ($t in $tpls) {
-                $p = Join-Path $tplSrc $t
-                if ([System.IO.File]::Exists($p)) { $files["$name/assets/templates/" + [System.IO.Path]::GetFileName($p)] = $p }
-                elseif ([System.IO.Directory]::Exists($p)) { $dirs["$name/assets/templates/" + [System.IO.Path]::GetFileName($p)] = $true }
-            }
-        }
-        else {
-            Add-ExpectedTree $files $dirs $tplSrc "$name/assets/templates"
-        }
-        Add-ExpectedTree $files $dirs (Join-Path $Zero 'schemas') "$name/assets/schemas"
-        $stdSrc = Join-Path $Zero 'standards'
-        $dirs["$name/references"] = $true
-        if ($stds.Count -gt 0) {
-            foreach ($s in $stds) {
-                $p = Join-Path $stdSrc $s
-                if ([System.IO.File]::Exists($p)) { $files["$name/references/" + [System.IO.Path]::GetFileName($p)] = $p }
-                elseif ([System.IO.Directory]::Exists($p)) { $dirs["$name/references/" + [System.IO.Path]::GetFileName($p)] = $true }
-            }
-        }
-        else {
-            foreach ($f in [System.IO.Directory]::GetFiles($stdSrc)) {
-                $files["$name/references/" + [System.IO.Path]::GetFileName($f)] = $f
-            }
-        }
+        Add-ExpectedTree $files $dirs $skill.FullName $name
     }
     return [PSCustomObject]@{ Files = $files; Dirs = $dirs; Skills = $skills }
 }
@@ -121,7 +60,7 @@ function Assert-SkillTree {
     $actualDirs = @{}
     foreach ($f in [System.IO.Directory]::GetFiles($root, '*', [System.IO.SearchOption]::AllDirectories)) {
         $rel = Get-RelativePath $root $f
-        # Setup writes the manifest at the top level, outside the bundle rules.
+        # Setup writes the manifest at the top level, outside any skill folder.
         if ($rel -eq '.ravintio-manifest') { continue }
         $actualFiles[$rel] = $f
     }
@@ -139,13 +78,10 @@ function Assert-SkillTree {
     $differ = @()
     foreach ($rel in $expected.Files.Keys) {
         if (-not $actualFiles.ContainsKey($rel)) { continue }
-        if ($rel -like '*/SKILL.md' -and ($rel.IndexOf('/') -eq $rel.LastIndexOf('/'))) {
-            if ((Get-RewrittenSkillText $expected.Files[$rel]) -cne (Get-SkillText $actualFiles[$rel])) { $differ += $rel }
-        }
-        elseif ((Get-FileBase64 $expected.Files[$rel]) -cne (Get-FileBase64 $actualFiles[$rel])) { $differ += $rel }
+        if ((Get-FileBase64 $expected.Files[$rel]) -cne (Get-FileBase64 $actualFiles[$rel])) { $differ += $rel }
     }
     Assert-Equal '' ((@($differ) | Sort-Object) -join ', ') "${Label}: every file matches its source"
-    Assert-True ($expected.Files.Count -gt 100) "${Label}: the expected tree holds more than 100 files"
+    Assert-True ($expected.Files.Count -gt 12) "${Label}: the expected tree holds every skill's files"
 }
 
 # Returns the text of one function in a script, up to the next function line.
@@ -161,18 +97,18 @@ function Get-FunctionBody {
 try {
 
 Write-Host ""
-Write-Host "=== req-002 AC-1: a fresh install matches the bundle rules ==="
+Write-Host "=== req-002 AC-1: a fresh install matches the skill source folders ==="
 $ws = New-SetupWorkspace
 $run = Invoke-Setup $ws @('claude-code')
 Assert-Equal 0 $run.Code "AC-1: setup.ps1 exits 0"
 Assert-SkillTree $ws 'AC-1'
 
 Write-Host ""
-Write-Host "=== req-002 AC-2: a rerun overwrites a changed template ==="
-$template = Get-ChildItem -Path (Join-Path $ws '.claude/skills') -Recurse -File |
-    Where-Object { $_.FullName -match '[\\/]assets[\\/]templates[\\/]' } | Select-Object -First 1
-Assert-True ($null -ne $template) "AC-2: an installed template exists"
-[System.IO.File]::WriteAllText($template.FullName, 'changed by hand')
+Write-Host "=== req-002 AC-2: a rerun overwrites a changed skill file ==="
+$changed = Get-ChildItem -Path (Join-Path $ws '.claude/skills') -Recurse -File |
+    Where-Object { $_.FullName -match '[\\/]references[\\/]orchestrator-[^\\/]+\.md$' } | Select-Object -First 1
+Assert-True ($null -ne $changed) "AC-2: an installed skill reference file exists"
+[System.IO.File]::WriteAllText($changed.FullName, 'changed by hand')
 $run = Invoke-Setup $ws @('claude-code')
 Assert-Equal 0 $run.Code "AC-2: the rerun exits 0"
 Assert-SkillTree $ws 'AC-2'
