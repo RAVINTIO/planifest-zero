@@ -91,3 +91,5 @@ P1 Plan: Complete: six requirements, four ADRs, execution plan, scope, risk regi
 - Done: track B REQ-004 setup attribution setting. New Bash suite 18 of 18. The PowerShell suite did not run locally, because `pwsh` is absent. (2026-10-25T03:36:57Z)
 - Deviation: the 0000034 byte-compare against v0.4.0 now drops the `attribution` key, in the feature and regression copies. v0.4.0 predates the key. (2026-10-25T03:36:57Z)
 - Deviation: `test-0000037-req-003` pinned an empty flags array in `plan/state/claude-code.md`. Roadmap activation (`38fe055`) recorded the human's `--strict-orchestrator`, so the suite failed on the roadmap base too. The suite now checks the array's shape and runs setup in its copy with the tracked flags. (2026-10-25T03:38:07Z)
+- Done: track D REQ-003, REQ-006 ship and CI (2026-10-25T03:41:13Z)
+- Deviation: track A's ban text names the footer line in the ship skill, so `test-0000025-req-001` now fails only on a line that starts with the footer. Three more suites (0000037-req-005, 0000042-req-011, 0000043-req-005) and 0000151-req-002 follow the moved ship text. No regression suite changed in track D. (2026-10-25T03:41:13Z)
