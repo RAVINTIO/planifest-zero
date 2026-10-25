@@ -88,3 +88,5 @@ P1 Plan: Complete: six requirements, four ADRs, execution plan, scope, risk regi
 - Done: track A REQ-002, REQ-001 attribution check and ban text (2026-10-25T03:33:51Z)
 - Self-correction: the first boot-text edit put `CLAUDE.md` plus orchestrator `SKILL.md` 44 bytes over the 0000151 cap of 35,484. Track A shortened two boot bullets, and the measured total is 35,473. (2026-10-25T03:33:51Z)
 - In progress: track D REQ-003, REQ-006 ship and CI (2026-10-25T03:33:56Z). Started beside track B, because their files do not overlap.
+- Done: track B REQ-004 setup attribution setting. New Bash suite 18 of 18. The PowerShell suite did not run locally, because `pwsh` is absent. (2026-10-25T03:36:57Z)
+- Deviation: the 0000034 byte-compare against v0.4.0 now drops the `attribution` key, in the feature and regression copies. v0.4.0 predates the key. (2026-10-25T03:36:57Z)
