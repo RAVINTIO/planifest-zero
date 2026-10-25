@@ -1,9 +1,9 @@
 ---
-title: "Backlog Entry: 0000183 - allocate backlog ids across every ref"
+title: "Backlog Entry: 0000183 - reserve ids from a counter file"
 summary: "A discovered-but-out-of-scope item deferred for pickup at a future discovery run."
 status: "open"
 ---
-# Backlog Entry: 0000183 - allocate backlog ids across every ref
+# Backlog Entry: 0000183 - reserve ids from a counter file
 
 **Source feature:** none (human request)
 **Source phase:** none (human request)
@@ -26,13 +26,28 @@ On 2026-10-25, a RAVINTIO Framework session and the 0000172 step session both fi
 
 ## Suggested Action
 
-Allocate the next id as one more than the highest id found anywhere in the target repo. That covers:
+Keep the next free id in a counter file, and reserve ids from it before any entry is written. The human on the loop chose this design over scanning every ref, because a counter needs no search.
 
-- `plan/backlog/`, `plan/_archive/`, `plan/changelog/`, and `plan/roadmap/` in the working tree
-- the same folders on every local and remote branch, after a `git fetch`
-- every `plan/backlog/{id}-*/entry.md` path that git history ever added
+- `plan/backlog/.next-id` holds one seven-digit number. Seed it with one above the highest id in use when the feature ships.
+- One script, `ravintio-zero/scripts/reserve-id.mjs`, reserves ids. To reserve `qty` ids, it:
+  1. takes an exclusive lock beside the file
+  2. reads the next free id, `n`
+  3. writes `n + qty`
+  4. releases the lock
+  5. returns ids `n` to `n + qty - 1`
+- Backlog entries, feature ids, and roadmap ids all reserve from this counter.
+- `ravintio-file-backlog`, the orchestrator, and roadmap charting call the script rather than scanning folders.
+- A copy from another repo reserves a new local id and names its source id in the text. Each repo keeps its own sequence.
+- If two branches reserve the same ids, git shows a merge conflict on `.next-id`. Keep the higher value and renumber the entries on the branch that merges second. This answer is pre-approved.
+- Update the backlog and roadmap templates, which describe the "highest ever allocated + 1" rule.
 
-Put this in one script that both repos ship, and use it in `ravintio-file-backlog` and any cross-repo copy. A copied entry always gets a new id in the target repo and names its source id in the text. Add a test that plants a higher id on a second branch and in deleted history, and checks that the script picks one above both.
+## Wanted outcome
+
+Every new id comes from `plan/backlog/.next-id`. Tests check these conditions:
+
+- Reserving 4 ids from `0000188` returns `0000188` to `0000191` and leaves `0000192` in the file.
+- Two reservations started at once return ids that don't overlap.
+- A copied entry gets a local id and names its source id.
 
 ## Why Deferred
 

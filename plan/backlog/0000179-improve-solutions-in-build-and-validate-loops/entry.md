@@ -25,6 +25,10 @@ The human on the loop raised this during RAVINTIO Framework feature 0000039-ravi
 
 Add a bounded improvement loop to implementation and validation. After GREEN, a fresh-context reviewer asks whether a simpler or cleaner solution meets the same tests. The implementer applies the changes worth making, and the suite runs again. Cap it at a small number of cycles, such as 2, and stop early when the reviewer finds nothing worth changing. Record each cycle in the build log so the run can measure the gain.
 
+## Wanted outcome
+
+After GREEN, the build log records up to 2 improvement cycles per requirement. Each cycle names the reviewer's finding and the change made, and the suite passes after it. A cycle stops early when the reviewer finds nothing worth changing.
+
 ## Why Deferred
 
 The human on the loop asked for it as a backlog entry. It changes how the implement, refactor, and validate skills loop, so it needs its own design and loop caps.
