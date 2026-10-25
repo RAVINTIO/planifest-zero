@@ -85,3 +85,18 @@ P1 Plan: Complete: three requirements, three ADRs, story map, execution plan, sc
 - Full suite under `env -i`: one real failure. A new `setup.ps1` comment used the retired word in a .NET version name, so the 0000042 wording tests failed. Reworded it, and both suites pass. (2026-10-25T05:35:07Z)
 - Done: living docs (architecture overview, decisions index, registry and graph stamps) and component manifest (2026-10-25T05:35:07Z)
 P2 Implement: Complete: three requirements, tests green, docs updated. REQ-001 AC-1 waits for the step PR's CI. Autonomous run, no gate stop. (2026-10-25T05:35:07Z)
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T05:50:00Z` |
+| Model tier | primary orchestrator, cheaper verification and security agents |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | `2` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Batch 1: execution verification and security review run in parallel. The orchestrator runs the full test suite meanwhile. |
+
+- In progress: P3 execution verification (2026-10-25T05:50:00Z)
+- In progress: P3 security review (2026-10-25T05:50:00Z)
