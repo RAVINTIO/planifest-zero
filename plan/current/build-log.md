@@ -66,3 +66,4 @@ P0 Discovery: Complete: design self-confirmed for roadmap step 5. (2026-10-25T12
 | Notes | Batch 1: scope, risk register, and glossary in one cheaper agent. The orchestrator writes the story map, four requirements, ADRs, and execution plan meanwhile. The requirements share one marker design, so one writer keeps them in step. |
 
 - In progress: P1 scope, risk register, and glossary (2026-10-25T12:30:23Z)
+- Done: P1 scope, risk register, and glossary, commit 8c98045 (2026-10-25T12:31:23Z)
