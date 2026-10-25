@@ -132,3 +132,10 @@ P3 Validate and Accept: Complete: checks green, security low, evidence in accept
 | Self-corrections | `1` (P2, `setup.ps1` comment wording) |
 | Deviations recorded | `0` |
 | Phases skipped | none |
+
+### R-D Advance (P4 Ship)
+
+- PR #32 raised against `roadmap/0000168-backlog-clearance`. (2026-10-25T05:48:49Z)
+- CI run `40166556373`: `windows-powershell (powershell)` failed. `test-0000171-req-002-install-tree-parity.ps1` found 6 SKILL.md files that differ from source. `setup.ps1:118` reads SKILL.md with no `-Encoding`, so Windows PowerShell 5.1 decodes UTF-8 as ANSI. The 6 files are the ones that hold non-ASCII characters. The bug predates this run. (2026-10-25T05:48:49Z)
+- REQ-001 AC-1 failed: the `setup.ps1` totals are 85002 ms (5.1) and 73486 ms (7) over 53 cases each, 158.5 s in all against a 105 s target. Per case, setup fell from about 1.89 s to about 1.50 s. (2026-10-25T05:48:49Z)
+Blocked: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-25T05:48:49Z)
