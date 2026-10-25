@@ -122,11 +122,28 @@ P3 Validate and Accept: Complete: checks green, security low, evidence in accept
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T12:16:28Z` |
-| End | `{{filled at Step 3}}` |
-| Wall clock | `{{filled at Step 3}}` |
+| End | `2026-10-25T12:16:53Z` |
+| Wall clock | `0 min` |
 | Model tier | primary |
 | Skills loaded | ravintio-ship |
 | Agents spawned | `0` |
 | MCP calls | `0` |
 | Parallel task batches | `0` |
 | Notes | Roadmap step at `standard` speed. Steps 1 to 6 run as written, then R-D Advance. The steps are sequential, so no subagent applies. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `41 min` (P0 1, P1 2, P2 25, P3 12, P4 to Step 3 0) |
+| Total agents spawned | `5` (P0 0, P1 1, P2 2, P3 2, P4 0) |
+| Total MCP calls | `0` |
+| Phases using parallelism | `3` (P1, P2, P3) |
+| Primary tier agent calls | `4` (sonnet: P2 two TDD tracks, P3 verification and security) |
+| Cheaper tier agent calls | `1` (haiku: P1 scope, risk register, and glossary) |
+| Self-corrections | `2` (P2 five suite failures fixed in one commit, P3 three medium security gaps) |
+| Deviations recorded | `1` (REQ-001 rules in a reference file) |
+| Phases skipped | none |
