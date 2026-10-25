@@ -30,12 +30,18 @@ During roadmap 0000168, the parent session ran without the orchestrator and with
   - each step's version and tag
   - any `Blocked:` stop and its build log line
   - the roadmap PR URL from R-E Delivery
+- Report progress to the human at least once every 5 minutes while the driver runs. Each report names:
+  - the step and its phase
+  - the last build log line and the time it was written
+  - the commits since the last report
+  - any stop
+  If nothing changed, say so and give the time since the last change.
 - Give supervisor messages a prefix, such as `R-C Run:` while steps run and `R-E Delivery:` for the final report.
 - Have R-B Activate start the driver from the orchestrator in supervisor mode, rather than offering it as a separate step.
 
 ## Wanted outcome
 
-The session that starts the driver runs as the orchestrator in supervisor mode throughout. The strict-mode hook stays quiet in both the supervisor and child sessions. When the driver exits, the supervisor reports every step's result and the roadmap PR URL. A test runs the driver with a stub child and checks that the supervisor report names each step.
+The session that starts the driver runs as the orchestrator in supervisor mode throughout. The supervisor reports progress at least once every 5 minutes. The strict-mode hook stays quiet in both the supervisor and child sessions. When the driver exits, the supervisor reports every step's result and the roadmap PR URL. A test runs the driver with a stub child and checks that the supervisor report names each step.
 
 ## Why Deferred
 
