@@ -70,6 +70,8 @@ P1 Plan: Complete: three requirements, three ADRs, story map, execution plan, sc
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-25T11:38:22Z` |
+| End | `2026-10-25T12:03:36Z` |
+| Wall clock | `25 min` |
 | Model tier | primary orchestrator (sonnet TDD tracks) |
 | Skills loaded | ravintio-implement, ravintio-test-writer, ravintio-implementer, ravintio-refactor |
 | Agents spawned | `2` |
@@ -79,3 +81,10 @@ P1 Plan: Complete: three requirements, three ADRs, story map, execution plan, sc
 
 - In progress: track A REQ-002 fast batches in the dispatch standard and three phase skills (2026-10-25T11:38:22Z)
 - In progress: track B REQ-003 timing rows in the build-log template (2026-10-25T11:38:22Z)
+- Done: track A REQ-002 fast batches in the dispatch standard and three phase skills, commits 9a095e4 and 1bd95ec (2026-10-25T12:03:36Z)
+- Done: track B REQ-003 timing rows in the build-log template, commits 10d56cd and 9a055c0 (2026-10-25T12:03:36Z)
+- Done: REQ-001 run speed inline, commits 581eea5 and d8b2fc6, plus the orchestrator and ship lines for REQ-002 and REQ-003 (2026-10-25T12:03:36Z)
+- Full suite under `env -i`: five suites failed after batch 1. The orchestrator `SKILL.md` passed its 0000151 size budget and changed three base lines. Ship Step 8 lost the wording the 0000023 suite reads. Backlog entry 0000177 named the other product as "Framework" alone. Commit 941c540 moves the run-speed rules to `references/orchestrator-run-speed.md`, restores the base lines, and fixes both wordings. Deviation recorded in REQ-001. (2026-10-25T12:03:36Z)
+- Full suite under `env -i`: 151 feature and 19 regression suites pass. (2026-10-25T12:03:36Z)
+- Commit 6148266 (backlog 0000179 and 0000180) landed on this branch from outside the run. The run left it in place. (2026-10-25T12:03:36Z)
+P2 Implement: Complete: three requirements, tests green, docs updated. Autonomous run, no gate stop. (2026-10-25T12:03:36Z)
