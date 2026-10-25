@@ -154,3 +154,17 @@ Blocked: CI failed on PR #32, and the REQ-001 speed target was missed (2026-10-2
 - Done: track B REQ-005 full pack paths, REQ-006 path check. 16 path mentions rewritten in 6 skills, 13 bundle lines removed. The orchestrator then added a full-path pack file list to 4 skills, so no skill loses a pointer its bundle list gave. Full Bash runner 149 and 19 regression, all pass. (2026-10-25T09:46:57Z)
 - REQ-001 AC-1 met in CI run `40182095593`: `setup.ps1` totals 53244 ms (5.1) and 44930 ms (7) over 55 cases each, 98.2 s in all against the 105 s target, from 210.1 s. A fresh install fell from 1480 ms to 1045 ms on 5.1 and from 1733 ms to 814 ms on 7. The skill copy fell from about 720 ms to 129 ms (5.1) and 71 ms (7). (2026-10-25T09:51:20Z)
 - Removed the temporary profile suite. (2026-10-25T09:51:20Z)
+
+### P3: Validate and Accept (re-run after the requirement change)
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-25T09:51:27Z` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` |
+| Notes | Re-run for REQ-001 to REQ-006 after the 2026-10-25 requirement change. |
+
+- In progress: P3 re-run, verification and security review (2026-10-25T09:51:27Z)
