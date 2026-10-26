@@ -102,3 +102,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Done: REQ-007 (2026-10-26T02:11:38Z)
 - REQ-009: setup ran with `--strict-orchestrator` from `plan/state/claude-code.md`. `diff -rq ravintio-zero/skills .claude/skills` reports no differing or missing source files.
 - Done: REQ-009 (2026-10-26T02:12:10Z)
+- Rework: REQ-006: brand guard flagged two PLANIFEST_ROADMAP_* lines in the new old-variable test. Added a line allowlist entry (2026-10-26T02:17:17Z)
