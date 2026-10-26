@@ -79,13 +79,13 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-26T02:02:39Z` |
-| End | `pending` |
+| End | `2026-10-26T02:23:56Z` |
 | Wall clock | `pending` |
 | Model tier | primary (sonnet for track agents) |
 | Skills loaded | ravintio-orchestrator, ravintio-implement |
-| Agents spawned | `pending` |
+| Agents spawned | `4` (sonnet: tracks A, B, C. haiku: track D) |
 | MCP calls | `0` |
-| Parallel task batches | `pending` |
+| Parallel task batches | `1` (four tracks). REQ-007 and REQ-009 ran inline after, because both depend on every track |
 | Notes | `Test suite files before: 181. Each track agent runs the test-writer, implementer, and refactor skills in sequence for its requirements, rather than three agents per requirement. Track agents do not commit, because four agents share one working tree. The orchestrator commits each track's files when it returns. Tracks use sonnet, not the skills' haiku default, because each track reasons across many files.` |
 
 - In progress: Track A REQ-002 REQ-003 REQ-006 (2026-10-26T02:02:39Z)
@@ -103,3 +103,6 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - REQ-009: setup ran with `--strict-orchestrator` from `plan/state/claude-code.md`. `diff -rq ravintio-zero/skills .claude/skills` reports no differing or missing source files.
 - Done: REQ-009 (2026-10-26T02:12:10Z)
 - Rework: REQ-006: brand guard flagged two PLANIFEST_ROADMAP_* lines in the new old-variable test. Added a line allowlist entry (2026-10-26T02:17:17Z)
+- Full suite: 165 feature and 19 regression Bash suites pass. 16 PowerShell suites pass under pwsh 7. Test files: 181 before, 189 after, none removed.
+- Out-of-scope discovery: the lock file and delivery archive folder still say "roadmap". Filed backlog 0000191.
+- P2 complete. Autonomous run, no gate.
