@@ -27,7 +27,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 |-------|-------|
 | Start | `2026-10-25T21:39:48Z` |
 | End | `2026-10-25T21:54:37Z` |
-| Wall clock | `pending` |
+| Wall clock | `14m 49s` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | `0` |
@@ -59,7 +59,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 |-------|-------|
 | Start | `2026-10-26T01:48:06Z` |
 | End | `2026-10-26T01:52:22Z` |
-| Wall clock | `pending` |
+| Wall clock | `4m 16s` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator, ravintio-plan |
 | Agents spawned | `2` (haiku: scope, risks, glossary. sonnet: ADR-002 to ADR-005) |
@@ -80,7 +80,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 |-------|-------|
 | Start | `2026-10-26T02:02:39Z` |
 | End | `2026-10-26T02:23:56Z` |
-| Wall clock | `pending` |
+| Wall clock | `21m 17s` |
 | Model tier | primary (sonnet for track agents) |
 | Skills loaded | ravintio-orchestrator, ravintio-implement |
 | Agents spawned | `4` (sonnet: tracks A, B, C. haiku: track D) |
@@ -113,7 +113,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 |-------|-------|
 | Start | `2026-10-26T02:24:18Z` |
 | End | `2026-10-26T02:29:46Z` |
-| Wall clock | `pending` |
+| Wall clock | `5m 28s` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator, ravintio-validate-and-accept |
 | Agents spawned | `2` (sonnet: verification, security review) |
@@ -128,3 +128,33 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - CI: library audit, coverage, syntax, consistency, and the full suite all pass. 0 self-correction cycles.
 - Risk register: R-001, R-002, and R-004 mitigated. R-003 stays open until Windows CI runs on the PR.
 - P3 complete. Autonomous run: evidence in `acceptance-evidence.md` for the PR.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-26T02:30:30Z` |
+| End | `2026-10-26T02:30:29Z` |
+| Wall clock | `-1m 59s` |
+| Model tier | cheaper (haiku: build assessment) |
+| Skills loaded | ravintio-orchestrator, ravintio-ship |
+| Agents spawned | `1` |
+| MCP calls | `0` |
+| Parallel task batches | `1` (build assessment beside the version bump) |
+| Notes | `Autonomous: raise the PR without a stop.` |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `290m 41s` (includes the gap between sessions) |
+| Total agents spawned | `9` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `4` (P1, P2, P3, P4) |
+| Primary tier agent calls | `6` |
+| Cheaper tier agent calls | `3` |
+| Self-corrections | `1` (REQ-006 brand guard allowlist) |
+| Phases skipped | none |
