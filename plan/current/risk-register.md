@@ -1,6 +1,6 @@
 ---
 title: "Risk Register - name-the-roadmap-initiative"
-summary: "Four risks and three logged assumptions for the roadmap initiative rename, with their mitigations."
+summary: "Four risks and four logged assumptions for the roadmap initiative rename, with their mitigations."
 status: "draft"
 version: "0.1.0"
 ---
@@ -29,3 +29,4 @@ Documented assumptions from the design are logged here with likelihood: medium.
 | A-001 | This repo is the only consumer of the pack today. | Another consumer must run migration `0005`, which the design already provides. | open |
 | A-002 | No initiative is active while this feature runs. | A running driver breaks on the new names. | open |
 | A-003 | US-001 says "four initiative states", but the design lists five: proposed, charted, active, delivered, and blocked. The plan treats it as five. | The glossary or the status field misses a state. | open |
+| A-004 | Removing the `PLANIFEST_ROADMAP_*` fallback breaks no one, because migration 0004 already retired Planifest names. | A consumer that still sets one sees the driver stop, with the new name in the message. | open |
