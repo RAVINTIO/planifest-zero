@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Tests for feature 0000151-hardening-efficiency-and-ci, req-013: roadmap telemetry labels.
+# Tests for feature 0000151-hardening-efficiency-and-ci, req-013: initiative telemetry labels.
 #
-# scripts/roadmap-run.mjs appends labels to OTEL_RESOURCE_ATTRIBUTES in the child environment.
+# scripts/initiative-run.mjs appends labels to OTEL_RESOURCE_ATTRIBUTES in the child environment.
 # A stub claude prints the value it sees and a sorted copy of its environment.
 
 set -uo pipefail
@@ -9,8 +9,8 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-DRIVER="$SCRIPT_DIR/../scripts/roadmap-run.mjs"
-LABELS="$SCRIPT_DIR/../scripts/roadmap-labels.mjs"
+DRIVER="$SCRIPT_DIR/../scripts/initiative-run.mjs"
+LABELS="$SCRIPT_DIR/../scripts/initiative-labels.mjs"
 STANDARDS="$SCRIPT_DIR/../standards/roadmap-standards.md"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
@@ -21,12 +21,12 @@ cat > "$WORK/bin/claude" <<'STUB'
 # Stub claude: logs the label variable and the rest of its environment, then advances.
 printenv OTEL_RESOURCE_ATTRIBUTES >> "$STUB_LOG"
 env | grep -v '^OTEL_RESOURCE_ATTRIBUTES=' | grep -v '^_=' | grep -v '^SHLVL=' | grep -v '^PWD=' | LC_ALL=C sort > "$STUB_LOG.env"
-RM=plan/current-roadmap/roadmap.md
+RM=plan/current-initiative/initiative.md
 POSRE='^((\*\*)?[Pp]osition:?(\*\*)? *:? *)'
 pos="$(sed -nE "s/${POSRE}//p" "$RM")"
 if [ "$pos" = 2 ]; then
   mkdir -p plan/_archive
-  mv plan/current-roadmap "plan/_archive/0000050-demo-roadmap-2026-10-24"
+  mv plan/current-initiative "plan/_archive/0000050-demo-roadmap-2026-10-24"
 else
   sed -i.bak -E "s/${POSRE}.*/\\1$((pos + 1))/" "$RM" && rm -f "$RM.bak"
 fi
@@ -35,14 +35,14 @@ chmod +x "$WORK/bin/claude"
 
 make_fixture() {
   local d="$WORK/$1"
-  mkdir -p "$d/plan/current-roadmap" "$d/plan/current"
-  cat > "$d/plan/current-roadmap/roadmap.md" <<EOF2
+  mkdir -p "$d/plan/current-initiative" "$d/plan/current"
+  cat > "$d/plan/current-initiative/initiative.md" <<EOF2
 ---
-title: "Roadmap: demo"
+title: "Initiative: demo"
 status: active
 ---
 goal: demo
-branch: roadmap/0000050-demo
+branch: initiative/0000050-demo
 status: active
 position: 1
 EOF2
@@ -54,20 +54,20 @@ echo ""
 echo "=== req-013 (a): label values ==="
 R="$(make_fixture a-unset)"
 (cd "$R" && env -u OTEL_RESOURCE_ATTRIBUTES PATH="$WORK/bin:$PATH" STUB_LOG="$R/stub.log" node "$DRIVER" --root "$R" >/dev/null 2>&1)
-assert_equals "work.kind=roadmap,ravintio.roadmap=0000050-demo,ravintio.step=1" "$(sed -n 1p "$R/stub.log")" "req-013 (a): unset variable gets the three labels"
-assert_equals "work.kind=roadmap,ravintio.roadmap=0000050-demo,ravintio.step=2" "$(sed -n 2p "$R/stub.log")" "req-013 (a): step 2 labels the position"
+assert_equals "work.kind=initiative,ravintio.initiative=0000050-demo,ravintio.step=1" "$(sed -n 1p "$R/stub.log")" "req-013 (a): unset variable gets the three labels"
+assert_equals "work.kind=initiative,ravintio.initiative=0000050-demo,ravintio.step=2" "$(sed -n 2p "$R/stub.log")" "req-013 (a): step 2 labels the position"
 
 R="$(make_fixture a-set)"
 (cd "$R" && OTEL_RESOURCE_ATTRIBUTES='service.name=x,team=a' PATH="$WORK/bin:$PATH" STUB_LOG="$R/stub.log" node "$DRIVER" --root "$R" >/dev/null 2>&1)
-assert_equals "service.name=x,team=a,work.kind=roadmap,ravintio.roadmap=0000050-demo,ravintio.step=1" "$(sed -n 1p "$R/stub.log")" "req-013 (a): old value kept and labels appended"
+assert_equals "service.name=x,team=a,work.kind=initiative,ravintio.initiative=0000050-demo,ravintio.step=1" "$(sed -n 1p "$R/stub.log")" "req-013 (a): old value kept and labels appended"
 
 echo ""
 echo "=== req-013 (b): encoder and edge cases ==="
 ENC="$(node --input-type=module -e "import { encodeLabelValue as e } from '$LABELS'; process.stdout.write(e('a,b=c d%e'))")"
 assert_equals "a%2Cb%3Dc%20d%25e" "$ENC" "req-013 (b): encoder escapes comma, equals, space, percent"
-JOIN="$(node --input-type=module -e "import { withRoadmapLabels as w } from '$LABELS'; process.stdout.write(w('k=v,', '0000050', 'demo', '1'))")"
-assert_equals "k=v,work.kind=roadmap,ravintio.roadmap=0000050-demo,ravintio.step=1" "$JOIN" "req-013 (b): a trailing comma adds no second comma"
-JOIN="$(node --input-type=module -e "import { withRoadmapLabels as w } from '$LABELS'; process.stdout.write(w('k=a%2Cb', '0000050', 'demo', '1'))")"
+JOIN="$(node --input-type=module -e "import { withInitiativeLabels as w } from '$LABELS'; process.stdout.write(w('k=v,', '0000050', 'demo', '1'))")"
+assert_equals "k=v,work.kind=initiative,ravintio.initiative=0000050-demo,ravintio.step=1" "$JOIN" "req-013 (b): a trailing comma adds no second comma"
+JOIN="$(node --input-type=module -e "import { withInitiativeLabels as w } from '$LABELS'; process.stdout.write(w('k=a%2Cb', '0000050', 'demo', '1'))")"
 assert_contains "k=a%2Cb,work.kind" "$JOIN" "req-013 (b): old value is not re-encoded"
 
 echo ""
@@ -87,8 +87,8 @@ echo ""
 echo "=== req-013 (c): documentation ==="
 HEAD_TXT="$(sed -n '1,70p' "$DRIVER")"
 for f in "$HEAD_TXT" "$(cat "$STANDARDS")"; do
-  assert_contains "work.kind=roadmap" "$f" "req-013: names work.kind"
-  assert_contains "ravintio.roadmap=" "$f" "req-013: names ravintio.roadmap"
+  assert_contains "work.kind=initiative" "$f" "req-013: names work.kind"
+  assert_contains "ravintio.initiative=" "$f" "req-013: names ravintio.initiative"
   assert_contains "ravintio.step=" "$f" "req-013: names ravintio.step"
 done
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests for feature 0000043-autonomous-roadmaps, req-002: R-A Chart.
+# Tests for feature 0000043-autonomous-roadmaps, req-002: I-A Chart.
 
 set -uo pipefail
 
@@ -9,16 +9,16 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 ZERO_DIR="$SCRIPT_DIR/.."
 ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
 REF="$ZERO_DIR/pipeline-reference.md"
-TPL="$ZERO_DIR/templates/roadmap-entry.template.md"
+TPL="$ZERO_DIR/templates/initiative.template.md"
 STD="$ZERO_DIR/standards/roadmap-standards.md"
 
 # The section from a heading to the next "---" rule.
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^---$/ {exit} on {print}' "$2"; }
 RM="$(cat "$STD")"
 
-echo "=== req-002 (a): R-A Chart stage ==="
-assert_contains '`R-A Chart:`' "$RM" "req-002 (a): defines R-A Chart"
-CH="$(awk '$0 == "### R-A Chart" {on=1; next} on && /^#/ {exit} on {print}' "$STD")"
+echo "=== req-002 (a): I-A Chart stage ==="
+assert_contains '`I-A Chart:`' "$RM" "req-002 (a): defines I-A Chart"
+CH="$(awk '$0 == "### I-A Chart" {on=1; next} on && /^#/ {exit} on {print}' "$STD")"
 assert_contains 'synced `main`' "$CH" "req-002 (a): starts on synced main"
 assert_contains 'pre-flight' "$CH" "req-002 (a): runs the git pre-flight"
 assert_contains 'new idea' "$CH" "req-002 (a): source can be a new idea"

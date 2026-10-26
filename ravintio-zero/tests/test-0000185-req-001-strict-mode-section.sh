@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 0000185 req-001: strict-mode-section
 # The strict mode section in project-operations.md names both files and the
-# flag, explains what the ack file holds and its name, and covers a roadmap run.
+# flag, explains what the ack file holds and its name, and covers an initiative run.
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -31,7 +31,7 @@ if hasi 'acknowledg' && hasi 'session id' && hasi 'timestamp' \
 check "req-001 AC-2: section explains the ack file content, its name, and the timestamp fallback" "$ok"
 
 ok=1
-if hasi 'roadmap' && has '0000182'; then ok=0; fi
-check "req-001 AC-3: section covers the roadmap case and names backlog 0000182" "$ok"
+if hasi 'initiative' && has '0000182'; then ok=0; fi
+check "req-001 AC-3: section covers the initiative case and names backlog 0000182" "$ok"
 
 print_summary

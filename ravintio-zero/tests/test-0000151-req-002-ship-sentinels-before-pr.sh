@@ -3,7 +3,7 @@
 # clears the sentinels in a commit before it pushes.
 #
 # The ship order is Step 7 tag, Step 8 clear sentinels, Step 9 PR, Step 10
-# final gate. The R-D Advance stage names the clear step by its new number.
+# final gate. The I-D Advance stage names the clear step by its new number.
 
 set -uo pipefail
 
@@ -53,13 +53,13 @@ assert_equals "yes" "$(has 'git ls-files' "$S8")" "req-002 (a): Step 8 checks gi
 assert_equals "yes" "$(has 'Step 8 deletes' "$S10")" "req-002 (a): Step 10 cites Step 8 for the deletion"
 assert_equals "yes" "$(has 'Read `plan/.run-mode` before Step 8' "$(cat "$SHIP")")" "req-002 (a): hard limit reads the mode before Step 8"
 
-RD="$(section '### R-D Advance' "$STD")"
+RD="$(section '### I-D Advance' "$STD")"
 r_clear="$(printf '%s\n' "$RD" | grep -n 'Step 8' | head -1 | cut -d: -f1)"
 r_pr="$(printf '%s\n' "$RD" | grep -n 'gh pr create' | head -1 | cut -d: -f1)"
 rd_ok=no
 [ -n "$r_clear" ] && [ -n "$r_pr" ] && [ "$r_clear" -lt "$r_pr" ] && rd_ok=yes
-assert_equals "yes" "$rd_ok" "req-002 (a): R-D Advance names Step 8 before gh pr create"
-assert_equals "no" "$(has 'Step 9' "$RD")" "req-002 (a): R-D Advance no longer cites Step 9"
+assert_equals "yes" "$rd_ok" "req-002 (a): I-D Advance names Step 8 before gh pr create"
+assert_equals "no" "$(has 'Step 9' "$RD")" "req-002 (a): I-D Advance no longer cites Step 9"
 
 echo ""
 echo "=== req-002 (b): scripted Step 8 run ==="

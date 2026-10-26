@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Tests for feature 0000043-autonomous-roadmaps, req-007: roadmap driver.
+# Tests for feature 0000043-autonomous-roadmaps, req-007: initiative driver.
 #
-# scripts/roadmap-run.mjs runs each roadmap step in a fresh claude -p session.
+# scripts/initiative-run.mjs runs each initiative step in a fresh claude -p session.
 # A stub claude on PATH stands in for the model. It edits the fixture's
-# roadmap.md and build-log.md the way a real step would.
+# initiative.md and build-log.md the way a real step would.
 
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-DRIVER="$SCRIPT_DIR/../scripts/roadmap-run.mjs"
-TPL="$SCRIPT_DIR/../templates/roadmap-entry.template.md"
+DRIVER="$SCRIPT_DIR/../scripts/initiative-run.mjs"
+TPL="$SCRIPT_DIR/../templates/initiative.template.md"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
@@ -20,7 +20,7 @@ cat > "$WORK/bin/claude" <<'STUB'
 #!/usr/bin/env bash
 # Stub claude. STUB_MODE: ok (default), block, stall, fail.
 printf '%s\n' "$*" >> "$STUB_LOG"
-RM=plan/current-roadmap/roadmap.md
+RM=plan/current-initiative/initiative.md
 POSRE='^((\*\*)?[Pp]osition:?(\*\*)? *:? *)'
 pos="$(sed -nE "s/${POSRE}//p" "$RM")"
 case "${STUB_MODE:-ok}" in
@@ -30,10 +30,10 @@ case "${STUB_MODE:-ok}" in
     printf 'Blocked: needs a human decision on step %s\n' "$pos" >> plan/current/build-log.md
     exit 0 ;;
 esac
-printf 'R-C Run: step %s done\n' "$pos" >> plan/current/build-log.md
+printf 'I-C Run: step %s done\n' "$pos" >> plan/current/build-log.md
 if [ "$pos" = 2 ]; then
   mkdir -p plan/_archive
-  mv plan/current-roadmap "plan/_archive/0000050-demo-roadmap-2026-10-23"
+  mv plan/current-initiative "plan/_archive/0000050-demo-roadmap-2026-10-23"
 else
   sed -i.bak -E "s/${POSRE}.*/\\1$((pos + 1))/" "$RM" && rm -f "$RM.bak"
 fi
@@ -43,17 +43,17 @@ chmod +x "$WORK/bin/claude"
 # make_fixture <name> <status>: prints the fixture root.
 make_fixture() {
   local d="$WORK/$1"
-  mkdir -p "$d/plan/current-roadmap" "$d/plan/current"
-  cat > "$d/plan/current-roadmap/roadmap.md" <<EOF2
+  mkdir -p "$d/plan/current-initiative" "$d/plan/current"
+  cat > "$d/plan/current-initiative/initiative.md" <<EOF2
 ---
-title: "Roadmap: demo"
+title: "Initiative: demo"
 summary: "Two steps."
 status: $2
 ---
-# Roadmap: demo
+# Initiative: demo
 
 goal: demo
-branch: roadmap/0000050-demo
+branch: initiative/0000050-demo
 status: $2
 position: 1
 
@@ -74,41 +74,41 @@ run_driver() {
 }
 
 echo ""
-echo "=== req-007 (a): a two-step roadmap runs to delivery ==="
+echo "=== req-007 (a): a two-step initiative runs to delivery ==="
 R="$(make_fixture a active)"
 run_driver "$R" ok
 assert_equals "0" "$CODE" "req-007 (a): driver exits 0 at delivery"
 assert_equals "2" "$(wc -l < "$R/stub.log" | tr -d ' ')" "req-007 (a): two steps ran"
-assert_equals "-p --permission-mode auto --model sonnet Run roadmap step 1" "$(sed -n 1p "$R/stub.log")" "req-007 (a): step 1 arguments"
-assert_equals "-p --permission-mode auto --model sonnet Run roadmap step 2" "$(sed -n 2p "$R/stub.log")" "req-007 (a): step 2 arguments"
+assert_equals "-p --permission-mode auto --model sonnet Run initiative step 1" "$(sed -n 1p "$R/stub.log")" "req-007 (a): step 1 arguments"
+assert_equals "-p --permission-mode auto --model sonnet Run initiative step 2" "$(sed -n 2p "$R/stub.log")" "req-007 (a): step 2 arguments"
 assert_equals "0" "$(grep -cE -- '--continue|--resume' "$R/stub.log")" "req-007 (a): no --continue or --resume"
-assert_contains "R-C Run:" "$OUT" "req-007 (a): prints R-C Run: lines"
-assert_contains "R-D Advance:" "$OUT" "req-007 (a): prints R-D Advance: lines"
-assert_contains "R-E Delivery:" "$OUT" "req-007 (a): prints an R-E Delivery: line"
+assert_contains "I-C Run:" "$OUT" "req-007 (a): prints I-C Run: lines"
+assert_contains "I-D Advance:" "$OUT" "req-007 (a): prints I-D Advance: lines"
+assert_contains "I-E Delivery:" "$OUT" "req-007 (a): prints an I-E Delivery: line"
 assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-007 (a): lock released"
 
-# make_template_fixture <name> <frontmatter status> <body status>: a roadmap filled in from the
+# make_template_fixture <name> <frontmatter status> <body status>: an initiative filled in from the
 # real template, quotes kept. Prints the fixture root.
 make_template_fixture() {
   local d="$WORK/$1"
-  mkdir -p "$d/plan/current-roadmap" "$d/plan/current"
+  mkdir -p "$d/plan/current-initiative" "$d/plan/current"
   sed -e "s/^status: \"draft\"/status: $2/" \
       -e 's/^\*\*Status:\*\* .*/**Status:** '"$3"'/' \
       -e 's/^\*\*Position:\*\* .*/**Position:** 1/' \
       -e 's/{{id}}/0000050/g; s/{{slug}}/demo/g; s/{{short-title}}/demo/g' \
       -e 's/^| 1 | {{feature id}} .*/| 1 | 0000051-a | 0000011 | minor | | pending |\
 | 2 | 0000052-b | 0000012 | minor | | pending |/' \
-      "$TPL" > "$d/plan/current-roadmap/roadmap.md"
+      "$TPL" > "$d/plan/current-initiative/initiative.md"
   : > "$d/plan/current/build-log.md"
   printf '%s' "$d"
 }
 
 echo ""
-echo "=== req-007 (a): a roadmap built from the real template ==="
+echo "=== req-007 (a): an initiative built from the real template ==="
 R="$(make_template_fixture t-quoted '"active"' active)"
 run_driver "$R" ok
 assert_equals "0" "$CODE" "req-007 (a): quoted frontmatter status runs to delivery"
-assert_equals "2" "$(wc -l < "$R/stub.log" | tr -d ' ')" "req-007 (a): template roadmap ran two steps"
+assert_equals "2" "$(wc -l < "$R/stub.log" | tr -d ' ')" "req-007 (a): template initiative ran two steps"
 R="$(make_template_fixture t-single "'active'" active)"
 run_driver "$R" ok
 assert_equals "0" "$CODE" "req-007 (a): single-quoted frontmatter status runs"

@@ -13,7 +13,7 @@ ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
 IMPL="$ZERO_DIR/skills/ravintio-implement/SKILL.md"
 VAL="$ZERO_DIR/skills/ravintio-validate-and-accept/SKILL.md"
 TPL="$ZERO_DIR/templates/build-log.template.md"
-DRIVER="$ZERO_DIR/scripts/roadmap-run.mjs"
+DRIVER="$ZERO_DIR/scripts/initiative-run.mjs"
 PM="$(awk '$0 == "## Progress Markers and Interrupted Units" {on=1; next} on && /^---$/ {exit} on {print}' "$STD")"
 RES="$(awk '$0 == "## Resume Detection" {on=1; next} on && /^---$/ {exit} on {print}' "$ORCH")"
 
@@ -42,24 +42,24 @@ assert_equals "yes" "$([ -n "$IDX_U" ] && [ -n "$IDX_O" ] && [ "$IDX_U" -lt "$ID
   "req-012 (b): the interrupted-unit step comes before Open"
 
 echo ""
-echo "=== req-012 (c): progress markers don't stop the roadmap driver ==="
+echo "=== req-012 (c): progress markers don't stop the initiative driver ==="
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
-mkdir -p "$WORK/bin" "$WORK/r/plan/current-roadmap" "$WORK/r/plan/current"
+mkdir -p "$WORK/bin" "$WORK/r/plan/current-initiative" "$WORK/r/plan/current"
 cat > "$WORK/bin/claude" <<'STUB'
 #!/usr/bin/env bash
 # Stub claude: logs an unmatched In progress: line, then delivers.
 printf -- '- In progress: REQ-001 test-writer (2026-10-24T10:00:00Z)\n' >> plan/current/build-log.md
 mkdir -p plan/_archive
-mv plan/current-roadmap plan/_archive/0000050-demo-roadmap-2026-10-24
+mv plan/current-initiative plan/_archive/0000050-demo-roadmap-2026-10-24
 STUB
 chmod +x "$WORK/bin/claude"
-cat > "$WORK/r/plan/current-roadmap/roadmap.md" <<'EOF'
+cat > "$WORK/r/plan/current-initiative/initiative.md" <<'EOF'
 ---
-title: "Roadmap: demo"
+title: "Initiative: demo"
 status: active
 ---
-branch: roadmap/0000050-demo
+branch: initiative/0000050-demo
 status: active
 position: 1
 EOF
@@ -67,6 +67,6 @@ EOF
 OUT="$(cd "$WORK/r" && PATH="$WORK/bin:$PATH" node "$DRIVER" --root "$WORK/r" 2>&1)"
 CODE=$?
 assert_equals "0" "$CODE" "req-012 (c): an In progress: line is not a Blocked: line to the driver"
-assert_contains 'R-E Delivery: Complete' "$OUT" "req-012 (c): the driver reaches delivery"
+assert_contains 'I-E Delivery: Complete' "$OUT" "req-012 (c): the driver reaches delivery"
 
 print_summary
