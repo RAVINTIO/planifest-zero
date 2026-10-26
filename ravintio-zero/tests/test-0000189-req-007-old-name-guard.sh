@@ -20,11 +20,9 @@ check() {
 # character on each side, so risk ids such as R-001 never match.
 OLD_NAMES='current-roadmap|roadmap-run\.mjs|roadmap-labels\.mjs|roadmap-entry\.template|\.roadmap-logs|RAVINTIO_ROADMAP_|work\.kind=roadmap|ravintio\.roadmap|(^|[^A-Za-z0-9/._-])roadmap/(\*|\{|[0-9])|(^|[^A-Za-z0-9_-])R-[A-E]([^A-Za-z0-9_]|$)'
 
-# Folders that hold history or this run's working state. Ship moves
-# plan/current/ to plan/_archive/.
+# Folders that hold history.
 ALLOW_DIRS='plan/_archive/
-plan/changelog/
-plan/current/'
+plan/changelog/'
 
 # Files that must name an old name to do their job.
 ALLOW_FILES='ravintio-zero/scripts/initiative-run.mjs

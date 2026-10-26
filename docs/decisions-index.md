@@ -26,7 +26,7 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR-002 | Clean break with migration | accepted | Old names get no aliases. Migration 0005 moves consumer drafts, the CI pattern, and step logs. A model or turns variable with an old prefix stops the driver and names its replacement. |
 | ADR-003 | Move on activation | accepted | I-B Activate moves the initiative to the fixed path `plan/current-initiative/initiative.md`. |
 | ADR-004 | Short initiative names | accepted | Names use the short form `initiative`, and stage prefixes are `I-A` to `I-E`. `roadmap-standards.md` keeps its name. |
-| ADR-005 | Old-name guard allowlist | accepted | A Bash test fails on old names outside an allowlist of exact files and three folders: `plan/_archive/`, `plan/changelog/`, and `plan/current/`. |
+| ADR-005 | Old-name guard allowlist | accepted | A Bash test fails on old names outside an allowlist of exact files and two folders: `plan/_archive/` and `plan/changelog/`. |
 ### Feature 0000185: explain-strict-mode
 
 | ADR | Title | Status | Summary |

@@ -21,6 +21,8 @@ Add `ravintio-zero/tests/test-0000189-req-007-old-name-guard.sh`. It searches tr
 
 The allowlist names exact file paths. Three folders are the only entries that cover a whole tree: `plan/_archive/`, `plan/changelog/`, and `plan/current/`. The first two hold history that this feature must not edit. `plan/current/` holds a run's working state, and ship moves it to `plan/_archive/`. P2 added it, because this run's own plan artifacts name every old name.
 
+Amended after P4: ship archived `plan/current/`, so the guard no longer needs it. The allowlist now holds two folders, `plan/_archive/` and `plan/changelog/`. A future run's plan files get the same check as the rest of the repo.
+
 ## Alternatives Considered
 
 | Alternative | Pros | Cons | Why Rejected |

@@ -24,7 +24,7 @@ Backlog entry 0000188: "roadmap" meant two things, so names and prose did not sa
 
 ## Deviations
 
-- The guard allowlists `plan/current/` as a third folder, because this run's plan artifacts name every old name. ADR-005 and REQ-007 record it.
+- During the run, the guard also allowlisted `plan/current/`, because this run's plan files name every old name. That entry came out after ship archived them, so the allowlist holds the two history folders only. ADR-005 records it.
 - The driver also drops the `PLANIFEST_ROADMAP_*` fallback (ADR-002).
 - The driver status check still accepts `draft` and `done`, so older initiative files still parse.
 - Two names stay, because the design Names table does not list them: the lock file `plan/.roadmap-runner.lock` and the delivery archive folder `plan/_archive/{id}-{slug}-roadmap-{date}/`.

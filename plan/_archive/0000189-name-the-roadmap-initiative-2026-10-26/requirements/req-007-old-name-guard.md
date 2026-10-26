@@ -20,7 +20,7 @@ As a maintainer, I get a failing test when an old name comes back, so that the r
   - `current-roadmap`, `roadmap-run`, `roadmap-labels`, `roadmap-entry.template`, and `.roadmap-logs`
   - `RAVINTIO_ROADMAP_`, `work.kind=roadmap`, and `ravintio.roadmap`
   - a `roadmap/` branch pattern, and an `R-A` to `R-E` stage prefix
-- The allowlist names exact files. Three folders are the only exception: `plan/_archive/`, `plan/changelog/`, and `plan/current/`. Ship moves `plan/current/` to `plan/_archive/`.
+- The allowlist names exact files. Two folders are the only exception: `plan/_archive/` and `plan/changelog/`. P2 also allowed `plan/current/` while this run's plan files sat there. It came out after ship archived them.
 - The allowlist holds these files:
   - the migration 0005 files
   - the driver's old-variable stop check, and `component.yml`, which describes it
