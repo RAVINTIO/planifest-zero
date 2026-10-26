@@ -42,3 +42,35 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock Challenge: in (both renames and the guard), out (archive folder renames, a migration), deferred (nothing), and the next initiative takes 0000174 to 0000186.
 - Run mode: autonomous (2026-10-26T03:57:41Z, from "Deliver it fast")
 - Run speed: fast (2026-10-26T03:57:41Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-26T04:02:00Z` |
+| End | `2026-10-26T04:09:30Z` |
+| Wall clock | `7m 30s` |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | `Three requirements, two ADRs, no gaps. Inline: each artifact is a few lines, so subagent overhead outweighs the gain. Plan files avoid the literal old names, because the guard no longer allowlists plan/current/. Consistency check clean.` |
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-26T04:09:30Z` |
+| End | `2026-10-26T04:16:00Z` |
+| Wall clock | `6m 30s` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | `One track: REQ-001 and REQ-002 share initiative-run.mjs and the driver test, and REQ-003 depends on both. RED: 15 assertions failed across four suites. GREEN on the first attempt. No PowerShell file named the old lock.` |
+
+- Done: REQ-001 runner lock (2026-10-26T04:15:00Z)
+- Done: REQ-002 archive folder (2026-10-26T04:15:00Z)
+- Done: REQ-003 old-name guard (2026-10-26T04:15:00Z)
