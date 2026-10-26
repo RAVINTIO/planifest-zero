@@ -112,7 +112,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-26T02:24:18Z` |
-| End | `pending` |
+| End | `2026-10-26T02:29:46Z` |
 | Wall clock | `pending` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator, ravintio-validate-and-accept |
@@ -125,3 +125,6 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - In progress: P3 security review (2026-10-26T02:24:18Z)
 - Done: P3 security review: overall low, 4 low and 1 informational, none critical or high (2026-10-26T02:25:42Z)
 - Done: P3 verification: 21 verified, 0 failed, 0 not-verifiable (2026-10-26T02:26:15Z)
+- CI: library audit, coverage, syntax, consistency, and the full suite all pass. 0 self-correction cycles.
+- Risk register: R-001, R-002, and R-004 mitigated. R-003 stays open until Windows CI runs on the PR.
+- P3 complete. Autonomous run: evidence in `acceptance-evidence.md` for the PR.
