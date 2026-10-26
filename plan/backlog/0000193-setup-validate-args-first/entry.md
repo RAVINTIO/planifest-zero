@@ -1,9 +1,9 @@
 ---
-title: "Backlog Entry: 0000193 - setup must reject a bad tool or flag before it changes anything"
+title: "Backlog Entry: 0000193 - setup must reject a bad tool, unknown flag, or retired flag before it changes anything"
 summary: "A discovered-but-out-of-scope item deferred for pickup at a future discovery run."
 status: "open"
 ---
-# Backlog Entry: 0000193 - setup must reject a bad tool or flag before it changes anything
+# Backlog Entry: 0000193 - setup must reject a bad tool, unknown flag, or retired flag before it changes anything
 
 **Source feature:** none (human request)
 **Source phase:** none (human request)
@@ -23,11 +23,38 @@ status: "open"
 
 See `ravintio-zero/setup.sh:1110-1144` and the matching block in `ravintio-zero/setup.ps1`. An existing install hides the effect because the files exist already. In a fresh repo, a rejected run turns on the git hooks and adds workflow files, but installs no skills or `CLAUDE.md`.
 
-Unknown flags already fail during argument parsing, before any change. Retired flags print a warning and carry on, which is the intended behaviour.
+Unknown flags already fail during argument parsing, before any change. Retired flags don't fail. Setup prints `! Warning: ignoring retired flag {flag}` and carries on. The human wants retired flags to fail too, so users remove them and learn that they don't work. These are the retired flags:
+
+- `--structured-telemetry-mcp`
+- `--context-mode-mcp`
+- `--include-full-skill-library`
+- `--backend-url`, in both the `--backend-url x` and `--backend-url=x` forms
+
+Feature 0000034 chose the warning so an old refresh command still runs. See `plan/_archive/0000034-setup-hardening-2026-10-16/`. This entry reverses that decision.
 
 ## Suggested Action
 
-Validate every argument before the first write in both scripts. Move the tool check to sit beside the flag parsing, ahead of the old-folder check and `initialize_repo`. A missing tool, an unknown tool, or an unknown flag then exits 1 with no change to the repo. Add a test in each shell that runs setup with a bad tool in a fresh temp repo. The test asserts exit 1, an unchanged tree, and an unset `core.hooksPath`.
+Validate every argument before the first write in both scripts. Move the tool check to sit beside the flag parsing, ahead of the old-folder check and `initialize_repo`. Each of these cases then exits 1 with no change to the repo:
+
+- a missing tool
+- an unknown tool
+- an unknown flag
+- a retired flag
+
+A retired flag gets its own error message. The message names the flag, says that it was removed and does nothing, and tells the user to remove it from the command. A `--backend-url` value never appears in the output.
+
+Add a test in each shell that runs setup with a bad argument in a fresh temp repo. The test asserts exit 1, an unchanged tree, and an unset `core.hooksPath`.
+
+These tests assert the warning today, so they need to change:
+
+- `ravintio-zero/tests/test-0000034-req-001-retired-flags.sh`
+- `ravintio-zero/tests/regression/test-0000034-req-001-retired-flags.sh`
+- `ravintio-zero/tests/test-0000036-req-004-setup-ps1-flags.ps1`
+- `ravintio-zero/tests/test-0000037-req-002-refresh-script-flags.sh`
+- `ravintio-zero/tests/test-0000037-req-003-setup-record-move.sh`
+- `ravintio-zero/tests/test-0000031-req-004-setup-execution.sh`
+
+A tracked `plan/state/{tool}.md` record or a `.ravintio-setup-flags` marker might still hold a retired flag. The `ravintio-refresh-setup` skill already rejects such a record. Check that the refresh path then reports the retired flag plainly instead of failing setup with no explanation.
 
 ## Why Deferred
 
