@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-26T03:57:41Z` |
-| End | `2026-10-26T04:02:00Z` |
-| Wall clock | `4m 19s` |
+| End | `2026-10-26T03:58:29Z` |
+| Wall clock | `0m 48s` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | `0` |
@@ -47,9 +47,9 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-26T04:02:00Z` |
-| End | `2026-10-26T04:09:30Z` |
-| Wall clock | `7m 30s` |
+| Start | `2026-10-26T03:58:29Z` |
+| End | `2026-10-26T03:59:42Z` |
+| Wall clock | `1m 13s` |
 | Model tier | primary |
 | Skills loaded | ravintio-plan |
 | Agents spawned | `0` |
@@ -61,16 +61,16 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-26T04:09:30Z` |
-| End | `2026-10-26T04:16:00Z` |
-| Wall clock | `6m 30s` |
+| Start | `2026-10-26T03:59:42Z` |
+| End | `2026-10-26T04:01:14Z` |
+| Wall clock | `1m 32s` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | `0` |
 | MCP calls | `0` |
 | Parallel task batches | `0` |
-| Notes | `One track: REQ-001 and REQ-002 share initiative-run.mjs and the driver test, and REQ-003 depends on both. RED: 15 assertions failed across four suites. GREEN on the first attempt. No PowerShell file named the old lock.` |
+| Notes | `Times come from commit timestamps. One track: REQ-001 and REQ-002 share initiative-run.mjs and the driver test, and REQ-003 depends on both. RED: 15 assertions failed across four suites. GREEN on the first attempt. No PowerShell file named the old lock.` |
 
-- Done: REQ-001 runner lock (2026-10-26T04:15:00Z)
-- Done: REQ-002 archive folder (2026-10-26T04:15:00Z)
-- Done: REQ-003 old-name guard (2026-10-26T04:15:00Z)
+- Done: REQ-001 runner lock (2026-10-26T04:00:54Z)
+- Done: REQ-002 archive folder (2026-10-26T04:00:54Z)
+- Done: REQ-003 old-name guard (2026-10-26T04:00:54Z)
