@@ -2,6 +2,7 @@
 
 **Feature:** name-the-roadmap-initiative
 **Version:** 0.19.0
+**PR:** pending
 
 ## What changed
 
@@ -28,6 +29,13 @@ Backlog entry 0000188: "roadmap" meant two things, so names and prose did not sa
 - The driver status check still accepts `draft` and `done`, so older initiative files still parse.
 - Two names stay, because the design Names table does not list them: the lock file `plan/.roadmap-runner.lock` and the delivery archive folder `plan/_archive/{id}-{slug}-roadmap-{date}/`.
 - `test-0000151-req-011` raises its size cap from 35,484 to 35,600 bytes. Its fixture now uses the new names.
+
+## Validation results
+
+- 165 feature and 19 regression Bash suites pass on macOS. 16 PowerShell suites pass under pwsh 7.
+- All 21 acceptance criteria pass by execution. The driver, `merge-guard`, and both migration helpers ran in stub repos.
+- The old-name guard finds 0 old names outside its allowlist.
+- Security review: overall low, four low findings and one informational note.
 
 ## Skipped phases
 
