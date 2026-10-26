@@ -40,7 +40,7 @@
 //
 // What it does:
 //   1. Reads plan/current-initiative/initiative.md and stops unless status is "active".
-//   2. Takes plan/.roadmap-runner.lock. If the lock exists, it refuses to start
+//   2. Takes plan/.initiative-runner.lock. If the lock exists, it refuses to start
 //      and leaves the lock alone.
 //   3. Runs `claude -p --permission-mode auto --model {model} [--max-turns {n}]
 //      "Run initiative step {position}"`
@@ -73,7 +73,7 @@ import { isAbsolute, join, relative, resolve } from 'node:path';
 import { withInitiativeLabels } from './initiative-labels.mjs';
 
 const INITIATIVE = 'plan/current-initiative/initiative.md';
-const LOCK = 'plan/.roadmap-runner.lock';
+const LOCK = 'plan/.initiative-runner.lock';
 const LOGS = 'plan/.initiative-logs';
 const BUILD_LOG = 'plan/current/build-log.md';
 const ARCHIVE = 'plan/_archive';
@@ -223,8 +223,9 @@ function delivered(root, id, slug) {
   if (existsSync(join(root, INITIATIVE))) return false;
   const dir = join(root, ARCHIVE);
   if (!existsSync(dir)) return false;
-  const prefix = `${id}-${slug}-roadmap-`;
-  return readdirSync(dir).some((n) => n.startsWith(prefix));
+  // Folders archived before 0000192 use the -roadmap- form, so accept both.
+  const prefixes = [`${id}-${slug}-initiative-`, `${id}-${slug}-roadmap-`];
+  return readdirSync(dir).some((n) => prefixes.some((p) => n.startsWith(p)));
 }
 
 function runStep(root, position, cfg, fd, labels) {

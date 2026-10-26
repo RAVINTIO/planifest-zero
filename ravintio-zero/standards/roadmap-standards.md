@@ -254,7 +254,7 @@ The tag comes after the merge because a squash creates a new commit. A tag on th
 
 Run this stage after the last step merges. Every message begins with `I-E Delivery:` after the `P4 Ship:` prefix. Work on the initiative branch.
 
-1. Move `plan/current-initiative/` to `plan/_archive/{id}-{slug}-roadmap-{date}/` and set the initiative `status: delivered`. Update links that point at the old path. Commit the move on the initiative branch.
+1. Move `plan/current-initiative/` to `plan/_archive/{id}-{slug}-initiative-{date}/` and set the initiative `status: delivered`. Update links that point at the old path. Commit the move on the initiative branch.
 2. Raise one PR from the initiative branch to `main`.
 
    ```bash
