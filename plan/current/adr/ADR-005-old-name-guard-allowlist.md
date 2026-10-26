@@ -19,7 +19,7 @@ A rename across skills, scripts, hooks, tests, and docs often stays half done. A
 
 Add `ravintio-zero/tests/test-0000189-req-007-old-name-guard.sh`. It searches tracked files for each old name and prints each hit with file and line. It fails on any hit outside the allowlist.
 
-The allowlist names exact file paths. Two folders are the only entries that cover a whole tree: `plan/_archive/` and `plan/changelog/`. Both hold history that this feature must not edit.
+The allowlist names exact file paths. Three folders are the only entries that cover a whole tree: `plan/_archive/`, `plan/changelog/`, and `plan/current/`. The first two hold history that this feature must not edit. `plan/current/` holds a run's working state, and ship moves it to `plan/_archive/`. P2 added it, because this run's own plan artifacts name every old name.
 
 ## Alternatives Considered
 

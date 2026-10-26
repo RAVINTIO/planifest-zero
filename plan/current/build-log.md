@@ -97,3 +97,6 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Done: Track B REQ-001 REQ-004 (2026-10-26T02:09:28Z)
 - Note: commit 8c7fb77 also carries three pure renames staged by Tracks A and B (`initiative-run.mjs`, `initiative-labels.mjs`, `initiative.template.md`), with no content change. Later commits name explicit paths.
 - Done: Track A REQ-002 REQ-003 REQ-006 (2026-10-26T02:10:08Z)
+- REQ-007 guard test: RED with one hit outside the allowlist (the REQ-003 prefix test), GREEN after allowlisting it.
+- Deviation: the guard allowlists `plan/current/` as a third folder, because this run's plan artifacts name every old name. ADR-005, REQ-007, and R-004 updated.
+- Done: REQ-007 (2026-10-26T02:11:38Z)

@@ -20,12 +20,11 @@ As a maintainer, I get a failing test when an old name comes back, so that the r
   - `current-roadmap`, `roadmap-run`, `roadmap-labels`, `roadmap-entry.template`, and `.roadmap-logs`
   - `RAVINTIO_ROADMAP_`, `work.kind=roadmap`, and `ravintio.roadmap`
   - a `roadmap/` branch pattern, and an `R-A` to `R-E` stage prefix
-- The allowlist names exact files. Two folders are the only exception: `plan/_archive/` and `plan/changelog/`.
+- The allowlist names exact files. Three folders are the only exception: `plan/_archive/`, `plan/changelog/`, and `plan/current/`. Ship moves `plan/current/` to `plan/_archive/`.
 - The allowlist holds these files:
-  - historical test files
   - the migration 0005 files
-  - `plan/current/` artifacts for this feature
-  - the driver's old-variable stop check
+  - the driver's old-variable stop check, and `component.yml`, which describes it
+  - the 0000189 tests that name old names to check them
 - On a hit, the test prints each file and line and exits non-zero.
 - The test plants an old name in a temporary copy and checks that the search fails.
 - The test runs on Linux, macOS, and Windows through the existing runner.

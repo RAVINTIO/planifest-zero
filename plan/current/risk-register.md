@@ -18,7 +18,7 @@ version: "0.1.0"
 | R-001 | technical | A missed old name breaks the driver or `merge-guard` at the next activation. | medium | high | The old-name search test runs in CI. Dry run the driver against a stub initiative. | open |
 | R-002 | operational | `.claude/skills/` drifts from `ravintio-zero/skills/`. | high | medium | Run setup after P2, which the human pre-approved at P0. Then check that the copies match. | open |
 | R-003 | technical | A rename breaks a Windows-only test path. | low | medium | Run the PowerShell suites locally with `pwsh`. Treat Windows PowerShell 5.1 as CI-only. | open |
-| R-004 | technical | The old-name search test allowlist grows too broad and hides a real miss. | low | medium | The allowlist names exact paths, not folders. The only folder entries are `plan/_archive/` and `plan/changelog/`. | open |
+| R-004 | technical | The old-name search test allowlist grows too broad and hides a real miss. | low | medium | The allowlist names exact paths, not folders. The only folder entries are `plan/_archive/`, `plan/changelog/`, and `plan/current/`, which ship archives. | open |
 
 ## Assumptions Logged as Risks
 
