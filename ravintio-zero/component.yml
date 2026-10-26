@@ -1,7 +1,7 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000185-explain-strict-mode"
+feature: "0000192-rename-runner-lock-and-archive"
 version: "0.19.0"
 status: "active"
 type: "component-pack"

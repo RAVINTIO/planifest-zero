@@ -11,7 +11,7 @@ updated: "25 Oct 2026"
 | Field | Value |
 |-------|-------|
 | Version | `0.19.0` |
-| Last feature | `0000189-name-the-roadmap-initiative` |
+| Last feature | `0000192-rename-runner-lock-and-archive` |
 | Updated | `26 Oct 2026` |
 
 ## What this is
