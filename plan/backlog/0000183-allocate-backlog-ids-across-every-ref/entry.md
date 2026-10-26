@@ -35,11 +35,11 @@ Keep the next free id in a counter file, and reserve ids from it before any entr
   3. writes `n + qty`
   4. releases the lock
   5. returns ids `n` to `n + qty - 1`
-- Backlog entries, feature ids, and roadmap ids all reserve from this counter.
-- `ravintio-file-backlog`, the orchestrator, and roadmap charting call the script rather than scanning folders.
+- Backlog entries, feature ids, and initiative ids all reserve from this counter.
+- `ravintio-file-backlog`, the orchestrator, and initiative charting call the script rather than scanning folders.
 - A copy from another repo reserves a new local id and names its source id in the text. Each repo keeps its own sequence.
 - If two branches reserve the same ids, git shows a merge conflict on `.next-id`. Keep the higher value and renumber the entries on the branch that merges second. This answer is pre-approved.
-- Update the backlog and roadmap templates, which describe the "highest ever allocated + 1" rule.
+- Update the backlog and initiative templates, which describe the "highest ever allocated + 1" rule.
 
 ## Wanted outcome
 

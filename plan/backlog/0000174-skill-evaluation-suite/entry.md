@@ -6,7 +6,7 @@ status: "open"
 # Backlog Entry: 0000174 - skill evaluation suite against fixed briefs
 
 **Source feature:** none (roadmap 0000168 chart)
-**Source phase:** none (roadmap chart)
+**Source phase:** none (initiative chart)
 **Deferral source:** deliberate scope decision
 **Date filed:** 2026-10-25
 
