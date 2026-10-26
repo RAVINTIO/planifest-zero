@@ -1,13 +1,13 @@
 ---
-title: "Roadmap: {{id}} - {{short-title}}"
-summary: "{{One sentence: what this roadmap delivers.}}"
-status: "draft"  # draft | active | blocked | done
+title: "Initiative: {{id}} - {{short-title}}"
+summary: "{{One sentence: what this initiative delivers.}}"
+status: "proposed"  # proposed | charted | active | delivered | blocked
 ---
-# Roadmap: {{id}} - {{short-title}}
+# Initiative: {{id}} - {{short-title}}
 
-> Path: `plan/roadmap/{id}-{slug}/roadmap.md` for a draft, one folder per draft. `{id}` is a
-> zero-padded seven-digit number and `{slug}` is kebab-case. An active roadmap lives at
-> `plan/current-roadmap/roadmap.md`.
+> Path: `plan/roadmap/{id}-{slug}/initiative.md` for a draft, one folder per draft. `{id}` is a
+> zero-padded seven-digit number and `{slug}` is kebab-case. An active initiative lives at
+> `plan/current-initiative/initiative.md`.
 >
 > **`{id}` shares the backlog's sequence.** Next `{id}` = highest ever allocated + 1, across
 > `plan/backlog/`, `plan/_archive/`, `plan/changelog/`, and `plan/roadmap/`.
@@ -22,8 +22,8 @@ status: "draft"  # draft | active | blocked | done
 > at Chart. See Chart-time dependency approval in the same file.
 
 **Goal:** {{What the whole chain delivers, in one or two sentences.}}
-**Branch:** roadmap/{{id}}-{{slug}}
-**Status:** {{draft | active | blocked | done}}
+**Branch:** initiative/{{id}}-{{slug}}
+**Status:** {{proposed | charted | active | delivered | blocked}}
 **Position:** {{number of the next step to run, for example 1}}
 **Speed:** {{standard | fast, optional, a missing field means standard}}
 

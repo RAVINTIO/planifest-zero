@@ -33,7 +33,7 @@ When discovery starts, the orchestrator writes `plan/.orchestrator-active` conta
 | **check-orchestrator-presence** (UserPromptSubmit) | Injects a reminder banner on every prompt while a pipeline is active, so the orchestrator skill reloads after context compaction or session resume |
 | **check-design** (UserPromptSubmit) | Injects a hard STOP message if neither the sentinel nor a `feature-brief.md` is present |
 | **auto-trigger-orchestrator** (UserPromptSubmit) | Loads the orchestrator skill at the start of a session when no pipeline is active yet |
-| **merge-guard** (PreToolUse, Bash) | Blocks `gh pr merge` unless it is a squash into a `roadmap/*` branch. Merging into `main` stays human-only |
+| **merge-guard** (PreToolUse, Bash) | Blocks `gh pr merge` unless it is a squash into an `initiative/*` branch. Merging into `main` stays human-only |
 
 The sentinel is deleted last during ship, after the archive is confirmed complete. You never create or delete it manually.
 
@@ -72,9 +72,26 @@ The hook acts only while a pipeline is active, that is while `plan/.orchestrator
 
 Ship deletes the file with the other sentinels, before it raises the pull request. You never write it by hand.
 
-In a roadmap run, each step session writes its own id. The session that started the driver then sees the banner on every prompt. Leave the file alone, because writing your own id replaces the step session's id. Backlog entry 0000182 covers this case.
+In a roadmap initiative run, each step session writes its own id. The session that started the driver then sees the banner on every prompt. Leave the file alone, because writing your own id replaces the step session's id. Backlog entry 0000182 covers this case.
 
 → [Strict mode internals and the session_id protocol](pipeline-reference.md#strict-orchestrator-mode)
+
+---
+
+## Roadmap and initiative glossary
+
+This section defines the roadmap terms once. Other pack files link here.
+
+- **Roadmap:** the long-term plan for the product. `plan/roadmap/` holds it, with one subfolder per roadmap initiative.
+- **Roadmap initiative:** a goal that delivers a string of feature builds. Each build merges into the initiative's own branch, and that branch merges to `main` in one PR. After first mention, prose says "initiative".
+- **Initiative states:** every initiative holds one of five states, and each stage of the lifecycle sets one:
+  - `proposed`: Drafting sets it.
+  - `charted`: I-A Chart sets it.
+  - `active`: I-B Activate sets it.
+  - `delivered`: I-E Delivery sets it.
+  - `blocked`: any exception stop sets it.
+
+→ [Initiative stages and rules](standards/roadmap-standards.md)
 
 ---
 

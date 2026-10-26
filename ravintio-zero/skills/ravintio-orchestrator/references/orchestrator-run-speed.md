@@ -21,9 +21,9 @@ Write the answer to `plan/.run-speed` (`standard` or `fast`). Append `Run speed:
 
 Phases still run in order at either speed, and every gate and exception stop stays in place. The rules for a fast batch are in `## Fast batches` of `ravintio-zero/standards/agent-dispatch-standards.md`. Each phase skill lists its own units under `### Fast batch`.
 
-## Roadmap step
+## Initiative step
 
-A roadmap step asks no run-speed question. It writes the roadmap's `**Speed:**` field to `plan/.run-speed`, as R-C Run in `ravintio-zero/standards/roadmap-standards.md` describes. If the field is absent or holds another value, it writes `standard`.
+An initiative step asks no run-speed question. It writes the initiative's `**Speed:**` field to `plan/.run-speed`, as I-C Run in `ravintio-zero/standards/roadmap-standards.md` describes. If the field is absent or holds another value, it writes `standard`.
 
 ## Resume
 

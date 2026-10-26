@@ -94,3 +94,5 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - In progress: Track D REQ-008 (2026-10-26T02:02:39Z)
 - Done: Track D REQ-008 (2026-10-26T02:05:51Z)
 - Done: Track C REQ-005 (2026-10-26T02:06:00Z)
+- Done: Track B REQ-001 REQ-004 (2026-10-26T02:09:28Z)
+- Note: commit 8c7fb77 also carries three pure renames staged by Tracks A and B (`initiative-run.mjs`, `initiative-labels.mjs`, `initiative.template.md`), with no content change. Later commits name explicit paths.

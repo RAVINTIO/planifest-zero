@@ -6,7 +6,7 @@ Two actions are human-only, with no exception:
 - Committing directly to `main`. Every change lands via a feature branch.
 - Merging pull requests into `main`. The human on the loop reviews and merges.
 
-One narrow exception: `gh pr merge --squash` for your own feature PR into `roadmap/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `ravintio-zero/standards/roadmap-standards.md`.
+One narrow exception: `gh pr merge --squash` for your own feature PR into `initiative/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `ravintio-zero/standards/roadmap-standards.md`.
 
 Report back if any remote git or GitHub command fails for any reason.
 

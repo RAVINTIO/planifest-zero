@@ -47,20 +47,20 @@ Status messages use one form: `{prefix} {Status}: {one-liner}`. The status is St
 - Blocking: `P0 Discovery: Blocked: {specific gap}`
 - Skipping: `P3 Validate: Skipped: {reason}`
 
-Roadmap stages use five more prefixes. They use the same `{prefix} {Status}: {one-liner}` form.
+Initiative stages use five more prefixes. They use the same `{prefix} {Status}: {one-liner}` form.
 
 | Prefix | Stage |
 |--------|-------|
-| `R-A Chart:` | Chart |
-| `R-B Activate:` | Activate |
-| `R-C Run:` | Run |
-| `R-D Advance:` | Advance |
-| `R-E Delivery:` | Delivery |
+| `I-A Chart:` | Chart |
+| `I-B Activate:` | Activate |
+| `I-C Run:` | Run |
+| `I-D Advance:` | Advance |
+| `I-E Delivery:` | Delivery |
 
-- Example: `R-C Run: Starting: step 2 of roadmap 0000050`
-- Example: `R-B Activate: Blocked: no remote named origin`
+- Example: `I-C Run: Starting: step 2 of initiative 0000050`
+- Example: `I-B Activate: Blocked: no remote named origin`
 
-R-A to R-E are stage letters, not phase numbers. The pipeline still has exactly five phases, P0 to P4. When a roadmap is involved, read `ravintio-zero/standards/roadmap-standards.md` first.
+I-A to I-E are stage letters, not phase numbers. The pipeline still has exactly five phases, P0 to P4. When an initiative is involved, read `ravintio-zero/standards/roadmap-standards.md` first.
 
 ---
 
@@ -71,11 +71,11 @@ On every session start, before any action:
 1. **Pending migrations first.** Check `ravintio-zero/migrations/` for `.md` files not in `_done/`. If found, invoke `ravintio-migrator` for each before any other phase work.
    - Skip a migration whose `Applies when:` condition is false. Leave it pending.
 2. **Pack dependency update.** Detect per `ravintio-zero/standards/pack-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a pack update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
-3. **Check the roadmap, then scan `plan/current/`.** Check `plan/current-roadmap/` first.
-   - If a roadmap is `active` and `plan/current/` holds artifacts, resume that step through the rest of this list.
-   - If a roadmap is `active`, `plan/current/` is empty, and `position` is past the last step, run R-E Delivery.
-   - If a roadmap is `active` and `plan/current/` is empty, start the step at `position` and open with `R-C Run: Starting: {step}`.
-   - If no roadmap is `active`, scan `plan/current/` for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
+3. **Check the initiative, then scan `plan/current/`.** Check `plan/current-initiative/` first.
+   - If an initiative is `active` and `plan/current/` holds artifacts, resume that step through the rest of this list.
+   - If an initiative is `active`, `plan/current/` is empty, and `position` is past the last step, run I-E Delivery.
+   - If an initiative is `active` and `plan/current/` is empty, start the step at `position` and open with `I-C Run: Starting: {step}`.
+   - If no initiative is `active`, scan `plan/current/` for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
 4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
 5. **`.feature-id` staleness.** If present and its contents differ from the current work, flag it for human review before proceeding.
 6. **Skips.** If `plan/current/.skips` exists, acknowledge the skipped phases at the top of your response.
@@ -99,7 +99,7 @@ Never assume you know a template's format. Read the relevant file immediately be
 | The build log | `ravintio-zero/templates/build-log.template.md` |
 | `plan/current/design.md` | `ravintio-zero/templates/design.template.md` |
 | A backlog entry | `ravintio-zero/templates/backlog-entry.template.md` |
-| A roadmap draft or plan | `ravintio-zero/templates/roadmap-entry.template.md` |
+| An initiative draft or plan | `ravintio-zero/templates/initiative.template.md` |
 | Any roadmap work (chart, activate, run, advance, delivery) | `ravintio-zero/standards/roadmap-standards.md` |
 | A pause record | `ravintio-zero/templates/pause.template.md` |
 | A park record | `ravintio-zero/templates/park.template.md` |
@@ -161,7 +161,7 @@ Opening Briefing, Decomposition, Adoption Modes (the table that step 7 uses), Sc
 Perform in order, before coaching begins:
 
 1. **Context reset** (fresh starts only): apply the Context Hygiene procedure.
-2. **Pre-flight** (fresh starts only; a roadmap step cuts its branch per R-C Run): run `git branch --show-current` and report it. Ask whether previous PRs are merged and main is up to date. Offer `git checkout main`, then `git checkout -b feat/{feature-id}` (use `pending` until the id is confirmed).
+2. **Pre-flight** (fresh starts only; an initiative step cuts its branch per I-C Run): run `git branch --show-current` and report it. Ask whether previous PRs are merged and main is up to date. Offer `git checkout main`, then `git checkout -b feat/{feature-id}` (use `pending` until the id is confirmed).
 3. **Stale run-mode** (fresh starts only): if `plan/.run-mode` exists with no `plan/current/` artifacts, it is stale from an incomplete ship. Warn, delete it, continue.
 4. **Write the sentinel**: `plan/.orchestrator-active` containing the feature-id (or `pending`). Update once confirmed. Include in the discovery commit.
 5. **Create the build log** from `ravintio-zero/templates/build-log.template.md`. Fill the header. On resume, append rather than overwrite. Append a `### P0: Discovery` block before any discovery work (Hard Limit 9). At ship, the summary table is completed.
@@ -169,7 +169,7 @@ Perform in order, before coaching begins:
 7. **Detect adoption mode** per the table below. Apply the highest-priority signal only. If standard-iterative is the only signal, assume it without asking and state the mode and its signal in the P0 briefing. Source in `src/` beside an archive is the normal iterative case. Recommend-then-confirm in every other case. That covers a signal conflict, where the human states a different mode or discovery can't read a signal. It also covers External Anchor, Retrofit, and Greenfield. Record the assumed or confirmed mode and its signal in `discovery.md`, `design.md`, and the build log.
 8. **Read the version**: `docs/about.md` frontmatter, cross-checked against the most recent archive entry. If `product.yml` exists, its product-level version takes precedence as the last known version. If its `versionPolicy` is `external`, do not suggest a bump: present the constraint and ask.
 9. **Product id check**: `product.yml` must exist at the project root with a non-empty `id`. If not, hard-stop and ask: `P0 Discovery: Blocked: No declared product id found (product.yml is missing or has no id field). The id gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. What should the product id be? (kebab-case, stable across releases)`. Write or update only the `id` field, then resume.
-10. **Backlog pickup** (a roadmap step takes its entries from its roadmap row, per R-C Run): scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids. Check `plan/_archive/` and `plan/changelog/` for the high-water mark. Read `releaseSize` from `product.yml` to set the release budget (see Decomposition).
+10. **Backlog pickup** (an initiative step takes its entries from its initiative row, per I-C Run): scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids. Check `plan/_archive/` and `plan/changelog/` for the high-water mark. Read `releaseSize` from `product.yml` to set the release budget (see Decomposition).
     - An entry with status `parked` offers resume or discard, not pull-in, leave, or discard. Resume runs these steps in order. `node scripts/park.mjs resume {branch}` does steps 1 and 2.
       1. Check out the branch the entry names.
       2. Merge `origin/main` into it. If the merge conflicts, report the exact error and stop.
@@ -178,7 +178,7 @@ Perform in order, before coaching begins:
     - Discard deletes the branch locally and on `origin`. It runs only after the human confirms. Run `node scripts/park.mjs discard {branch} --confirmed`, then delete the parked entry folder with a build-log note, as for any discard.
     - Pickup never merges a pull request, never commits to `main`, and never force-pushes.
 11. **Write `discovery.md`** (Hard Limit 12): copy `ravintio-zero/templates/discovery.template.md` to `plan/current/discovery.md` and populate it with the findings from steps 2 to 10 plus a `ravintio-zero/skills-inbox/` scan. Commit it on its own before coaching begins. A section whose signal could not be read says so plainly: coaching proceeds on the rest, never a hard block.
-12. **Suggest a version bump** (a roadmap step applies its row's `Bump`, per R-C Run): a feature run defaults to a minor bump (x.Y.0). A breaking change is major. Recommend-then-confirm. **Hard block on downgrade**: if the human proposes a version lower than the last known one, refuse: `P0 Discovery: Blocked: {proposed} is lower than the last known version ({current}). Provide a version >= {current}.` Record the confirmed version in `design.md` and the build log.
+12. **Suggest a version bump** (an initiative step applies its row's `Bump`, per I-C Run): a feature run defaults to a minor bump (x.Y.0). A breaking change is major. Recommend-then-confirm. **Hard block on downgrade**: if the human proposes a version lower than the last known one, refuse: `P0 Discovery: Blocked: {proposed} is lower than the last known version ({current}). Provide a version >= {current}.` Record the confirmed version in `design.md` and the build log.
 13. **Strict-mode ack**: if `plan/.orchestrator-strict` exists, write `plan/.orchestrator-ack` containing the `session_id` from the hook banner (or the current UTC timestamp if none is in context) and include it in the discovery commit. This silences the strict-mode banner for the session.
 14. **Check the skills inbox**: process any `SKILL.md` in `ravintio-zero/skills-inbox/` per Capability Skills below. Repeat this check at every phase transition.
 
@@ -222,7 +222,7 @@ On a gate change, append `Gate revised: P{N}`.
 
 Then ask the run-speed question and write `plan/.run-speed`.
 
-A roadmap step skips the run-mode question and the human confirmation, as R-C Run in `ravintio-zero/standards/roadmap-standards.md` describes.
+An initiative step skips the run-mode question and the human confirmation, as I-C Run in `ravintio-zero/standards/roadmap-standards.md` describes.
 
 In a gated run, state the context size before you ask for confirmation. See Context size at gates in Phase Invocation.
 
@@ -258,13 +258,13 @@ Conventions for every downstream phase:
 - If the host reports none, give a stated estimate, labelled as an estimate.
 - If the size passes about 150,000 tokens, recommend `/clear` or a new session before the next phase. The `plan/current/` artifacts carry the state, so a clear loses none. Tell the human to start the new session and let Resume Detection continue from the build log.
 - The statement is advisory. It never blocks, delays, or skips a gate.
-- An autonomous run or a roadmap step does not report context size. Each roadmap step already starts a fresh session.
+- An autonomous run or an initiative step does not report context size. Each initiative step already starts a fresh session.
 
 **Before P2:** check the declared stack against installed capability skills and recommend loading relevant ones. Then apply subagent decomposition for every requirement: consult `## Skill Map` in `design.md` for the best-fit skill, select the model tier, and dispatch per the dispatch standards below.
 
 **After P4:** apply the Context Hygiene reset so the next session starts cold.
 
-**Merge is human-only.** Merging into `main` stays human-only in every run mode, and the agent never commits to `main`. The one exception is `gh pr merge --squash` for the agent's own feature PR into `roadmap/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `ravintio-zero/standards/roadmap-standards.md`.
+**Merge is human-only.** Merging into `main` stays human-only in every run mode, and the agent never commits to `main`. The one exception is `gh pr merge --squash` for the agent's own feature PR into `initiative/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `ravintio-zero/standards/roadmap-standards.md`.
 
 ---
 
@@ -283,11 +283,11 @@ After the human acts, the run resumes in the same mode from `plan/.run-mode`.
 | Exception | Message |
 |-----------|---------|
 | A requirement or check still fails after 5 attempts | `P2 Implement: Blocked: {requirement or check} still fails after 5 attempts. Review the escalation and choose the next step.` (P3 uses `P3 Validate:`) |
-| P2 needs a schema change, unless a roadmap step matches a chart-approved row (see `ravintio-zero/standards/roadmap-standards.md`) | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
+| P2 needs a schema change, unless an initiative step matches a chart-approved row (see `ravintio-zero/standards/roadmap-standards.md`) | `P2 Implement: Blocked: schema change proposed at {path}. Approve or reject the migration proposal.` |
 | The P3 security review finds an unmitigated critical or high issue | `P3 Validate: Blocked: {n} unmitigated critical or high security findings. Approve a mitigation or accept the risk.` |
 | A push or `gh pr create` fails | `P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.` (other phases use their own prefix) |
 | A possible credential appears in a file the run will commit, or in a PR body | `{prefix} Blocked: possible credential in {path}. Remove it or confirm it is not a secret.` Stop before the commit and before any push. Never print the value. |
-| P1 or P2 adds a library or service that is not on the approved list. This applies in every run mode. The list is the `Approved dependencies` field of `design.md` in a gated run, and the `## Dependencies` table of `roadmap.md` in a roadmap step | `{prefix} Blocked: new dependency {name} is not on the approved list. Approve it or choose an approved alternative.` When the human approves, add the name to the same list and record the decision in the `Resolved:` line. |
+| P1 or P2 adds a library or service that is not on the approved list. This applies in every run mode. The list is the `Approved dependencies` field of `design.md` in a gated run, and the `## Dependencies` table of `initiative.md` in an initiative step | `{prefix} Blocked: new dependency {name} is not on the approved list. Approve it or choose an approved alternative.` When the human approves, add the name to the same list and record the decision in the `Resolved:` line. |
 
 The status `Blocked:` follows the phase prefix, as in every status message. Never work round an exception stop. Do not force-push, merge, or skip the failing check.
 

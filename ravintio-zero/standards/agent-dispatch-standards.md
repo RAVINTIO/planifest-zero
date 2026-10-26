@@ -168,4 +168,4 @@ On resume, read the build log. An `In progress:` line with no later matching `Do
 
 Never commit uncommitted files that an interrupted unit left behind without rerunning the unit. A stop can cut a file off partway through, and nothing records whether it finished. The stash keeps the files for the human to inspect.
 
-The roadmap driver reads only `Blocked:` and `Resolved:` lines. Progress markers never stop it.
+The initiative driver reads only `Blocked:` and `Resolved:` lines. Progress markers never stop it.

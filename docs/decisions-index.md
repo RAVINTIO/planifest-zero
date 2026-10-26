@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000185-explain-strict-mode
+Last updated: 0000189-name-the-roadmap-initiative
 
 ---
 
@@ -122,10 +122,10 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | 0000037 ADR-003 (decision item 4 only, narrowed) | 0000041 ADR-003 | The non-array warning no longer prints the old value. Warn, replace, and exit 0 stand. |
 | 0000031 ADR-001 (phase numbers and prefixes only, superseded in part) | 0000042 ADR-003 | Phases take the numbers P0 to P4 and number-plus-name prefixes. The five-phase contract and skill consolidation stand. |
 | 0000023 run-mode gate rules (in skills and tests, no ADR) | 0000042 ADR-002 | The two earlier run modes become `gated` and `autonomous`. |
-| 0000042 ADR-002 (merge rule only, amended) | 0000043 ADR-003 | The agent may squash-merge its own step PR into a `roadmap/*` branch after a clean P3 and green CI. Merging into `main` stays human-only. |
+| 0000042 ADR-002 (merge rule only, amended) | 0000043 ADR-003 | The agent may squash-merge its own step PR into an `initiative/*` branch after a clean P3 and green CI. Merging into `main` stays human-only. |
 | 0000031 ADR-002 (folder and product id only, superseded in part) | 0000160 ADR-001 | The pack folder is `ravintio-zero/` and the product id is `ravintio-zero`. |
 | 0000042 ADR-004 (brand word only, superseded in part) | 0000160 ADR-004 | A separate brand guard test blocks the earlier product name. The wording allowlist test for the retired word stands. |
-| 0000043 ADR-004 (driver child contract, extended) | 0000151 ADR-005 | Each roadmap child gets a model, an optional turn cap, a step log, and telemetry labels. The fresh `claude -p` session per step stands. |
+| 0000043 ADR-004 (driver child contract, extended) | 0000151 ADR-005 | Each initiative child gets a model, an optional turn cap, a step log, and telemetry labels. The fresh `claude -p` session per step stands. |
 | 0000042 ADR-002 (exception stops, extended) | 0000151 ADR-004 | A sixth exception stop covers a library or service missing from the approved list. It applies to both run modes. |
 
 ### Feature 0000034: setup-hardening
@@ -209,23 +209,23 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
-| ADR-001 | The stack stays as declared | accepted | No new language, runtime, or dependency. Adds one Node hook, `merge-guard`, and one Node script, `roadmap-run.mjs`. |
-| ADR-002 | Roadmap storage and lifecycle | accepted | Drafts live in `plan/roadmap/`. The one active roadmap lives in `plan/current-roadmap/` on the roadmap branch. Ids share the backlog sequence. |
-| ADR-003 | Agent squash-merge into roadmap branches | accepted | The agent may run `gh pr merge --squash` for its own step PR into `roadmap/*` after a clean P3 and green CI. `merge-guard` enforces it. Amends the 0000042 run-mode merge rule. |
-| ADR-004 | Driver script runs each step in a fresh session | accepted | `roadmap-run.mjs` runs each step as its own `claude -p` session in auto permission mode. A lock file stops a second driver. |
-| ADR-005 | Tag after the squash merge in a roadmap step | accepted | A roadmap step squash-merges first, then tags the squash commit and pushes the tag. Outside a roadmap, tag-before-PR stays. |
-| ADR-006 | Self-confirmed roadmap steps and stage prefixes | accepted | A step's P0 builds the brief from its backlog entries and self-confirms. R-A Chart is the single human approval, including predicted additive schema changes. Stages R-A to R-E sit beside P0 to P4. |
+| ADR-001 | The stack stays as declared | accepted | No new language, runtime, or dependency. Adds one Node hook, `merge-guard`, and one Node script, `initiative-run.mjs`. |
+| ADR-002 | Roadmap storage and lifecycle | accepted | Drafts live in `plan/roadmap/`. The one active initiative lives in `plan/current-initiative/` on the initiative branch. Ids share the backlog sequence. |
+| ADR-003 | Agent squash-merge into initiative branches | accepted | The agent may run `gh pr merge --squash` for its own step PR into `initiative/*` after a clean P3 and green CI. `merge-guard` enforces it. Amends the 0000042 run-mode merge rule. |
+| ADR-004 | Driver script runs each step in a fresh session | accepted | `initiative-run.mjs` runs each step as its own `claude -p` session in auto permission mode. A lock file stops a second driver. |
+| ADR-005 | Tag after the squash merge in an initiative step | accepted | An initiative step squash-merges first, then tags the squash commit and pushes the tag. Outside an initiative, tag-before-PR stays. |
+| ADR-006 | Self-confirmed initiative steps and stage prefixes | accepted | A step's P0 builds the brief from its backlog entries and self-confirms. I-A Chart is the single human approval, including predicted additive schema changes. Stages I-A to I-E sit beside P0 to P4. |
 | ADR-007 | Progress markers and interrupted-unit resume | accepted | Each dispatched unit logs `In progress:` before it starts and `Done:` with its work. On resume, the session stashes left-over changes and reruns an interrupted unit from its start. |
 
 ### Feature 0000151: hardening-efficiency-and-ci
 
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
-| ADR-001 | The stack stays as declared | accepted | No new language, runtime, or package. Adds one Node helper, `roadmap-labels.mjs`, and edits existing files. |
+| ADR-001 | The stack stays as declared | accepted | No new language, runtime, or package. Adds one Node helper, `initiative-labels.mjs`, and edits existing files. |
 | ADR-002 | Hook block reasons go to stderr and stdout | accepted | `gate-write`, `em-dash-guard`, and `ratchet-check` write each block reason to both streams, as `merge-guard` does. The stdout write stays plain text. |
 | ADR-003 | Ship clears sentinels before the PR | accepted | Ship runs Step 7 tag, Step 8 clear sentinels, Step 9 push and PR, Step 10 final gate. The tag is pushed with the branch. |
 | ADR-004 | A sixth exception stop for unapproved dependencies | accepted | P1 or P2 adding a library or service that is missing from the approved list stops the run. It applies to both run modes. |
-| ADR-005 | Roadmap driver child contract | accepted | The driver passes `--model` and `--max-turns`, writes `plan/.roadmap-logs/step-{position}.log`, and appends percent-encoded labels to `OTEL_RESOURCE_ATTRIBUTES`. |
+| ADR-005 | Initiative driver child contract | accepted | The driver passes `--model` and `--max-turns`, writes `plan/.initiative-logs/step-{position}.log`, and appends percent-encoded labels to `OTEL_RESOURCE_ATTRIBUTES`. |
 | ADR-006 | Orchestrator references split | accepted | Rarely used orchestrator sections move word for word to `references/orchestrator-*.md`. A line-preservation test proves no rule was lost. |
 | ADR-007 | Setup prunes retired hooks by list | accepted | Setup deletes an installed hook only if its name is on the retired list, which starts with `phase-enum`. |
 | ADR-008 | Park refuses symlinked entry paths | accepted | Park refuses any symlink in the entry path, checking with `lstat` and real-path containment before it creates, writes, or removes. |
@@ -235,7 +235,7 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
 | ADR-001 | The RAVINTIO rename map | accepted | Prose writes RAVINTIO in block capitals. Identifiers use lowercase `ravintio` and variables use `RAVINTIO_`. History folders stay as written. Supersedes 0000031 ADR-002 in part. |
-| ADR-002 | Legacy aliases stay accepted through 0.x | accepted | Two roadmap variables and the em dash sentinel keep their earlier names as fallbacks. The new name wins. The fallbacks go at 1.0.0. 0000164 ADR-005 moves the removal point from 2.0.0 to 1.0.0. |
+| ADR-002 | Legacy aliases stay accepted through 0.x | accepted | Two initiative variables and the em dash sentinel keep their earlier names as fallbacks. The new name wins. The fallbacks go at 1.0.0. 0000164 ADR-005 moves the removal point from 2.0.0 to 1.0.0. |
 | ADR-003 | Consumer migration 0004 | accepted | Bash and PowerShell helpers move the overrides folder and the workflow, remove old markers, move the old pack folder to `.ravintio-backup/` instead of deleting it, and archive 0004. A migration with a false `Applies when:` condition stays pending. Setup stops while an old folder remains. |
 | ADR-004 | Brand guard test | accepted | A test fails on any tracked path or line outside history that holds the earlier product name, unless a path and line allowlist entry matches. A stale entry also fails. |
 | 0000160 ADR-001 (version decision only) | 0000164 ADR-005 | The rename release is 0.12.0, not 1.0.0. The rename map stays in force. |
