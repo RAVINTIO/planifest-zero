@@ -19,8 +19,8 @@
 ### Names
 | Today | New |
 |-------|-----|
-| `plan/.roadmap-runner.lock` | `plan/.initiative-runner.lock` |
-| `plan/_archive/{id}-{slug}-roadmap-{date}/` | `plan/_archive/{id}-{slug}-initiative-{date}/` |
+| the old `roadmap-runner` lock | `plan/.initiative-runner.lock` |
+| the old `-roadmap-` archive folder form | `plan/_archive/{id}-{slug}-initiative-{date}/` |
 
 Unchanged: existing folders in `plan/_archive/`, such as `0000168-backlog-clearance-roadmap-2026-10-25`.
 
