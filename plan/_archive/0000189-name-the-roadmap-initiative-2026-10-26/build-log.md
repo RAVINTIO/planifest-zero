@@ -133,15 +133,15 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-26T02:30:30Z` |
+| Start | `2026-10-26T02:30:17Z` |
 | End | `2026-10-26T02:30:29Z` |
-| Wall clock | `-1m 59s` |
+| Wall clock | `0m 12s` (to the summary. Archive, version bump, and PR followed) |
 | Model tier | cheaper (haiku: build assessment) |
 | Skills loaded | ravintio-orchestrator, ravintio-ship |
 | Agents spawned | `1` |
 | MCP calls | `0` |
 | Parallel task batches | `1` (build assessment beside the version bump) |
-| Notes | `Autonomous: raise the PR without a stop.` |
+| Notes | `Autonomous: raise the PR without a stop. Start corrected at ship to the first P4 commit (903de12), because the first draft held a guessed time.` |
 
 ---
 
