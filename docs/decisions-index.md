@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000189-name-the-roadmap-initiative
+Last updated: 0000192-rename-runner-lock-and-archive
 
 ---
 
@@ -18,6 +18,12 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000192: rename-runner-lock-and-archive
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature keeps the declared stack and adds no dependency. |
+| ADR-002 | Read both archive folder forms | accepted | I-E Delivery archives to `plan/_archive/{id}-{slug}-initiative-{date}/`. The driver's delivery check also accepts the older `-roadmap-` folder form, so no migration runs. |
 ### Feature 0000189: name-the-roadmap-initiative
 
 | ADR | Title | Status | Summary |
