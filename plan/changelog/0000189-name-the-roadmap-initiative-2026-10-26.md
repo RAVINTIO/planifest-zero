@@ -2,7 +2,7 @@
 
 **Feature:** name-the-roadmap-initiative
 **Version:** 0.19.0
-**PR:** pending
+**PR:** [#37](https://github.com/RAVINTIO/ravintio-zero/pull/37)
 
 ## What changed
 
