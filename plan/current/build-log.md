@@ -100,3 +100,5 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - REQ-007 guard test: RED with one hit outside the allowlist (the REQ-003 prefix test), GREEN after allowlisting it.
 - Deviation: the guard allowlists `plan/current/` as a third folder, because this run's plan artifacts name every old name. ADR-005, REQ-007, and R-004 updated.
 - Done: REQ-007 (2026-10-26T02:11:38Z)
+- REQ-009: setup ran with `--strict-orchestrator` from `plan/state/claude-code.md`. `diff -rq ravintio-zero/skills .claude/skills` reports no differing or missing source files.
+- Done: REQ-009 (2026-10-26T02:12:10Z)
