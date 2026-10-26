@@ -93,3 +93,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - In progress: Track C REQ-005 (2026-10-26T02:02:39Z)
 - In progress: Track D REQ-008 (2026-10-26T02:02:39Z)
 - Done: Track D REQ-008 (2026-10-26T02:05:51Z)
+- Done: Track C REQ-005 (2026-10-26T02:06:00Z)
