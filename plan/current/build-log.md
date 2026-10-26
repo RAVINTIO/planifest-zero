@@ -52,3 +52,17 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - P0 exchange (setup): Q: (human, unprompted) / A: Stop and ask before setup runs, even in autonomous mode.
 - P0 exchange (setup, revised): Q: Confirm the design? / A: "Or just run it. You have my permission. Perhaps just stop when you want context clearing." Setup is pre-approved. The run stops when it recommends a context clear, in place of the setup stop.
 - Design confirmed by the human (2026-10-25T21:54:37Z).
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-26T01:48:06Z` |
+| End | `pending` |
+| Wall clock | `pending` |
+| Model tier | primary |
+| Skills loaded | ravintio-orchestrator, ravintio-plan |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | `Resumed in a new session (254626ef). Run mode autonomous, speed fast.` |
