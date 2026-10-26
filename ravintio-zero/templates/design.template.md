@@ -43,7 +43,7 @@
 ## Dependencies
 - Upstream: {list}
 - Downstream: {list}
-- Approved dependencies: {each library or service the feature may add, or none. In a roadmap step, copy the step's rows from roadmap.md}
+- Approved dependencies: {each library or service the feature may add, or none. In an initiative step, copy the step's rows from initiative.md}
 
 ## Active Skills
 {List of capability skills available for this run, or "None"}

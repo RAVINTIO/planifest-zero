@@ -21,7 +21,7 @@ assert_contains 'usage figure the host reports' "$PI" "host-reported usage first
 assert_contains 'labelled as an estimate' "$PI" "labelled estimate second"
 assert_contains 'advisory' "$PI" "statement is advisory"
 assert_contains 'never blocks, delays, or skips a gate' "$PI" "never blocks a gate"
-assert_contains 'autonomous run or a roadmap step does not report context size' "$PI" "autonomous run and roadmap step do not report"
+assert_contains 'autonomous run or an initiative step does not report context size' "$PI" "autonomous run and initiative step do not report"
 assert_contains 'Resume Detection' "$PI" "names the resume route"
 assert_contains 'Context size at gates' "$DC" "design gate points to the rule"
 

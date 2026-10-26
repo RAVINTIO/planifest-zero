@@ -13,7 +13,7 @@ description: Archive, build assessment, changelog, version, and PR, behind the f
 2. Do not modify application code or pack files during this phase.
 3. Never skip the archive step. A populated `plan/current/` breaks resume detection for the next feature.
 4. Read `plan/.run-mode` before Step 8. In `gated`, the final gate stops before the PR. In `autonomous`, raise the PR without a stop. The PR is where the human reviews the run.
-5. Merging into `main` stays human-only in every run mode, and the agent never commits to `main`. The one exception is `gh pr merge --squash` for the agent's own feature PR into `roadmap/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `ravintio-zero/standards/roadmap-standards.md`.
+5. Merging into `main` stays human-only in every run mode, and the agent never commits to `main`. The one exception is `gh pr merge --squash` for the agent's own feature PR into `initiative/*`, after a clean P3 and green CI. The `merge-guard` hook enforces it. See `ravintio-zero/standards/roadmap-standards.md`.
 6. Credentials are never in your context.
 7. One question at a time.
 
@@ -74,7 +74,7 @@ Derive the current product version with `node ravintio-zero/scripts/product-vers
 
 ### Step 7: Release tag
 
-Create no tag. After the human merges the PR, the CI `release-tag` job tags the merge commit on `main` with `v{version}`. A squash merge leaves a branch tag off `main`. For a roadmap step: R-D Advance tags the squash commit.
+Create no tag. After the human merges the PR, the CI `release-tag` job tags the merge commit on `main` with `v{version}`. A squash merge leaves a branch tag off `main`. For an initiative step: I-D Advance tags the squash commit.
 
 ### Step 8: Clear sentinels
 
@@ -170,6 +170,6 @@ When `plan/.run-speed` holds `fast`, run one batch after Step 4 in one message. 
 
 Each unit commits its own files by path, one commit at a time, per `## Fast batches` in `ravintio-zero/standards/agent-dispatch-standards.md`. Step 7 starts after both land. At `standard`, run Steps 5 and 6 in order.
 
-## Roadmap steps
+## Initiative steps
 
-When `plan/current-roadmap/roadmap.md` has `status: active`, read `ravintio-zero/standards/roadmap-standards.md` first. Step 9 gives way to its R-D Advance stage, and R-E Delivery follows the last step. Outside a roadmap, ignore this section.
+When `plan/current-initiative/initiative.md` has `status: active`, read `ravintio-zero/standards/roadmap-standards.md` first. Step 9 gives way to its I-D Advance stage, and I-E Delivery follows the last step. Outside an initiative, ignore this section.

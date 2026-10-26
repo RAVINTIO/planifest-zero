@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000173-workflow-governance-gates
+Last updated: 0000192-rename-runner-lock-and-archive
 
 ## What this repo is
 
@@ -46,7 +46,7 @@ At the end of P0, the orchestrator asks how to run P1 to P4. It writes the answe
 
 On resume, a missing or unknown `plan/.run-mode` makes the orchestrator ask the question again and name the value it found.
 
-**Run speed.** After the run mode, the orchestrator asks for a run speed and writes `standard` or `fast` to `plan/.run-speed`. A missing or unknown value counts as `standard`. A roadmap step takes the roadmap's `**Speed:**` field.
+**Run speed.** After the run mode, the orchestrator asks for a run speed and writes `standard` or `fast` to `plan/.run-speed`. A missing or unknown value counts as `standard`. An initiative step takes the initiative's `**Speed:**` field.
 
 - **Standard.** Each phase applies its own parallelism rules.
 - **Fast.** Each phase skill dispatches the units in its `### Fast batch` list, each batch in one message. The rules sit in `## Fast batches` of the dispatch standard.
@@ -56,11 +56,11 @@ Phases run in order at either speed, and the gates and exception stops stay the 
 **Exception stops.** Both modes stop and print `{prefix} Blocked: {action needed}` in these cases:
 
 - A requirement or check still fails after 5 attempts.
-- P2 needs a schema change. In a roadmap step, a change that matches a chart-approved additive row does not stop.
+- P2 needs a schema change. In an initiative step, a change that matches a chart-approved additive row does not stop.
 - The P3 security review finds an unmitigated critical or high issue.
 - A push or `gh pr create` fails.
 - A possible credential appears in a file the run will commit, or in the PR body.
-- P1 or P2 adds a library or service that is not on the approved dependency list. The list is `design.md` "Approved dependencies" in a gated or autonomous run, and `roadmap.md` "## Dependencies" in a roadmap step.
+- P1 or P2 adds a library or service that is not on the approved dependency list. The list is `design.md` "Approved dependencies" in a gated or autonomous run, and `initiative.md` "## Dependencies" in an initiative step.
 
 Each stop adds a `Blocked:` line to the build log. A resumed run does not pass it until a `Resolved:` line follows.
 
@@ -86,17 +86,17 @@ The pipeline measures its own workflow as well as the product. Phase skills writ
 
 Ship adds the resulting `## Workflow governance` section to `build-report.md` and the PR description. A breach shows in both places and never stops ship. If the script fails, ship writes `Workflow governance: not measured` with the reason.
 
-### Roadmaps
+### Initiatives
 
-A roadmap is a chain of feature steps that the human approves once. The standard `ravintio-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `R-A Chart:`, `R-B Activate:`, `R-C Run:`, `R-D Advance:`, and `R-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
+An initiative is a chain of feature steps that the human approves once. The standard `ravintio-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `I-A Chart:`, `I-B Activate:`, `I-C Run:`, `I-D Advance:`, and `I-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
 
-- **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/roadmap.md` on any branch. The one active roadmap lives in `plan/current-roadmap/roadmap.md` on the branch `roadmap/{id}-{slug}`. Roadmap ids share the backlog sequence.
-- **Chart and activate.** R-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the roadmap's `## Schema changes` table. R-B Activate cuts the roadmap branch, writes the active roadmap, and offers the driver. One roadmap is active per working tree.
-- **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the roadmap branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
-- **Advance.** At P4, the agent raises the step PR against the roadmap branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside a roadmap, the CI `release-tag` job tags the merge commit after the human merges.
-- **Delivery.** R-E Delivery archives the roadmap and raises one PR to `main` that asks for a merge commit. The human merges it.
-- **Driver.** `ravintio-zero/scripts/roadmap-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.roadmap-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `R-C Run: Blocked:`. Each step writes `plan/.roadmap-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.roadmap`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/roadmap-labels.mjs`.
-- **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `roadmap/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
+- **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/initiative.md` on any branch. The one active initiative lives in `plan/current-initiative/initiative.md` on the branch `initiative/{id}-{slug}`. Initiative ids share the backlog sequence.
+- **Chart and activate.** I-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the initiative's `## Schema changes` table. I-B Activate cuts the initiative branch, writes the active initiative, and offers the driver. One initiative is active per working tree.
+- **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the initiative branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
+- **Advance.** At P4, the agent raises the step PR against the initiative branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside an initiative, the CI `release-tag` job tags the merge commit after the human merges.
+- **Delivery.** I-E Delivery archives the initiative and raises one PR to `main` that asks for a merge commit. The human merges it.
+- **Driver.** `ravintio-zero/scripts/initiative-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.initiative-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `I-C Run: Blocked:`. Each step writes `plan/.initiative-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.initiative`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/initiative-labels.mjs`.
+- **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `initiative/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
 
 The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. Five support skills complete the set of thirteen: ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, ravintio-refresh-setup, and ravintio-file-backlog.
 
@@ -132,7 +132,7 @@ Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from 
 
 Enforcement is deterministic where it can be, and instructional where it cannot.
 
-**Deterministic.** A hook exits 2 with a human-readable message and Claude Code blocks the tool call. `gate-write`, `em-dash-guard`, `ratchet-check`, and `merge-guard` write the reason to stderr and stdout, so the agent sees why the call stopped. `gate-write` gates this project only. It passes a target whose real path lies outside the project's real root, and resolves symlinks first. So a link inside the project that points outside counts as outside. For an in-project target, it blocks a write that has no confirmed design or no matching declared component. `plan/`, `docs/`, and a few root files always pass. `ratchet-check` blocks weakening edits to an active loop's artifacts. `em-dash-guard` rejects U+2014 in scoped prose paths. `merge-guard` blocks a `gh pr merge` that is not a squash into a `roadmap/*` branch.
+**Deterministic.** A hook exits 2 with a human-readable message and Claude Code blocks the tool call. `gate-write`, `em-dash-guard`, `ratchet-check`, and `merge-guard` write the reason to stderr and stdout, so the agent sees why the call stopped. `gate-write` gates this project only. It passes a target whose real path lies outside the project's real root, and resolves symlinks first. So a link inside the project that points outside counts as outside. For an in-project target, it blocks a write that has no confirmed design or no matching declared component. `plan/`, `docs/`, and a few root files always pass. `ratchet-check` blocks weakening edits to an active loop's artifacts. `em-dash-guard` rejects U+2014 in scoped prose paths. `merge-guard` blocks a `gh pr merge` that is not a squash into a `initiative/*` branch.
 
 **Instructional.** Skills tell the agent what to do. The orchestrator's hard limits, the one-question-at-a-time rule, and the phase gates all rely on the agent following its instructions.
 

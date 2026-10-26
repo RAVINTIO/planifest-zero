@@ -22,6 +22,10 @@ The human on the loop raised this during RAVINTIO Framework feature 0000039-ravi
 
 Make the plan, and any re-plan after a reopened phase, include a concurrency plan. It lists the work units, their dependencies, and the batches that can run at once when they share no files. Default to concurrent dispatch when two units have no dependency and no shared write target, and record the reason when work runs in sequence.
 
+## Wanted outcome
+
+Every execution plan has a concurrency section that lists the units, their dependencies, and the batches. Each unit that runs in sequence gives its reason. The consistency check fails a plan that lacks the section.
+
 ## Why Deferred
 
 The human on the loop asked for it as a backlog entry. Feature 0000172-subagent-acceleration, which was in progress when this entry was filed, adds a `fast` run speed with batched dispatch per phase. Check at pickup what 0000172 already covers. This entry asks for more: concurrency planned up front and the default for every run, not just one speed setting.

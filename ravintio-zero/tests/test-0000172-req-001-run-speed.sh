@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 0000172 req-001: run-speed-setting
 # The orchestrator asks for a run speed and writes plan/.run-speed. A missing
-# or unknown value counts as standard, a roadmap step reads its Speed field,
+# or unknown value counts as standard, an initiative step reads its Speed field,
 # and ship clears the file with the other sentinels (ADR-002).
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -11,7 +11,7 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
 SHIP="$ZERO_DIR/skills/ravintio-ship/SKILL.md"
 ROAD="$ZERO_DIR/standards/roadmap-standards.md"
-TPL="$ZERO_DIR/templates/roadmap-entry.template.md"
+TPL="$ZERO_DIR/templates/initiative.template.md"
 
 echo ""
 echo "=== 0000172 req-001 run-speed-setting ==="
@@ -38,7 +38,7 @@ check "req-001 AC-1: orchestrator asks for and records the run speed" "$ok"
 ok=1
 if grep -qi 'missing `plan/.run-speed` counts as `standard`' "$REF" \
   && grep -qi 'also counts as `standard`' "$REF" \
-  && section "$ROAD" '### R-C Run' | grep -qF '**Speed:**' \
+  && section "$ROAD" '### I-C Run' | grep -qF '**Speed:**' \
   && grep -qF '**Speed:**' "$TPL"; then ok=0; fi
 check "req-001 AC-2: missing or unknown is standard, roadmap names Speed" "$ok"
 

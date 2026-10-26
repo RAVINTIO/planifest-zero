@@ -2,7 +2,7 @@
 # Tests for feature 0000043-autonomous-roadmaps, req-010: merge carve-out governance.
 #
 # The orchestrator rule, ship Hard Limit 5, two override instructions, and the
-# roadmap standard agree on one narrow carve-out. CLAUDE.md is regenerated from
+# initiative standard agree on one narrow carve-out. CLAUDE.md is regenerated from
 # the overrides by setup, so this test checks the overrides.
 
 set -uo pipefail
@@ -40,7 +40,7 @@ text_of() {
 echo "=== req-010 (a): carve-out conditions in every place ==="
 for p in $PLACES; do
   T="$(text_of "$p")"
-  assert_contains 'roadmap/*' "$T" "req-010 (a): $p names roadmap/*"
+  assert_contains 'initiative/*' "$T" "req-010 (a): $p names initiative/*"
   assert_contains '--squash' "$T" "req-010 (a): $p names --squash"
   if [ "$p" = custom-004 ]; then CLEAN='validation finished clean'; else CLEAN='clean P3'; fi
   assert_contains "$CLEAN" "$T" "req-010 (a): $p requires a clean validate phase"
@@ -55,7 +55,7 @@ for p in $PLACES; do
   assert_contains 'human-only' "$(text_of "$p")" "req-010 (b): $p keeps merging into main human-only"
   assert_contains '`main`' "$(text_of "$p")" "req-010 (b): $p names main"
 done
-assert_contains 'roadmap PR' "$SECT" "req-010 (b): standard keeps the roadmap PR human-only"
+assert_contains 'initiative PR' "$SECT" "req-010 (b): standard keeps the initiative PR human-only"
 assert_contains 'never commits to `main`' "$SECT" "req-010 (b): standard says the agent never commits to main"
 
 echo ""

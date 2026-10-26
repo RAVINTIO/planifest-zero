@@ -12,7 +12,7 @@ version: "1.0.0"
 
 Run this after coaching Q&A completes and before presenting the design. It is a mandatory gate.
 
-A roadmap step self-confirms this gate as R-C Run in `ravintio-zero/standards/roadmap-standards.md` describes.
+An initiative step self-confirms this gate as I-C Run in `ravintio-zero/standards/roadmap-standards.md` describes.
 
 Read `plan/current/feature-brief.md`. If `## Scenario Paths` is filled in, use the human's four paths. Otherwise derive them from the user stories and acceptance criteria. The four questions:
 

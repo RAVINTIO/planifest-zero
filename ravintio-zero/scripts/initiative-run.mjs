@@ -1,66 +1,66 @@
 #!/usr/bin/env node
-// roadmap-run.mjs - runs each roadmap step in a fresh claude -p session (0000043 ADR-004).
+// initiative-run.mjs - runs each initiative step in a fresh claude -p session (0000043 ADR-004).
 //
 // Usage, run from the repository root:
 //
-//   node ravintio-zero/scripts/roadmap-run.mjs [--root <dir>]
+//   node ravintio-zero/scripts/initiative-run.mjs [--root <dir>]
 //
 // Arguments:
 //   --root   The working tree that holds plan/. Defaults to the current directory.
 //
 // Environment:
 //   CLAUDE_BIN   The claude executable. Defaults to "claude", found through PATH.
-//   RAVINTIO_ROADMAP_MODEL
+//   RAVINTIO_INITIATIVE_MODEL
 //                The model for every step, passed as --model. Defaults to "sonnet".
 //                It must match ^[A-Za-z0-9][A-Za-z0-9._:\[\]-]{0,63}$.
-//   RAVINTIO_ROADMAP_MAX_TURNS
+//   RAVINTIO_INITIATIVE_MAX_TURNS
 //                A turn cap for every step, passed as --max-turns. If unset or empty,
 //                no cap applies and no default ships. It must be 1 to 9999. If claude
 //                exits non-zero while a cap is set, the stop line names the cap.
-//   PLANIFEST_ROADMAP_MODEL, PLANIFEST_ROADMAP_MAX_TURNS
-//                Legacy names for the two variables above. Each applies only if its
-//                RAVINTIO_ROADMAP_ name is unset or empty. If both are set, the RAVINTIO value wins.
-//                Remove at 1.0.0 (0000160 ADR-002).
+//   RAVINTIO_ROADMAP_MODEL, RAVINTIO_ROADMAP_MAX_TURNS, PLANIFEST_ROADMAP_MODEL,
+//   PLANIFEST_ROADMAP_MAX_TURNS
+//                Old names. The driver no longer reads them. If one is set and non-empty,
+//                the driver stops before it spawns a step and names the new variable.
 //
 // Labels: the child's OTEL_RESOURCE_ATTRIBUTES gets these labels appended, with each value
-// percent-encoded by scripts/roadmap-labels.mjs. The old value stays as it was.
-//   work.kind=roadmap
-//   ravintio.roadmap={id}-{slug}
+// percent-encoded by scripts/initiative-labels.mjs. The old value stays as it was.
+//   work.kind=initiative
+//   ravintio.initiative={id}-{slug}
 //   ravintio.step={position}
 // Only the child sees the change. The labels hold identifiers, never prompt or file text.
 //
 // Logs: each step writes the child's stdout and stderr, in arrival order, to
-// plan/.roadmap-logs/step-{position}.log. Each step start will truncate its log, so a
+// plan/.initiative-logs/step-{position}.log. Each step start will truncate its log, so a
 // rerun leaves only the latest attempt. The driver copies the child's stderr to its own
 // stderr and never prints the child's stdout or any log content. It excludes the folder
 // through .git/info/exclude. The driver refuses a symlink at plan, at the log folder, or at
-// the log file, and stops with "R-C Run: Blocked: refused a symlinked step log path". Logs
+// the log file, and stops with "I-C Run: Blocked: refused a symlinked step log path". Logs
 // are private to the user: the folder has mode 700 and each log mode 600. Every stop after a step starts ends with
-// "Log: plan/.roadmap-logs/step-{position}.log".
+// "Log: plan/.initiative-logs/step-{position}.log".
 //
 // What it does:
-//   1. Reads plan/current-roadmap/roadmap.md and stops unless status is "active".
-//   2. Takes plan/.roadmap-runner.lock. If the lock exists, it refuses to start
+//   1. Reads plan/current-initiative/initiative.md and stops unless status is "active".
+//   2. Takes plan/.initiative-runner.lock. If the lock exists, it refuses to start
 //      and leaves the lock alone.
 //   3. Runs `claude -p --permission-mode auto --model {model} [--max-turns {n}]
-//      "Run roadmap step {position}"`
+//      "Run initiative step {position}"`
 //      and waits. It never passes --continue or --resume, so each step gets a
 //      fresh session. The position goes to claude as one argument, never
 //      through a shell.
 //   4. After each step it stops if plan/current/build-log.md ends on a
 //      "Blocked:" line with no later "Resolved:" line, or if position did not
 //      move.
-//   5. It repeats until delivery: roadmap.md is gone and
+//   5. It repeats until delivery: initiative.md is gone and
 //      plan/_archive/{id}-{slug}-roadmap-*/ exists. It then exits 0.
 //
 // Output: one line per stage, written and flushed at once so a parent session
-// can stream it with Monitor. Lines start with "R-C Run:" or "R-D Advance:"
-// and the final line with "R-E Delivery:". A stop line names the reason and,
+// can stream it with Monitor. Lines start with "I-C Run:" or "I-D Advance:"
+// and the final line with "I-E Delivery:". A stop line names the reason and,
 // for a block, repeats the Blocked: message cut to 500 characters.
 //
 // Exit codes:
 //   0  Delivery is complete.
-//   1  A stop: invalid or inactive roadmap, existing lock, block, stalled
+//   1  A stop: invalid or inactive initiative, existing lock, block, stalled
 //      position, failed claude call, or interruption.
 //
 // The lock is released on every exit path, including SIGINT and SIGTERM.
@@ -70,16 +70,16 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { appendFileSync, closeSync, constants as fsConstants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve } from 'node:path';
-import { withRoadmapLabels } from './roadmap-labels.mjs';
+import { withInitiativeLabels } from './initiative-labels.mjs';
 
-const ROADMAP = 'plan/current-roadmap/roadmap.md';
-const LOCK = 'plan/.roadmap-runner.lock';
-const LOGS = 'plan/.roadmap-logs';
+const INITIATIVE = 'plan/current-initiative/initiative.md';
+const LOCK = 'plan/.initiative-runner.lock';
+const LOGS = 'plan/.initiative-logs';
 const BUILD_LOG = 'plan/current/build-log.md';
 const ARCHIVE = 'plan/_archive';
-const STATUS = /^(draft|active|blocked|done)$/;
+const STATUS = /^(proposed|charted|draft|active|blocked|delivered|done)$/;
 const POSITION = /^[1-9][0-9]{0,2}$/;
-const BRANCH = /^roadmap\/([0-9]{7})-([a-z0-9]+(-[a-z0-9]+)*)$/;
+const BRANCH = /^initiative\/([0-9]{7})-([a-z0-9]+(-[a-z0-9]+)*)$/;
 const MAX_LINE = 500;
 const MODEL = /^[A-Za-z0-9][A-Za-z0-9._:[\]-]{0,63}$/;
 const TURNS = /^[1-9][0-9]{0,3}$/;
@@ -93,7 +93,7 @@ function parseArgs(argv) {
   let root = process.cwd();
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--root' && argv[i + 1]) root = argv[++i];
-    else throw new Stop(`R-C Run: Blocked: unknown argument "${argv[i].slice(0, 40)}"`);
+    else throw new Stop(`I-C Run: Blocked: unknown argument "${argv[i].slice(0, 40)}"`);
   }
   return resolve(root);
 }
@@ -116,36 +116,41 @@ function fieldIn(text, name) {
   return /^(["']).*\1$/.test(v) ? v.slice(1, -1).trim() : v;
 }
 
-// Reads a RAVINTIO_* variable. If it is unset or empty, falls back to the legacy
-// name from the old brand. The fallback is for 0.x only and goes at 1.0.0 (0000160 ADR-002).
-function legacyEnv(name, legacy) {
-  return process.env[name] || process.env[legacy] || '';
-}
+// Old name to new name. A set old variable stops the driver (0000189 REQ-006).
+const OLD_VARIABLES = [
+  ['RAVINTIO_ROADMAP_MODEL', 'RAVINTIO_INITIATIVE_MODEL'],
+  ['PLANIFEST_ROADMAP_MODEL', 'RAVINTIO_INITIATIVE_MODEL'],
+  ['RAVINTIO_ROADMAP_MAX_TURNS', 'RAVINTIO_INITIATIVE_MAX_TURNS'],
+  ['PLANIFEST_ROADMAP_MAX_TURNS', 'RAVINTIO_INITIATIVE_MAX_TURNS'],
+];
 
 // Reads and validates the child settings. The stop lines name the variable, never the value.
 function readChildConfig() {
-  const model = legacyEnv('RAVINTIO_ROADMAP_MODEL', 'PLANIFEST_ROADMAP_MODEL') || DEFAULT_MODEL;
-  if (!MODEL.test(model)) {
-    throw new Stop('R-C Run: Blocked: RAVINTIO_ROADMAP_MODEL must match ^[A-Za-z0-9][A-Za-z0-9._:[\\]-]{0,63}$');
+  for (const [old, current] of OLD_VARIABLES) {
+    if (process.env[old]) throw new Stop(`I-C Run: Blocked: ${old} is no longer read. Set ${current} instead.`);
   }
-  const turns = legacyEnv('RAVINTIO_ROADMAP_MAX_TURNS', 'PLANIFEST_ROADMAP_MAX_TURNS');
+  const model = process.env.RAVINTIO_INITIATIVE_MODEL || DEFAULT_MODEL;
+  if (!MODEL.test(model)) {
+    throw new Stop('I-C Run: Blocked: RAVINTIO_INITIATIVE_MODEL must match ^[A-Za-z0-9][A-Za-z0-9._:[\\]-]{0,63}$');
+  }
+  const turns = process.env.RAVINTIO_INITIATIVE_MAX_TURNS || '';
   if (turns !== '' && !TURNS.test(turns)) {
-    throw new Stop('R-C Run: Blocked: RAVINTIO_ROADMAP_MAX_TURNS must be a positive integer of up to 4 digits');
+    throw new Stop('I-C Run: Blocked: RAVINTIO_INITIATIVE_MAX_TURNS must be a positive integer of up to 4 digits');
   }
   return { model, turns };
 }
 
-function readRoadmap(root) {
-  const file = join(root, ROADMAP);
-  if (!existsSync(file)) throw new Stop(`R-C Run: Blocked: ${ROADMAP} is missing`);
+function readInitiative(root) {
+  const file = join(root, INITIATIVE);
+  if (!existsSync(file)) throw new Stop(`I-C Run: Blocked: ${INITIATIVE} is missing`);
   const text = readFileSync(file, 'utf8');
   const status = field(text, 'status');
   const position = field(text, 'position');
   const branch = field(text, 'branch');
-  if (!STATUS.test(status)) throw new Stop('R-C Run: Blocked: roadmap status is missing or invalid');
-  if (!POSITION.test(position)) throw new Stop('R-C Run: Blocked: roadmap position is missing or invalid');
+  if (!STATUS.test(status)) throw new Stop('I-C Run: Blocked: initiative status is missing or invalid');
+  if (!POSITION.test(position)) throw new Stop('I-C Run: Blocked: initiative position is missing or invalid');
   const b = branch.match(BRANCH);
-  if (!b) throw new Stop('R-C Run: Blocked: roadmap branch is missing or invalid');
+  if (!b) throw new Stop('I-C Run: Blocked: initiative branch is missing or invalid');
   return { status, position, id: b[1], slug: b[2] };
 }
 
@@ -176,14 +181,14 @@ function isLink(path) {
   }
 }
 
-// Opens plan/.roadmap-logs/step-{position}.log for writing and truncates it.
+// Opens plan/.initiative-logs/step-{position}.log for writing and truncates it.
 // Refuses a symlink at plan, at the log folder, or at the log file, and a log folder
 // whose real path leaves the real root. The open adds O_NOFOLLOW where the platform has it.
 // The folder gets mode 0o700 and the log 0o600. Returns the file descriptor and the
 // root-relative path.
 function openLog(root, position) {
   const rel = `${LOGS}/step-${position}.log`;
-  const refuse = () => new Stop('R-C Run: Blocked: refused a symlinked step log path');
+  const refuse = () => new Stop('I-C Run: Blocked: refused a symlinked step log path');
   try {
     const dir = join(root, LOGS);
     for (const part of [join(root, 'plan'), dir]) if (isLink(part)) throw refuse();
@@ -197,7 +202,7 @@ function openLog(root, position) {
     return { fd: openSync(file, O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW, 0o600), rel };
   } catch (e) {
     if (e instanceof Stop) throw e;
-    throw new Stop('R-C Run: Blocked: could not open the step log');
+    throw new Stop('I-C Run: Blocked: could not open the step log');
   }
 }
 
@@ -215,11 +220,12 @@ function openBlock(root) {
 }
 
 function delivered(root, id, slug) {
-  if (existsSync(join(root, ROADMAP))) return false;
+  if (existsSync(join(root, INITIATIVE))) return false;
   const dir = join(root, ARCHIVE);
   if (!existsSync(dir)) return false;
-  const prefix = `${id}-${slug}-roadmap-`;
-  return readdirSync(dir).some((n) => n.startsWith(prefix));
+  // Folders archived before 0000192 use the -roadmap- form, so accept both.
+  const prefixes = [`${id}-${slug}-initiative-`, `${id}-${slug}-roadmap-`];
+  return readdirSync(dir).some((n) => prefixes.some((p) => n.startsWith(p)));
 }
 
 function runStep(root, position, cfg, fd, labels) {
@@ -227,10 +233,10 @@ function runStep(root, position, cfg, fd, labels) {
     const bin = process.env.CLAUDE_BIN || 'claude';
     const args = ['-p', '--permission-mode', 'auto', '--model', cfg.model];
     if (cfg.turns) args.push('--max-turns', cfg.turns);
-    args.push(`Run roadmap step ${position}`);
+    args.push(`Run initiative step ${position}`);
     const child = spawn(bin, args, {
       cwd: root,
-      env: { ...process.env, OTEL_RESOURCE_ATTRIBUTES: withRoadmapLabels(process.env.OTEL_RESOURCE_ATTRIBUTES, labels.id, labels.slug, position) },
+      env: { ...process.env, OTEL_RESOURCE_ATTRIBUTES: withInitiativeLabels(process.env.OTEL_RESOURCE_ATTRIBUTES, labels.id, labels.slug, position) },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     activeChild = child;
@@ -264,7 +270,7 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
   process.on(sig, () => {
     if (activeChild) activeChild.kill(sig);
     releaseLock();
-    out(withLog(`R-C Run: Blocked: driver stopped by ${sig}`));
+    out(withLog(`I-C Run: Blocked: driver stopped by ${sig}`));
     process.exit(1);
   });
 }
@@ -273,8 +279,8 @@ process.on('exit', releaseLock);
 async function main() {
   const root = parseArgs(process.argv.slice(2));
   const cfg = readChildConfig();
-  let rm = readRoadmap(root);
-  if (rm.status !== 'active') throw new Stop(`R-C Run: Blocked: roadmap status is ${rm.status}, not active`);
+  let rm = readInitiative(root);
+  if (rm.status !== 'active') throw new Stop(`I-C Run: Blocked: initiative status is ${rm.status}, not active`);
   const { id, slug } = rm;
 
   const lock = join(root, LOCK);
@@ -282,7 +288,7 @@ async function main() {
   try {
     writeFileSync(lock, `${process.pid}\n`, { flag: 'wx' });
   } catch (e) {
-    if (e.code === 'EEXIST') throw new Stop(`R-C Run: Blocked: ${LOCK} exists, another driver may be running`);
+    if (e.code === 'EEXIST') throw new Stop(`I-C Run: Blocked: ${LOCK} exists, another driver may be running`);
     throw e;
   }
   lockPath = lock;
@@ -292,7 +298,7 @@ async function main() {
     currentLog = null;
     const log = openLog(root, position);
     currentLog = log.rel;
-    out(`R-C Run: Starting: roadmap step ${position} in a fresh session`);
+    out(`I-C Run: Starting: initiative step ${position} in a fresh session`);
     let res;
     try {
       res = await runStep(root, position, cfg, log.fd, { id, slug });
@@ -300,33 +306,33 @@ async function main() {
       closeSync(log.fd);
     }
     activeChild = null;
-    if (res.error) throw new Stop(`R-C Run: Blocked: could not start claude (${res.error})`);
+    if (res.error) throw new Stop(`I-C Run: Blocked: could not start claude (${res.error})`);
     if (res.code !== 0) {
-      const cap = cfg.turns ? `. The step may have reached RAVINTIO_ROADMAP_MAX_TURNS=${cfg.turns}` : '';
-      throw new Stop(`R-C Run: Blocked: claude exited ${res.code ?? res.signal} on step ${position}${cap}`);
+      const cap = cfg.turns ? `. The step may have reached RAVINTIO_INITIATIVE_MAX_TURNS=${cfg.turns}` : '';
+      throw new Stop(`I-C Run: Blocked: claude exited ${res.code ?? res.signal} on step ${position}${cap}`);
     }
 
     if (delivered(root, id, slug)) {
-      out(`R-D Advance: Complete: step ${position} merged`);
-      out(`R-E Delivery: Complete: roadmap ${id}-${slug} archived, driver done`);
+      out(`I-D Advance: Complete: step ${position} merged`);
+      out(`I-E Delivery: Complete: initiative ${id}-${slug} archived, driver done`);
       return;
     }
     const block = openBlock(root);
-    if (block) throw new Stop(`R-C Run: Blocked: step ${position} stopped. ${block}`);
+    if (block) throw new Stop(`I-C Run: Blocked: step ${position} stopped. ${block}`);
 
-    rm = readRoadmap(root);
+    rm = readInitiative(root);
     if (rm.position === position) {
-      throw new Stop(`R-C Run: Blocked: position stayed at ${position} after step ${position}`);
+      throw new Stop(`I-C Run: Blocked: position stayed at ${position} after step ${position}`);
     }
-    if (rm.status !== 'active') throw new Stop(`R-C Run: Blocked: roadmap status is ${rm.status}, not active`);
-    out(`R-D Advance: Complete: step ${position} done, position now ${rm.position}`);
+    if (rm.status !== 'active') throw new Stop(`I-C Run: Blocked: initiative status is ${rm.status}, not active`);
+    out(`I-D Advance: Complete: step ${position} done, position now ${rm.position}`);
   }
 }
 
 main().then(
   () => process.exit(0),
   (e) => {
-    out(e instanceof Stop ? withLog(e.message) : `R-C Run: Blocked: driver error ${e.code || e.name}`);
+    out(e instanceof Stop ? withLog(e.message) : `I-C Run: Blocked: driver error ${e.code || e.name}`);
     process.exit(1);
   },
 );

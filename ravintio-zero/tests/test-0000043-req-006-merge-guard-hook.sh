@@ -2,7 +2,7 @@
 # Tests for feature 0000043-autonomous-roadmaps, req-006: merge-guard hook.
 #
 # merge-guard.mjs blocks any gh pr merge unless the flag is --squash and the PR
-# base starts with roadmap/. It reads the base through gh pr view and fails
+# base starts with initiative/. It reads the base through gh pr view and fails
 # closed. A stub gh on PATH stands in for the real one.
 
 set -uo pipefail
@@ -42,31 +42,31 @@ check() {
 }
 
 echo ""
-echo "=== req-006 (a): gh pr merge needs --squash and a roadmap/* base ==="
+echo "=== req-006 (a): gh pr merge needs --squash and an initiative/* base ==="
 if [ ! -f "$GUARD" ]; then assert_equals "exists" "missing" "req-006: merge-guard.mjs exists"; fi
-check "squash into roadmap/x" 0 "gh pr merge 12 --squash" "roadmap/x"
-check "squash into roadmap/x with branch delete" 0 "gh pr merge 12 --squash --delete-branch" "roadmap/x"
-check "chained with &&" 0 "git fetch && gh pr merge 12 --squash" "roadmap/x"
+check "squash into initiative/x" 0 "gh pr merge 12 --squash" "initiative/x"
+check "squash into initiative/x with branch delete" 0 "gh pr merge 12 --squash --delete-branch" "initiative/x"
+check "chained with &&" 0 "git fetch && gh pr merge 12 --squash" "initiative/x"
 check "squash into main" 2 "gh pr merge 12 --squash" "main"
-check "squash into roadmapx (no slash)" 2 "gh pr merge 12 --squash" "roadmapx"
-check "no flag" 2 "gh pr merge 12" "roadmap/x"
-check "--merge" 2 "gh pr merge 12 --merge" "roadmap/x"
-check "--rebase" 2 "gh pr merge 12 --rebase" "roadmap/x"
-check "--admin with --squash" 2 "gh pr merge 12 --squash --admin" "roadmap/x"
-check "--auto without --squash" 2 "gh pr merge 12 --auto" "roadmap/x"
-check "--squash and --merge" 2 "gh pr merge 12 --squash --merge" "roadmap/x"
+check "squash into initiativex (no slash)" 2 "gh pr merge 12 --squash" "initiativex"
+check "no flag" 2 "gh pr merge 12" "initiative/x"
+check "--merge" 2 "gh pr merge 12 --merge" "initiative/x"
+check "--rebase" 2 "gh pr merge 12 --rebase" "initiative/x"
+check "--admin with --squash" 2 "gh pr merge 12 --squash --admin" "initiative/x"
+check "--auto without --squash" 2 "gh pr merge 12 --auto" "initiative/x"
+check "--squash and --merge" 2 "gh pr merge 12 --squash --merge" "initiative/x"
 check "chained with ; into main" 2 "echo hi; gh pr merge 12 --squash" "main"
-check "gh pr view fails" 2 "gh pr merge 12 --squash" "roadmap/x" 1
+check "gh pr view fails" 2 "gh pr merge 12 --squash" "initiative/x" 1
 check "empty base" 2 "gh pr merge 12 --squash" ""
 check "current-branch merge into main" 2 "gh pr merge --squash" "main"
 
 : > "$STUB_LOG"
-run_guard "$(payload 'gh pr merge 12 --squash; rm -rf x')" STUB_BASE=roadmap/x
+run_guard "$(payload 'gh pr merge 12 --squash; rm -rf x')" STUB_BASE=initiative/x
 assert_contains "pr view 12 --json baseRefName" "$(cat "$STUB_LOG")" "req-006: base is read with gh pr view <pr> --json baseRefName"
 assert_equals "0" "$(grep -c 'rm' "$STUB_LOG" || true)" "req-006: the command is never executed"
 
 : > "$STUB_LOG"
-run_guard "$(payload 'gh pr merge --squash')" STUB_BASE=roadmap/x
+run_guard "$(payload 'gh pr merge --squash')" STUB_BASE=initiative/x
 assert_equals "pr view --json baseRefName" "$(head -1 "$STUB_LOG")" "req-006: no PR argument reads the current branch"
 
 run_guard "$(payload 'gh pr merge 12 --squash')" STUB_BASE=main
@@ -86,33 +86,33 @@ assert_equals "0" "$CODE" "req-006: empty stdin exits 0"
 
 echo ""
 echo "=== req-006 (d): fail-closed tripwire (security report F-001 to F-004) ==="
-# Every bypass form exits 2 even when the stub base is roadmap/x.
-check "F-001 absolute path" 2 "/usr/bin/gh pr merge 5 --squash" "roadmap/x"
-check "F-001 backticks" 2 'echo `gh pr merge 5 --squash`' "roadmap/x"
-check "F-001 quoted gh" 2 '"gh" pr merge 5 --squash' "roadmap/x"
-check "F-001 leading backslash" 2 '\gh pr merge 5 --squash' "roadmap/x"
-check "F-001 bash -c" 2 "bash -c 'gh pr merge 5 --squash'" "roadmap/x"
-check "F-001 eval" 2 'eval "gh pr merge 5 --squash"' "roadmap/x"
-check "F-001 variable" 2 'g=gh; $g pr merge 5 --squash' "roadmap/x"
-check "F-001 alias" 2 "gh alias set m 'pr merge'" "roadmap/x"
-check "F-001 repeated -R" 2 "gh -R a/b -R c/d pr merge 5 --squash" "roadmap/x"
-check "F-001 --hostname" 2 "gh --hostname x pr merge 5 --squash" "roadmap/x"
-check "F-001 tab between pr and merge" 2 "$(printf 'echo pr\tmerge')" "roadmap/x"
-check "F-002 gh api merge path" 2 "gh api -X PUT repos/o/r/pulls/5/merge" "roadmap/x"
-check "F-002 gh api merge path, no slash prefix" 2 "gh api -X PUT pulls/5/merge" "roadmap/x"
-check "F-002 gh api graphql merge" 2 "gh api graphql -f query=mergePullRequest" "roadmap/x"
+# Every bypass form exits 2 even when the stub base is initiative/x.
+check "F-001 absolute path" 2 "/usr/bin/gh pr merge 5 --squash" "initiative/x"
+check "F-001 backticks" 2 'echo `gh pr merge 5 --squash`' "initiative/x"
+check "F-001 quoted gh" 2 '"gh" pr merge 5 --squash' "initiative/x"
+check "F-001 leading backslash" 2 '\gh pr merge 5 --squash' "initiative/x"
+check "F-001 bash -c" 2 "bash -c 'gh pr merge 5 --squash'" "initiative/x"
+check "F-001 eval" 2 'eval "gh pr merge 5 --squash"' "initiative/x"
+check "F-001 variable" 2 'g=gh; $g pr merge 5 --squash' "initiative/x"
+check "F-001 alias" 2 "gh alias set m 'pr merge'" "initiative/x"
+check "F-001 repeated -R" 2 "gh -R a/b -R c/d pr merge 5 --squash" "initiative/x"
+check "F-001 --hostname" 2 "gh --hostname x pr merge 5 --squash" "initiative/x"
+check "F-001 tab between pr and merge" 2 "$(printf 'echo pr\tmerge')" "initiative/x"
+check "F-002 gh api merge path" 2 "gh api -X PUT repos/o/r/pulls/5/merge" "initiative/x"
+check "F-002 gh api merge path, no slash prefix" 2 "gh api -X PUT pulls/5/merge" "initiative/x"
+check "F-002 gh api graphql merge" 2 "gh api graphql -f query=mergePullRequest" "initiative/x"
 PAD=$(printf 'a%.0s' $(seq 1 5000))
-check "F-003 merge after 5000 characters" 2 "echo $PAD; gh pr merge 5 --squash" "roadmap/x"
+check "F-003 merge after 5000 characters" 2 "echo $PAD; gh pr merge 5 --squash" "initiative/x"
 check "F-003 long command without merge" 0 "echo $PAD" "main"
-check "F-004 command substitution ref" 2 'gh pr merge $(echo 5) --squash' "roadmap/x"
-check "F-004 --squash=false" 2 "gh pr merge 5 --squash=false" "roadmap/x"
-check "F-004 --squash=true" 0 "gh pr merge 5 --squash=true" "roadmap/x"
-check "F-004 two PR selectors" 2 "gh pr merge 5 6 --squash" "roadmap/x"
-check "plain merge with -R" 0 "gh pr merge 5 --squash -R o/r" "roadmap/x"
-check "text in a quoted string" 2 'git commit -m "pr merge notes"' "roadmap/x"
-run_guard "$(payload 'gh api -X PUT x/pulls/5/merge')" STUB_BASE=roadmap/x
+check "F-004 command substitution ref" 2 'gh pr merge $(echo 5) --squash' "initiative/x"
+check "F-004 --squash=false" 2 "gh pr merge 5 --squash=false" "initiative/x"
+check "F-004 --squash=true" 0 "gh pr merge 5 --squash=true" "initiative/x"
+check "F-004 two PR selectors" 2 "gh pr merge 5 6 --squash" "initiative/x"
+check "plain merge with -R" 0 "gh pr merge 5 --squash -R o/r" "initiative/x"
+check "text in a quoted string" 2 'git commit -m "pr merge notes"' "initiative/x"
+run_guard "$(payload 'gh api -X PUT x/pulls/5/merge')" STUB_BASE=initiative/x
 assert_contains "merge-guard:" "$OUT" "req-006: the unconfirmed message names merge-guard"
-assert_contains "roadmap/*" "$OUT" "req-006: the unconfirmed message names roadmap/*"
+assert_contains "initiative/*" "$OUT" "req-006: the unconfirmed message names initiative/*"
 
 echo ""
 echo "=== req-006 (c): setup.sh and setup.ps1 register merge-guard ==="

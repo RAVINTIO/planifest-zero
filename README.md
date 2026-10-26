@@ -39,7 +39,7 @@ The pipeline runs five phases. Every change, however small, takes the same route
 
 Every agent response carries a phase prefix, from `P0 Discovery:` to `P4 Ship:`, so you always know where you are. Every artifact follows a template, so output stays consistent across sessions and models.
 
-To run several features from one approval, chart a roadmap. A driver script runs each step through P0 to P4, and the agent squash-merges each step into a roadmap branch. You merge the final roadmap PR. See [roadmap-standards.md](ravintio-zero/standards/roadmap-standards.md).
+To run several features from one approval, chart a roadmap initiative. A driver script runs each step through P0 to P4, and the agent squash-merges each step into the initiative branch. You merge the final initiative PR. See [roadmap-standards.md](ravintio-zero/standards/roadmap-standards.md).
 
 ---
 
@@ -124,7 +124,7 @@ One optional flag:
 | [setup/](ravintio-zero/setup/) | The Claude Code tool config, as a `.sh` and `.ps1` pair |
 | [hooks/](ravintio-zero/hooks/) | Enforcement hooks, git hooks, and the CI workflow |
 | [workflows/](ravintio-zero/workflows/) | The feature pipeline route definition |
-| [scripts/](ravintio-zero/scripts/) | Consistency checks, version derivation, regression promotion, and the roadmap driver |
+| [scripts/](ravintio-zero/scripts/) | Consistency checks, version derivation, regression promotion, and the initiative driver |
 | [tests/](ravintio-zero/tests/) | Per-feature test scripts plus the promoted regression pack |
 | [migrations/](ravintio-zero/migrations/) | Pending and completed pack migrations, applied by the `ravintio-migrator` skill |
 | [skills-inbox/](ravintio-zero/skills-inbox/) | Drop-in intake for a new capability skill, processed at the next discovery |

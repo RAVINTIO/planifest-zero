@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.18.1"
-feature: "0000185-explain-strict-mode"
+version: "0.19.0"
+feature: "0000192-rename-runner-lock-and-archive"
 
 versionPolicy: "max-component-version"
 

@@ -13,7 +13,7 @@
  *      substitution, variable, wrapper, or alias in its segment
  *   2. uses --squash (and no --merge, --rebase, or --admin)
  *   3. names at most one PR selector
- *   4. targets a PR whose base, read by `gh pr view`, starts with roadmap/
+ *   4. targets a PR whose base, read by `gh pr view`, starts with initiative/
  * Anything else that trips the wire is blocked, including commands over
  * 4096 characters. Commands that do not trip the wire pass.
  *
@@ -47,7 +47,7 @@ const SAFE_REF = /[^a-zA-Z0-9\-_./#:]/g;
 function block(reason) {
   const message =
     "[RAVINTIO] merge-guard: Merge blocked. Merges into main are human-only. " +
-    "The agent may squash-merge only into roadmap/*. " + reason + "\n";
+    "The agent may squash-merge only into initiative/*. " + reason + "\n";
   // Claude Code shows the agent stderr on exit 2. Stdout keeps the tests' view.
   process.stderr.write(message);
   process.stdout.write(message);
@@ -55,7 +55,7 @@ function block(reason) {
 }
 
 function unconfirmed(detail) {
-  block(`Cannot confirm the merge is a squash into roadmap/*. ${detail}`);
+  block(`Cannot confirm the merge is a squash into initiative/*. ${detail}`);
 }
 
 function trips(command) {
@@ -174,7 +174,7 @@ function evaluate(command) {
   if (flagProblem) block(flagProblem);
   const base = readBase(parsed);
   if (!base) block("The PR base could not be read, so the merge is blocked.");
-  if (!base.startsWith("roadmap/")) block(`The PR base is '${base}'.`);
+  if (!base.startsWith("initiative/")) block(`The PR base is '${base}'.`);
 }
 
 let command = "";

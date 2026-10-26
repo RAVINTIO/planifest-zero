@@ -1,9 +1,9 @@
 ---
-title: "Backlog Entry: 0000182 - the orchestrator supervises the roadmap driver"
+title: "Backlog Entry: 0000182 - an initiative skill coordinates initiative delivery"
 summary: "A human-requested fix, filed for pickup at a future discovery run."
 status: "open"
 ---
-# Backlog Entry: 0000182 - the orchestrator supervises the roadmap driver
+# Backlog Entry: 0000182 - an initiative skill coordinates initiative delivery
 
 **Source feature:** none (human request)
 **Source phase:** none (human request)
@@ -14,67 +14,86 @@ status: "open"
 
 ## Problem
 
-The session that starts `ravintio-zero/scripts/roadmap-run.mjs` has no orchestrator role. The human on the loop expects it to be the orchestrator and to report when the roadmap completes. Three things stop it:
+Nothing coordinates an initiative from start to finish. The orchestrator coordinates one feature. The driver, `ravintio-zero/scripts/initiative-run.mjs`, is a script that starts one step session after another. The human talks to the session that starts the driver, and that session has no defined role.
 
-- R-E Delivery runs in the last child session. That session raises the roadmap PR and ends. The roadmap standard gives the parent session no duty to report the result.
-- `plan/.orchestrator-ack` holds one session id, and each child writes its own. The strict-mode hook then tells the parent on every prompt that the orchestrator isn't confirmed. The parent can't fix that without overwriting the child's id.
-- If the parent loads the orchestrator, resume detection finds the child's `plan/current/` and resumes that step. Two sessions would then run one step.
+During roadmap 0000168, this caused these problems:
 
-During roadmap 0000168, the parent session ran without the orchestrator and without phase prefixes (see 0000181).
+- **No final report.** I-E Delivery runs in the last step session. That session raises the initiative PR and exits, so nothing reports the result to the human.
+- **Strict-mode warnings.** `plan/.orchestrator-ack` holds one session id, and each step session writes its own. The strict-mode hook then warned the human's session on every prompt. That session couldn't fix the warning without overwriting the step session's id.
+- **Unsafe resume.** If the human's session loads the orchestrator, resume detection finds the step's `plan/current/` and resumes that step. Two sessions would then run one step.
+- **No progress view.** The human had to ask for progress. During step 4, the build log stayed unchanged for 25 minutes while the step kept committing.
+- **No safe place for backlog entries.** The working tree was on the step's feature branch. Entries 0000179 to 0000182 went into the step 4 PR as a result.
 
-The human also had no regular view of progress. During step 4, the child's build log stayed unchanged for 25 minutes while it kept committing. The log's `In progress:` lines gave no sign of how close P2 was to complete.
+The driver also showed three bugs:
 
-Backlog entries filed by the parent while a step ran had nowhere safe to go. The working tree was on the child's feature branch. Entries 0000179 to 0000182 rode into the step 4 PR as a result. On the same day, two sessions gave the same RAVINTIO Framework backlog ids to different entries.
-
-The driver also showed three bugs during roadmap 0000168:
-
-1. **Missed stop.** Step 1's ship archived the plan before its CI run failed. The `Blocked:` line went to the archived build log, and the driver read only `plan/current/build-log.md`. It started step 2, and the step 2 session found the stop.
-2. **Early advance.** R-D Advance marked step 1 `merged` and moved `position` before the merge took place. The roadmap then showed a step as merged with its PR still open.
-3. **Lost subagents.** A `claude -p` child stops its background subagents after 10 minutes by default. Step 2 lost work this way until the parent set `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0`. The driver doesn't set it.
+1. **Missed stop.** Step 1's ship archived the plan before its CI run failed. The `Blocked:` line went to the archived build log, and the driver read only `plan/current/build-log.md`. It started step 2 anyway.
+2. **Early advance.** I-D Advance marked step 1 `merged` and moved `position` before the merge took place.
+3. **Lost subagents.** A `claude -p` session stops its background subagents after 10 minutes by default. Step 2 lost work this way until the human's session set `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0`. The driver doesn't set it.
 
 ## Suggested Action
 
-- Define a supervisor mode in the orchestrator for the session that runs the driver. In that mode, resume detection skips `plan/current/` while the driver holds its lock, and the session doesn't edit the working tree.
-- Let strict mode accept a supervisor ack beside the child's ack, for example `plan/.orchestrator-supervisor`, so neither session overwrites the other.
-- When the driver exits, the supervisor reads the roadmap and the step logs. It then reports to the human:
-  - each step's version and tag
-  - any `Blocked:` stop and its build log line
-  - the roadmap PR URL from R-E Delivery
-- Report progress to the human at least once every 5 minutes while the driver runs. Each report names:
+Add a `ravintio-initiative` skill. It coordinates an initiative the way the orchestrator coordinates a feature.
+
+### The three parts
+
+| Part | What it is | Runs where | Owns |
+|------|-----------|------------|------|
+| `ravintio-initiative` skill | The initiative coordinator | The human's session | Chart, activate, watch the steps, report progress, deliver |
+| Driver, `initiative-run.mjs` | A script with no AI | A background task that the initiative skill starts | Start each step session in turn, and stop on a `Blocked:` line |
+| `ravintio-orchestrator` skill | The feature coordinator | Each step session, a separate `claude -p` process | One feature from P0 to P4, then the merge into the initiative branch |
+
+The human talks only to their own session. Step sessions run with no human present.
+
+### How an initiative runs
+
+1. **I-A Chart.** The initiative skill plans the steps with the human and takes their approval.
+2. **I-B Activate.** The initiative skill cuts the initiative branch and starts the driver.
+3. **I-C Run.** The driver starts a step session. It loads the orchestrator and builds one feature from P0 to P4.
+4. **I-D Advance.** The step session merges its feature PR into the initiative branch, tags the merge commit, and exits.
+5. The driver starts the next step session. Stages I-C and I-D repeat until no steps remain.
+6. While steps run, the initiative skill watches the build log and git, and reports to the human. It never edits the working tree.
+7. **I-E Delivery.** After the driver exits, the initiative skill archives the initiative and raises the initiative PR to `main`. It then gives the final report.
+
+### Changes
+
+- **Move initiative stages out of the orchestrator.** I-A Chart, I-B Activate, and I-E Delivery move to the initiative skill. The orchestrator and ship skills keep I-C Run and I-D Advance.
+- **Split resume detection.** The orchestrator never resumes an initiative. The initiative skill resumes an initiative and never resumes a step. A session that starts with an active initiative and the driver's lock held loads the initiative skill.
+- **Split the ack files.** The initiative skill writes `plan/.initiative-ack`, and a step session writes `plan/.orchestrator-ack`. The strict-mode hook accepts either, so it stays quiet in both sessions.
+- **Trigger the right skill.** The auto-trigger hook loads the initiative skill for initiative work and the orchestrator for feature work. Both skills keep the same hard limits.
+- **Explain the parts.** `ravintio-zero/standards/roadmap-standards.md` and `ravintio-zero/project-operations.md` both gain the table of the three parts and the run sequence above.
+- **Report progress.** While the driver runs, the initiative skill reports at least once every 5 minutes. Each report names:
   - the step and its phase
-  - the last build log line and the time it was written
+  - the last build log line and when it was written
   - the commits since the last report
   - any stop
-  If nothing changed, say so and give the time since the last change.
-- Answer a progress request at any time, and close each phase end with the same report. It has two parts:
-  - **Roadmap:** steps merged out of the total, and backlog entries done out of the total, with a table of each step's feature, entries, version, and status.
-  - **Current step:** the phase, progress within it (units done out of planned, and criteria verified out of total once P3 starts), and what comes next. Add highlights: what the step changes for the user, and any risk, such as criteria verified only by text search.
-- Report at once, without waiting for the next 5-minute report, when the build log gains a phase `Complete:`, a `Blocked:`, or a `Resolved:` line.
-- In Claude Code, a read-only background monitor does this. It checks every 30 seconds and prints one line per event and one heartbeat line every 5 minutes. A monitor expires after 30 minutes, so the supervisor starts a new one each time until the driver exits.
-- When the monitor switches to a new build log, report the `Complete:` lines already in it. During roadmap 0000168, the monitor counted them as seen and missed step 6's P0 and P1 ends.
-- Make each heartbeat show whether the driver process is still running, so a stopped driver never looks like a quiet one.
-- Flag a stale build log. If the child keeps committing but its build log hasn't changed for 15 minutes, say so in the report.
-- Give the supervisor a safe place to file backlog entries while a step runs. One option is to hold them in a queue outside the working tree and commit them to the roadmap branch after the step merges. Allocate each id against every branch, so two sessions can't take the same id.
-- Fix the three driver bugs:
+  - whether the driver process is still running
+
+  If nothing changed, the report says so and gives the time since the last change.
+- **Report events at once.** When the build log gains a phase `Complete:`, a `Blocked:`, or a `Resolved:` line, the initiative skill reports it without waiting for the next 5-minute report. When it moves to a new build log, it also reports the `Complete:` lines already there. During roadmap 0000168, those lines went unreported for step 6's P0 and P1.
+- **Answer progress requests.** On request and at each phase end, give a report in two parts:
+  - **Initiative:** steps merged out of the total, and backlog entries done out of the total, with a table of each step's feature, entries, version, and status.
+  - **Current step:** the phase, progress within it, and what comes next. Progress is units done out of planned in P2, and criteria verified out of total from P3. Add highlights, such as what the step changes for the user, and any risk.
+- **Flag a stale log.** If the step keeps committing but its build log hasn't changed for 15 minutes, say so in the report.
+- **Use a Claude Code monitor.** A read-only background monitor checks every 30 seconds. It prints one line per event and a heartbeat every 5 minutes. A monitor expires after 30 minutes, so the initiative skill starts a new one until the driver exits.
+- **Queue backlog entries.** While a step runs, the initiative skill holds new backlog entries outside the working tree. It commits them to the initiative branch after the step merges. Ids come from the counter that 0000183 adds.
+- **Use the `I-` prefixes.** The initiative skill uses `I-C Run:` while steps run and `I-E Delivery:` for the final report.
+- **Fix the driver bugs:**
   1. Read the newest archived build log as well as `plan/current/build-log.md`, and stop on an unresolved `Blocked:` line in either.
   2. Mark a step `merged` and move `position` only after the merge commit exists.
-  3. Set `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0` in each child's environment, unless the human has set it.
-- Give supervisor messages a prefix, such as `R-C Run:` while steps run and `R-E Delivery:` for the final report.
-- Have R-B Activate start the driver from the orchestrator in supervisor mode, rather than offering it as a separate step.
-
-## Decision at P0
-
-Should one orchestrator skill run both the roadmap workflow and the feature pipeline, or should they split into two skills?
-
-- **One skill.** The orchestrator keeps the R-A to R-E stages and adds supervisor mode. It keeps one entry point, and the auto-trigger hook needs no change. The cost is a larger skill with two resume paths. Resume detection must also tell a supervisor from a step session.
-- **Two skills.** A roadmap skill owns charting, the driver, supervision, progress reports, and governance across steps. The orchestrator keeps one feature run, P0 onwards. Each session then loads one skill with one resume path and its own ack. The cost is a second entry point. The auto-trigger hook must also pick the right skill, and the shared hard limits must stay in step across both.
-
-The recommendation is two skills. The supervisor and the step session differ in resume detection, ack, prefixes, and reporting duty. A split keeps the orchestrator to one run, and gives roadmap reporting and governance one owner.
+  3. Set `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0` in each step session's environment, unless the human has already set it.
 
 ## Wanted outcome
 
-The session that starts the driver runs as the orchestrator in supervisor mode throughout. On request and at each phase end, the supervisor reports roadmap completion and the current step's phase, progress, and highlights. It also reports progress at least once every 5 minutes and reports each phase end or stop at once. The driver stops on a `Blocked:` line in an archived build log, advances a step only after its merge, and keeps child subagents running. The strict-mode hook stays quiet in both the supervisor and child sessions. When the driver exits, the supervisor reports every step's result and the roadmap PR URL. A test runs the driver with a stub child and checks that the supervisor report names each step. Further tests cover each driver fix.
+The human's session runs the initiative skill from chart to delivery. It reports progress at least every 5 minutes, at each phase end, and on request, and it gives the final report with the initiative PR URL. Strict mode stays quiet in the human's session and in every step session. The driver stops on a `Blocked:` line in an archived build log, marks a step merged only after its merge, and keeps step subagents running.
+
+Tests check these conditions:
+
+- A driver run with a stub step session produces a final report that names each step.
+- A `Blocked:` line in an archived build log stops the driver.
+- `position` doesn't move before the merge commit exists.
+- Each step session's environment holds `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0`.
+- The strict-mode hook stays quiet in both sessions when each has written its own ack file.
 
 ## Why Deferred
 
-The human asked for it while roadmap 0000168 step 4 was running. It pairs with 0000181.
+The human asked for it while roadmap 0000168 step 4 was running. It pairs with 0000181 (phase prefixes) and 0000183 (id counter). RAVINTIO Framework backlog 0000245 holds the same design.

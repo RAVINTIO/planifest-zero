@@ -2,7 +2,7 @@ name: RAVINTIO Strict Pipeline
 
 on:
   pull_request:
-    branches: [ main, master, 'roadmap/**' ]
+    branches: [ main, master, 'initiative/**' ]
   push:
     branches: [ main, master ]
 

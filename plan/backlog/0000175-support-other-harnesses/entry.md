@@ -20,11 +20,16 @@ Feature 0000030 removed eight tool targets on purpose, to cut the pack down to C
 
 ## Suggested Action
 
-Pick the harnesses to support first, for example Codex and Cursor, which read `AGENTS.md`. For each one, decide how setup installs the boot file and skills. Then decide how each enforcement hook maps to that harness's hook or rule system. Where a harness has no hooks, fall back to instruction-based enforcement and say so in the setup output. Add each tool to `VALID_TOOLS`, the refresh-setup skill, and the CI test matrix.
+Support Codex first. The human on the loop chose it on 2026-10-25. Codex reads `AGENTS.md`.
+
+- Add `codex` to `VALID_TOOLS` in `setup.sh` and `setup.ps1`, and to the refresh-setup skill.
+- Have setup write an `AGENTS.md` boot file and install the skills where Codex finds them.
+- Map each enforcement hook to a Codex hook where one exists. Where none exists, fall back to an instruction in `AGENTS.md`, and say so in the setup output.
+- Add `codex` to the CI test matrix.
 
 ## Wanted outcome
 
-`setup.sh` and `setup.ps1` accept at least one tool besides `claude-code`. For that tool, setup writes a boot file the harness loads and installs the skills where the harness finds them. Setup also reports which enforcement hooks are active and which fall back to instructions. A CI test runs setup for each supported tool.
+`setup.sh` and `setup.ps1` accept `codex`. For Codex, setup writes a boot file the harness loads and installs the skills where the harness finds them. Setup also reports which enforcement hooks are active and which fall back to instructions. A CI test runs setup for `codex` and checks the files it writes.
 
 ## Why Deferred
 
