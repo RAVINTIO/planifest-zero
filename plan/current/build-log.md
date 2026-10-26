@@ -95,7 +95,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 |-------|-------|
 | Start | `2026-10-26T04:06:05Z` |
 | End | `2026-10-26T04:06:26Z` |
-| Wall clock | `see summary` |
+| Wall clock | `0m 21s` |
 | Model tier | primary |
 | Skills loaded | ravintio-ship |
 | Agents spawned | `0` |
@@ -111,6 +111,6 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | P1 | 0 | 0 | 1m 13s | 1 (plan files reworded to avoid old names) |
 | P2 | 0 | 0 | 1m 32s | 0 |
 | P3 | 0 | 1 | 4m 51s | 1 (estimated timestamps replaced with commit times) |
-| P4 | 0 | 0 | to 2026-10-26T04:06:26Z | 0 |
+| P4 | 0 | 0 | 0m 21s (to close of log) | 0 |
 
-Total wall clock: 2026-10-26T03:57:41Z to 2026-10-26T04:06:26Z.
+Total wall clock: 8m 45s (2026-10-26T03:57:41Z to 2026-10-26T04:06:26Z).
