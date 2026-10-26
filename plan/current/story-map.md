@@ -24,8 +24,8 @@ summary: "The backbone of activities and steps, with the requirement that covers
 | Upgrade a consumer | Rerun migration `0005` or run it during an active roadmap | US-005 | REQ-005 |
 | Keep the rename complete | Run the old-name search test in CI | US-006 | REQ-007 |
 | Pick up the next initiative | Read open backlog entries in the new terms | US-007 | REQ-008 |
-| Install the pack | Refresh `.claude/skills/` from `ravintio-zero/skills/` | none | gap: out of scope |
+| Install the pack | Refresh `.claude/skills/` from `ravintio-zero/skills/` | none | gap: added as US-008 (REQ-009) |
 
 ## Gaps
 
-- Refreshing `.claude/skills/` is a run task the human pre-approved at P0, not a user story. The run does it after P2, and `scope.md` lists it under the run's own tasks, not as a requirement.
+- Refreshing `.claude/skills/` had no story. The brief and design scope both state it, so it became US-008: "As a maintainer, I find `.claude/skills/` matching `ravintio-zero/skills/` after the run, so that each session loads the renamed skills." The human pre-approved setup at P0.
