@@ -80,7 +80,7 @@ for bad in 0 -3 1.5 abc "10 --foo" 12345; do
   assert_contains "I-C Run: Blocked:" "$OUT" "req-006 (a): cap '$bad' prints a Blocked line"
   assert_contains "RAVINTIO_INITIATIVE_MAX_TURNS" "$OUT" "req-006 (a): cap '$bad' names the variable"
   assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-006 (a): cap '$bad' runs no step"
-  assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-006 (a): cap '$bad' takes no lock"
+  assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-006 (a): cap '$bad' takes no lock"
 done
 for bad in "a b" "-x" 'a;b' 'a$b'; do
   i=$((i + 1))
@@ -91,7 +91,7 @@ for bad in "a b" "-x" 'a;b' 'a$b'; do
   assert_contains "RAVINTIO_INITIATIVE_MODEL" "$OUT" "req-006 (a): model '$bad' names the variable"
   assert_not_contains "$bad" "$OUT" "req-006 (a): model '$bad' value not printed"
   assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-006 (a): model '$bad' runs no step"
-  assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-006 (a): model '$bad' takes no lock"
+  assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-006 (a): model '$bad' takes no lock"
 done
 
 echo ""
@@ -101,7 +101,7 @@ run_driver "$R" fail RAVINTIO_INITIATIVE_MAX_TURNS=40
 assert_equals "1" "$CODE" "req-006 (b): exits 1"
 assert_equals "1" "$(printf '%s\n' "$OUT" | grep -c 'I-C Run: Blocked:')" "req-006 (b): one Blocked line"
 assert_contains "RAVINTIO_INITIATIVE_MAX_TURNS=40" "$OUT" "req-006 (b): the line names the cap"
-assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-006 (b): lock released"
+assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-006 (b): lock released"
 R="$(make_fixture b-nocap)"
 run_driver "$R" fail
 assert_not_contains "RAVINTIO_INITIATIVE_MAX_TURNS" "$OUT" "req-006 (b): no cap named when none is set"

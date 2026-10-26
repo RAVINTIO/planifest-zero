@@ -17,8 +17,9 @@ check() {
 
 # One alternative per old name in the design Names table. The branch pattern
 # skips plan/roadmap/, which keeps its name. The prefix match needs a non-word
-# character on each side, so risk ids such as R-001 never match.
-OLD_NAMES='current-roadmap|roadmap-run\.mjs|roadmap-labels\.mjs|roadmap-entry\.template|\.roadmap-logs|RAVINTIO_ROADMAP_|work\.kind=roadmap|ravintio\.roadmap|(^|[^A-Za-z0-9/._-])roadmap/(\*|\{|[0-9])|(^|[^A-Za-z0-9_-])R-[A-E]([^A-Za-z0-9_]|$)'
+# character on each side, so risk ids such as R-001 never match. 0000192 adds
+# the runner lock and the archive folder pattern.
+OLD_NAMES='roadmap-runner\.lock|\{slug\}-roadmap-\{date\}|current-roadmap|roadmap-run\.mjs|roadmap-labels\.mjs|roadmap-entry\.template|\.roadmap-logs|RAVINTIO_ROADMAP_|work\.kind=roadmap|ravintio\.roadmap|(^|[^A-Za-z0-9/._-])roadmap/(\*|\{|[0-9])|(^|[^A-Za-z0-9_-])R-[A-E]([^A-Za-z0-9_]|$)'
 
 # Folders that hold history.
 ALLOW_DIRS='plan/_archive/
@@ -78,5 +79,20 @@ out="$(guard "$TMP")"; rc=$?
 ok=1
 if [ "$rc" -ne 0 ] && printf '%s\n' "$out" | grep -qF 'ravintio-zero/skills/demo/SKILL.md:2'; then ok=0; fi
 check "req-007 AC-2: a planted old name fails and names its file and line" "$ok"
+
+for planted in 'Lock: plan/.roadmap-runner.lock' 'Archive to plan/_archive/{id}-{slug}-roadmap-{date}/.'; do
+  printf 'line one\n%s\n' "$planted" > "$TMP/ravintio-zero/skills/demo/SKILL.md"
+  git -C "$TMP" add ravintio-zero/skills/demo/SKILL.md
+  out="$(guard "$TMP")"; rc=$?
+  ok=1
+  if [ "$rc" -ne 0 ] && printf '%s\n' "$out" | grep -qF 'ravintio-zero/skills/demo/SKILL.md:2'; then ok=0; fi
+  check "0000192 req-003 AC-2: planted '$planted' fails and names its file and line" "$ok"
+done
+
+printf 'line one\nSee plan/_archive/0000168-backlog-clearance-roadmap-2026-10-25/.\n' > "$TMP/ravintio-zero/skills/demo/SKILL.md"
+git -C "$TMP" add ravintio-zero/skills/demo/SKILL.md
+ok=1
+if guard "$TMP" >/dev/null; then ok=0; fi
+check "0000192 req-003: a real archive folder name does not match" "$ok"
 
 print_summary

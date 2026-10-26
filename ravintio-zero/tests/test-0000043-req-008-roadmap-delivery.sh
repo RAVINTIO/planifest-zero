@@ -25,7 +25,7 @@ echo "=== req-008 (a): archive the initiative folder, status delivered ==="
 assert_contains 'I-E Delivery:' "$DEL" "req-008 (a): uses the I-E Delivery prefix"
 assert_contains 'last step' "$DEL" "req-008 (a): runs after the last step"
 assert_contains 'plan/current-initiative/' "$DEL" "req-008 (a): names the source folder"
-assert_contains 'plan/_archive/{id}-{slug}-roadmap-{date}/' "$DEL" "req-008 (a): names the archive path"
+assert_contains 'plan/_archive/{id}-{slug}-initiative-{date}/' "$DEL" "req-008 (a): names the archive path"
 assert_contains '`status: delivered`' "$DEL" "req-008 (a): sets status delivered"
 assert_contains 'initiative branch' "$DEL" "req-008 (a): commits on the initiative branch"
 

@@ -93,14 +93,14 @@ done
 R="$(make_fixture a-rerun active)"
 run_driver "$R" block
 run_driver "$R" short
-rm -f "$R/plan/.roadmap-runner.lock"
+rm -f "$R/plan/.initiative-runner.lock"
 assert_equals "short out" "$(cat "$R/plan/.initiative-logs/step-1.log")" "req-012 (a): a rerun truncates the log"
 
 R="$(make_fixture a-draft draft)"
 run_driver "$R" ok
 assert_equals "0" "$(printf '%s\n' "$OUT" | grep -c 'Log:')" "req-012 (a): an inactive initiative names no log"
 R="$(make_fixture a-lock active)"
-echo other > "$R/plan/.roadmap-runner.lock"
+echo other > "$R/plan/.initiative-runner.lock"
 run_driver "$R" ok
 assert_equals "0" "$(printf '%s\n' "$OUT" | grep -c 'Log:')" "req-012 (a): an existing lock names no log"
 
@@ -116,7 +116,7 @@ git -C "$R" init -q
 run_driver "$R" ok
 run_driver "$R" ok
 assert_equals "1" "$(grep -cxF 'plan/.initiative-logs/' "$R/.git/info/exclude")" "req-012 (b): log folder excluded exactly once"
-assert_equals "1" "$(grep -cxF 'plan/.roadmap-runner.lock' "$R/.git/info/exclude")" "req-012 (b): lock still excluded once"
+assert_equals "1" "$(grep -cxF 'plan/.initiative-runner.lock' "$R/.git/info/exclude")" "req-012 (b): lock still excluded once"
 assert_equals "0" "$(git -C "$R" status --porcelain | grep -c 'initiative-logs')" "req-012 (b): git status lists no log"
 
 R="$(make_fixture b-file active)"
@@ -124,7 +124,7 @@ echo not-a-dir > "$R/plan/.initiative-logs"
 run_driver "$R" ok
 assert_equals "1" "$CODE" "req-012 (b): an unusable log folder exits 1"
 assert_contains "I-C Run: Blocked: could not open the step log" "$OUT" "req-012 (b): log-open stop line"
-assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-012 (b): lock released"
+assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-012 (b): lock released"
 assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-012 (b): no step ran"
 
 echo ""
@@ -140,7 +140,7 @@ assert_equals "1" "$CODE" "req-012 (d): a symlinked step log exits 1"
 assert_contains "I-C Run: Blocked: refused a symlinked step log path" "$OUT" "req-012 (d): symlinked log stop line"
 assert_equals "0" "$(printf '%s\n' "$OUT" | grep -c "$WORK")" "req-012 (d): stop line omits the target path"
 assert_equals "victim bytes" "$(cat "$WORK/victim-file")" "req-012 (d): the victim file keeps its bytes"
-assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-012 (d): lock released after a symlinked log"
+assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-012 (d): lock released after a symlinked log"
 assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-012 (d): no step ran after a symlinked log"
 
 R="$(make_fixture d-dir active)"
@@ -152,7 +152,7 @@ assert_equals "1" "$CODE" "req-012 (d): a symlinked log folder exits 1"
 assert_contains "I-C Run: Blocked: refused a symlinked step log path" "$OUT" "req-012 (d): symlinked folder stop line"
 assert_equals "0" "$(printf '%s\n' "$OUT" | grep -c "$WORK")" "req-012 (d): folder stop line omits the target path"
 assert_equals "victim bytes" "$(cat "$WORK/victim-dir/step-1.log")" "req-012 (d): the victim folder file keeps its bytes"
-assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-012 (d): lock released after a symlinked folder"
+assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-012 (d): lock released after a symlinked folder"
 assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-012 (d): no step ran after a symlinked folder"
 
 R="$(make_fixture d-mode active)"

@@ -33,7 +33,7 @@ esac
 printf 'I-C Run: step %s done\n' "$pos" >> plan/current/build-log.md
 if [ "$pos" = 2 ]; then
   mkdir -p plan/_archive
-  mv plan/current-initiative "plan/_archive/0000050-demo-roadmap-2026-10-23"
+  mv plan/current-initiative "plan/_archive/0000050-demo-${ARCHIVE_FORM:-initiative}-2026-10-23"
 else
   sed -i.bak -E "s/${POSRE}.*/\\1$((pos + 1))/" "$RM" && rm -f "$RM.bak"
 fi
@@ -85,7 +85,16 @@ assert_equals "0" "$(grep -cE -- '--continue|--resume' "$R/stub.log")" "req-007 
 assert_contains "I-C Run:" "$OUT" "req-007 (a): prints I-C Run: lines"
 assert_contains "I-D Advance:" "$OUT" "req-007 (a): prints I-D Advance: lines"
 assert_contains "I-E Delivery:" "$OUT" "req-007 (a): prints an I-E Delivery: line"
-assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-007 (a): lock released"
+assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-007 (a): lock released"
+
+echo ""
+echo "=== 0000192 req-002: an archive folder in the old form still counts as delivered ==="
+R="$(make_fixture a-old active)"
+ARCHIVE_FORM=roadmap run_driver "$R" ok
+assert_equals "0" "$CODE" "0000192 req-002 AC-3: driver exits 0 with the old archive form"
+assert_contains "I-E Delivery:" "$OUT" "0000192 req-002 AC-3: prints an I-E Delivery: line"
+assert_equals "yes" "$([ -d "$R/plan/_archive/0000050-demo-roadmap-2026-10-23" ] && echo yes || echo no)" "0000192 req-002 AC-3: fixture used the old form"
+assert_equals "yes" "$([ -d "$WORK/a/plan/_archive/0000050-demo-initiative-2026-10-23" ] && echo yes || echo no)" "0000192 req-002 AC-2: case (a) used the new form"
 
 # make_template_fixture <name> <frontmatter status> <body status>: an initiative filled in from the
 # real template, quotes kept. Prints the fixture root.
@@ -129,12 +138,12 @@ assert_equals "yes" "$r" "req-007 (b): non-zero exit when status is draft"
 assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-007 (b): no step ran for draft"
 
 R="$(make_fixture b-lock active)"
-echo "other-driver" > "$R/plan/.roadmap-runner.lock"
+echo "other-driver" > "$R/plan/.initiative-runner.lock"
 run_driver "$R" ok
 [ "$CODE" -ne 0 ] && r=yes || r=no
 assert_equals "yes" "$r" "req-007 (b): non-zero exit when the lock exists"
 assert_equals "no" "$([ -e "$R/stub.log" ] && echo yes || echo no)" "req-007 (b): no step ran with a lock"
-assert_equals "other-driver" "$(cat "$R/plan/.roadmap-runner.lock")" "req-007 (b): pre-existing lock untouched"
+assert_equals "other-driver" "$(cat "$R/plan/.initiative-runner.lock")" "req-007 (b): pre-existing lock untouched"
 
 echo ""
 echo "=== req-007 (c): stop rules ==="
@@ -143,7 +152,7 @@ run_driver "$R" block
 [ "$CODE" -ne 0 ] && r=yes || r=no
 assert_equals "yes" "$r" "req-007 (c): non-zero exit on Blocked:"
 assert_contains "Blocked: needs a human decision on step 1" "$OUT" "req-007 (c): stop line repeats the Blocked: message"
-assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-007 (c): lock released after a block"
+assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-007 (c): lock released after a block"
 
 R="$(make_fixture c-resolved active)"
 printf 'Blocked: old\nResolved: old\n' > "$R/plan/current/build-log.md"
@@ -168,13 +177,13 @@ run_driver "$R" stall
 [ "$CODE" -ne 0 ] && r=yes || r=no
 assert_equals "yes" "$r" "req-007 (c): non-zero exit on a stalled position"
 assert_contains "position" "$OUT" "req-007 (c): stop line names the stalled position"
-assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-007 (c): lock released after a stall"
+assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-007 (c): lock released after a stall"
 
 R="$(make_fixture c-fail active)"
 run_driver "$R" fail
 [ "$CODE" -ne 0 ] && r=yes || r=no
 assert_equals "yes" "$r" "req-007 (c): non-zero exit when claude fails"
-assert_equals "no" "$([ -e "$R/plan/.roadmap-runner.lock" ] && echo yes || echo no)" "req-007 (c): lock released after a failure"
+assert_equals "no" "$([ -e "$R/plan/.initiative-runner.lock" ] && echo yes || echo no)" "req-007 (c): lock released after a failure"
 
 echo ""
 echo "=== req-007 (d): runner lock is excluded from git ==="
@@ -182,12 +191,12 @@ R="$(make_fixture d-git active)"
 git -C "$R" init -q
 run_driver "$R" ok
 assert_equals "0" "$CODE" "req-007 (d): driver exits 0 in a git work tree"
-assert_equals "1" "$(grep -cxF 'plan/.roadmap-runner.lock' "$R/.git/info/exclude")" "req-007 (d): lock path added to info/exclude"
+assert_equals "1" "$(grep -cxF 'plan/.initiative-runner.lock' "$R/.git/info/exclude")" "req-007 (d): lock path added to info/exclude"
 R="$(make_fixture d-git-rerun active)"
 git -C "$R" init -q
 run_driver "$R" ok
 run_driver "$R" ok
-assert_equals "1" "$(grep -cxF 'plan/.roadmap-runner.lock' "$R/.git/info/exclude")" "req-007 (d): a second run does not duplicate the entry"
+assert_equals "1" "$(grep -cxF 'plan/.initiative-runner.lock' "$R/.git/info/exclude")" "req-007 (d): a second run does not duplicate the entry"
 R="$(make_fixture d-nogit active)"
 run_driver "$R" ok
 assert_equals "0" "$CODE" "req-007 (d): driver exits 0 outside a git work tree"
