@@ -88,3 +88,29 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | MCP calls | `0` |
 | Parallel task batches | `1` |
 | Notes | `Full Bash suite ran in the background beside execution checks and the security review. 165 feature and 19 regression Bash suites pass. 16 pwsh suites pass. 0 self-correction cycles. Security: low, two low findings. All 8 criteria verified by execution. The strict-mode ack was written on resume.` |
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-26T04:06:05Z` |
+| End | `2026-10-26T04:06:26Z` |
+| Wall clock | `see summary` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | `Changelog, archive, build report, about table, sentinels, push, and PR description update. The PR is #37, shared with 0000189. Steps 5 and 6 ran inline: the version needs no bump.` |
+
+## Summary
+
+| Phase | Agents | Parallel batches | Wall clock | Self-corrections |
+|-------|--------|------------------|------------|------------------|
+| P0 | 0 | 0 | 0m 48s | 0 |
+| P1 | 0 | 0 | 1m 13s | 1 (plan files reworded to avoid old names) |
+| P2 | 0 | 0 | 1m 32s | 0 |
+| P3 | 0 | 1 | 4m 51s | 1 (estimated timestamps replaced with commit times) |
+| P4 | 0 | 0 | to 2026-10-26T04:06:26Z | 0 |
+
+Total wall clock: 2026-10-26T03:57:41Z to 2026-10-26T04:06:26Z.
