@@ -124,3 +124,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - In progress: P3 verification (2026-10-26T02:24:18Z)
 - In progress: P3 security review (2026-10-26T02:24:18Z)
 - Done: P3 security review: overall low, 4 low and 1 informational, none critical or high (2026-10-26T02:25:42Z)
+- Done: P3 verification: 21 verified, 0 failed, 0 not-verifiable (2026-10-26T02:26:15Z)
