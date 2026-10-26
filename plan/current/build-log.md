@@ -58,11 +58,18 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-26T01:48:06Z` |
-| End | `pending` |
+| End | `2026-10-26T01:52:22Z` |
 | Wall clock | `pending` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator, ravintio-plan |
-| Agents spawned | `0` |
+| Agents spawned | `2` (haiku: scope, risks, glossary. sonnet: ADR-002 to ADR-005) |
 | MCP calls | `0` |
-| Parallel task batches | `0` |
+| Parallel task batches | `2` |
 | Notes | `Resumed in a new session (254626ef). Run mode autonomous, speed fast.` |
+
+- Story map gap: refreshing `.claude/skills/` had no story. The brief states it, so it became US-008 and REQ-009.
+- Requirements: REQ-001 to REQ-009. REQ-006 also drops the `PLANIFEST_ROADMAP_*` fallback (assumption A-004, ADR-002).
+- Assumption A-003: the design says "four initiative states" but lists five. The plan uses five.
+- Out-of-scope discovery: `merge-guard` blocked a long heredoc that named the merge command. Filed backlog 0000190.
+- Consistency check: clean.
+- P1 complete. Autonomous run, no gate. The run stops here to recommend a context clear before P2, as the human asked at P0.
