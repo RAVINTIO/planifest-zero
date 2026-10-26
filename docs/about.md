@@ -1,5 +1,5 @@
 ---
-version: "0.18.1"
+version: "0.19.0"
 feature: "0000185-explain-strict-mode"
 updated: "25 Oct 2026"
 ---
