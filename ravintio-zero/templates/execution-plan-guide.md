@@ -52,6 +52,29 @@ A quick-reference table. The full contract is in `openapi-spec.yaml` - this tabl
 
 Entities, their owner components, and relationships. This feeds into the data contract and the ADRs.
 
+### Concurrency plan
+
+The table tells the human which work runs at once before the work starts. Units in one batch run together. Batches run in order.
+
+| Column | Meaning |
+|--------|---------|
+| Unit | The unit of work, named by its id. |
+| Depends on | The units it needs first. Each one sits in an earlier batch. Write `none` if it needs no unit. |
+| Writes | The files the unit writes. List files, not directories or components. |
+| Batch | The batch number. Two units with no dependency and no shared write target share a batch. |
+| Sequential reason | Why the unit runs alone in its batch. A unit alone in its batch needs a reason. |
+
+Worked example:
+
+| Unit | Depends on | Writes | Batch | Sequential reason |
+|------|-----------|--------|-------|-------------------|
+| U1-template | none | `templates/a.md` | 1 | none |
+| U2-skill | none | `skills/b/SKILL.md` | 1 | none |
+| U3-tests | none | `tests/test-c.sh` | 1 | none |
+| U4-check | U1-template | `scripts/check.mjs` | 2 | Reads the template that U1 writes, and no other unit remains |
+
+U1 to U3 share no write target, so they run together in batch 1. U4 depends on U1, so it moves to batch 2 and gives its reason. A re-plan after a reopened phase rewrites this section.
+
 ### Open Questions
 
 Material gaps the plan skill could not resolve from the brief. These are **not** filled by assumption - they're reported to the orchestrator, which surfaces them to the human.

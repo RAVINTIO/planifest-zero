@@ -1,0 +1,136 @@
+---
+title: "Build Log - 0000201-plan-concurrent-work"
+summary: "Working record of the pipeline run, maintained by the orchestrator."
+---
+# Build Log - 0000201-plan-concurrent-work
+
+> Created at discovery (P0). Appended by the orchestrator at each phase boundary. Survives session changes.
+
+## Header
+
+| Field | Value |
+|-------|-------|
+| Feature ID | `0000201-plan-concurrent-work` |
+| Pipeline start | `2026-10-27T09:39:34Z` |
+| Tool | `claude-code` |
+| Primary model | `claude-sonnet-5-5` |
+| Cheaper model | `claude-haiku-5-5` |
+| Run speed | `standard` |
+
+---
+
+## Phase Log
+
+### P0: Discovery
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:39:34Z` |
+| End | `2026-10-27T09:45:00Z` |
+| Wall clock | `6` |
+| Model tier | primary |
+| Skills loaded | ravintio-orchestrator |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
+| Notes | initiative step 6 of 0000195-backlog-clearance |
+
+Run mode: autonomous (2026-10-27T09:39:34Z, initiative step)
+Version: 0.23.0 (minor bump from 0.22.0, initiative step 6 `Bump`)
+Backlog pickup: 0000180 pulled in from the initiative row, folder deleted in the brief commit.
+Approved dependencies: none. Schema changes: none (initiative.md).
+Scope Lock (happy path): the plan skill writes a concurrency table, the check passes, and implement dispatches batch 1 in one message [source: draft-accepted (initiative)]
+Scope Lock (first-run path): the template supplies the section, so the first plan in a repo has it [source: draft-accepted (initiative)]
+Scope Lock (error path): a missing section or an unjustified sequential unit makes the check print a finding and exit 1 [source: draft-accepted (initiative)]
+Scope Lock (cross-session continuity): the table lives in tracked `execution-plan.md`, and a reopened phase rewrites it [source: draft-accepted (initiative)]
+Scope Lock complete. All four scenario paths captured.
+Design confirmed: draft-accepted (initiative) (2026-10-27T09:45:00Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:46:00Z` |
+| End | `2026-10-27T09:56:00Z` |
+| Wall clock | `10` |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 1 |
+| Notes | Artifacts are small and share one concept, so they ran inline in one batch of parallel writes. |
+
+- Consistency check: clean over `plan/current`.
+- The execution plan holds a concurrency plan for P2: three units in batch 1, one docs unit in batch 2.
+- Autonomous run: no plan gate stop.
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:42:11Z` |
+| End | `2026-10-27T09:54:54Z` |
+| Wall clock | `8` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 3 |
+| MCP calls | 0 |
+| Parallel task batches | 1 |
+| Notes | Dispatch follows the concurrency plan: batch 1 (U1, U2, U3) in one message, then U4 inline. |
+
+- In progress: U1-check-8 (2026-10-27T09:42:11Z)
+- In progress: U2-plan-docs (2026-10-27T09:42:11Z)
+- In progress: U3-dispatch-rule (2026-10-27T09:42:11Z)
+- Done: U1-check-8 (2026-10-27T09:54:54Z)
+- Done: U2-plan-docs (2026-10-27T09:54:54Z)
+- Done: U3-dispatch-rule (2026-10-27T09:54:54Z)
+- In progress: U4-living-docs (2026-10-27T09:54:54Z)
+- Done: U4-living-docs (2026-10-27T09:54:54Z)
+- Rework: REQ-001: the mid-pipeline reference edit changed a base line that test-0000151-req-011 guards, so the new sentence moved to its own line (2026-10-27T09:54:54Z)
+- Full suite: feature suites 177 passed and 2 failed before the fix. One failure was the base-line guard, now fixed. The other is test-0000151-req-014, installed skill copies under `.claude/skills/` differ from source. That folder is git-ignored and refreshes at step 13, as in steps 1 to 5.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:55:19Z` |
+| End | `2026-10-27T09:55:19Z` |
+| Wall clock | `3` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Checks and the security review are small and ran inline. |
+
+- Self-correct cycles: 1 (recorded under P2).
+- Security: no finding above low.
+- Autonomous run: no acceptance stop. Evidence is in `acceptance-evidence.md`.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:55:46Z` |
+| End | `2026-10-27T09:55:46Z` |
+| Wall clock | `6` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `about 40 minutes across P0 to P4 blocks` |
+| Total agents spawned | `3` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `2` |
+| Primary tier agent calls | `3` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `1` |
+| Phases skipped | `none` |
