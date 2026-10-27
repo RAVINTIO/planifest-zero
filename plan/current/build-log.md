@@ -43,3 +43,13 @@ Skipped: chore with a fixed spec in initiative.md. Requirements are the four acc
 ### P2: Implement
 
 REQ-001: wrote custom-006 override from initiative.md text.
+
+REQ-002: ran the standing-approved setup command. REQ-003: committed entries 0000210 and 0000211.
+
+### P3: Validate and Accept
+
+Test cap raised to 38,200 (deviation, see changelog). Evidence in acceptance-evidence.md.
+
+### P4: Ship
+
+Version 0.29.1.

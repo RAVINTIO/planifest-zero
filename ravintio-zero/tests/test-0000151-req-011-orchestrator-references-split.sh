@@ -60,8 +60,9 @@ assert_equals "yes" "$([ "$SKILL_BYTES" -le 27800 ] && echo yes || echo no)" "SK
 # Cap raised from 35,484 to 35,600 for the initiative rename (0000189).
 # Caps raised to 27,700 and 37,800 for the reporting rule and the Supervise prefix (0000200).
 # Cap raised to 27,800 for the initiative resume split (0000205).
+# Cap raised to 38,200 for the standing setup refresh override that the repo CLAUDE.md carries (0000208).
 # The combined cap also covers the Reply Conventions section that the boot template adds to CLAUDE.md.
-assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le 37800 ] && echo yes || echo no)" "CLAUDE.md plus SKILL.md is 37,800 bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
+assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le 38200 ] && echo yes || echo no)" "CLAUDE.md plus SKILL.md is 38,200 bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
 
 echo "=== (a) no rule line was lost ==="
 REF_FILES=$(ls "$REFS"/orchestrator-*.md 2>/dev/null)

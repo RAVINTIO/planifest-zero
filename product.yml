@@ -10,7 +10,7 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.29.0"
+version: "0.29.1"
 feature: "0000207-codex-support"
 
 versionPolicy: "max-component-version"
