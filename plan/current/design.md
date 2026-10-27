@@ -10,7 +10,7 @@
 - User stories:
   - US-001: As an agent that files an entry or starts a feature, I reserve ids from `plan/backlog/.next-id` with one script, so that two sessions never take the same id.
   - US-002: As an agent that copies an entry from another repo, I reserve a new local id and name the source id in the text, so that each repo keeps its own sequence and no id clashes.
-- Acceptance criteria confirmed: 8
+- Acceptance criteria confirmed: 9
 - Constraints: Node built-ins only. Seven-digit ids. No schema change.
 - Integrations: none
 
@@ -56,7 +56,8 @@ None
 | Requirement | Best-fit Skill | Rationale |
 |-------------|----------------|-----------|
 | REQ-001 - reserve ids with a script | ravintio-implement | TDD loop with tests and docs landing together |
-| REQ-002 - call the counter from every id rule | ravintio-implement | TDD loop with tests and docs landing together |
+| REQ-002 - bootstrap and seed the counter | ravintio-implement | TDD loop with tests and docs landing together |
+| REQ-003 - call the counter from every id rule | ravintio-implement | TDD loop with tests and docs landing together |
 
 ## Repo Instructions
 Five files in `ravintio-overrides/instructions/` (`custom-001` to `custom-005`) apply: local git only, subagent decomposition, GUTD shorthand, push and raise PR in ship, delete redundant local branches.

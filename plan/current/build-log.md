@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T08:18:00Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-27T08:26:00Z` |
+| Wall clock | `8` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -49,3 +49,20 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock (cross-session continuity): the counter file is the only state. Two sessions that reserve at once take disjoint ranges. [source: draft-accepted (initiative)]
 - Scope Lock complete. All four scenario paths captured.
 - Design confirmation: draft-accepted (initiative)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T08:26:30Z` |
+| End | `2026-10-27T08:34:00Z` |
+| Wall clock | `8` |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | none |
+
+- Consistency check: first run found two requirements over the 3-criteria cap. Split into three requirements. Second run clean over `plan/current`.
+- Autonomous run: no plan gate stop.
