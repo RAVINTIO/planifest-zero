@@ -67,6 +67,8 @@ Chart runs a clarity check on each backlog entry of each step:
 - The human's confirmation of the chart covers only entries that pass or that the human sharpens.
 - Chart never rewrites an entry itself.
 
+Before it coaches, Chart reads the latest records in `plan/retrospectives/`, newest first, and names any change they filed that is still open. If the folder is empty, Chart says so.
+
 Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval.
 
 ### Chart-time schema approval
@@ -256,13 +258,14 @@ The tag comes after the merge because a squash creates a new commit. A tag on th
 Run this stage after the last step merges. Every message begins with `I-E Delivery:` after the `P4 Ship:` prefix. Work on the initiative branch.
 
 1. Move `plan/current-initiative/` to `plan/_archive/{id}-{slug}-initiative-{date}/` and set the initiative `status: delivered`. Update links that point at the old path. Commit the move on the initiative branch.
-2. Raise one PR from the initiative branch to `main`.
+2. Run `ravintio-retrospective` in initiative mode. It writes `plan/retrospectives/{id}-{slug}-initiative-{date}.md`. Commit the record on the initiative branch, so the PR carries it. A missing retrospective never blocks delivery.
+3. Raise one PR from the initiative branch to `main`.
 
    ```bash
    gh pr create --base main --head initiative/{id}-{slug}
    ```
 
-3. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag. Scan the body for credential patterns before you raise the PR, as in Step 9.
-4. Report the PR URL and end the run.
+4. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag, and name the retrospective record. Scan the body for credential patterns before you raise the PR, as in Step 9.
+5. Report the PR URL and end the run.
 
 The agent never merges the initiative PR and never commits to `main`. The human reviews and merges it.

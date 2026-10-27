@@ -33,7 +33,7 @@ for f in "$ZERO_DIR/component.yml" "$ZERO_DIR/pipeline-reference.md" "$REPO/docs
   T=$(cat "$f")
   assert_contains "ravintio-postmortem" "$T" "req-002 AC-3: $(basename "$f") names the skill"
 done
-assert_contains "The 14 skills" "$(cat "$ZERO_DIR/component.yml")" "req-002 AC-3: component.yml counts 14 skills"
-assert_contains "fourteen" "$(cat "$REPO/docs/architecture-overview.md")" "req-002 AC-3: the overview counts fourteen skills"
+assert_contains "The 15 skills" "$(cat "$ZERO_DIR/component.yml")" "req-002 AC-3: component.yml counts 15 skills"
+assert_contains "fifteen" "$(cat "$REPO/docs/architecture-overview.md")" "req-002 AC-3: the overview counts fifteen skills"
 
 print_summary

@@ -73,6 +73,7 @@ Twelve skills drive the pipeline.
 | `ravintio-refresh-setup` | Re-runs setup with the flags currently in effect |
 | `ravintio-file-backlog` | Files one uncommitted backlog entry in another repo |
 | `ravintio-postmortem` | Writes one blameless postmortem per failed CI run or Blocked stop, and files its actions |
+| `ravintio-retrospective` | Writes one blameless retrospective per shipped run and per delivered initiative, and files its changes |
 
 The TDD trio (`ravintio-test-writer`, `ravintio-implementer`, `ravintio-refactor`) is dispatched by `ravintio-implement`, once per requirement. After GREEN and refactor, the improvement loop runs up to 2 cycles per requirement and records an `Improve:` marker for each.
 

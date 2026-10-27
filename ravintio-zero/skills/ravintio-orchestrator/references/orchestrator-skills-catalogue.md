@@ -21,6 +21,7 @@ version: "1.0.0"
 | ravintio-refresh-setup | Human asks to refresh the setup | Standalone. Invoke any time. |
 | ravintio-file-backlog | Human asks to file a backlog entry in another repo | Standalone. Invoke any time. |
 | ravintio-postmortem | A `Resolved:` line follows a `Blocked:` stop, or a CI failure, a P2 self-correction, an escaped defect, or the human asks | Standalone. The orchestrator runs it before ship. Invoke any time. |
+| ravintio-retrospective | Ship finishes the build report, I-E Delivery finishes the archive, or the human asks | Standalone. Ship and delivery run it. Invoke any time. |
 
 ## Capability Skills
 
