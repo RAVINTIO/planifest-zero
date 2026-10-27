@@ -71,6 +71,8 @@ Then run `node ravintio-zero/scripts/workflow-metrics.mjs "{archive-folder}"` an
 
 Source every metric from the build log. Never infer or fabricate. If routing or parallelism is not evidenced, treat it as not applied.
 
+Last, run `ravintio-retrospective` in run mode. It writes the record to `plan/retrospectives/`. Append `Retrospective: {path}` to `build-report.md`, or `Retrospective: none` if the skill wrote no record. A missing retrospective never blocks ship.
+
 ### Step 6: Version bump
 
 Derive the current product version with `node ravintio-zero/scripts/product-version.mjs`, then apply the release version to `docs/about.md`, `product.yml`, and `component.yml`. The version must match `[0-9]+\.[0-9]+(\.[0-9]+)?` and must not be lower than the last release tag. If it fails validation, ask the human for the value. Never tag a fabricated version.

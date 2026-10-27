@@ -27,7 +27,8 @@ e181="$(entry_of 0000181)entry.md"
 e182="$(entry_of 0000182)entry.md"
 
 ok=1
-if [ -f "$e178" ] && grep -qF -- 'post-initiative retrospective' "$e178"; then ok=0; fi
+# Entry 0000178 left the backlog when 0000204 pulled it in. A missing entry passes.
+if [ ! -f "$e178" ] || grep -qF -- 'post-initiative retrospective' "$e178"; then ok=0; fi
 check "req-008 AC-2: 0000178 says post-initiative retrospective" "$ok"
 
 ok=1
