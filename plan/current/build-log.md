@@ -26,7 +26,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T10:36:23Z` |
-| End | `` |
+| End | `2026-10-27T10:40:00Z` |
 | Wall clock | `` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
