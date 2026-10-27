@@ -31,7 +31,7 @@ if hasi 'acknowledg' && hasi 'session id' && hasi 'timestamp' \
 check "req-001 AC-2: section explains the ack file content, its name, and the timestamp fallback" "$ok"
 
 ok=1
-if hasi 'initiative' && has '0000182'; then ok=0; fi
-check "req-001 AC-3: section covers the initiative case and names backlog 0000182" "$ok"
+if hasi 'initiative' && has '.initiative-ack'; then ok=0; fi
+check "req-001 AC-3: section covers the initiative case and names plan/.initiative-ack" "$ok"
 
 print_summary

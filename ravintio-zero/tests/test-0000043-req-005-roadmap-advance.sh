@@ -90,7 +90,7 @@ assert_contains 'If the local feature branch still exists' "$ADV" "req-005 (f): 
 assert_contains 'I-D Advance: Complete:' "$ADV" "req-005 (f): ends with a Complete line"
 assert_contains 'step {next} of {n} next' "$ADV" "req-005 (f): Complete line names the next step"
 assert_contains 'one past the last step number' "$SEC" "req-005 (f): defines position after the last step"
-assert_contains 'run I-E Delivery in the same session' "$ADV" "req-005 (f): last step runs delivery"
+assert_contains 'driver then prints `I-E Delivery: Pending:`' "$ADV" "req-005 (f): last step ends and the driver reports delivery pending"
 push_ln="$(printf '%s\n' "$ADV" | grep -n 'git push origin v' | head -1 | cut -d: -f1)"
 pull_ln="$(printf '%s\n' "$ADV" | grep -n 'git pull --ff-only' | head -1 | cut -d: -f1)"
 assert_equals "yes" "$([ -n "$push_ln" ] && [ -n "$pull_ln" ] && [ "$push_ln" -lt "$pull_ln" ] && echo yes || echo no)" "req-005 (f): pull follows the tag push"
