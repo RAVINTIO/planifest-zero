@@ -72,8 +72,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T07:55:00Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-27T09:00:00Z` |
+| Wall clock | `65` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 0 |
@@ -84,3 +84,5 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Done: REQ-001 and REQ-002 in setup.sh (RED then GREEN, 2026-10-27T08:10:00Z)
 - Done: REQ-001 and REQ-002 in setup.ps1 (RED then GREEN, 2026-10-27T08:25:00Z)
 - Done: updated four existing tests that asserted the warning (0000034 x2, 0000031, 0000036). The backlog listed six. 0000037-req-002 and 0000037-req-003 assert that no record or refresh script holds a retired flag, so they pass unchanged.
+
+- Done: REQ-003 refresh skill (RED then GREEN). Full suite: 170 feature suites and 19 regression suites pass, including PowerShell on local pwsh.
