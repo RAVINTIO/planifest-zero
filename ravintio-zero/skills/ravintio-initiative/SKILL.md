@@ -38,7 +38,7 @@ description: Coordinates an initiative from chart to delivery in the human's ses
 
 ## I-A Chart and I-B Activate
 
-Follow the I-A Chart and I-B Activate sections of the roadmap standards. Take the human's confirmation per item. At Activate, start two background tasks:
+Follow the I-A Chart and I-B Activate sections of the roadmap standards. Take the human's confirmation per item. Chart builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. At Activate, start two background tasks:
 
 - The driver: `node ravintio-zero/scripts/initiative-run.mjs`.
 - The monitor: `node ravintio-zero/scripts/initiative-watch.mjs`. It prints one line per event and a heartbeat every 5 minutes.

@@ -96,7 +96,7 @@ Chart runs a clarity check on each backlog entry of each step:
 
 Before it coaches, Chart reads the latest records in `plan/retrospectives/`, newest first, and names any change they filed that is still open. If the folder is empty, Chart says so.
 
-Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval.
+Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval. It builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. See Chart-time decisions.
 
 ### Chart-time schema approval
 
@@ -132,6 +132,35 @@ At Chart:
 
 Chart asks no fallback question. A dependency that no row lists stops the step. The step takes the dependency exception stop in the orchestrator skill. In P0, copy the step's rows into the `Approved dependencies` field of `design.md`. The stop check still reads `initiative.md`.
 
+### Chart-time decisions
+
+A step stops when it meets a fork that no one approved. The human is present at Chart and absent during the steps, so Chart takes these decisions up front. Chart writes three tables in `initiative.md`: `## Decisions`, `## Baselines`, and `## Criteria`. The human's confirmation of the chart approves every row left in them.
+
+At Chart, for each step:
+
+1. **Pre-mortem.** Ask what would stop the step. Record each likely fork as a row in `## Decisions` with its pre-approved answer. Name one fork per row.
+2. **Pre-approved fallbacks.** If a row's answer adds scope, name that scope in the row, as in "may also change `setup.sh`".
+3. **Bump rule.** Give each row a bump effect, as in "rises to minor if the fallback scope is used". Use `none` if the bump stays as charted.
+4. **Baseline.** A speed or size target needs a profile taken at Chart that shows where the cost goes. Record it in `## Baselines`. Take the target and the planned fix from that profile.
+5. **Criterion critic.** Check each measurable criterion and record the result in `## Criteria`. Ask whether the step changes what the criterion measures, such as a total that grows with the step's new tests. Ask how noisy the measure is across runs, and whether the margin covers that noise.
+6. **Environment check.** Check the local tools that the step's tests need. Mark a criterion `CI` in `## Criteria` if only CI can check it. Mark it `local` otherwise.
+7. **Retrospective input.** Read the stops in the latest records in `plan/retrospectives/`. Turn each stop that can recur into a row in `## Decisions`.
+
+Chart asks no fallback question. A fork that no row covers stops the step.
+
+#### Worked example
+
+Roadmap 0000168 stopped step 3 four times. These rows would have answered each stop, with no human present.
+
+| Step | Fork | Pre-approved answer | Bump effect |
+|------|------|---------------------|-------------|
+| 3 | CI misses the speed target on Windows | Profile on Windows and fix the top cost | none |
+| 3 | The profile shows skill bundling as the top cost | Widen scope to drop skill bundling on every platform | rises to minor if the fallback scope is used |
+| 3 | The wider scope changes the release | Raise the bump from patch to minor | minor |
+| 3 | The speed target counts the step's own new tests | Measure per case, not as a fixed total | none |
+
+The criterion critic would have caught the last row at Chart. A fixed total grows with the step's new tests, and runner noise exceeded the margin. The environment check would have caught the first failure of step 1. The machine had no `pwsh`, so the PowerShell criterion belongs to CI.
+
 ### I-B Activate
 
 Activate turns a charted initiative into a live branch. Run these checks first:
@@ -162,6 +191,8 @@ Run executes one initiative step from `position`. Ship owns the merge that ends 
 - P0 builds `feature-brief.md` from the backlog entries that the step's row lists. It pulls each entry in and deletes its folder in the same commit. It does not ask pull-in, leave, or discard.
 - P0 self-confirms the design and the Scope Lock Challenge. Each scope lock line ends with `[source: draft-accepted (initiative)]`. The design confirmation records `draft-accepted (initiative)` in place of a human confirmation.
 - A schema change that matches a chart-approved row does not stop the step. See Chart-time schema approval.
+- A fork that matches a `## Decisions` row does not stop the step. Apply the row's answer and its bump effect, and log `Decision applied (initiative chart): {fork}` in the build log. The downgrade block still applies. The step stops only for a fork no row covers. A missing table counts as an empty one.
+- A criterion marked `CI` in `## Criteria` counts as validated only after the step's first CI run.
 - P0 stops only when a backlog entry is too vague to draft a brief from. Print `Blocked:` with the entry and what is missing. The exception stops in Exception Stops still apply, including the credential stop.
 - P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the initiative branch's version. That is the last known version from Discovery Start Actions step 8. The initiative branch's version comes from `product.yml`, or from `docs/about.md` when `product.yml` is absent. The downgrade block still applies.
 

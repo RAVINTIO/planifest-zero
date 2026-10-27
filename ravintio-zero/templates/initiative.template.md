@@ -21,6 +21,9 @@ status: "proposed"  # proposed | charted | active | delivered | blocked
 >
 > `## Dependencies` lists each step's predicted library or service. The human approves the rows
 > at Chart. See Chart-time dependency approval in the same file.
+>
+> `## Decisions`, `## Baselines`, and `## Criteria` hold the Chart-time decisions. The human
+> approves the rows at Chart. See Chart-time decisions in the same file.
 
 **Goal:** {{What the whole chain delivers, in one or two sentences.}}
 **Branch:** initiative/{{id}}-{{slug}}
@@ -45,6 +48,24 @@ status: "proposed"  # proposed | charted | active | delivered | blocked
 | Step | Name | Kind | Purpose |
 |------|------|------|---------|
 | 1 | none | none | {{the library or service the step adds, or none. Kind is library, service, or none}} |
+
+## Decisions
+
+| Step | Fork | Pre-approved answer | Bump effect |
+|------|------|---------------------|-------------|
+| 1 | {{a likely fork, or none}} | {{the answer, and any fallback scope it adds}} | {{the bump change, or none}} |
+
+## Baselines
+
+| Step | Target | Baseline | Source |
+|------|--------|----------|--------|
+| 1 | {{a speed or size target, or none}} | {{where the cost goes}} | {{the profile taken at Chart}} |
+
+## Criteria
+
+| Step | Criterion | Noise and margin | Checked in |
+|------|-----------|------------------|------------|
+| 1 | {{a measurable criterion, or none}} | {{noise across runs, and whether the margin covers it}} | {{local | CI}} |
 
 ## Steps
 
