@@ -58,7 +58,7 @@ None
 |-------------|----------------|-----------|
 | REQ-001 - chart-time rules and template tables | ravintio-implement | TDD loop with tests and docs landing together |
 | REQ-002 - step-side application and skill pointers | ravintio-implement | TDD loop with tests and docs landing together |
-| REQ-003 - living docs | ravintio-implement | TDD loop with tests and docs landing together |
+| REQ-003 - worked example replaying roadmap 0000168 | ravintio-implement | TDD loop with tests and docs landing together |
 
 ## Repo Instructions
 Five files in `ravintio-overrides/instructions/` (`custom-001` to `custom-005`) apply: local git only, subagent decomposition, GUTD shorthand, push and raise PR in ship, delete redundant local branches.
