@@ -87,7 +87,7 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 | 10 | 0000205-initiative-skill | 0000182 | minor | 0.27.0 | merged |
 | 11 | 0000206-chart-time-decisions | 0000186 | minor | 0.28.0 | merged |
 | 12 | 0000207-codex-support | 0000175 | minor | 0.29.0 | merged |
-| 13 | 0000208-refresh-setup-record | none (chore) | patch | | pending |
+| 13 | 0000208-refresh-setup-record | none (chore) | patch | 0.29.1 | merged |
 
 ## Step 13 chore
 
