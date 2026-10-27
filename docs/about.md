@@ -1,5 +1,5 @@
 ---
-version: "0.29.0"
+version: "0.29.1"
 feature: "0000207-codex-support"
 updated: "27 Oct 2026"
 ---
@@ -10,7 +10,7 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.29.0` |
+| Version | `0.29.1` |
 | Last feature | `0000207-codex-support` |
 | Updated | `27 Oct 2026` |
 

@@ -8,7 +8,7 @@ status: "active"
 **Goal:** Clear every valid open backlog entry from 2026-10-26, one feature release per step. A final chore step refreshes the setup record and commits the backlog entries that the steps queued.
 **Branch:** initiative/0000195-backlog-clearance
 **Status:** active
-**Position:** 13
+**Position:** 14
 **Speed:** standard
 
 The human asked for this draft on 2026-10-26. The human approved the chart on 2026-10-27, and I-B Activate ran the same day.
@@ -52,6 +52,8 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 | 11 | none | none | none |
 | 12 | none | none | none |
 | 13 | none | none | none |
+| 14 | none | none | none |
+| 15 | none | none | none |
 
 ## Dependencies
 
@@ -70,6 +72,8 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 | 11 | none | none | none |
 | 12 | none | none | none |
 | 13 | none | none | none |
+| 14 | Codex CLI (`/opt/homebrew/bin/codex`) | service | Runs a real Codex session in a temp repo. It makes model calls on the human's OpenAI account. Local only, never in CI. |
+| 15 | none | none | none |
 
 ## Steps
 
@@ -87,7 +91,26 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 | 10 | 0000205-initiative-skill | 0000182 | minor | 0.27.0 | merged |
 | 11 | 0000206-chart-time-decisions | 0000186 | minor | 0.28.0 | merged |
 | 12 | 0000207-codex-support | 0000175 | minor | 0.29.0 | merged |
-| 13 | 0000208-refresh-setup-record | none (chore) | patch | | pending |
+| 13 | 0000208-refresh-setup-record | none (chore) | patch | 0.29.1 | merged |
+| 14 | 0000217-verify-codex-setup | none (chore) | patch | | pending |
+| 15 | 0000218-strict-hook-follows-active-skill | 0000215 | patch | | pending |
+
+The human added steps 14 and 15 on 2026-10-27, after step 13 merged.
+
+## Step 14 chore
+
+Step 14 has no backlog entry. Step 12 added the `codex` setup target but could not run Codex, so this step checks it with the real program.
+
+1. Create a fresh git repo in a temp folder outside this repo.
+2. Run `setup.sh codex` from the initiative branch's pack against that repo.
+3. Put a stub `gh` first on the temp session's `PATH`. The stub logs its arguments and exits 0, so nothing reaches GitHub.
+4. Run `codex exec` in the temp repo and ask it to list the RAVINTIO skills it can see.
+5. Run `codex exec` again and ask it to run `gh pr merge 1 --merge` in the temp repo.
+6. Record the commands, outputs, and Codex version in the step's acceptance evidence.
+
+**Wanted outcome:** Codex loads `AGENTS.md` and names at least one RAVINTIO skill from `.agents/skills/`. `merge-guard` blocks the merge command with exit 2, and the stub `gh` log stays empty.
+
+**Bump rule:** if either check fails, the step fixes the `codex` target and adds a test that reproduces the failure. The bump then rises from `patch` to `minor`.
 
 ## Step 13 chore
 
