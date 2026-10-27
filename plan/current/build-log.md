@@ -90,3 +90,17 @@ Rework: REQ-002: orchestrator skill passed its size cap, shortened the pointer l
 | Notes | Autonomous: evidence goes in the PR |
 
 P3 Validate: Complete: CI green except the known installed-copies check, 7 of 7 criteria verified, no security finding above low (2026-10-27T12:27:11Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T12:27:30Z` |
+| End | |
+| Wall clock | |
+| Model tier | primary |
+| Skills loaded | ravintio-ship, ravintio-retrospective |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance into the initiative branch |
