@@ -429,10 +429,10 @@ function Read-SettingsObject {
 }
 
 function Merge-EnforcementHookSettings {
-    # Merge the seven enforcement hooks into settings.json: gate-write,
+    # Merge the eight enforcement hooks into settings.json: gate-write,
     # ratchet-check, em-dash-guard, and merge-guard (PreToolUse), then
     # auto-trigger-orchestrator, check-orchestrator-presence, and check-design
-    # (UserPromptSubmit). Idempotent. The entries match setup.sh in event,
+    # (UserPromptSubmit), then check-reply-prefix (Stop). Idempotent. The entries match setup.sh in event,
     # matcher, and order (0000035 ADR-001), and a parity suite checks it.
     param(
         [string]$SettingsPath,
@@ -453,6 +453,9 @@ function Merge-EnforcementHookSettings {
         (New-HookEntry '.*' 'auto-trigger-orchestrator' $HooksDir),
         (New-HookEntry '.*' 'check-orchestrator-presence' $HooksDir),
         (New-HookEntry '.*' 'check-design' $HooksDir)
+    )
+    $stopEntries = @(
+        (New-HookEntry '.*' 'check-reply-prefix' $HooksDir)
     )
 
     if (Test-Path $SettingsPath) {
@@ -484,7 +487,7 @@ function Merge-EnforcementHookSettings {
         # warning. Test the property directly, never through the pipeline, so
         # Windows PowerShell 5.1 can't unwrap or wrap it (0000035 ADR-002).
         # setup.sh prints the same text.
-        foreach ($eventName in @('PreToolUse', 'UserPromptSubmit')) {
+        foreach ($eventName in @('PreToolUse', 'UserPromptSubmit', 'Stop')) {
             $prop = $existing.hooks.PSObject.Properties[$eventName]
             if ($null -eq $prop -or $null -eq $prop.Value) { continue }
             if ($prop.Value -is [array]) { continue }
@@ -532,6 +535,14 @@ function Merge-EnforcementHookSettings {
             -Pattern '(^|[\s"''/\\])(auto-trigger-orchestrator|check-orchestrator-presence|check-design)\.mjs\b')
         $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
 
+        # Merge Stop the same way (0000200 req-004).
+        if (-not $existing.hooks.Stop) {
+            $existing.hooks | Add-Member -NotePropertyName 'Stop' -NotePropertyValue @() -Force
+        }
+        $filtered = @(Remove-RavintioHookCommands -Entries $existing.hooks.Stop `
+            -Pattern '(^|[\s"''/\\])(check-reply-prefix)\.mjs\b')
+        $existing.hooks.Stop = $filtered + $stopEntries
+
         # Depth 100 keeps deep user values whole (0000039 req-003).
         Write-SettingsOrExit -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 100) -SettingsRel $SettingsRel
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
@@ -544,6 +555,7 @@ function Merge-EnforcementHookSettings {
             hooks = [PSCustomObject]@{
                 PreToolUse       = @($preToolEntries)
                 UserPromptSubmit = @($userPromptEntries)
+                Stop             = @($stopEntries)
             }
         }
         Write-SettingsOrExit -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100) -SettingsRel $SettingsRel

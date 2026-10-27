@@ -60,6 +60,10 @@ Initiative stages use five more prefixes. They use the same `{prefix} {Status}: 
 - Example: `I-C Run: Starting: step 2 of initiative 0000050`
 - Example: `I-B Activate: Blocked: no remote named origin`
 
+Out-of-phase work uses `Supervise:` with the same form, as in `Supervise: {Status}: {one-liner}`. Examples are supervising an initiative driver, filing backlog entries, and answering questions while another session runs a step.
+
+**Reporting rule.** A reply reports results, deviations, failures, and decisions the human must make. A reply never states that the agent followed a standing rule. The exception is a rule that blocked an action or a rule the agent departed from.
+
 I-A to I-E are stage letters, not phase numbers. The pipeline still has exactly five phases, P0 to P4. When an initiative is involved, read `ravintio-zero/standards/roadmap-standards.md` first.
 
 ---

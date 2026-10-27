@@ -54,7 +54,7 @@ foreach ($ev in @('PreToolUse', 'UserPromptSubmit')) {
         Write-Host "=== req-008: $ev holds $val ==="
 
         $ws = New-SetupWorkspace
-        Write-SettingsText $ws ('{"keep":1,"hooks":{"Stop":"keep-me","' + $ev + '":' + $val + '}}')
+        Write-SettingsText $ws ('{"keep":1,"hooks":{"Notification":"keep-me","' + $ev + '":' + $val + '}}')
         $run = Invoke-Setup $ws @('claude-code')
         Assert-Equal 0 $run.Code "req-008: setup.ps1 exits 0 with $ev set to $val"
         if ($run.Code -ne 0) { Write-Host $run.Output }
@@ -65,7 +65,7 @@ foreach ($ev in @('PreToolUse', 'UserPromptSubmit')) {
         $settings = Read-Settings $ws
         Assert-Equal $expected[$ev] (Get-EventEntries $settings $ev) "req-008: $ev is an array of only the RAVINTIO entries"
         Assert-Equal $expected[$other] (Get-EventEntries $settings $other) "req-008: $other still gets the RAVINTIO entries"
-        Assert-Equal '1 keep-me' "$($settings.keep) $($settings.hooks.Stop)" "req-008: other keys and events stay as they were"
+        Assert-Equal '1 keep-me' "$($settings.keep) $($settings.hooks.Notification)" "req-008: other keys and events stay as they were"
         Remove-SetupWorkspace $ws
     }
 }

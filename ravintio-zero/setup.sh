@@ -368,9 +368,10 @@ install_enforcement_hooks() {
   local presence_cmd="node \"$hooks_dir_rel/check-orchestrator-presence.mjs\""
   local design_cmd="node \"$hooks_dir_rel/check-design.mjs\""
   local merge_guard_cmd="node \"$hooks_dir_rel/merge-guard.mjs\""
+  local reply_prefix_cmd="node \"$hooks_dir_rel/check-reply-prefix.mjs\""
 
   if command -v node >/dev/null 2>&1; then
-    RAVINTIO_GATE="$gate_cmd" RAVINTIO_RATCHET="$ratchet_cmd" RAVINTIO_EM_DASH="$em_dash_cmd" RAVINTIO_TRIGGER="$trigger_cmd" RAVINTIO_PRESENCE="$presence_cmd" RAVINTIO_DESIGN="$design_cmd" RAVINTIO_MERGE_GUARD="$merge_guard_cmd" RAVINTIO_RETIRED="$RETIRED_HOOK_NAMES" RAVINTIO_SETTINGS="$settings" RAVINTIO_SETTINGS_REL="$settings_rel" node -e "$RAVINTIO_WRITE_SETTINGS_JS$RAVINTIO_SETTINGS_SHAPE_JS"'
+    RAVINTIO_GATE="$gate_cmd" RAVINTIO_RATCHET="$ratchet_cmd" RAVINTIO_EM_DASH="$em_dash_cmd" RAVINTIO_TRIGGER="$trigger_cmd" RAVINTIO_PRESENCE="$presence_cmd" RAVINTIO_DESIGN="$design_cmd" RAVINTIO_MERGE_GUARD="$merge_guard_cmd" RAVINTIO_REPLY_PREFIX="$reply_prefix_cmd" RAVINTIO_RETIRED="$RETIRED_HOOK_NAMES" RAVINTIO_SETTINGS="$settings" RAVINTIO_SETTINGS_REL="$settings_rel" node -e "$RAVINTIO_WRITE_SETTINGS_JS$RAVINTIO_SETTINGS_SHAPE_JS"'
       const fs = require("fs"), path = require("path");
       const gate     = process.env.RAVINTIO_GATE;
       const ratchet  = process.env.RAVINTIO_RATCHET;
@@ -379,6 +380,7 @@ install_enforcement_hooks() {
       const presence = process.env.RAVINTIO_PRESENCE;
       const design   = process.env.RAVINTIO_DESIGN;
       const mergeGuard = process.env.RAVINTIO_MERGE_GUARD;
+      const replyPrefix = process.env.RAVINTIO_REPLY_PREFIX;
       const sf       = process.env.RAVINTIO_SETTINGS;
       let s = {};
       // On invalid JSON, print one fixed line that names the file, write
@@ -407,7 +409,7 @@ install_enforcement_hooks() {
       // event and the file, never the old value, which can hold a secret
       // (0000041 ADR-003). An absent or null value gets the entries with no
       // warning. setup.ps1 prints the same text.
-      for (const ev of ["PreToolUse", "UserPromptSubmit"]) {
+      for (const ev of ["PreToolUse", "UserPromptSubmit", "Stop"]) {
         const v = s.hooks[ev];
         if (v === undefined || v === null || Array.isArray(v)) continue;
         process.stderr.write("  ! Warning: hooks." + ev + " in " + process.env.RAVINTIO_SETTINGS_REL +
@@ -478,13 +480,20 @@ install_enforcement_hooks() {
         {matcher:".*", hooks:[{type:"command",command:presence}]},
         {matcher:".*", hooks:[{type:"command",command:design}]}
       );
+      // Stop: check-reply-prefix warns when a reply lacks a prefix (0000200
+      // req-004, idempotent). The same path-boundary match as the other events.
+      const stopModule = /(^|[\s"\x27\/\\])(check-reply-prefix)\.mjs\b/;
+      s.hooks.Stop = keepUserCommands(s.hooks.Stop || [], stopModule);
+      s.hooks.Stop.push(
+        {matcher:".*", hooks:[{type:"command",command:replyPrefix}]}
+      );
       fs.mkdirSync(path.dirname(sf),{recursive:true});
       writeSettings(sf, JSON.stringify(s,null,2)+"\n");
     ' || exit 1
     echo "  ~ $settings_rel (enforcement hooks wired)"
   else
     echo "  ! Warning: node not found — skipping settings.json enforcement hook wiring"
-    echo "  ! Manually add gate-write, ratchet-check, em-dash-guard (Write/Edit PreToolUse), merge-guard (Bash PreToolUse), auto-trigger-orchestrator, check-orchestrator-presence and check-design (UserPromptSubmit) to $settings_rel"
+    echo "  ! Manually add gate-write, ratchet-check, em-dash-guard (Write/Edit PreToolUse), merge-guard (Bash PreToolUse), auto-trigger-orchestrator, check-orchestrator-presence and check-design (UserPromptSubmit), and check-reply-prefix (Stop) to $settings_rel"
   fi
 }
 

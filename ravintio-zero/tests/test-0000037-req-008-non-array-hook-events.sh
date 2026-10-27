@@ -66,7 +66,7 @@ for EV in PreToolUse UserPromptSubmit; do
     echo "=== req-008: $EV holds $VAL ==="
 
     WS="$(new_workspace)"
-    printf '{"keep":1,"hooks":{"Stop":"keep-me","%s":%s}}\n' "$EV" "$VAL" > "$WS/.claude/settings.json"
+    printf '{"keep":1,"hooks":{"Notification":"keep-me","%s":%s}}\n' "$EV" "$VAL" > "$WS/.claude/settings.json"
     run_setup "$WS"
     assert_exit_zero "$?" "req-008: setup.sh exits 0 with $EV set to $VAL"
     ERR="$(cat "$WS/stderr.txt")"
@@ -78,7 +78,7 @@ for EV in PreToolUse UserPromptSubmit; do
       "req-008: $EV is an array of only the RAVINTIO entries"
     assert_equals "$(expected_entries "$OTHER")" "$(event_entries "$WS/.claude/settings.json" "$OTHER")" \
       "req-008: $OTHER still gets the RAVINTIO entries"
-    assert_equals "1 keep-me" "$(node -e 'const s=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log(s.keep+" "+s.hooks.Stop)' "$WS/.claude/settings.json")" \
+    assert_equals "1 keep-me" "$(node -e 'const s=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log(s.keep+" "+s.hooks.Notification)' "$WS/.claude/settings.json")" \
       "req-008: other keys and events stay as they were"
     rm -rf "$WS"
   done

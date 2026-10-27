@@ -52,8 +52,9 @@ MERGE="$(extract_function_body 'Merge-EnforcementHookSettings')"
 FILTER_FN="$(extract_function_body 'Remove-RavintioHookCommands')"
 assert_equals "1" "$(printf '%s\n' "$FILTER_FN" | grep -c -- '-cmatch \$Pattern' || true)" \
   "S-004: the per-command filter uses -cmatch"
-assert_equals "2" "$(printf '%s\n' "$MERGE" | grep -c -- "-Pattern '.*\\\\.mjs" || true)" \
-  "S-004: both filters pass a <module>.mjs pattern"
+# Three filters since 0000200 added the Stop event.
+assert_equals "3" "$(printf '%s\n' "$MERGE" | grep -c -- "-Pattern '.*\\\\.mjs" || true)" \
+  "S-004: the three filters pass a <module>.mjs pattern"
 assert_equals "0" "$(printf '%s\n' "$MERGE$FILTER_FN" | grep -c -- ' -match ' || true)" \
   "S-004: no filter uses case-insensitive -match"
 

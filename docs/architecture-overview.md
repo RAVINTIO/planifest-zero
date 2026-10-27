@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000199-reserve-ids-from-counter
+Last updated: 0000200-reply-conventions
 
 ## What this repo is
 
@@ -186,9 +186,9 @@ Setup checks the tool straight after argument parsing, ahead of the old-folder c
 
 **Leftover temporary file.** Each run removes a leftover `settings.json.ravintio-tmp` before its first settings write, even when `node` is missing. It removes a file or a link, never a folder, and never follows a link.
 
-**Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same seven hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
+**Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same eight hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
 
-**Hook entry repair.** Both scripts find a RAVINTIO `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse` or `UserPromptSubmit` holds a value that isn't an array, setup prints a warning that names the event and the file. The warning never prints the old value, because a hook command can hold a secret. It then replaces the value with the RAVINTIO entries and exits 0. An absent or null value gets the entries with no warning.
+**Hook entry repair.** Both scripts find a RAVINTIO `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse`, `UserPromptSubmit`, or `Stop` holds a value that isn't an array, setup prints a warning that names the event and the file. The warning never prints the old value, because a hook command can hold a secret. It then replaces the value with the RAVINTIO entries and exits 0. An absent or null value gets the entries with no warning.
 
 **Per-command filter.** Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. Setup removes each RAVINTIO command and keeps any user command in the same entry. If an entry holds only RAVINTIO commands, setup drops it. A `hooks` value that holds one object counts as a one-item array, so setup filters it the same way. An entry with no commands stays as it was. A command counts as RAVINTIO only when it runs `<module>.mjs` at a path boundary, matched case-sensitively.
 
