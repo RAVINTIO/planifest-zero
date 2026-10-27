@@ -131,8 +131,8 @@ Docs rules:
 Independent requirements MUST be dispatched in parallel per `ravintio-zero/standards/agent-dispatch-standards.md`. Before writing any code:
 
 1. List all requirements for the phase.
-2. Map dependencies. A requirement depends on a sibling only if it imports its types, reads its files, or builds on its contract.
-3. Dispatch all leaf requirements in a single parallel batch, then dependent batches.
+2. Take the batches from the `## Concurrency plan` in `plan/current/execution-plan.md`. Do not map dependencies afresh.
+3. Dispatch each batch in a single parallel message, in batch order. Record a departure from the batches in the build log with its reason.
 4. Record the batch count in the build log. If nothing can be parallelised, state the dependency reason there.
 
 Per-component docs for independent components also parallelise. The registry and dependency graph wait until all component docs exist. If a dispatched subagent finds an out-of-scope bug or gap, it files a `plan/backlog/` entry directly per the dispatch standards.
