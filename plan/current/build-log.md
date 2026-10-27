@@ -35,3 +35,9 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 Run mode: autonomous (2026-10-27T12:09:04Z)
 Version bump: minor, 0.27.0 to 0.28.0 (initiative step row)
+Scope Lock (happy path): The initiative skill builds three tables at Chart and a step applies a forecast row and logs it. [source: draft-accepted (initiative)]
+Scope Lock (first-run path): An initiative with no new tables behaves as today. [source: draft-accepted (initiative)]
+Scope Lock (error path): An uncovered fork stops the step with Blocked. [source: draft-accepted (initiative)]
+Scope Lock (cross-session continuity): The tables live in initiative.md and the applied decision lands in the build log. [source: draft-accepted (initiative)]
+Scope Lock complete. All four scenario paths captured.
+Design confirmed: draft-accepted (initiative) (2026-10-27T12:10:18Z)
