@@ -64,3 +64,73 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T10:40:00Z)
 
 - The execution plan holds a concurrency plan for P2: two units in batch 1, one docs unit in batch 2.
 - Autonomous run: no plan gate stop.
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T10:51:00Z` |
+| End | `2026-10-27T11:08:00Z` |
+| Wall clock | `17` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 2 |
+| Notes | Units are small, share wording, and write Markdown, so they ran inline in parallel batches of writes. A subagent per unit would cost more than the edits. |
+
+- In progress: U1-postmortem-skill (2026-10-27T10:52:00Z)
+- In progress: U2-trigger-and-report (2026-10-27T10:52:00Z)
+- Done: U1-postmortem-skill (2026-10-27T11:00:00Z)
+- Done: U2-trigger-and-report (2026-10-27T11:00:00Z)
+- In progress: U3-living-docs (2026-10-27T11:01:00Z)
+- Done: U3-living-docs (2026-10-27T11:03:00Z)
+- Rework: REQ-001: the first test run failed 3 checks because the skill capitalised the action types. The skill now uses lowercase terms. (2026-10-27T11:04:00Z)
+- Rework: REQ-001: adding a skill raised the skill text from 1447 to 1520 lines and the skill count from 13 to 14. Tests 0000031 (two suites) and 0000160 now state the new budget and count. Plan updated to match. (2026-10-27T11:06:00Z)
+- Full suite: feature suites 182 passed and 1 failed. The failure is test-0000151-req-014, installed skill copies under `.claude/skills/` differ from source. That folder is git-ignored and refreshes at step 13, as in steps 1 to 7.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T11:09:00Z` |
+| End | `2026-10-27T11:12:00Z` |
+| Wall clock | `3` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Checks and the security review are small and ran inline. |
+
+- Self-correct cycles: 2 (recorded under P2).
+- Security: no finding above low.
+- Autonomous run: no acceptance stop. Evidence is in `acceptance-evidence.md`.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T11:13:00Z` |
+| End | `2026-10-27T11:18:00Z` |
+| Wall clock | `5` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `about 38 minutes across P0 to P4 blocks` |
+| Total agents spawned | `0` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `2` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `2` |
+| Phases skipped | `none` |
