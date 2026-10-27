@@ -106,3 +106,31 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T09:45:00Z)
 - Self-correct cycles: 1 (recorded under P2).
 - Security: no finding above low.
 - Autonomous run: no acceptance stop. Evidence is in `acceptance-evidence.md`.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:55:46Z` |
+| End | `2026-10-27T09:55:46Z` |
+| Wall clock | `6` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `about 40 minutes across P0 to P4 blocks` |
+| Total agents spawned | `3` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `2` |
+| Primary tier agent calls | `3` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `1` |
+| Phases skipped | `none` |

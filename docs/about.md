@@ -1,6 +1,6 @@
 ---
-version: "0.22.0"
-feature: "0000200-reply-conventions"
+version: "0.23.0"
+feature: "0000201-plan-concurrent-work"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.22.0` |
-| Last feature | `0000200-reply-conventions` |
+| Version | `0.23.0` |
+| Last feature | `0000201-plan-concurrent-work` |
 | Updated | `27 Oct 2026` |
 
 ## What this is
