@@ -16,7 +16,7 @@ version: "0.1.0"
 - Make each retired flag exit 1 during argument parsing, with an error that names the flag and tells the user to remove it.
 - Keep a `--backend-url` value out of every output.
 - Change the six existing tests that assert the retired-flag warning.
-- Add per-shell tests for an unknown tool, a missing tool, and each retired flag.
+- Add per-shell tests for an unknown tool, a missing tool (usage, exit 0), and each retired flag.
 - Change Step 3 of `ravintio-refresh-setup` so it names a retired flag in a record or marker.
 - Update the `component.yml` responsibility line and the docs that describe the warning.
 

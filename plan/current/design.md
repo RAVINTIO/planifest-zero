@@ -8,7 +8,7 @@
 
 ## Product Layer
 - User stories:
-  - US-001: As a maintainer, I run setup with a missing or unknown tool and the run exits 1 with no change to the repo, so that a rejected run never enables hooks or adds workflow files.
+  - US-001: As a maintainer, I run setup with an unknown tool and the run exits 1 with no change to the repo, so that a rejected run never enables hooks or adds workflow files.
   - US-002: As a maintainer, I run setup with a retired flag and the run exits 1 with an error that names the flag, so that I remove a flag that does nothing.
   - US-003: As a maintainer, I refresh setup from a record that holds a retired flag and the refresh names that flag, so that I know why setup refused.
 - Acceptance criteria confirmed: 6

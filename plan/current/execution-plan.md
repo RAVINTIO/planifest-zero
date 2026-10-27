@@ -19,7 +19,7 @@ Functional requirements are split into individual files, one user story per file
 
 | File | Requirement |
 |------|------------|
-| [req-001-validate-tool-first.md](requirements/req-001-validate-tool-first.md) | Reject a missing or unknown tool before any change |
+| [req-001-validate-tool-first.md](requirements/req-001-validate-tool-first.md) | Reject an unknown tool before any change |
 | [req-002-fail-on-retired-flags.md](requirements/req-002-fail-on-retired-flags.md) | Exit 1 on a retired flag during parsing |
 | [req-003-refresh-names-retired-flag.md](requirements/req-003-refresh-names-retired-flag.md) | Refresh skill names a retired flag |
 

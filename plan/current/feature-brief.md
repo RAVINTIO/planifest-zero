@@ -18,7 +18,7 @@ version: "0.1.0"
 
 | Feature | User Stories | Priority | Wave |
 |---------|-------------|----------|------|
-| Validate the tool first | As a maintainer, I run setup with a missing or unknown tool and the run exits 1 with no change to the repo, so that a rejected run never enables hooks or adds workflow files. | must-have | 1 |
+| Validate the tool first | As a maintainer, I run setup with an unknown tool and the run exits 1 with no change to the repo, so that a rejected run never enables hooks or adds workflow files. | must-have | 1 |
 | Fail on retired flags | As a maintainer, I run setup with a retired flag and the run exits 1 with an error that names the flag, so that I remove a flag that does nothing. | must-have | 1 |
 | Refresh reports retired flags | As a maintainer, I refresh setup from a record that holds a retired flag and the refresh names that flag, so that I know why setup refused. | must-have | 1 |
 
@@ -119,7 +119,7 @@ Nothing deferred.
 
 ## Acceptance Criteria
 
-- [ ] A missing or unknown tool exits 1 straight after argument parsing. In a fresh temp repo the tree is unchanged and `core.hooksPath` is unset, in each shell.
+- [ ] An unknown tool exits 1 straight after argument parsing. In a fresh temp repo the tree is unchanged and `core.hooksPath` is unset, in each shell. A missing tool keeps its behaviour: usage text, exit 0, tree unchanged.
 - [ ] Each retired flag exits 1 during argument parsing with an error that names the flag, says it does nothing, and tells the user to remove it, in each shell.
 - [ ] Each retired flag leaves the repo unchanged and `core.hooksPath` unset, in each shell.
 - [ ] A `--backend-url` value never appears in the output.

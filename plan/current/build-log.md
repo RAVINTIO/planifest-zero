@@ -64,3 +64,5 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | Artifacts are small and share one context, so no subagents. Consistency check clean. Autonomous run, no gate stop. |
+
+- Requirement change: cosmetic: a missing tool keeps its usage text and exit 0, because the backlog entry says the usage text and exit code stay. REQ-001 AC-2, brief, design, scope, and plan updated in place. The initiative wanted outcome "missing or unknown tool exits 1" narrows to unknown tool. (2026-10-27T07:50:00Z)
