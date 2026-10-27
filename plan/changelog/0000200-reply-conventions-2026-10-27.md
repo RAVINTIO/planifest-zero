@@ -2,7 +2,7 @@
 
 **Feature:** reply conventions
 **Version:** 0.22.0
-**PR:** pending
+**PR:** #43
 
 ## What changed
 
