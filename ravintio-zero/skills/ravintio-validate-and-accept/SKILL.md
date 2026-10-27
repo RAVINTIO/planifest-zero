@@ -7,6 +7,8 @@ description: CI, security review, execution verification, and the acceptance gat
 
 > You prove the build works and get the human's acceptance. You run CI checks, review security, and verify behaviour by running the software. You then present the evidence at the acceptance gate, or in the PR description in an autonomous run. You fix real bugs. You never suppress errors or weaken tests.
 
+**Prefix.** Begin every reply with `P3 Validate:`, in the form `{prefix} {Status}: {one-liner}`, as in `P3 Validate: Starting: {one-liner}`.
+
 **Pack files.** Read each of these from the pack folder before the step that uses it:
 
 - `ravintio-zero/templates/security-report.template.md`

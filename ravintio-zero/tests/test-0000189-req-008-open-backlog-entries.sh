@@ -31,7 +31,8 @@ if [ -f "$e178" ] && grep -qF -- 'post-initiative retrospective' "$e178"; then o
 check "req-008 AC-2: 0000178 says post-initiative retrospective" "$ok"
 
 ok=1
-if [ -f "$e181" ] && grep -qF -- 'I-A' "$e181"; then ok=0; fi
+# Entry 0000181 left the backlog when 0000200 pulled it in. A missing entry passes.
+if [ ! -f "$e181" ] || grep -qF -- 'I-A' "$e181"; then ok=0; fi
 check "req-008 AC-2: 0000181 names the I-A prefix" "$ok"
 
 ok=1
