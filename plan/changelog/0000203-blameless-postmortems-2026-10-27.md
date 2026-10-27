@@ -2,7 +2,7 @@
 
 **Feature:** blameless postmortems
 **Version:** 0.25.0
-**PR:** pending
+**PR:** #46
 
 ## What changed
 
