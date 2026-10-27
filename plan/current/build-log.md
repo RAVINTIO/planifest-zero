@@ -92,3 +92,35 @@ Deviation: git add plan swept queued backlog entries 0000210 to 0000212 into a c
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | 12 of 12 criteria verified. One local-only failure, the stale .claude/skills copy. |
+
+---
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T13:01:09Z` |
+| End | `2026-10-27T13:01:09Z` |
+| Wall clock | 0 |
+| Model tier | primary |
+| Skills loaded | ravintio-ship, ravintio-retrospective |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance after the PR. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | 5 |
+| Total wall clock | not recorded |
+| Total agents spawned | 2 |
+| Total MCP calls | 0 |
+| Phases using parallelism | 0 |
+| Primary tier agent calls | 2 |
+| Cheaper tier agent calls | 0 |
+| Self-corrections | 0 |
+| Phases skipped | none |
