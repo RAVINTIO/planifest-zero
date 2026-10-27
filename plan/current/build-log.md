@@ -103,3 +103,31 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 - Rework: REQ-001: exact tool match grep in 0000035 test needed the `-ccontains` form (2026-10-27T09:10:00Z)
 - Rework: REQ-001: new test used the earlier brand name, so the brand and old-name guards failed (2026-10-27T09:15:00Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:30:00Z` |
+| End | `2026-10-27T09:50:00Z` |
+| Wall clock | `20` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `49 minutes across P0 to P4 blocks` |
+| Total agents spawned | `0` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `0` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `3` |
+| Phases skipped | `none` |
