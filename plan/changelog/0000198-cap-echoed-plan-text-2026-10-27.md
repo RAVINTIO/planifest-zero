@@ -2,7 +2,7 @@
 
 **Feature:** cap echoed plan text
 **Version:** 0.20.2
-**PR:** pending, updated at Step 9
+**PR:** #41
 
 ## What changed
 
