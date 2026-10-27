@@ -26,6 +26,9 @@
  *      every Backbone row has a Requirement cell. The cell names a REQ-nnn that
  *      has a req-nnn-*.md file, or reads "gap: {disposition}".
  *
+ * A finding that echoes a story map row label prints at most 200 characters of
+ * it, with a trailing marker if it cut the label (feature 0000198).
+ *
  * Exit codes: 0 = clean, 1 = findings (listed on stdout).
  */
 
@@ -37,6 +40,13 @@ const findings = [];
 
 function read(p) {
   try { return readFileSync(p, "utf-8"); } catch { return null; }
+}
+
+/** Cuts an echoed plan line to 200 code points and marks the cut (feature 0000198). */
+function cap(line) {
+  const chars = Array.from(line);
+  if (chars.length <= 200) return line;
+  return chars.slice(0, 200).join("") + " …[truncated]";
 }
 
 function section(text, heading) {
@@ -129,7 +139,7 @@ if (reqFiles.length > 0) {
         continue;
       }
       if (col === -1) continue;
-      const label = cells[1] || cells[0] || "(unnamed row)";
+      const label = cap(cells[1] || cells[0] || "(unnamed row)");
       const cell = cells[col] ?? "";
       if (cell === "") {
         findings.push(`story-map.md: row "${label}" has an empty Requirement cell`);
