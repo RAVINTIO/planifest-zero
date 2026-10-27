@@ -24,8 +24,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T12:36:32Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-27T12:41:01Z` |
+| Wall clock | 0 |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 1 |
@@ -41,3 +41,19 @@ Scope Lock (error path): an unknown tool or invalid hooks.json stops setup with 
 Scope Lock (deferred path): hooks with no confirmed Codex contract stay instructions in AGENTS.md. [source: draft-accepted (initiative)]
 Hook contract source: Codex docs read by subagent on 2026-10-27 (hooks.json shape, exit 2 on stderr, Bash uses tool_input.command, skills in .agents/skills, AGENTS.md)
 Design confirmation: draft-accepted (initiative) (2026-10-27T12:40:11Z)
+
+---
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T12:41:01Z` |
+| End | `2026-10-27T12:41:01Z` |
+| Wall clock | 0 |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | consistency-check clean. Autonomous run, no gate stop. |
