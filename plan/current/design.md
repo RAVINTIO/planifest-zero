@@ -57,11 +57,13 @@ None
 ## Skill Map
 | Requirement | Best-fit Skill | Rationale |
 |-------------|----------------|-----------|
-| REQ-001 - driver fixes and final report | ravintio-implement | TDD loop with tests and docs landing together |
+| REQ-001 - driver fixes | ravintio-implement | TDD loop with tests and docs landing together |
 | REQ-002 - ack split and trigger hooks | ravintio-implement | TDD loop with tests and docs landing together |
 | REQ-003 - watch script | ravintio-implement | TDD loop with tests and docs landing together |
 | REQ-004 - initiative skill and resume split | ravintio-implement | TDD loop with tests and docs landing together |
 | REQ-005 - living docs and skill count | ravintio-implement | TDD loop with tests and docs landing together |
+| REQ-006 - driver final report | ravintio-implement | TDD loop with tests and docs landing together |
+| REQ-007 - stage ownership | ravintio-implement | TDD loop with tests and docs landing together |
 
 ## Repo Instructions
 Five files in `ravintio-overrides/instructions/` (`custom-001` to `custom-005`) apply: local git only, subagent decomposition, GUTD shorthand, push and raise PR in ship, delete redundant local branches.
