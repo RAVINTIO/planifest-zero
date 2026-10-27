@@ -48,14 +48,40 @@
 //      fresh session. The position goes to claude as one argument, never
 //      through a shell.
 //   4. After each step it stops if plan/current/build-log.md ends on a
-//      "Blocked:" line with no later "Resolved:" line, or if position did not
-//      move.
-//   5. It repeats until delivery: initiative.md is gone and
-//      plan/_archive/{id}-{slug}-roadmap-*/ exists. It then exits 0.
+//      "Blocked:" line with no later "Resolved:" line. It runs the same check on
+//      plan/_archive/{feature-id}-*/build-log.md, in the newest folder (by name) whose
+//      name starts with the step's feature id and that changed after the step started.
+//      Ship archives plan/current/ before CI, so a block can sit only in the archive. The
+//      driver skips a symlinked archive folder or build log. The stop line is
+//      "I-C Run: Blocked: step {n} stopped." plus the message.
+//   5. It reads position and status after each step from the initiative branch ref, with
+//      `git show {branch}:plan/current-initiative/initiative.md` (0000205 ADR-002). A step
+//      that did not merge leaves the branch file unchanged, so the driver stops with
+//      "I-C Run: Blocked: step {n} is not merged into the initiative branch, position
+//      stayed at {n}". If the ref is unreadable or the root is not a git work tree, it
+//      reads the working-tree file. The driver passes git its arguments as an array, with
+//      no shell.
+//   6. It repeats until delivery: initiative.md is gone and
+//      plan/_archive/{id}-{slug}-initiative-*/ exists. It then exits 0.
+//      If every step in the "## Steps" table has merged but the archive is not there yet,
+//      it prints "I-E Delivery: Pending: all {n} steps merged, initiative delivery runs
+//      from the initiative skill" and exits 0 without starting another step.
+//
+// Child environment: each step session gets CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0, so
+// background subagents keep running. A value in the parent environment, even another
+// value, wins. Each step session also gets RAVINTIO_INITIATIVE_STEP=1, which the
+// auto-trigger hook reads to load the orchestrator and not the initiative skill.
+//
+// Final report: the driver keeps a list of the steps it ran. At delivery it prints one
+// "I-E Delivery: Complete: step {n} merged" line per step, in order. The last line is
+// "I-E Delivery: Complete: initiative {id}-{slug} archived, driver done".
+//
+// Exclusions: the driver adds the lock, the log folder, and plan/.initiative-queue/ to
+// .git/info/exclude, so a step never commits the queue folder.
 //
 // Output: one line per stage, written and flushed at once so a parent session
 // can stream it with Monitor. Lines start with "I-C Run:" or "I-D Advance:"
-// and the final line with "I-E Delivery:". A stop line names the reason and,
+// and the final lines with "I-E Delivery:". A stop line names the reason and,
 // for a block, repeats the Blocked: message cut to 500 characters.
 //
 // Exit codes:
@@ -75,6 +101,7 @@ import { withInitiativeLabels } from './initiative-labels.mjs';
 const INITIATIVE = 'plan/current-initiative/initiative.md';
 const LOCK = 'plan/.initiative-runner.lock';
 const LOGS = 'plan/.initiative-logs';
+const QUEUE = 'plan/.initiative-queue/';
 const BUILD_LOG = 'plan/current/build-log.md';
 const ARCHIVE = 'plan/_archive';
 const STATUS = /^(proposed|charted|draft|active|blocked|delivered|done)$/;
@@ -143,7 +170,21 @@ function readChildConfig() {
 function readInitiative(root) {
   const file = join(root, INITIATIVE);
   if (!existsSync(file)) throw new Stop(`I-C Run: Blocked: ${INITIATIVE} is missing`);
-  const text = readFileSync(file, 'utf8');
+  return parseInitiative(readFileSync(file, 'utf8'));
+}
+
+// Reads initiative.md from the initiative branch ref. Falls back to the working tree if
+// the root is not a git work tree or the ref cannot be read.
+function readInitiativeFromBranch(root, branch) {
+  const inside = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { cwd: root, encoding: 'utf8' });
+  if (!inside.error && inside.status === 0 && inside.stdout.trim() === 'true') {
+    const shown = spawnSync('git', ['show', `${branch}:${INITIATIVE}`], { cwd: root, encoding: 'utf8' });
+    if (!shown.error && shown.status === 0 && shown.stdout.trim() !== '') return parseInitiative(shown.stdout);
+  }
+  return readInitiative(root);
+}
+
+function parseInitiative(text) {
   const status = field(text, 'status');
   const position = field(text, 'position');
   const branch = field(text, 'branch');
@@ -151,7 +192,7 @@ function readInitiative(root) {
   if (!POSITION.test(position)) throw new Stop('I-C Run: Blocked: initiative position is missing or invalid');
   const b = branch.match(BRANCH);
   if (!b) throw new Stop('I-C Run: Blocked: initiative branch is missing or invalid');
-  return { status, position, id: b[1], slug: b[2] };
+  return { status, position, branch, id: b[1], slug: b[2], text };
 }
 
 // Adds the lock path and the log folder to .git/info/exclude so a step session's
@@ -164,12 +205,32 @@ function excludeLock(root) {
   if (p.status !== 0) return;
   const file = resolve(root, p.stdout.trim());
   let text = existsSync(file) ? readFileSync(file, 'utf8') : '';
-  for (const entry of [LOCK, `${LOGS}/`]) {
+  for (const entry of [LOCK, `${LOGS}/`, QUEUE]) {
     if (text.split(/\r?\n/).includes(entry)) continue;
     const add = (text === '' || text.endsWith('\n') ? '' : '\n') + entry + '\n';
     appendFileSync(file, add);
     text += add;
   }
+}
+
+// Returns the feature id in the Steps table row for a position, or ''.
+function featureIdFor(text, position) {
+  for (const line of text.split(/\r?\n/)) {
+    const m = line.match(/^\|\s*(\d+)\s*\|\s*([0-9]{7}-[a-z0-9-]+)\s*\|/);
+    if (m && m[1] === position) return m[2];
+  }
+  return '';
+}
+
+// Counts the numbered rows in the "## Steps" section. Returns 0 if there is no such section.
+function countSteps(text) {
+  let inSteps = false;
+  let n = 0;
+  for (const line of text.split(/\r?\n/)) {
+    if (/^##\s/.test(line)) inSteps = /^##\s+Steps\s*$/i.test(line);
+    else if (inSteps && /^\|\s*\d+\s*\|/.test(line)) n++;
+  }
+  return n;
 }
 
 // True when the path is a symlink. A missing path is not one.
@@ -211,12 +272,43 @@ function openLog(root, position) {
 function openBlock(root) {
   const file = join(root, BUILD_LOG);
   if (!existsSync(file)) return null;
+  return blockIn(readFileSync(file, 'utf8'));
+}
+
+function blockIn(text) {
   let last = null;
-  for (const line of readFileSync(file, 'utf8').split(/\r?\n/)) {
+  for (const line of text.split(/\r?\n/)) {
     if (/^\s*(?:[-*+]\s+)?Blocked:/.test(line)) last = line.trim();
     else if (/^\s*(?:[-*+]\s+)?Resolved:/.test(line)) last = null;
   }
   return last === null ? null : last.slice(0, MAX_LINE);
+}
+
+// Checks the build log in the newest folder under plan/_archive/ whose name starts with the
+// feature id and that changed after the step started. Skips symlinks and paths that leave
+// the archive folder.
+function archivedBlock(root, featureId, since) {
+  if (!featureId) return null;
+  try {
+    const dir = join(root, ARCHIVE);
+    if (isLink(join(root, 'plan')) || isLink(dir) || !existsSync(dir)) return null;
+    const names = readdirSync(dir).filter((n) => n.startsWith(featureId)).sort();
+    for (let i = names.length - 1; i >= 0; i--) {
+      const folder = join(dir, names[i]);
+      const st = lstatSync(folder);
+      if (st.isSymbolicLink() || !st.isDirectory()) continue;
+      if (st.mtimeMs < since) return null;
+      const file = join(folder, 'build-log.md');
+      const fst = lstatSync(file);
+      if (fst.isSymbolicLink() || !fst.isFile()) return null;
+      const within = relative(realpathSync(dir), realpathSync(file));
+      if (within.startsWith('..') || isAbsolute(within)) return null;
+      return blockIn(readFileSync(file, 'utf8'));
+    }
+  } catch {
+    // A missing folder or log means no archived block.
+  }
+  return null;
 }
 
 function delivered(root, id, slug) {
@@ -236,7 +328,7 @@ function runStep(root, position, cfg, fd, labels) {
     args.push(`Run initiative step ${position}`);
     const child = spawn(bin, args, {
       cwd: root,
-      env: { ...process.env, OTEL_RESOURCE_ATTRIBUTES: withInitiativeLabels(process.env.OTEL_RESOURCE_ATTRIBUTES, labels.id, labels.slug, position) },
+      env: { ...process.env, CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS: process.env.CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS ?? '0', RAVINTIO_INITIATIVE_STEP: '1', OTEL_RESOURCE_ATTRIBUTES: withInitiativeLabels(process.env.OTEL_RESOURCE_ATTRIBUTES, labels.id, labels.slug, position) },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     activeChild = child;
@@ -293,8 +385,11 @@ async function main() {
   }
   lockPath = lock;
 
+  const ran = [];
   for (;;) {
     const position = rm.position;
+    const featureId = featureIdFor(rm.text, position);
+    const started = Date.now();
     currentLog = null;
     const log = openLog(root, position);
     currentLog = log.rel;
@@ -311,22 +406,33 @@ async function main() {
       const cap = cfg.turns ? `. The step may have reached RAVINTIO_INITIATIVE_MAX_TURNS=${cfg.turns}` : '';
       throw new Stop(`I-C Run: Blocked: claude exited ${res.code ?? res.signal} on step ${position}${cap}`);
     }
+    ran.push(position);
 
     if (delivered(root, id, slug)) {
-      out(`I-D Advance: Complete: step ${position} merged`);
+      reportSteps(ran);
       out(`I-E Delivery: Complete: initiative ${id}-${slug} archived, driver done`);
       return;
     }
-    const block = openBlock(root);
+    const block = openBlock(root) || archivedBlock(root, featureId, started - 1000);
     if (block) throw new Stop(`I-C Run: Blocked: step ${position} stopped. ${block}`);
 
-    rm = readInitiative(root);
+    rm = readInitiativeFromBranch(root, rm.branch);
     if (rm.position === position) {
-      throw new Stop(`I-C Run: Blocked: position stayed at ${position} after step ${position}`);
+      throw new Stop(`I-C Run: Blocked: step ${position} is not merged into the initiative branch, position stayed at ${position}`);
     }
     if (rm.status !== 'active') throw new Stop(`I-C Run: Blocked: initiative status is ${rm.status}, not active`);
+    const total = countSteps(rm.text);
+    if (total > 0 && Number(rm.position) > total) {
+      reportSteps(ran);
+      out(`I-E Delivery: Pending: all ${total} steps merged, initiative delivery runs from the initiative skill`);
+      return;
+    }
     out(`I-D Advance: Complete: step ${position} done, position now ${rm.position}`);
   }
+}
+
+function reportSteps(ran) {
+  for (const n of ran) out(`I-E Delivery: Complete: step ${n} merged`);
 }
 
 main().then(
