@@ -64,3 +64,46 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T11:10:00Z)
 
 - The execution plan holds a concurrency plan for P2: two units in batch 1, one docs unit in batch 2.
 - Autonomous run: no plan gate stop.
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T11:21:00Z` |
+| End | `2026-10-27T11:45:00Z` |
+| Wall clock | `24` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 2 |
+| Notes | Units are small, share wording, and write Markdown, so they ran inline in parallel batches of writes. A subagent per unit would cost more than the edits. |
+
+- In progress: U1-retrospective-skill (2026-10-27T11:22:00Z)
+- In progress: U2-hooks-and-reads (2026-10-27T11:22:00Z)
+- Done: U1-retrospective-skill (2026-10-27T11:30:00Z)
+- Done: U2-hooks-and-reads (2026-10-27T11:34:00Z)
+- In progress: U3-living-docs (2026-10-27T11:35:00Z)
+- Done: U3-living-docs (2026-10-27T11:38:00Z)
+- Rework: REQ-002: the orchestrator SKILL.md edit rewrote a base line of Discovery Start Actions and raised the file to 27764 bytes, past the 27700 cap in test 0000151 req-011. The scan moved to `orchestrator-discovery-coaching.md`, and the test reads it there. (2026-10-27T11:41:00Z)
+- Rework: REQ-001: adding the skill raised the skill text from 1520 to 1598 lines and the skill count from 14 to 15. Tests 0000031 (two suites), 0000160, and 0000203 now state the new budget and count. (2026-10-27T11:43:00Z)
+- Rework: REQ-002: test 0000189 req-008 required entry 0000178 to exist. It now passes when the entry has left the backlog, as for entry 0000181. (2026-10-27T11:44:00Z)
+- Full suite: all suites pass except test-0000151-req-014, installed skill copies under `.claude/skills/` differ from source. That folder is git-ignored and refreshes at step 13, as in steps 1 to 8.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T11:46:00Z` |
+| End | `2026-10-27T11:50:00Z` |
+| Wall clock | `4` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Checks and the security review are small and ran inline. |
+
+- Self-correct cycles: 3 (recorded under P2).
+- Security: no finding above low.
+- Autonomous run: no acceptance stop. Evidence is in `acceptance-evidence.md`.
