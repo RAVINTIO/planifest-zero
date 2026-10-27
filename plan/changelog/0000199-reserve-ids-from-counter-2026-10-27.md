@@ -2,7 +2,7 @@
 
 **Feature:** reserve ids from a counter
 **Version:** 0.21.0
-**PR:** pending
+**PR:** #42
 
 ## What changed
 
