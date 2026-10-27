@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T07:01:17Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-27T07:40:00Z` |
+| Wall clock | `39` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -50,3 +50,17 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock complete. All four scenario paths captured.
 - Design confirmation: draft-accepted (initiative)
 - Skill Map written. Run mode and run speed recorded above.
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T07:12:00Z` |
+| End | `2026-10-27T07:40:00Z` |
+| Wall clock | `28` |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Artifacts are small and share one context, so no subagents. Consistency check clean. Autonomous run, no gate stop. |
