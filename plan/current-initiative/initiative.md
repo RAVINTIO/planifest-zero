@@ -93,7 +93,26 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 
 Step 13 has no backlog entry. It runs these tasks:
 
-1. Run the `ravintio-refresh-setup` skill with the flags in `plan/state/claude-code.md`. The run updates the `writtenAt` value in that file and reinstalls the skills from the pack.
-2. Commit each backlog entry that the steps queued during the initiative, one commit per entry.
+1. Add `ravintio-overrides/instructions/custom-006-standing-setup-refresh-approval.md` with the text in the next section. The human asked for it on 2026-10-27, when the first step 13 session stopped for the refresh confirmation.
+2. Run the `ravintio-refresh-setup` skill with the flags in `plan/state/claude-code.md`. The run updates the `writtenAt` value in that file and reinstalls the skills from the pack. Setup also copies the new override into `CLAUDE.md`.
+3. Commit each backlog entry that the steps queued during the initiative, one commit per entry.
 
-**Wanted outcome:** `plan/state/claude-code.md` holds a `writtenAt` value later than the step 12 merge. Every queued backlog entry is in `plan/backlog/` on the initiative branch, and the working tree is clean.
+**Wanted outcome:** `plan/state/claude-code.md` holds a `writtenAt` value later than the step 12 merge. `CLAUDE.md` holds the standing approval between its override markers. Every queued backlog entry is in `plan/backlog/` on the initiative branch, and the working tree is clean.
+
+### Override text for task 1
+
+The file holds exactly this Markdown:
+
+````markdown
+### Standing approval for the setup refresh
+
+You may run the `ravintio-refresh-setup` skill without asking first, if the command is exactly this:
+
+```bash
+ravintio-zero/setup.sh claude-code --strict-orchestrator
+```
+
+This approval replaces the skill's Step 4 confirmation for that command only. The human gave it on 2026-10-27, during initiative 0000195 step 13.
+
+If the tool, a flag, or the script differs in any way, ask first, as Step 4 requires. That includes an added flag, a removed flag, and `setup.ps1`. Report the command you ran and its result in your reply.
+````
