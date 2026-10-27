@@ -53,3 +53,15 @@ Test cap raised to 38,200 (deviation, see changelog). Evidence in acceptance-evi
 ### P4: Ship
 
 Version 0.29.1.
+
+## Summary
+
+| Phase | Agents | Parallel batches | Wall clock | Self-corrections |
+|-------|--------|------------------|------------|------------------|
+| P0 | 0 | 0 | not recorded | 1 (backlog entries first committed together, then split) |
+| P1 | 0 | 0 | skipped | 0 |
+| P2 | 0 | 0 | not recorded | 0 |
+| P3 | 0 | 0 | not recorded | 1 (size cap raised) |
+| P4 | 0 | 0 | not recorded | 0 |
+
+Total wall clock: not recorded
