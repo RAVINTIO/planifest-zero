@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000196-setup-argument-checks
+Last updated: 0000197-merge-guard-block-message
 
 ## What this repo is
 
@@ -96,7 +96,7 @@ An initiative is a chain of feature steps that the human approves once. The stan
 - **Advance.** At P4, the agent raises the step PR against the initiative branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside an initiative, the CI `release-tag` job tags the merge commit after the human merges.
 - **Delivery.** I-E Delivery archives the initiative and raises one PR to `main` that asks for a merge commit. The human merges it.
 - **Driver.** `ravintio-zero/scripts/initiative-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.initiative-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `I-C Run: Blocked:`. Each step writes `plan/.initiative-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.initiative`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/initiative-labels.mjs`.
-- **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `initiative/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
+- **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `initiative/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only. A command that names a merge in text, such as a heredoc line, also blocks. The message says so and tells the agent to write files with the Write tool.
 
 The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. Five support skills complete the set of thirteen: ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, ravintio-refresh-setup, and ravintio-file-backlog.
 
