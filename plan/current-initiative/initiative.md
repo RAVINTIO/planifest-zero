@@ -1,17 +1,17 @@
 ---
 title: "Initiative: 0000195 - backlog clearance"
 summary: "Clears 14 open backlog entries in 12 feature steps, then a chore step refreshes the setup record and commits the queued entries."
-status: "proposed"
+status: "active"
 ---
 # Initiative: 0000195 - backlog clearance
 
 **Goal:** Clear every valid open backlog entry from 2026-10-26, one feature release per step. A final chore step refreshes the setup record and commits the backlog entries that the steps queued.
 **Branch:** initiative/0000195-backlog-clearance
-**Status:** proposed
+**Status:** active
 **Position:** 1
 **Speed:** standard
 
-The human asked for this draft on 2026-10-26. I-A Chart still has to run on `main` and take the human's approval.
+The human asked for this draft on 2026-10-26. The human approved the chart on 2026-10-27, and I-B Activate ran the same day.
 
 ## Out of scope
 
@@ -19,7 +19,7 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 
 ## Notes for chart
 
-- **Clarity check:** entries 0000190, 0000193, and 0000194 have no **Wanted outcome** section. Each one puts its observable test under **Suggested Action**. Chart asks the human to sharpen them or accept them as written.
+- **Clarity check:** entries 0000190, 0000193, and 0000194 had no **Wanted outcome** section. At chart on 2026-10-26, the human asked for one in each, drafted from its **Suggested Action**.
 - **Order:** steps 1 to 3 are small fixes that cut friction in later steps. Step 4 comes before step 10, because the initiative skill queues entries with ids from the step 4 counter. Step 8 comes before step 9, because retrospectives read postmortems. Steps 9 and 10 come before step 11, because chart-time decisions read retrospectives and use the initiative skill.
 - **Shared files:** step 1 holds both setup entries. Both change argument parsing in `setup.sh` and `setup.ps1`, so one step avoids two edits of the same lines. Step 5 holds both reply entries for the same reason. Each one adds a reply rule to the boot file and the orchestrator skill.
 - **Counter seed:** feature ids 0000196 to 0000208 are reserved below, and backlog entry 0000209 exists. Step 4 seeds `plan/backlog/.next-id` at `0000210` or higher, so later ids don't clash with them.
@@ -35,7 +35,7 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 
 ## Schema changes
 
-**Unpredicted additive changes:** stop
+**Unpredicted additive changes:** pre-approved
 
 | Step | Component | Change | Kind |
 |------|-----------|--------|------|
@@ -76,7 +76,7 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 | Step | Feature id | Backlog entries | Bump | Version | Status |
 |------|------------|-----------------|------|---------|--------|
 | 1 | 0000196-setup-argument-checks | 0000193, 0000194 | minor | | pending |
-| 2 | 0000197-merge-guard-heredoc-match | 0000190 | patch | | pending |
+| 2 | 0000197-merge-guard-block-message | 0000190 | patch | | pending |
 | 3 | 0000198-cap-echoed-plan-text | 0000176 | patch | | pending |
 | 4 | 0000199-reserve-ids-from-counter | 0000183 | minor | | pending |
 | 5 | 0000200-reply-conventions | 0000181, 0000209 | minor | | pending |
