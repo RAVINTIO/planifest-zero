@@ -63,3 +63,21 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T09:45:00Z)
 - Consistency check: clean over `plan/current`.
 - The execution plan holds a concurrency plan for P2: three units in batch 1, one docs unit in batch 2.
 - Autonomous run: no plan gate stop.
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:42:11Z` |
+| End | |
+| Wall clock | |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 3 |
+| MCP calls | 0 |
+| Parallel task batches | 1 |
+| Notes | Dispatch follows the concurrency plan: batch 1 (U1, U2, U3) in one message, then U4 inline. |
+
+- In progress: U1-check-8 (2026-10-27T09:42:11Z)
+- In progress: U2-plan-docs (2026-10-27T09:42:11Z)
+- In progress: U3-dispatch-rule (2026-10-27T09:42:11Z)
