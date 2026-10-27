@@ -33,6 +33,7 @@ When discovery starts, the orchestrator writes `plan/.orchestrator-active` conta
 | **check-orchestrator-presence** (UserPromptSubmit) | Injects a reminder banner on every prompt while a pipeline is active, so the orchestrator skill reloads after context compaction or session resume |
 | **check-design** (UserPromptSubmit) | Injects a hard STOP message if neither the sentinel nor a `feature-brief.md` is present |
 | **auto-trigger-orchestrator** (UserPromptSubmit) | Loads the orchestrator skill at the start of a session when no pipeline is active yet |
+| **check-reply-prefix** (Stop) | Warns when a reply in an active run lacks a valid phase prefix, and logs each miss to `plan/.prefix-misses.log`. It never blocks |
 | **merge-guard** (PreToolUse, Bash) | Blocks `gh pr merge` unless it is a squash into an `initiative/*` branch. Merging into `main` stays human-only |
 
 The sentinel is deleted last during ship, after the archive is confirmed complete. You never create or delete it manually.
