@@ -16,7 +16,7 @@ ROADMAP="$ZERO_DIR/standards/roadmap-standards.md"
 STEP5=$(awk '/^### Step 5: Build assessment/{f=1;next} /^### /{f=0} f' "$SHIP")
 CHART=$(awk '/^### I-A Chart/{f=1;next} /^### /{f=0} f' "$ROADMAP")
 DELIVERY=$(awk '/^### I-E Delivery/{f=1;next} /^### /{f=0} f' "$ROADMAP")
-DISCOVERY=$(grep -F 'Write `discovery.md`' "$ORCH")
+DISCOVERY=$(cat "$ZERO_DIR/skills/ravintio-orchestrator/references/orchestrator-discovery-coaching.md")
 
 echo ""
 echo "=== req-002 AC-1: ship writes the run retrospective ==="
@@ -37,7 +37,7 @@ assert_contains "retrospective" "$(printf '%s\n' "$DELIVERY" | grep -i 'body')" 
 
 echo ""
 echo "=== req-002 AC-3: P0 and chart read past records ==="
-assert_contains "plan/retrospectives/" "$DISCOVERY" "req-002 AC-3: Discovery Start Actions step 11 reads retrospectives"
+assert_contains "plan/retrospectives/" "$DISCOVERY" "req-002 AC-3: the discovery coaching reference reads retrospectives"
 assert_contains "plan/retrospectives/" "$CHART" "req-002 AC-3: I-A Chart reads retrospectives"
 assert_contains "| ravintio-retrospective |" "$(cat "$CATALOGUE")" "req-002 AC-3: the catalogue has a row"
 
