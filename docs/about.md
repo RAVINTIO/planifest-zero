@@ -1,6 +1,6 @@
 ---
-version: "0.20.0"
-feature: "0000196-setup-argument-checks"
+version: "0.20.1"
+feature: "0000197-merge-guard-block-message"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.20.0` |
-| Last feature | `0000196-setup-argument-checks` |
+| Version | `0.20.1` |
+| Last feature | `0000197-merge-guard-block-message` |
 | Updated | `27 Oct 2026` |
 
 ## What this is

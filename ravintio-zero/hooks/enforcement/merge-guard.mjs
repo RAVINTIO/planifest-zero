@@ -29,6 +29,8 @@ import { spawnSync } from "node:child_process";
 import { readStdin } from "./read-stdin.mjs";
 
 const MAX_COMMAND = 4096;
+// Text that names a merge is blocked wherever it sits, so a file write needs the Write tool.
+const WRITE_ADVICE = "To write a file, use the Write tool, not a shell command.";
 const PR_merge_RE = /\bpr\s+merge\b/;
 const API_PATH_RE = /pulls\/[^\s/]*\/merge/;
 const GH_RE = /\bgh\b/;
@@ -75,13 +77,13 @@ function parsePlain(segment, why) {
     const stripped = text.replace(
       /(^|\s)--?[A-Za-z][\w-]*=[^\s"'`$\\(){}<>*?~!#=\[\]]*/g, " ");
     if (UNPLAIN_RE.test(stripped)) {
-      why[0] = "The segment uses quoting, substitution, or a variable.";
+      why[0] = "The segment uses quoting, substitution, or a variable. " + WRITE_ADVICE;
       return null;
     }
   }
   const tokens = text.split(/\s+/);
   if (tokens[0] !== "gh" || tokens[1] !== "pr" || tokens[2] !== "merge") {
-    why[0] = "The call is not a bare `gh pr merge`.";
+    why[0] = "The command names a merge in text that isn't a merge call. " + WRITE_ADVICE;
     return null;
   }
   const flags = new Map();
@@ -153,7 +155,7 @@ function readBase({ ref, repo }) {
 
 function evaluate(command) {
   if (command.length > MAX_COMMAND) {
-    unconfirmed("The command is over 4096 characters.");
+    unconfirmed("The command is over 4096 characters. " + WRITE_ADVICE);
   }
   const segments = command.split(/&&|\|\||[;&|\n]/);
   const calls = [];
