@@ -1,12 +1,12 @@
 ---
 title: "Roadmap standards"
-summary: "How the orchestrator and ship skills chart, activate, run, advance, and deliver an initiative."
+summary: "How the initiative, orchestrator, and ship skills chart, activate, run, advance, and deliver an initiative."
 status: "active"
 version: "0.1.0"
 ---
 # Roadmap standards
 
-Read this file first when an initiative is involved. The orchestrator and ship skills point here to keep their text short. An initiative is a chain of feature steps that the human approves once. Read `ravintio-zero/templates/initiative.template.md` before you write one.
+Read this file first when an initiative is involved. The initiative, orchestrator, and ship skills point here to keep their text short. An initiative is a chain of feature steps that the human approves once. Read `ravintio-zero/templates/initiative.template.md` before you write one.
 
 For the meaning of "roadmap", "roadmap initiative", and the initiative states, see the [roadmap and initiative glossary](../project-operations.md#roadmap-and-initiative-glossary).
 
@@ -25,21 +25,50 @@ The driver still requires status `active` before it runs a step.
 ### Filing a draft
 
 - A draft lives at `plan/roadmap/{id}-{slug}/initiative.md`, one folder per draft.
-- Initiative ids share the backlog's seven-digit sequence. The next id is the highest ever allocated plus one.
-- The high-water mark covers `plan/backlog/`, `plan/_archive/`, `plan/changelog/`, and `plan/roadmap/`.
+- Initiative ids share the backlog's seven-digit sequence. Reserve each id with `node ravintio-zero/scripts/reserve-id.mjs [qty]`, which takes it from the counter file `plan/backlog/.next-id`.
+- To reserve ids for the initiative and its step features, ask for one block of `qty` ids in a single call.
+- If two branches reserve the same ids, git shows a conflict on `.next-id`. Keep the higher value and renumber the entries on the branch that merges second. This answer is pre-approved.
 - Filing a draft has no prefix. It works on any branch and in any phase, as filing a backlog entry does.
 - You may suggest a draft and help the human structure it. Write the draft only after the human confirms.
 - The draft reaches `main` with the PR of the branch that holds it.
 
 ### Stages
 
-| Stage | Prefix | Runs on | What happens |
-|-------|--------|---------|--------------|
-| Chart | `I-A Chart:` | `main` | Plan the initiative with the human and take their confirmation. |
-| Activate | `I-B Activate:` | initiative branch | Cut the initiative branch, write the active initiative, and offer the driver. |
-| Run | `I-C Run:` | feature branch | Run one step through P0 to P4. |
-| Advance | `I-D Advance:` | initiative branch | Merge the step PR into the initiative branch and tag it. The ship skill owns this stage. |
-| Delivery | `I-E Delivery:` | initiative branch | Archive the initiative and raise the initiative PR to `main`. The ship skill owns this stage. |
+| Stage | Prefix | Owner | Runs on | What happens |
+|-------|--------|-------|---------|--------------|
+| Chart | `I-A Chart:` | `ravintio-initiative` | `main` | Plan the initiative with the human and take their confirmation. |
+| Activate | `I-B Activate:` | `ravintio-initiative` | initiative branch | Cut the initiative branch, write the active initiative, and start the driver and the watch script. |
+| Run | `I-C Run:` | `ravintio-orchestrator` | feature branch | Run one step through P0 to P4. |
+| Advance | `I-D Advance:` | `ravintio-ship` | initiative branch | Merge the step PR into the initiative branch and tag it. |
+| Delivery | `I-E Delivery:` | `ravintio-initiative` | initiative branch | Archive the initiative and raise the initiative PR to `main`. |
+
+### The three parts
+
+Three parts run an initiative. The human talks only to their own session. Step sessions run with no human present.
+
+| Part | What it is | Runs where | Owns |
+|------|-----------|------------|------|
+| `ravintio-initiative` skill | The initiative coordinator | The human's session | Chart, activate, watching the steps, progress reports, and delivery |
+| Driver, `initiative-run.mjs` | A script with no AI | A background task that the initiative skill starts | Starting each step session in turn, and stopping on a `Blocked:` line |
+| `ravintio-orchestrator` skill | The feature coordinator | Each step session, a separate `claude -p` process | One feature from P0 to P4, then the merge into the initiative branch |
+
+An initiative runs in this sequence:
+
+1. **I-A Chart.** The initiative skill plans the steps with the human and takes their approval.
+2. **I-B Activate.** The initiative skill cuts the initiative branch and starts the driver.
+3. **I-C Run.** The driver starts a step session. It loads the orchestrator and builds one feature from P0 to P4.
+4. **I-D Advance.** The step session merges its feature PR into the initiative branch, tags the merge commit, and exits.
+5. The driver starts the next step session. Stages I-C and I-D repeat until no steps remain.
+6. While steps run, the initiative skill watches the build log and git, and reports to the human. It never edits the working tree.
+7. **I-E Delivery.** After the driver exits, the initiative skill archives the initiative and raises the initiative PR to `main`. It then gives the final report.
+
+#### Sessions and ack files
+
+- The initiative skill writes `plan/.initiative-ack`. A step session writes `plan/.orchestrator-ack`. The strict-mode hook accepts either.
+- The orchestrator never resumes an initiative. The initiative skill never resumes a step.
+- A step session has `RAVINTIO_INITIATIVE_STEP=1` in its environment. The auto-trigger hook and the strict-mode hook both name the orchestrator for it, and the initiative skill for any other session while `plan/current-initiative/initiative.md` has `status: active`. The driver lock and the contents of `plan/current/` play no part.
+- `plan/.initiative-ack` is git-ignored, so a step session never commits the human's ack. `plan/.orchestrator-ack` stays tracked.
+- While the driver lock `plan/.initiative-runner.lock` is held, the initiative skill holds new backlog entries in `plan/.initiative-queue/`. It commits them to the initiative branch after the step merges.
 
 ### I-A Chart
 
@@ -66,7 +95,9 @@ Chart runs a clarity check on each backlog entry of each step:
 - The human's confirmation of the chart covers only entries that pass or that the human sharpens.
 - Chart never rewrites an entry itself.
 
-Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval.
+Before it coaches, Chart reads the latest records in `plan/retrospectives/`, newest first, and names any change they filed that is still open. If the folder is empty, Chart says so.
+
+Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval. It builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. See Chart-time decisions.
 
 ### Chart-time schema approval
 
@@ -102,6 +133,35 @@ At Chart:
 
 Chart asks no fallback question. A dependency that no row lists stops the step. The step takes the dependency exception stop in the orchestrator skill. In P0, copy the step's rows into the `Approved dependencies` field of `design.md`. The stop check still reads `initiative.md`.
 
+### Chart-time decisions
+
+A step stops when it meets a fork that no one approved. The human is present at Chart and absent during the steps, so Chart takes these decisions up front. Chart writes three tables in `initiative.md`: `## Decisions`, `## Baselines`, and `## Criteria`. The human's confirmation of the chart approves every row left in them.
+
+At Chart, for each step:
+
+1. **Pre-mortem.** Ask what would stop the step. Record each likely fork as a row in `## Decisions` with its pre-approved answer. Name one fork per row.
+2. **Pre-approved fallbacks.** If a row's answer adds scope, name that scope in the row, as in "may also change `setup.sh`".
+3. **Bump rule.** Give each row a bump effect, as in "rises to minor if the fallback scope is used". Use `none` if the bump stays as charted.
+4. **Baseline.** A speed or size target needs a profile taken at Chart that shows where the cost goes. Record it in `## Baselines`. Take the target and the planned fix from that profile.
+5. **Criterion critic.** Check each measurable criterion and record the result in `## Criteria`. Ask whether the step changes what the criterion measures, such as a total that grows with the step's new tests. Ask how noisy the measure is across runs, and whether the margin covers that noise.
+6. **Environment check.** Check the local tools that the step's tests need. Mark a criterion `CI` in `## Criteria` if only CI can check it. Mark it `local` otherwise.
+7. **Retrospective input.** Read the stops in the latest records in `plan/retrospectives/`. Turn each stop that can recur into a row in `## Decisions`.
+
+Chart asks no fallback question. A fork that no row covers stops the step.
+
+#### Worked example
+
+Roadmap 0000168 stopped step 3 four times. These rows would have answered each stop, with no human present.
+
+| Step | Fork | Pre-approved answer | Bump effect |
+|------|------|---------------------|-------------|
+| 3 | CI misses the speed target on Windows | Profile on Windows and fix the top cost | none |
+| 3 | The profile shows skill bundling as the top cost | Widen scope to drop skill bundling on every platform | rises to minor if the fallback scope is used |
+| 3 | The wider scope changes the release | Raise the bump from patch to minor | minor |
+| 3 | The speed target counts the step's own new tests | Measure per case, not as a fixed total | none |
+
+The criterion critic would have caught the last row at Chart. A fixed total grows with the step's new tests, and runner noise exceeded the margin. The environment check would have caught the first failure of step 1. The machine had no `pwsh`, so the PowerShell criterion belongs to CI.
+
 ### I-B Activate
 
 Activate turns a charted initiative into a live branch. Run these checks first:
@@ -118,9 +178,9 @@ When the checks pass:
 1. Cut `initiative/{id}-{slug}` from `main`.
 2. In one commit, write `plan/current-initiative/initiative.md` with `status: active` and delete the draft folder `plan/roadmap/{id}-{slug}/`.
 3. Push the initiative branch to `origin`.
-4. Offer to start the driver `ravintio-zero/scripts/initiative-run.mjs`.
+4. Start the driver `ravintio-zero/scripts/initiative-run.mjs` and the watch script `ravintio-zero/scripts/initiative-watch.mjs` as background tasks, because a foreground Bash call times out after 10 minutes.
 
-A Claude session runs the driver as a background task, because a foreground Bash call times out after 10 minutes. Tell the human that the parent session must not edit the working tree while the driver runs.
+The initiative skill's session must not edit the working tree while the driver runs. It queues new backlog entries instead.
 
 ### I-C Run
 
@@ -132,6 +192,8 @@ Run executes one initiative step from `position`. Ship owns the merge that ends 
 - P0 builds `feature-brief.md` from the backlog entries that the step's row lists. It pulls each entry in and deletes its folder in the same commit. It does not ask pull-in, leave, or discard.
 - P0 self-confirms the design and the Scope Lock Challenge. Each scope lock line ends with `[source: draft-accepted (initiative)]`. The design confirmation records `draft-accepted (initiative)` in place of a human confirmation.
 - A schema change that matches a chart-approved row does not stop the step. See Chart-time schema approval.
+- A fork that matches a `## Decisions` row does not stop the step. Apply the row's answer and its bump effect, and log `Decision applied (initiative chart): {fork}` in the build log. The downgrade block still applies. The step stops only for a fork no row covers. A missing table counts as an empty one.
+- A criterion marked `CI` in `## Criteria` counts as validated only after the step's first CI run.
 - P0 stops only when a backlog entry is too vague to draft a brief from. Print `Blocked:` with the entry and what is missing. The exception stops in Exception Stops still apply, including the credential stop.
 - P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the initiative branch's version. That is the last known version from Discovery Start Actions step 8. The initiative branch's version comes from `product.yml`, or from `docs/about.md` when `product.yml` is absent. The downgrade block still applies.
 
@@ -244,24 +306,25 @@ Consumer CI must trigger on pull requests to `initiative/**`. The pack's workflo
       I-D Advance: Complete: {feature-id} merged as v{version}, step {next} of {n} next
       ```
 
-   4. If no pending step remains, run I-E Delivery in the same session.
+   4. If no pending step remains, end the session. The driver then prints `I-E Delivery: Pending:` and exits, and the initiative skill runs I-E Delivery. If the driver predates this rule and the last step session finds no initiative session to deliver, the step session runs I-E Delivery itself.
 
-After the last step, `position` is one past the last step number. If a session ends in that state with `plan/current/` empty, the orchestrator's resume rule runs I-E Delivery.
+After the last step, `position` is one past the last step number. If a session starts in that state with `plan/current/` empty, the initiative skill runs I-E Delivery.
 
 The tag comes after the merge because a squash creates a new commit. A tag on the feature branch tip, or on the fetched branch tip, could point at the wrong commit. The merge commit is the exact commit the PR created. If a push or merge fails, stop and report the exact error. Do not retry with force.
 
 ### I-E Delivery
 
-Run this stage after the last step merges. Every message begins with `I-E Delivery:` after the `P4 Ship:` prefix. Work on the initiative branch.
+The initiative skill runs this stage after the last step merges. Every message begins with `I-E Delivery:` after the `P4 Ship:` prefix. Work on the initiative branch.
 
 1. Move `plan/current-initiative/` to `plan/_archive/{id}-{slug}-initiative-{date}/` and set the initiative `status: delivered`. Update links that point at the old path. Commit the move on the initiative branch.
-2. Raise one PR from the initiative branch to `main`.
+2. Run `ravintio-retrospective` in initiative mode. It writes `plan/retrospectives/{id}-{slug}-initiative-{date}.md`. Commit the record on the initiative branch, so the PR carries it. A missing retrospective never blocks delivery.
+3. Raise one PR from the initiative branch to `main`.
 
    ```bash
    gh pr create --base main --head initiative/{id}-{slug}
    ```
 
-3. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag. Scan the body for credential patterns before you raise the PR, as in Step 9.
-4. Report the PR URL and end the run.
+4. In the body, ask the human to merge with a merge commit, not a squash, so each step tag stays reachable from `main`. List each step with its version and tag, and name the retrospective record. Scan the body for credential patterns before you raise the PR, as in Step 9.
+5. Report the PR URL and end the run.
 
 The agent never merges the initiative PR and never commits to `main`. The human reviews and merges it.

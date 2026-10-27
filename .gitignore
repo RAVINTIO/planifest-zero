@@ -28,3 +28,7 @@ plan/.telemetry-receipts/
 
 # OS
 .DS_Store
+
+# Human session ack (0000218) - local to the human's session, never committed.
+# plan/.orchestrator-ack stays tracked, because a step session owns it.
+plan/.initiative-ack

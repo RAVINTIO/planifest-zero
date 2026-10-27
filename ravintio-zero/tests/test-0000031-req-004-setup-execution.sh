@@ -20,7 +20,7 @@ mkdir -p "$WS/clone/ravintio-overrides/instructions"
 assert_equals "0" "$?" "setup.sh exits 0"
 assert_equals "yes" "$([ -f "$WS/clone/.claude/settings.json" ] && echo yes || echo no)" "settings.json written"
 SKILLS=$(ls -d "$WS/clone/.claude/skills/"*/ 2>/dev/null | wc -l | tr -d ' ')
-assert_equals "13" "$SKILLS" "exactly 13 skills installed"
+assert_equals "16" "$SKILLS" "exactly 16 skills installed"
 assert_equals "no" "$([ -d "$WS/clone/.claude/hooks/telemetry" ] && echo yes || echo no)" "no telemetry hook directory created"
 
 echo "=== (b) pruning: retired skill folder removed on re-run ==="
@@ -29,7 +29,7 @@ touch "$WS/clone/.claude/skills/ravintio-change-agent/SKILL.md"
 ( cd "$WS/clone" && bash ravintio-zero/setup.sh claude-code >/dev/null 2>&1 )
 assert_equals "no" "$([ -d "$WS/clone/.claude/skills/ravintio-change-agent" ] && echo yes || echo no)" "retired skill pruned on regeneration"
 SKILLS2=$(ls -d "$WS/clone/.claude/skills/"*/ 2>/dev/null | wc -l | tr -d ' ')
-assert_equals "13" "$SKILLS2" "still exactly 13 skills after re-run"
+assert_equals "16" "$SKILLS2" "still exactly 16 skills after re-run"
 
 echo "=== (c) install installs enforcement hooks only ==="
 mkdir -p "$WS/clone2"
@@ -42,9 +42,9 @@ assert_equals "no" "$([ -d "$WS/clone2/.claude/hooks/telemetry" ] && echo yes ||
 echo "=== (c2) retired telemetry flags are rejected ==="
 mkdir -p "$WS/clone3"
 cp -R "$ZERO_DIR" "$WS/clone3/ravintio-zero"
-# 0000034 ADR-001: the retired flag now warns and is skipped, so setup exits 0.
+# 0000196 ADR-002: a retired flag now fails during argument parsing, so setup exits 1.
 ( cd "$WS/clone3" && git init -q . && bash ravintio-zero/setup.sh claude-code --structured-telemetry-mcp >/dev/null 2>&1 )
-assert_equals "0" "$?" "setup.sh exits 0 and skips the retired --structured-telemetry-mcp"
+assert_equals "1" "$?" "setup.sh exits 1 on the retired --structured-telemetry-mcp"
 assert_equals "no" "$([ -d "$WS/clone3/.claude/hooks/telemetry" ] && echo yes || echo no)" "no telemetry hook directory after a run with the retired flag"
 
 echo "=== (d) installed tree references no old name ==="

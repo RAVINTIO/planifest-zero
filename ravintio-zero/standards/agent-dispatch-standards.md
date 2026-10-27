@@ -81,6 +81,32 @@ A small page that the parent needs in full may run in the main session.
 
 ---
 
+## Concurrency plan
+
+Dispatch follows the batches in the `## Concurrency plan` of `plan/current/execution-plan.md`.
+
+- Two units with no dependency and no shared write target share a batch.
+- A unit alone in its batch gives its reason in the `Sequential reason` column.
+- A departure from the plan's batches is recorded in the build log with its reason.
+- Check 8 of `consistency-check.mjs` validates the table.
+
+---
+
+## Improvement loop
+
+After ravintio-refactor confirms all-suite GREEN, ravintio-implement runs up to 2 cycles per requirement. Each cycle asks whether a simpler or cleaner solution meets the same tests.
+
+1. Dispatch a reviewer in a fresh context on the primary tier. Pass it the requirement, the test file, and the implementation files. Do not pass the transcript of earlier dispatches. The reviewer edits nothing.
+2. The reviewer returns one finding worth making, or the text `no change worth making`. It reports only a change that simplifies the code, removes duplication, or picks a cleaner design. It skips style preferences and any change that alters behaviour.
+3. If the reviewer returns `no change worth making`, append the early stop marker. The loop stops early for that requirement.
+4. If the reviewer returns a finding, dispatch ravintio-refactor in improvement mode with that finding, then run the full suite.
+5. If the suite fails, ravintio-refactor reverts the change. The requirement stays GREEN, and the cycle records `suite fail, reverted`.
+6. Append the cycle marker to the build log before the next dispatch.
+
+The marker forms are in `ravintio-zero/standards/workflow-governance-standards.md`. On resume, count the `Improve:` markers for the requirement in the build log and run only the cycles that remain.
+
+---
+
 ## Fast batches
 
 The run speed is in `plan/.run-speed`. It holds `fast` or `standard`. A missing or unknown value counts as `standard`. See the orchestrator skill.
@@ -119,7 +145,7 @@ Agent({ description: "Implement REQ-002: {one-liner}", subagent_type: "general-p
 
 **Out-of-scope discovery filing:** if a dispatched subagent discovers an out-of-scope bug or gap while doing its task, it MUST file `plan/backlog/{id}-{slug}/entry.md` directly, per `templates/backlog-entry.template.md`, with `Deferral source: discovered mid-flight`, `Source feature` set to the active feature ID, and `Source phase` set to the phase active at discovery. It must NOT report the discovery back for the dispatching agent to relay through a host-tool side channel (e.g. a task-spawning tool), and must NOT silently drop it.
 
-The **dispatching agent** (orchestrator or phase skill placing the `Agent()` call) pre-computes the next available backlog ID before dispatch, per the Backlog ID sequence convention (`ravintio-orchestrator/SKILL.md` discovery start actions, backlog pickup step: highest ID ever allocated, including picked-up and discarded entries, plus one), and passes it explicitly in the subagent's prompt as the ID to use if a discovery needs filing. Subagent self-lookup of `plan/backlog/` at file-time is rejected: picked-up entries are deleted from `plan/backlog/` once folded into a design, so a subagent scanning only that directory would systematically undercount the true high-water mark and risk reusing a retired ID.
+The **dispatching agent** (orchestrator or phase skill placing the `Agent()` call) pre-computes the next available backlog ID before dispatch by reserving it with `node ravintio-zero/scripts/reserve-id.mjs`, which takes it from the counter file `plan/backlog/.next-id`, and passes it explicitly in the subagent's prompt as the ID to use if a discovery needs filing. Subagent self-lookup of `plan/backlog/` at file-time is rejected: picked-up entries are deleted from `plan/backlog/` once folded into a design, so a subagent scanning only that directory would systematically undercount the true high-water mark and risk reusing a retired ID.
 
 When dispatching multiple subagents in a single parallel batch, each MUST receive a distinct pre-assigned backlog ID (or a reserved contiguous block, one per subagent); no two subagents may independently file under the same ID.
 

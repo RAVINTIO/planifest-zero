@@ -1,7 +1,7 @@
 ---
-version: "0.19.0"
-feature: "0000185-explain-strict-mode"
-updated: "25 Oct 2026"
+version: "0.30.1"
+feature: "0000218-strict-hook-follows-active-skill"
+updated: "27 Oct 2026"
 ---
 # About
 
@@ -10,13 +10,13 @@ updated: "25 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.19.0` |
-| Last feature | `0000192-rename-runner-lock-and-archive` |
-| Updated | `26 Oct 2026` |
+| Version | `0.30.1` |
+| Last feature | `0000218-strict-hook-follows-active-skill` |
+| Updated | `27 Oct 2026` |
 
 ## What this is
 
-RAVINTIO Zero is a specification-first pipeline for Claude Code. The
+RAVINTIO Zero is a specification-first pipeline for Claude Code and Codex. The
 repository holds one component, `ravintio-zero`. It is a component pack of
 standards, skills, hooks, templates, schemas, and setup scripts.
 

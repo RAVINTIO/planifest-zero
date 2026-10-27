@@ -1,0 +1,141 @@
+---
+title: "Initiative: 0000195 - backlog clearance"
+summary: "Clears 14 open backlog entries in 12 feature steps, then a chore step refreshes the setup record and commits the queued entries."
+status: "delivered"
+---
+# Initiative: 0000195 - backlog clearance
+
+**Goal:** Clear every valid open backlog entry from 2026-10-26, one feature release per step. A final chore step refreshes the setup record and commits the backlog entries that the steps queued.
+**Branch:** initiative/0000195-backlog-clearance
+**Status:** delivered
+**Position:** 16
+**Speed:** standard
+
+The human asked for this draft on 2026-10-26. The human approved the chart on 2026-10-27, and I-B Activate ran the same day.
+
+## Out of scope
+
+Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a new paid service for `claude -p` calls, and the human must decide who pays. Chart can pull it in if the human approves the service and its cost.
+
+## Notes for chart
+
+- **Clarity check:** entries 0000190, 0000193, and 0000194 had no **Wanted outcome** section. At chart on 2026-10-26, the human asked for one in each, drafted from its **Suggested Action**.
+- **Order:** steps 1 to 3 are small fixes that cut friction in later steps. Step 4 comes before step 10, because the initiative skill queues entries with ids from the step 4 counter. Step 8 comes before step 9, because retrospectives read postmortems. Steps 9 and 10 come before step 11, because chart-time decisions read retrospectives and use the initiative skill.
+- **Shared files:** step 1 holds both setup entries. Both change argument parsing in `setup.sh` and `setup.ps1`, so one step avoids two edits of the same lines. Step 5 holds both reply entries for the same reason. Each one adds a reply rule to the boot file and the orchestrator skill.
+- **Counter seed:** feature ids 0000196 to 0000208 are reserved below, and backlog entry 0000209 exists. Step 4 seeds `plan/backlog/.next-id` at `0000210` or higher, so later ids don't clash with them.
+- **Driver changes mid-run:** step 10 changes `initiative-run.mjs`, the ship skill, and where I-E Delivery runs. The driver that runs this initiative started before step 10. Steps 11 to 13 and I-E Delivery keep the stage rules in place at activation, unless chart decides otherwise.
+- **Installed skills:** step sessions load skills from `.claude/skills/`, which change only when setup runs. Step 13 reruns setup, so the installed skills match the pack before delivery.
+
+## Stop conditions
+
+- Any step prints `Blocked:`.
+- CI fails on a step PR.
+- A step proposes a destructive change.
+- A step needs a library or service that the Dependencies table doesn't list.
+
+## Schema changes
+
+**Unpredicted additive changes:** pre-approved
+
+| Step | Component | Change | Kind |
+|------|-----------|--------|------|
+| 1 | none | none | none |
+| 2 | none | none | none |
+| 3 | none | none | none |
+| 4 | none | none | none |
+| 5 | none | none | none |
+| 6 | none | none | none |
+| 7 | none | none | none |
+| 8 | none | none | none |
+| 9 | none | none | none |
+| 10 | none | none | none |
+| 11 | none | none | none |
+| 12 | none | none | none |
+| 13 | none | none | none |
+| 14 | none | none | none |
+| 15 | none | none | none |
+
+## Dependencies
+
+| Step | Name | Kind | Purpose |
+|------|------|------|---------|
+| 1 | none | none | none |
+| 2 | none | none | none |
+| 3 | none | none | none |
+| 4 | none | none | none |
+| 5 | none | none | none |
+| 6 | none | none | none |
+| 7 | none | none | none |
+| 8 | none | none | none |
+| 9 | none | none | none |
+| 10 | none | none | none |
+| 11 | none | none | none |
+| 12 | none | none | none |
+| 13 | none | none | none |
+| 14 | Codex CLI (`/opt/homebrew/bin/codex`) | service | Runs a real Codex session in a temp repo. It makes model calls on the human's OpenAI account. Local only, never in CI. |
+| 15 | none | none | none |
+
+## Steps
+
+| Step | Feature id | Backlog entries | Bump | Version | Status |
+|------|------------|-----------------|------|---------|--------|
+| 1 | 0000196-setup-argument-checks | 0000193, 0000194 | minor | 0.20.0 | merged |
+| 2 | 0000197-merge-guard-block-message | 0000190 | patch | 0.20.1 | merged |
+| 3 | 0000198-cap-echoed-plan-text | 0000176 | patch | 0.20.2 | merged |
+| 4 | 0000199-reserve-ids-from-counter | 0000183 | minor | 0.21.0 | merged |
+| 5 | 0000200-reply-conventions | 0000181, 0000209 | minor | 0.22.0 | merged |
+| 6 | 0000201-plan-concurrent-work | 0000180 | minor | 0.23.0 | merged |
+| 7 | 0000202-improvement-loops | 0000179 | minor | 0.24.0 | merged |
+| 8 | 0000203-blameless-postmortems | 0000177 | minor | 0.25.0 | merged |
+| 9 | 0000204-run-and-initiative-retrospectives | 0000178 | minor | 0.26.0 | merged |
+| 10 | 0000205-initiative-skill | 0000182 | minor | 0.27.0 | merged |
+| 11 | 0000206-chart-time-decisions | 0000186 | minor | 0.28.0 | merged |
+| 12 | 0000207-codex-support | 0000175 | minor | 0.29.0 | merged |
+| 13 | 0000208-refresh-setup-record | none (chore) | patch | 0.29.1 | merged |
+| 14 | 0000217-verify-codex-setup | none (chore) | minor | 0.30.0 | merged |
+| 15 | 0000218-strict-hook-follows-active-skill | 0000215 | patch | 0.30.1 | merged |
+
+The human added steps 14 and 15 on 2026-10-27, after step 13 merged.
+
+## Step 14 chore
+
+Step 14 has no backlog entry. Step 12 added the `codex` setup target but could not run Codex, so this step checks it with the real program.
+
+1. Create a fresh git repo in a temp folder outside this repo.
+2. Run `setup.sh codex` from the initiative branch's pack against that repo.
+3. Put a stub `gh` first on the temp session's `PATH`. The stub logs its arguments and exits 0, so nothing reaches GitHub.
+4. Run `codex exec` in the temp repo and ask it to list the RAVINTIO skills it can see.
+5. Run `codex exec` again and ask it to run `gh pr merge 1 --merge` in the temp repo.
+6. Record the commands, outputs, and Codex version in the step's acceptance evidence.
+
+**Wanted outcome:** Codex loads `AGENTS.md` and names at least one RAVINTIO skill from `.agents/skills/`. `merge-guard` blocks the merge command with exit 2, and the stub `gh` log stays empty.
+
+**Bump rule:** if either check fails, the step fixes the `codex` target and adds a test that reproduces the failure. The bump then rises from `patch` to `minor`.
+
+## Step 13 chore
+
+Step 13 has no backlog entry. It runs these tasks:
+
+1. Add `ravintio-overrides/instructions/custom-006-standing-setup-refresh-approval.md` with the text in the next section. The human asked for it on 2026-10-27, when the first step 13 session stopped for the refresh confirmation.
+2. Run the `ravintio-refresh-setup` skill with the flags in `plan/state/claude-code.md`. The run updates the `writtenAt` value in that file and reinstalls the skills from the pack. Setup also copies the new override into `CLAUDE.md`.
+3. Commit each backlog entry that the steps queued during the initiative, one commit per entry.
+
+**Wanted outcome:** `plan/state/claude-code.md` holds a `writtenAt` value later than the step 12 merge. `CLAUDE.md` holds the standing approval between its override markers. Every queued backlog entry is in `plan/backlog/` on the initiative branch, and the working tree is clean.
+
+### Override text for task 1
+
+The file holds exactly this Markdown:
+
+````markdown
+### Standing approval for the setup refresh
+
+You may run the `ravintio-refresh-setup` skill without asking first, if the command is exactly this:
+
+```bash
+ravintio-zero/setup.sh claude-code --strict-orchestrator
+```
+
+This approval replaces the skill's Step 4 confirmation for that command only. The human gave it on 2026-10-27, during initiative 0000195 step 13.
+
+If the tool, a flag, or the script differs in any way, ask first, as Step 4 requires. That includes an added flag, a removed flag, and `setup.ps1`. Report the command you ran and its result in your reply.
+````

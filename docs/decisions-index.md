@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000192-rename-runner-lock-and-archive
+Last updated: 0000200-reply-conventions
 
 ---
 
@@ -18,6 +18,40 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000200: reply-conventions
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature adds one Node.js hook with built-in modules only. It adds no dependency. |
+| ADR-002 | A warn-only Stop hook | accepted | `check-reply-prefix.mjs` warns and logs a reply without a prefix, and always exits 0. |
+
+### Feature 0000199: reserve-ids-from-counter
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature adds one Node.js script with built-in modules only. It adds no dependency. |
+| ADR-002 | A counter file in place of a scan of every ref | accepted | `plan/backlog/.next-id` holds the next free id and `reserve-id.mjs` reserves blocks under an exclusive lock. |
+
+### Feature 0000198: cap-echoed-plan-text
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature edits two programs and adds one suite. It adds no dependency. |
+| ADR-002 | A cap helper in each program | accepted | The hook installs as one file, so each program holds its own 200-character cap function. A parity test checks both. |
+
+### Feature 0000197: merge-guard-block-message
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature edits message text only and adds no dependency. |
+
+### Feature 0000196: setup-argument-checks
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature keeps Bash and PowerShell and adds no dependency. |
+| ADR-002 | Retired flags fail setup | accepted | A retired flag exits 1 during argument parsing and names the flag. The tool check runs straight after parsing. The refresh skill reports a retired flag and omits it. Supersedes 0000034 ADR-001. |
+
 ### Feature 0000192: rename-runner-lock-and-archive
 
 | ADR | Title | Status | Summary |
@@ -128,6 +162,7 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 
 | ADR | Superseded by | Reason |
 |-----|---------------|--------|
+| 0000034 ADR-001 | 0000196 ADR-002 | A retired flag now exits 1 during argument parsing instead of warning and continuing. |
 | 0000001 ADR-001 to ADR-004 | 0000030 ADR-001 | The context-mode hook design they governed no longer exists. |
 | 0000025 ADR-002 | 0000032 ADR-001 | The record moved from planifest-overrides/setup-config/ to plan/state/. The ADR text is in git history only. |
 | 0000018, 0000024, 0000026, 0000027, and 0000028 telemetry ADRs | 0000033 ADR-001 | Their subject no longer exists in `planifest-zero`. The ADR text is in git history only. |

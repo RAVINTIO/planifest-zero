@@ -42,8 +42,8 @@ assert_equals "yes" "$(grep_has '\*\*Source feature:\*\*' "$TEMPLATE")" \
   "req-005: template still has Source feature field"
 assert_equals "yes" "$(grep_has '\*\*Source phase:\*\*' "$TEMPLATE")" \
   "req-005: template still has Source phase field"
-assert_equals "yes" "$(grep_has 'highest ever allocated' "$TEMPLATE")" \
-  "req-005: template still documents the highest-id-plus-one allocation convention"
+assert_equals "yes" "$(grep_has 'counter file' "$TEMPLATE")" \
+  "req-005: template documents the counter-file allocation convention"
 
 echo ""
 echo "=== req-005: backlog mechanics live in the orchestrator's discovery text ==="
@@ -52,10 +52,10 @@ assert_equals "yes" "$(grep_has 'Backlog pickup' "$ORCHESTRATOR")" \
   "req-005: discovery has a backlog pickup start action"
 assert_equals "yes" "$(grep_has 'pull-in / leave / discard' "$ORCHESTRATOR")" \
   "req-005: pickup offers pull-in / leave / discard per entry"
-assert_equals "yes" "$(grep_has 'own monotonic sequence' "$ORCHESTRATOR")" \
-  "req-005: backlog ids come from their own monotonic sequence"
-assert_equals "yes" "$(grep_has 'highest ever allocated plus one, including spent ids' "$ORCHESTRATOR")" \
-  "req-005: next id is highest ever allocated plus one, including spent ids"
+assert_equals "yes" "$(grep_has 'counter file' "$ORCHESTRATOR")" \
+  "req-005: backlog ids come from the counter file"
+assert_equals "yes" "$(grep_has 'spent ids never return' "$ORCHESTRATOR")" \
+  "req-005: spent ids never return"
 
 echo ""
 echo "=== req-005: subagent filing routes through the dispatch standards ==="

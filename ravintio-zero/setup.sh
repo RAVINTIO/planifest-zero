@@ -5,7 +5,7 @@ set -euo pipefail
 #
 # Usage:  ./ravintio-zero/setup.sh <tool>
 #
-# Tools:  claude-code
+# Tools:  claude-code, codex
 #
 # Each tool's specific config lives in setup/<tool>.sh
 # This script handles shared logic only.
@@ -16,7 +16,7 @@ SKILLS_SRC="$SCRIPT_DIR/skills"
 WORKFLOWS_SRC="$SCRIPT_DIR/workflows"
 SETUP_DIR="$SCRIPT_DIR/setup"
 
-VALID_TOOLS="claude-code"
+VALID_TOOLS="claude-code codex"
 STRICT_ORCHESTRATOR=false
 
 # Prepended to every node script that writes settings.json (0000034 ADR-002).
@@ -310,6 +310,81 @@ prune_retired_hooks() {
   done
 }
 
+# Wire the Codex hooks (0000207 ADR-002). Only merge-guard has a Codex contract
+# that the Codex docs confirm: a PreToolUse group for Bash, exit 2, and the
+# reason on stderr. Every other RAVINTIO hook stays an instruction in
+# AGENTS.md. The report names both lists, so nobody assumes more is enforced.
+install_codex_hooks() {
+  local hooks_dir_rel="$1"   # e.g. .codex/hooks/enforcement
+  local hooks_file_rel="$2"  # e.g. .codex/hooks.json
+  local src="$SCRIPT_DIR/hooks/enforcement"
+  local dest="$PROJECT_ROOT/$hooks_dir_rel"
+  local hooks_file="$PROJECT_ROOT/$hooks_file_rel"
+
+  if [ ! -d "$src" ]; then
+    echo "  ! Warning: enforcement hook scripts not found at $src — skipping"
+    return
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    echo "  ! Warning: node is not installed, so setup wired no Codex hook"
+    return
+  fi
+
+  echo ""
+  echo "  Installing RAVINTIO Codex hooks"
+
+  mkdir -p "$dest"
+  local script_name
+  for script_name in merge-guard.mjs read-stdin.mjs; do
+    cp "$src/$script_name" "$dest/$script_name"
+    echo "  + $hooks_dir_rel/$script_name"
+  done
+
+  local command_line="node \"\$(git rev-parse --show-toplevel)/$hooks_dir_rel/merge-guard.mjs\""
+  RAVINTIO_HOOK_CMD="$command_line" RAVINTIO_HOOK_MARK="$hooks_dir_rel/merge-guard.mjs" \
+    RAVINTIO_SETTINGS="$hooks_file" RAVINTIO_SETTINGS_REL="$hooks_file_rel" \
+    node -e "$RAVINTIO_WRITE_SETTINGS_JS"'
+      const fs = require("fs");
+      const sf = process.env.RAVINTIO_SETTINGS;
+      const rel = process.env.RAVINTIO_SETTINGS_REL;
+      const isObj = v => v !== null && typeof v === "object" && !Array.isArray(v);
+      let s = {};
+      if (fs.existsSync(sf)) {
+        try { s = JSON.parse(fs.readFileSync(sf, "utf8").replace(/^\uFEFF/, "")); } catch (_) {
+          process.stderr.write("! Error: " + rel + " is not valid JSON. Fix it and rerun setup.\n");
+          process.exit(1);
+        }
+      }
+      if (!isObj(s) || !(s.hooks === undefined || s.hooks === null || isObj(s.hooks)) ||
+          !(isObj(s.hooks) ? (s.hooks.PreToolUse === undefined || s.hooks.PreToolUse === null || Array.isArray(s.hooks.PreToolUse)) : true)) {
+        process.stderr.write("! Error: " + rel + " is valid JSON but not a hooks file setup can read. Fix it and rerun setup.\n");
+        process.exit(1);
+      }
+      s.hooks = s.hooks || {};
+      const mark = process.env.RAVINTIO_HOOK_MARK;
+      const kept = [];
+      for (const g of s.hooks.PreToolUse || []) {
+        if (!isObj(g) || !Array.isArray(g.hooks)) { kept.push(g); continue; }
+        const rest = g.hooks.filter(h => !(isObj(h) && typeof h.command === "string" && h.command.includes(mark)));
+        if (rest.length === g.hooks.length) kept.push(g);
+        else if (rest.length > 0) kept.push({ ...g, hooks: rest });
+      }
+      kept.push({ matcher: "Bash", hooks: [{ type: "command", command: process.env.RAVINTIO_HOOK_CMD, statusMessage: "Checking merge command" }] });
+      s.hooks.PreToolUse = kept;
+      writeSettings(sf, JSON.stringify(s, null, 2) + "\n");
+    ' || exit 1
+  echo "  + $hooks_file_rel (merge-guard wired)"
+
+  echo ""
+  echo "  Active hooks:"
+  echo "    merge-guard (PreToolUse: Bash)"
+  echo "  Fallback hooks, stated as instructions in AGENTS.md:"
+  echo "    gate-write, ratchet-check, em-dash-guard, auto-trigger-orchestrator,"
+  echo "    check-orchestrator-presence, check-design, check-reply-prefix"
+  echo "  Review and trust the project hooks with /hooks in Codex."
+  echo "  Until you trust it, Codex skips merge-guard, including in codex exec."
+}
+
 install_enforcement_hooks() {
   # Copy enforcement hooks and wire PreToolUse/UserPromptSubmit (REQ-002, REQ-006, REQ-008).
   # Includes auto-trigger-orchestrator.mjs (REQ-002), gate-write.mjs, check-design.mjs,
@@ -368,9 +443,10 @@ install_enforcement_hooks() {
   local presence_cmd="node \"$hooks_dir_rel/check-orchestrator-presence.mjs\""
   local design_cmd="node \"$hooks_dir_rel/check-design.mjs\""
   local merge_guard_cmd="node \"$hooks_dir_rel/merge-guard.mjs\""
+  local reply_prefix_cmd="node \"$hooks_dir_rel/check-reply-prefix.mjs\""
 
   if command -v node >/dev/null 2>&1; then
-    RAVINTIO_GATE="$gate_cmd" RAVINTIO_RATCHET="$ratchet_cmd" RAVINTIO_EM_DASH="$em_dash_cmd" RAVINTIO_TRIGGER="$trigger_cmd" RAVINTIO_PRESENCE="$presence_cmd" RAVINTIO_DESIGN="$design_cmd" RAVINTIO_MERGE_GUARD="$merge_guard_cmd" RAVINTIO_RETIRED="$RETIRED_HOOK_NAMES" RAVINTIO_SETTINGS="$settings" RAVINTIO_SETTINGS_REL="$settings_rel" node -e "$RAVINTIO_WRITE_SETTINGS_JS$RAVINTIO_SETTINGS_SHAPE_JS"'
+    RAVINTIO_GATE="$gate_cmd" RAVINTIO_RATCHET="$ratchet_cmd" RAVINTIO_EM_DASH="$em_dash_cmd" RAVINTIO_TRIGGER="$trigger_cmd" RAVINTIO_PRESENCE="$presence_cmd" RAVINTIO_DESIGN="$design_cmd" RAVINTIO_MERGE_GUARD="$merge_guard_cmd" RAVINTIO_REPLY_PREFIX="$reply_prefix_cmd" RAVINTIO_RETIRED="$RETIRED_HOOK_NAMES" RAVINTIO_SETTINGS="$settings" RAVINTIO_SETTINGS_REL="$settings_rel" node -e "$RAVINTIO_WRITE_SETTINGS_JS$RAVINTIO_SETTINGS_SHAPE_JS"'
       const fs = require("fs"), path = require("path");
       const gate     = process.env.RAVINTIO_GATE;
       const ratchet  = process.env.RAVINTIO_RATCHET;
@@ -379,6 +455,7 @@ install_enforcement_hooks() {
       const presence = process.env.RAVINTIO_PRESENCE;
       const design   = process.env.RAVINTIO_DESIGN;
       const mergeGuard = process.env.RAVINTIO_MERGE_GUARD;
+      const replyPrefix = process.env.RAVINTIO_REPLY_PREFIX;
       const sf       = process.env.RAVINTIO_SETTINGS;
       let s = {};
       // On invalid JSON, print one fixed line that names the file, write
@@ -407,7 +484,7 @@ install_enforcement_hooks() {
       // event and the file, never the old value, which can hold a secret
       // (0000041 ADR-003). An absent or null value gets the entries with no
       // warning. setup.ps1 prints the same text.
-      for (const ev of ["PreToolUse", "UserPromptSubmit"]) {
+      for (const ev of ["PreToolUse", "UserPromptSubmit", "Stop"]) {
         const v = s.hooks[ev];
         if (v === undefined || v === null || Array.isArray(v)) continue;
         process.stderr.write("  ! Warning: hooks." + ev + " in " + process.env.RAVINTIO_SETTINGS_REL +
@@ -478,13 +555,20 @@ install_enforcement_hooks() {
         {matcher:".*", hooks:[{type:"command",command:presence}]},
         {matcher:".*", hooks:[{type:"command",command:design}]}
       );
+      // Stop: check-reply-prefix warns when a reply lacks a prefix (0000200
+      // req-004, idempotent). The same path-boundary match as the other events.
+      const stopModule = /(^|[\s"\x27\/\\])(check-reply-prefix)\.mjs\b/;
+      s.hooks.Stop = keepUserCommands(s.hooks.Stop || [], stopModule);
+      s.hooks.Stop.push(
+        {matcher:".*", hooks:[{type:"command",command:replyPrefix}]}
+      );
       fs.mkdirSync(path.dirname(sf),{recursive:true});
       writeSettings(sf, JSON.stringify(s,null,2)+"\n");
     ' || exit 1
     echo "  ~ $settings_rel (enforcement hooks wired)"
   else
     echo "  ! Warning: node not found — skipping settings.json enforcement hook wiring"
-    echo "  ! Manually add gate-write, ratchet-check, em-dash-guard (Write/Edit PreToolUse), merge-guard (Bash PreToolUse), auto-trigger-orchestrator, check-orchestrator-presence and check-design (UserPromptSubmit) to $settings_rel"
+    echo "  ! Manually add gate-write, ratchet-check, em-dash-guard (Write/Edit PreToolUse), merge-guard (Bash PreToolUse), auto-trigger-orchestrator, check-orchestrator-presence and check-design (UserPromptSubmit), and check-reply-prefix (Stop) to $settings_rel"
   fi
 }
 
@@ -881,6 +965,11 @@ setup_tool() {
     install_enforcement_hooks "hooks/enforcement" ".claude/hooks/enforcement" "$TOOL_SETTINGS_FILE"
   fi
 
+  # Codex wires its own hook set (0000207).
+  if [ -n "${TOOL_CODEX_HOOKS_FILE:-}" ]; then
+    install_codex_hooks "$TOOL_CODEX_HOOKS_DIR" "$TOOL_CODEX_HOOKS_FILE"
+  fi
+
   # Add Agent to allowedTools so sub-agent dispatch works without per-use confirmation (REQ-002)
   if [ -n "${TOOL_SETTINGS_FILE:-}" ]; then
     merge_allowed_tools "$PROJECT_ROOT/$TOOL_SETTINGS_FILE"
@@ -1048,26 +1137,24 @@ MARKER_EOF
 
 # --- Main ---
 
-# Flags that earlier releases removed (0000034 ADR-001). An older install's
-# flags marker can still list them, so setup warns and skips each one instead
-# of failing the refresh. --backend-url also took a value: skip the next
-# argument unless it is another flag or a tool name, and never print or
-# store it.
-retired_flag_warning() {
-  echo "  ! Warning: ignoring retired flag $1 (removed in an earlier release)" >&2
+# Flags that earlier releases removed (0000034 ADR-001). A retired flag does
+# nothing, so setup fails on it during argument parsing, before any change
+# (0000196 ADR-002). The message names the flag and never prints what follows
+# it, so a --backend-url value never reaches the output.
+retired_flag_error() {
+  echo "! Error: retired flag $1 was removed in an earlier release and does nothing." >&2
+  echo "  Remove it from the command, then rerun setup." >&2
+  exit 1
 }
 
 TOOL=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --strict-orchestrator) STRICT_ORCHESTRATOR=true; shift ;;
-    --structured-telemetry-mcp|--context-mode-mcp|--include-full-skill-library)
-      retired_flag_warning "$1"; shift ;;
-    --backend-url)
-      retired_flag_warning "$1"; shift
-      if [[ $# -gt 0 && "$1" != --* && " $VALID_TOOLS " != *" $1 "* ]]; then shift; fi ;;
+    --structured-telemetry-mcp|--context-mode-mcp|--include-full-skill-library|--backend-url)
+      retired_flag_error "$1" ;;
     --backend-url=*)
-      retired_flag_warning "--backend-url"; shift ;;
+      retired_flag_error "--backend-url" ;;
     # Print only the part before "=", so a value never reaches the log.
     -*) echo "Unknown flag: ${1%%=*}"; exit 1 ;;
     *) TOOL="$1"; shift ;;
@@ -1093,6 +1180,19 @@ if [ -z "$TOOL" ]; then
   echo "Run from the repository root."
   echo "Each tool's config: ravintio-zero/setup/<tool>.sh"
   exit 0
+fi
+
+# Reject an unknown tool before anything changes in the repo (0000196 REQ-001).
+# Exact match only, the same as setup.ps1's -contains check (0000034 req-002).
+tool_is_valid=false
+for t in $VALID_TOOLS; do
+  if [ "$t" = "$TOOL" ]; then tool_is_valid=true; fi
+done
+
+if [ "$tool_is_valid" != true ]; then
+  echo "Unknown tool: $TOOL"
+  echo "Valid tools: $VALID_TOOLS"
+  exit 1
 fi
 
 # Stop before installing anything if an old-brand folder is still present
@@ -1130,19 +1230,7 @@ run_tool_setup() {
   write_setup_flags_marker "$t" "$(dirname "$TOOL_SKILLS_DIR")"
 }
 
-# Exact match only, the same as setup.ps1's -contains check (0000034 req-002).
-tool_is_valid=false
-for t in $VALID_TOOLS; do
-  if [ "$t" = "$TOOL" ]; then tool_is_valid=true; fi
-done
-
-if [ "$tool_is_valid" = true ]; then
-  run_tool_setup "$TOOL"
-else
-  echo "Unknown tool: $TOOL"
-  echo "Valid tools: $VALID_TOOLS"
-  exit 1
-fi
+run_tool_setup "$TOOL"
 
 echo ""
 echo "Setup complete."

@@ -60,6 +60,10 @@ Initiative stages use five more prefixes. They use the same `{prefix} {Status}: 
 - Example: `I-C Run: Starting: step 2 of initiative 0000050`
 - Example: `I-B Activate: Blocked: no remote named origin`
 
+Out-of-phase work uses `Supervise:` with the same form, as in `Supervise: {Status}: {one-liner}`. Examples are supervising an initiative driver, filing backlog entries, and answering questions while another session runs a step.
+
+**Reporting rule.** A reply reports results, deviations, failures, and decisions the human must make. A reply never states that the agent followed a standing rule. The exception is a rule that blocked an action or a rule the agent departed from.
+
 I-A to I-E are stage letters, not phase numbers. The pipeline still has exactly five phases, P0 to P4. When an initiative is involved, read `ravintio-zero/standards/roadmap-standards.md` first.
 
 ---
@@ -71,10 +75,10 @@ On every session start, before any action:
 1. **Pending migrations first.** Check `ravintio-zero/migrations/` for `.md` files not in `_done/`. If found, invoke `ravintio-migrator` for each before any other phase work.
    - Skip a migration whose `Applies when:` condition is false. Leave it pending.
 2. **Pack dependency update.** Detect per `ravintio-zero/standards/pack-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a pack update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
-3. **Check the initiative, then scan `plan/current/`.** Check `plan/current-initiative/` first.
-   - If an initiative is `active` and `plan/current/` holds artifacts, resume that step through the rest of this list.
-   - If an initiative is `active`, `plan/current/` is empty, and `position` is past the last step, run I-E Delivery.
-   - If an initiative is `active` and `plan/current/` is empty, start the step at `position` and open with `I-C Run: Starting: {step}`.
+3. **Check the initiative, then scan `plan/current/`.** Check `plan/current-initiative/` first. The orchestrator never resumes an initiative.
+   - A step session has `RAVINTIO_INITIATIVE_STEP=1` or the prompt `Run initiative step {n}`. With `plan/current/` artifacts, resume that step through the rest of this list.
+   - A step session with `plan/current/` empty starts the step at `position` and opens with `I-C Run: Starting: {step}`.
+   - If an initiative is `active` and this is not a step session, load `ravintio-initiative` and stop. It owns I-A, I-B, and I-E.
    - If no initiative is `active`, scan `plan/current/` for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
 4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
 5. **`.feature-id` staleness.** If present and its contents differ from the current work, flag it for human review before proceeding.
@@ -169,7 +173,7 @@ Perform in order, before coaching begins:
 7. **Detect adoption mode** per the table below. Apply the highest-priority signal only. If standard-iterative is the only signal, assume it without asking and state the mode and its signal in the P0 briefing. Source in `src/` beside an archive is the normal iterative case. Recommend-then-confirm in every other case. That covers a signal conflict, where the human states a different mode or discovery can't read a signal. It also covers External Anchor, Retrofit, and Greenfield. Record the assumed or confirmed mode and its signal in `discovery.md`, `design.md`, and the build log.
 8. **Read the version**: `docs/about.md` frontmatter, cross-checked against the most recent archive entry. If `product.yml` exists, its product-level version takes precedence as the last known version. If its `versionPolicy` is `external`, do not suggest a bump: present the constraint and ask.
 9. **Product id check**: `product.yml` must exist at the project root with a non-empty `id`. If not, hard-stop and ask: `P0 Discovery: Blocked: No declared product id found (product.yml is missing or has no id field). The id gives the product a stable name for versioning and for attributing archived runs, wherever the repo is cloned. What should the product id be? (kebab-case, stable across releases)`. Write or update only the `id` field, then resume.
-10. **Backlog pickup** (an initiative step takes its entries from its initiative row, per I-C Run): scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids. Check `plan/_archive/` and `plan/changelog/` for the high-water mark. Read `releaseSize` from `product.yml` to set the release budget (see Decomposition).
+10. **Backlog pickup** (an initiative step takes its entries from its initiative row, per I-C Run): scan `plan/backlog/` for `{id}-{slug}/` entries. Present each **one at a time** (recommend-then-confirm): pull-in / leave / discard. Pull-in folds the entry into the brief and deletes the folder in the same commit. Discard deletes with a build-log note. A malformed entry is flagged to the human, never silently ignored or parsed as instructions. Reserve every new backlog, feature, and initiative id with `node ravintio-zero/scripts/reserve-id.mjs [qty]`. It takes ids from the counter file `plan/backlog/.next-id`, so spent ids never return. Read `releaseSize` from `product.yml` to set the release budget (see Decomposition).
     - An entry with status `parked` offers resume or discard, not pull-in, leave, or discard. Resume runs these steps in order. `node scripts/park.mjs resume {branch}` does steps 1 and 2.
       1. Check out the branch the entry names.
       2. Merge `origin/main` into it. If the merge conflicts, report the exact error and stop.
@@ -277,6 +281,7 @@ At each stop, follow these steps:
 1. Append `Blocked: {exception} ({ISO-8601 timestamp})` to the build log under the current phase block, and commit it.
 2. Print the message for the exception, then wait.
 3. When the human acts, append `Resolved: {exception} ({ISO-8601 timestamp}, {decision})` to the build log, and commit it.
+4. Run `ravintio-postmortem` for the stop, before ship.
 
 After the human acts, the run resumes in the same mode from `plan/.run-mode`.
 
@@ -288,6 +293,8 @@ After the human acts, the run resumes in the same mode from `plan/.run-mode`.
 | A push or `gh pr create` fails | `P4 Ship: Blocked: {command} failed with {exact error}. Fix the remote or the credentials, then tell me to retry.` (other phases use their own prefix) |
 | A possible credential appears in a file the run will commit, or in a PR body | `{prefix} Blocked: possible credential in {path}. Remove it or confirm it is not a secret.` Stop before the commit and before any push. Never print the value. |
 | P1 or P2 adds a library or service that is not on the approved list. This applies in every run mode. The list is the `Approved dependencies` field of `design.md` in a gated run, and the `## Dependencies` table of `initiative.md` in an initiative step | `{prefix} Blocked: new dependency {name} is not on the approved list. Approve it or choose an approved alternative.` When the human approves, add the name to the same list and record the decision in the `Resolved:` line. |
+
+A fork that matches a `## Decisions` row is no stop (see I-C Run).
 
 The status `Blocked:` follows the phase prefix, as in every status message. Never work round an exception stop. Do not force-push, merge, or skip the failing check.
 

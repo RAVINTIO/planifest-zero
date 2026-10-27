@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000192-rename-runner-lock-and-archive
+Last updated: 0000205-initiative-skill
 
 ## What this repo is
 
@@ -35,7 +35,7 @@ P1 starts with a story mapping pass. It writes `plan/current/story-map.md` from 
 
 Each acceptance criterion is one checkbox line, `- [ ] AC-{n}: {name}`, with indented `Given`, `When`, and `Then` bullets under it. `And` and `But` continue the step above. The limit of three criteria counts checkbox lines.
 
-`scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2.
+`scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. Every execution plan holds a `## Concurrency plan` table of units, dependencies, write targets, and batches. Check 8 reports a plan that lacks the section, a unit alone in its batch with no reason, two units in one batch that share a write target, and a dependency on a unit in the same or a later batch. The implement phase dispatches by those batches. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2. Both programs cut an echoed line to 200 characters and append ` …[truncated]` if they cut it, so a long line never floods the agent's context.
 
 ### Run modes
 
@@ -78,6 +78,8 @@ No mode merges a PR or commits to `main`. The human merges every PR.
 
 Discovery sizes each release against a budget. The optional `releaseSize` field in `product.yml` sets it to `small`, `medium`, or `large`, and the default is `medium`. Discovery gives each candidate requirement a size class from the files it touches, then recommends a fill up to the budget.
 
+**Ids.** Backlog, feature, and initiative ids come from the counter file `plan/backlog/.next-id`. `scripts/reserve-id.mjs [qty]` takes an exclusive lock beside the file, reads the next free id, writes the id plus `qty`, and prints the block, one id per line. A held lock, a malformed or symlinked counter, or a bad quantity exits 1 and leaves the file unchanged. `--init` creates a missing counter from the highest id in the plan folders, once. A copied entry reserves a local id and names its source id. If two branches reserve the same ids, git shows a conflict on `.next-id`. Keep the higher value and renumber the entries on the branch that merges second.
+
 **Park.** When the human says "park", the orchestrator shelves the feature on its branch. It writes `plan/current/park.md`, pushes the branch, and raises a `chore/park-{feature-id}` PR. That PR files a backlog entry with status `parked`. The working tree then returns to `main`. The git and `gh` steps live in the orchestrator's `scripts/park.mjs`. If a local add or commit fails on the chore branch, park unstages and deletes the entry, then returns to the feature branch. Park refuses an `--entry` that is the target path, so that cleanup never deletes the only copy. Park also refuses any symlink in the entry path. It checks each part with `lstat` and the real path against the real `plan/backlog/`, before it creates, writes, or removes anything. At a later discovery, backlog pickup offers resume or discard for a parked entry. Park and pickup never merge a PR, never commit to `main`, and never force-push.
 
 ### Workflow governance
@@ -96,15 +98,15 @@ An initiative is a chain of feature steps that the human approves once. The stan
 - **Advance.** At P4, the agent raises the step PR against the initiative branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside an initiative, the CI `release-tag` job tags the merge commit after the human merges.
 - **Delivery.** I-E Delivery archives the initiative and raises one PR to `main` that asks for a merge commit. The human merges it.
 - **Driver.** `ravintio-zero/scripts/initiative-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.initiative-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `I-C Run: Blocked:`. Each step writes `plan/.initiative-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.initiative`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/initiative-labels.mjs`.
-- **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `initiative/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only.
+- **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `initiative/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only. A command that names a merge in text, such as a heredoc line, also blocks. The message says so and tells the agent to write files with the Write tool.
 
-The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. Five support skills complete the set of thirteen: ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, ravintio-refresh-setup, and ravintio-file-backlog.
+The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. After GREEN and refactor, an improvement loop of up to 2 cycles per requirement runs a fresh-context reviewer and applies its finding through ravintio-refactor. Each cycle writes an `Improve:` marker to the build log. Eight support skills complete the set of sixteen: ravintio-initiative, ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, ravintio-refresh-setup, ravintio-file-backlog, ravintio-postmortem, and ravintio-retrospective. After a `Resolved:` line, the orchestrator runs ravintio-postmortem, which writes a blameless record to `plan/postmortems/`. Ship runs ravintio-retrospective after the build report, and I-E Delivery runs it before the initiative PR. Both write to `plan/retrospectives/`, which P0 discovery and I-A Chart read. In the human's session, ravintio-initiative charts, activates, watches, and delivers an initiative. It starts the driver and the read-only watch script, and it never resumes a step. The orchestrator runs each step in its own session.
 
 ---
 
 ## Install flow
 
-Setup targets Claude Code only. It copies skills and hooks into `.claude/`, prunes retired skills, writes the boot file, and wires the git hooks.
+Setup targets Claude Code and Codex. It copies skills into the tool folder, prunes retired skills, writes the boot file, wires the hooks, and wires the git hooks. The Claude Code flow follows.
 
 ```
 ravintio-zero/          setup.sh claude-code          target project
@@ -117,6 +119,8 @@ ravintio-zero/          setup.sh claude-code          target project
 ```
 
 Setup installs only each skill's own folder. Skills read templates, standards, and schemas from the one copy in `ravintio-zero/`, named by full path, such as `ravintio-zero/templates/requirement.template.md` (0000171 ADR-004). A suite fails when a skill names a pack file by a short path or names one that does not exist. A rerun removes bundled files that an older install left.
+
+For Codex, `setup.sh codex` and `setup.ps1 codex` install skills in `.agents/skills/`, write `AGENTS.md` from `templates/codex-boot.md`, and wire only `merge-guard` in `.codex/hooks.json`. The Codex docs confirm its `Bash` hook contract. They don't state the `apply_patch` input or the prompt hook context, so the other rules stay instructions in `AGENTS.md` (0000207 ADR-002). Setup prints the active and fallback hooks.
 
 Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from the template, then re-appends the contents of `ravintio-overrides/instructions/` between sentinel markers. Durable local customisation lives in the overrides directory, never in the boot file.
 
@@ -170,9 +174,11 @@ Setup is safe to re-run on a project that an older release installed.
 - `--context-mode-mcp`
 - `--include-full-skill-library`
 
-Each prints one warning and setup skips it. After `--backend-url`, setup also skips the next argument, unless that argument is a flag or a tool name. Setup never prints or stores that value, in either the spaced or the `=` form. Any other unknown flag still exits 1, and its error shows the flag name only. Matching is exact and case-sensitive in both scripts. The tool name also matches exactly.
+Each exits 1 during argument parsing, before setup changes anything. The error names the flag, says that it was removed and does nothing, and tells the user to remove it. Setup never prints or stores a `--backend-url` value, in either the spaced or the `=` form. Any other unknown flag also exits 1, and its error shows the flag name only. Matching is exact and case-sensitive in both scripts.
 
-PowerShell 7 splits an argument such as `--backend-url=https://x` at its first colon. `setup.ps1` skips the rest of the value too, and never prints a tool name that isn't a plain name.
+Setup checks the tool straight after argument parsing, ahead of the old-folder check. An unknown tool exits 1 and leaves the repo unchanged. A missing tool prints the usage text and exits 0, also with no change. The `ravintio-refresh-setup` skill names a retired flag that a record or marker holds, and leaves it out of the command it proposes.
+
+`setup.ps1` never prints a tool name that isn't a plain name.
 
 **Retired hooks.** Both scripts prune a hook only if its name is on the retired list, which `setup.sh` keeps as `RETIRED_HOOK_NAMES` and `setup.ps1` as `$RetiredHookNames`. Pruning deletes the installed hook file. The hook install step also drops each `settings.json` entry that runs a retired hook, on every event. A hook that is not on the list stays.
 
@@ -182,9 +188,9 @@ PowerShell 7 splits an argument such as `--backend-url=https://x` at its first c
 
 **Leftover temporary file.** Each run removes a leftover `settings.json.ravintio-tmp` before its first settings write, even when `node` is missing. It removes a file or a link, never a folder, and never follows a link.
 
-**Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same seven hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
+**Two scripts, one result.** `setup.sh` and `setup.ps1` wire the same eight hooks, in the same events, matchers, and order. A parity suite fails if they drift. `setup.ps1` runs on Windows PowerShell 5.1 and PowerShell 7. It reads and writes `settings.json` as UTF-8 with no BOM. Flags and the tool name match case in both scripts.
 
-**Hook entry repair.** Both scripts find a RAVINTIO `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse` or `UserPromptSubmit` holds a value that isn't an array, setup prints a warning that names the event and the file. The warning never prints the old value, because a hook command can hold a secret. It then replaces the value with the RAVINTIO entries and exits 0. An absent or null value gets the entries with no warning.
+**Hook entry repair.** Both scripts find a RAVINTIO `PreToolUse` entry by its module name, on any matcher. So an older `Write|Edit` entry gives way to one `Write` entry and one `Edit` entry, and `gate-write` runs once per tool. If `PreToolUse`, `UserPromptSubmit`, or `Stop` holds a value that isn't an array, setup prints a warning that names the event and the file. The warning never prints the old value, because a hook command can hold a secret. It then replaces the value with the RAVINTIO entries and exits 0. An absent or null value gets the entries with no warning.
 
 **Per-command filter.** Both scripts filter `PreToolUse` and `UserPromptSubmit` one command at a time. Setup removes each RAVINTIO command and keeps any user command in the same entry. If an entry holds only RAVINTIO commands, setup drops it. A `hooks` value that holds one object counts as a one-item array, so setup filters it the same way. An entry with no commands stays as it was. A command counts as RAVINTIO only when it runs `<module>.mjs` at a path boundary, matched case-sensitively.
 

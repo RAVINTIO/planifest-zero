@@ -12,7 +12,17 @@
  *   On first prompt of a session (or after session change), injects a hard-block
  *   banner that instructs the model to load the orchestrator skill and write the
  *   session_id to plan/.orchestrator-ack before processing anything else.
- *   Once plan/.orchestrator-ack contains the matching session_id, exits 0 silently.
+ *   Once plan/.orchestrator-ack or plan/.initiative-ack contains the matching
+ *   session_id, exits 0 silently.
+ *   If neither matches and an initiative is active, the banner names the
+ *   ravintio-initiative skill and plan/.initiative-ack instead.
+ *
+ * The skill that owns the session decides the banner. The driver lock plays no
+ * part, because it is free between steps and after the driver exits.
+ *
+ * Environment: RAVINTIO_INITIATIVE_STEP=1 marks a step session started by the
+ * initiative driver. The driver sets it. The hook then keeps the orchestrator
+ * banner even while an initiative is active.
  *
  * Design: REQ-008.
  * Exit codes: 0 always — this hook informs but never blocks via exit 2.
@@ -22,6 +32,18 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { readStdin } from "./read-stdin.mjs";
+
+// True when initiative.md holds status active, in frontmatter or as "**Status:** active".
+// Keep in step with initiativeActive in auto-trigger-orchestrator.mjs.
+function initiativeActive(cwd) {
+  try {
+    const text = readFileSync(join(cwd, "plan", "current-initiative", "initiative.md"), "utf-8");
+    return /^\s*status:\s*["']?active["']?\s*$/im.test(text) ||
+      /^\s*\*\*Status:\*\*\s*active\s*$/im.test(text);
+  } catch {
+    return false;
+  }
+}
 
 try {
   const raw = await readStdin();
@@ -42,8 +64,22 @@ try {
   const strictPath = join(cwd, "plan", ".orchestrator-strict");
   const isStrict = existsSync(strictPath);
 
+  // An active initiative gives the initiative banner. A step session sets
+  // RAVINTIO_INITIATIVE_STEP=1 and gets the orchestrator banner instead.
+  const initiativeDriver =
+    process.env.RAVINTIO_INITIATIVE_STEP !== "1" && initiativeActive(cwd);
+
   if (!isStrict) {
     // Advisory mode: brief banner, always passes.
+    if (initiativeDriver) {
+      process.stdout.write(
+        `RAVINTIO PIPELINE ACTIVE [${featureId}]: ` +
+        `An initiative run is in progress. ` +
+        `If the ravintio-initiative skill is not currently loaded in this session ` +
+        `(e.g. after context compaction or a session resume), load it now before responding.\n`
+      );
+      process.exit(0);
+    }
     process.stdout.write(
       `RAVINTIO PIPELINE ACTIVE [${featureId}]: ` +
       `A RAVINTIO pipeline is in progress. ` +
@@ -54,13 +90,27 @@ try {
     process.exit(0);
   }
 
-  // Strict mode: check session ack.
+  // Strict mode: check session ack. Either ack file silences the hook.
   const sessionId = (input?.session_id ?? "").trim();
-  const ackPath = join(cwd, "plan", ".orchestrator-ack");
+  if (sessionId) {
+    for (const name of [".initiative-ack", ".orchestrator-ack"]) {
+      const p = join(cwd, "plan", name);
+      try {
+        if (existsSync(p) && readFileSync(p, "utf-8").trim() === sessionId) process.exit(0);
+      } catch { /* unreadable ack counts as no ack */ }
+    }
+  }
 
-  if (sessionId && existsSync(ackPath)) {
-    const acked = readFileSync(ackPath, "utf-8").trim();
-    if (acked === sessionId) process.exit(0); // acked for this session — silent
+  if (initiativeDriver) {
+    process.stdout.write(
+      `⛔ RAVINTIO STRICT MODE [${featureId}]: ` +
+      `Initiative presence is required and has not been confirmed for this session. ` +
+      `STOP — do not process the user's request below. ` +
+      `Load the ravintio-initiative skill now, ` +
+      `then write the following session ID to plan/.initiative-ack: ${sessionId || "(session_id unavailable — write current timestamp)"}\n` +
+      `Once plan/.initiative-ack is written, future prompts in this session will pass silently.\n`
+    );
+    process.exit(0);
   }
 
   // Not acked. Inject hard-block banner with session_id so the model can write the ack.

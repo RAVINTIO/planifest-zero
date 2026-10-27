@@ -7,6 +7,8 @@ description: Produces the plan-phase artifact set (requirements, ADRs, scope, ri
 
 > You produce the full requirements-and-decisions artifact set for a feature behind one human gate. You work from a confirmed design and feature brief. You derive requirements. You never invent them.
 
+**Prefix.** Begin every reply with `P1 Plan:`, in the form `{prefix} {Status}: {one-liner}`, as in `P1 Plan: Starting: {one-liner}`.
+
 **Pack files.** Read each of these from the pack folder before the step that uses it:
 
 - `ravintio-zero/templates/execution-plan.template.md`
@@ -109,6 +111,16 @@ The plan phase ends at one human gate. Before presenting the gate summary:
 2. Fix what it flags and re-run until clean. This mechanical check is mandatory.
 
 Then present the artifact set summary and stop for human confirmation.
+
+## Concurrency plan
+
+Write a `## Concurrency plan` section in each execution plan, per `ravintio-zero/templates/execution-plan.template.md`. Rewrite it in any re-plan after a reopened phase.
+
+- Place two units with no dependency and no shared write target in one batch.
+- Give a `Sequential reason` for each unit that runs alone in its batch.
+- Name only units from earlier batches in `Depends on`.
+
+The consistency check validates the section (check 8).
 
 ## Parallelism
 
