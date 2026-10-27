@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000197-merge-guard-block-message
+Last updated: 0000198-cap-echoed-plan-text
 
 ---
 
@@ -18,6 +18,13 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000198: cap-echoed-plan-text
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature edits two programs and adds one suite. It adds no dependency. |
+| ADR-002 | A cap helper in each program | accepted | The hook installs as one file, so each program holds its own 200-character cap function. A parity test checks both. |
+
 ### Feature 0000197: merge-guard-block-message
 
 | ADR | Title | Status | Summary |

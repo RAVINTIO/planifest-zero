@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000197-merge-guard-block-message
+Last updated: 0000198-cap-echoed-plan-text
 
 ## Registry
 
