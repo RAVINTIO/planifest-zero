@@ -69,11 +69,29 @@ P1 Plan: Complete: 7 requirements, 2 ADRs, story map, scope, risks, glossary, ex
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T11:50:00Z` |
-| End | `{{timestamp}}` |
-| Wall clock | `{{minutes}}` |
+| End | `2026-10-27T12:22:00Z` |
+| Wall clock | `32` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | `3` |
 | MCP calls | `0` |
 | Parallel task batches | `1` |
+| Notes | 3 parallel units in batch 1, then skill and docs inline |
+
+P2 Implement: Complete: 5 units, 7 new suites, older suites aligned.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T12:22:00Z` |
+| End | `2026-10-27T12:30:00Z` |
+| Wall clock | `8` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | `0` |
+| MCP calls | `0` |
+| Parallel task batches | `0` |
 | Notes | none |
+
+P3 Validate: Complete: no critical or high findings, acceptance evidence written.
