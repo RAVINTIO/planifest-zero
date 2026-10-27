@@ -12,8 +12,9 @@
  * starting with Given, When, Then, And, or But; feature 0000170, ADR-004) from an
  * "## Acceptance Criteria" section, or removing a bullet from an "## In Scope" /
  * "## Scope" section, of a plan/current/ markdown artifact. Additions
- * (strengthening) always pass. The block message names each removed line and
- * prints no other file content.
+ * (strengthening) always pass. The block message names each removed line, cut
+ * to 200 characters with a trailing marker (feature 0000198), and prints no
+ * other file content.
  *
  * Human approval path (ADR-001, amends ADR-004): plan/current/.ratchet-approve
  * holds one approval per line in the format `path | reason | timestamp`
@@ -55,6 +56,7 @@ import { readStdin } from "./read-stdin.mjs";
 
 const AUDIT_LOG_REL = join("plan", "ratchet-audit-log.md");
 const MAX_REASON_LEN = 500;
+const MAX_ECHO_LEN = 200;
 const TRUNCATE_MARKER = " …[truncated]";
 
 function realpathSafe(p) {
@@ -152,6 +154,13 @@ function isUncommitted(projectRoot, absPath) {
   }
 }
 
+/** Cuts an echoed plan line to MAX_ECHO_LEN code points and marks the cut (feature 0000198). */
+function capLine(line) {
+  const chars = Array.from(line);
+  if (chars.length <= MAX_ECHO_LEN) return line;
+  return chars.slice(0, MAX_ECHO_LEN).join("") + TRUNCATE_MARKER;
+}
+
 function truncateReason(reason) {
   if (reason.length <= MAX_REASON_LEN) return reason;
   return reason.slice(0, MAX_REASON_LEN) + TRUNCATE_MARKER;
@@ -235,7 +244,7 @@ async function main() {
   } else {
     reason = [
       `Ratchet: this write weakens ${relPath} while a loop is active.`,
-      ...removed.map((l) => `  removed: "${l}"`),
+      ...removed.map((l) => `  removed: "${capLine(l)}"`),
       "Loops may strengthen criteria/scope but never weaken them (ADR-007).",
       "If this weakening is intentional, add a line to plan/current/.ratchet-approve:",
       `  ${relPath} | <reason> | <timestamp>`,

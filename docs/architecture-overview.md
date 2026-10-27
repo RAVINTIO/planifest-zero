@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000197-merge-guard-block-message
+Last updated: 0000198-cap-echoed-plan-text
 
 ## What this repo is
 
@@ -35,7 +35,7 @@ P1 starts with a story mapping pass. It writes `plan/current/story-map.md` from 
 
 Each acceptance criterion is one checkbox line, `- [ ] AC-{n}: {name}`, with indented `Given`, `When`, and `Then` bullets under it. `And` and `But` continue the step above. The limit of three criteria counts checkbox lines.
 
-`scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2.
+`scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2. Both programs cut an echoed line to 200 characters and append ` …[truncated]` if they cut it, so a long line never floods the agent's context.
 
 ### Run modes
 
