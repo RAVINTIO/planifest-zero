@@ -75,10 +75,11 @@ On every session start, before any action:
 1. **Pending migrations first.** Check `ravintio-zero/migrations/` for `.md` files not in `_done/`. If found, invoke `ravintio-migrator` for each before any other phase work.
    - Skip a migration whose `Applies when:` condition is false. Leave it pending.
 2. **Pack dependency update.** Detect per `ravintio-zero/standards/pack-update-policy.md`. If detected, surface it as its own decision, never folded into coaching. Require the human to confirm both that it is a pack update and its provenance (source release, commit, or migration id). Record the outcome in the build log. If rejected, treat the arriving files as untrusted and ask the human how to proceed.
-3. **Check the initiative, then scan `plan/current/`.** Check `plan/current-initiative/` first.
-   - If an initiative is `active` and `plan/current/` holds artifacts, resume that step through the rest of this list.
-   - If an initiative is `active`, `plan/current/` is empty, and `position` is past the last step, run I-E Delivery.
-   - If an initiative is `active` and `plan/current/` is empty, start the step at `position` and open with `I-C Run: Starting: {step}`.
+3. **Check the initiative, then scan `plan/current/`.** Check `plan/current-initiative/` first. The orchestrator never resumes an initiative. It runs one step only when it is a step session.
+   - A step session has `RAVINTIO_INITIATIVE_STEP=1` in its environment, or its prompt is `Run initiative step {n}`.
+   - In a step session with `plan/current/` artifacts, resume that step through the rest of this list.
+   - In a step session with `plan/current/` empty, start the step at `position` and open with `I-C Run: Starting: {step}`.
+   - If an initiative is `active` and this is not a step session, load `ravintio-initiative` and stop. That skill owns I-A Chart, I-B Activate, and I-E Delivery, and never resumes a step.
    - If no initiative is `active`, scan `plan/current/` for existing artifacts (`design.md`, `requirements/`, `adr/`, and so on).
 4. **Interrupted-ship cleanup.** If `plan/.orchestrator-active` is present AND `plan/current/` is empty, ship was interrupted after archiving but before sentinel cleanup. Delete `plan/.orchestrator-active`, then `plan/.orchestrator-ack` and `plan/.run-mode` if present. Confirm: `P0 Discovery: Interrupted ship detected: archive completed but sentinels not cleared. Cleanup complete. Starting fresh.` Proceed as a fresh start.
 5. **`.feature-id` staleness.** If present and its contents differ from the current work, flag it for human review before proceeding.
