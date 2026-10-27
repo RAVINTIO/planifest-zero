@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000198-cap-echoed-plan-text
+Last updated: 0000199-reserve-ids-from-counter
 
 ---
 
@@ -18,6 +18,13 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000199: reserve-ids-from-counter
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature adds one Node.js script with built-in modules only. It adds no dependency. |
+| ADR-002 | A counter file in place of a scan of every ref | accepted | `plan/backlog/.next-id` holds the next free id and `reserve-id.mjs` reserves blocks under an exclusive lock. |
+
 ### Feature 0000198: cap-echoed-plan-text
 
 | ADR | Title | Status | Summary |

@@ -106,3 +106,31 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - CI: full suite green, no lint or typecheck for this pack. Self-corrections: 1.
 - Security review: no critical or high finding.
 - Autonomous run: no acceptance gate stop. Evidence is in `plan/current/acceptance-evidence.md`.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T08:56:30Z` |
+| End | `2026-10-27T09:05:00Z` |
+| Wall clock | `9` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `46 minutes across P0 to P4 blocks` |
+| Total agents spawned | `0` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `0` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `1` |
+| Phases skipped | `none` |
