@@ -31,10 +31,8 @@ assert_contains '| Step | Feature id | Backlog entries | Bump | Version | Status
 echo ""
 echo "=== req-001 (b): shared id sequence ==="
 assert_contains 'seven-digit sequence' "$RM" "req-001 (b): ids share the backlog's seven-digit sequence"
-assert_contains 'plan/backlog/' "$RM" "req-001 (b): high-water mark covers backlog"
-assert_contains 'plan/_archive/' "$RM" "req-001 (b): high-water mark covers archive"
-assert_contains 'plan/changelog/' "$RM" "req-001 (b): high-water mark covers changelog"
-assert_contains 'plan/roadmap/' "$RM" "req-001 (b): high-water mark covers roadmap"
+assert_contains 'plan/backlog/.next-id' "$RM" "req-001 (b): ids come from the counter file"
+assert_contains 'reserve-id.mjs' "$RM" "req-001 (b): ids are reserved with the script"
 
 echo ""
 echo "=== req-001 (c): filing rules ==="

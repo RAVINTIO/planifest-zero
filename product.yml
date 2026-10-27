@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.20.2"
-feature: "0000198-cap-echoed-plan-text"
+version: "0.21.0"
+feature: "0000199-reserve-ids-from-counter"
 
 versionPolicy: "max-component-version"
 

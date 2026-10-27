@@ -1,6 +1,6 @@
 ---
-version: "0.20.2"
-feature: "0000198-cap-echoed-plan-text"
+version: "0.21.0"
+feature: "0000199-reserve-ids-from-counter"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.20.2` |
-| Last feature | `0000198-cap-echoed-plan-text` |
+| Version | `0.21.0` |
+| Last feature | `0000199-reserve-ids-from-counter` |
 | Updated | `27 Oct 2026` |
 
 ## What this is
