@@ -57,3 +57,19 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T12:10:18Z)
 | Notes | Inline authoring, units are small |
 
 P1 Plan: Complete: 3 requirements, 2 ADRs, consistency check clean (2026-10-27T12:11:27Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T12:11:33Z` |
+| End | `2026-10-27T12:21:16Z` |
+| Wall clock | 0 |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Inline TDD. U2 depends on U1 and both edit one standards file, so no parallel batch applies. |
+
+P2 Implement: Complete: 3 requirements, 25 new assertions green. Installed skill copies test still fails because .claude/skills lags the pack until step 13 (2026-10-27T12:21:16Z)
