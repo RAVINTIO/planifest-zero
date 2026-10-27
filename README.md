@@ -89,7 +89,7 @@ Quick start:
 
 The setup script copies skills into `.claude/skills/`, prunes retired skills, wires the enforcement hooks and git hooks, and writes the `CLAUDE.md` boot file.
 
-To install for Codex, replace `claude-code` with `codex`. Setup then writes `AGENTS.md`, copies skills into `.agents/skills/`, and wires the `merge-guard` hook in `.codex/hooks.json`. Codex runs no other RAVINTIO hook, so `AGENTS.md` states those rules as instructions.
+To install for Codex, replace `claude-code` with `codex`. Setup then writes `AGENTS.md`, copies skills into `.agents/skills/`, and wires the `merge-guard` hook in `.codex/hooks.json`. Codex runs no other RAVINTIO hook, so `AGENTS.md` states those rules as instructions. Codex also skips `merge-guard` until you trust it with `/hooks`.
 
 One optional flag:
 

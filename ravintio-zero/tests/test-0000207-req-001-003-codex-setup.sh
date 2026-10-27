@@ -63,6 +63,10 @@ assert_contains "Fallback hooks" "$OUT" "req-003 AC-2: the report has a fallback
 assert_contains "gate-write" "$OUT" "req-003 AC-2: gate-write is a fallback"
 assert_contains "/hooks" "$OUT" "req-003 AC-2: the report names the /hooks review"
 assert_contains "gate-write" "$(cat AGENTS.md)" "req-003: AGENTS.md states the gate-write fallback"
+# 0000217: real Codex 0.163.0 skips project hooks until a person trusts them, so
+# the report and AGENTS.md must not call merge-guard active before that.
+assert_contains "Until you trust it, Codex skips merge-guard" "$OUT" "0000217: the report says merge-guard is off until trusted"
+assert_contains "nothing blocks a merge" "$(cat AGENTS.md)" "0000217: AGENTS.md says nothing blocks a merge until the hook is trusted"
 
 echo ""
 echo "=== req-003 AC-1: a rerun keeps one entry and other entries ==="

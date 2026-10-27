@@ -382,6 +382,7 @@ install_codex_hooks() {
   echo "    gate-write, ratchet-check, em-dash-guard, auto-trigger-orchestrator,"
   echo "    check-orchestrator-presence, check-design, check-reply-prefix"
   echo "  Review and trust the project hooks with /hooks in Codex."
+  echo "  Until you trust it, Codex skips merge-guard, including in codex exec."
 }
 
 install_enforcement_hooks() {
