@@ -42,9 +42,9 @@ assert_equals "no" "$([ -d "$WS/clone2/.claude/hooks/telemetry" ] && echo yes ||
 echo "=== (c2) retired telemetry flags are rejected ==="
 mkdir -p "$WS/clone3"
 cp -R "$ZERO_DIR" "$WS/clone3/ravintio-zero"
-# 0000034 ADR-001: the retired flag now warns and is skipped, so setup exits 0.
+# 0000196 ADR-002: a retired flag now fails during argument parsing, so setup exits 1.
 ( cd "$WS/clone3" && git init -q . && bash ravintio-zero/setup.sh claude-code --structured-telemetry-mcp >/dev/null 2>&1 )
-assert_equals "0" "$?" "setup.sh exits 0 and skips the retired --structured-telemetry-mcp"
+assert_equals "1" "$?" "setup.sh exits 1 on the retired --structured-telemetry-mcp"
 assert_equals "no" "$([ -d "$WS/clone3/.claude/hooks/telemetry" ] && echo yes || echo no)" "no telemetry hook directory after a run with the retired flag"
 
 echo "=== (d) installed tree references no old name ==="

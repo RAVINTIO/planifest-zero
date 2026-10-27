@@ -66,3 +66,21 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | Artifacts are small and share one context, so no subagents. Consistency check clean. Autonomous run, no gate stop. |
 
 - Requirement change: cosmetic: a missing tool keeps its usage text and exit 0, because the backlog entry says the usage text and exit code stay. REQ-001 AC-2, brief, design, scope, and plan updated in place. The initiative wanted outcome "missing or unknown tool exits 1" narrows to unknown tool. (2026-10-27T07:50:00Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T07:55:00Z` |
+| End | |
+| Wall clock | |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | REQ-001 and REQ-002 edit the same lines of `setup.sh` and `setup.ps1`, and REQ-003 words its report from REQ-002, so the work runs in one context with no subagents. Each requirement ran RED then GREEN with its own test. |
+
+- Done: REQ-001 and REQ-002 in setup.sh (RED then GREEN, 2026-10-27T08:10:00Z)
+- Done: REQ-001 and REQ-002 in setup.ps1 (RED then GREEN, 2026-10-27T08:25:00Z)
+- Done: updated four existing tests that asserted the warning (0000034 x2, 0000031, 0000036). The backlog listed six. 0000037-req-002 and 0000037-req-003 assert that no record or refresh script holds a retired flag, so they pass unchanged.
