@@ -45,3 +45,7 @@ Skipped: chore with a fixed spec in initiative.md. Requirements are the four acc
 ### P2: Implement
 
 REQ-001: verify the codex target against real Codex (codex-cli 0.163.0).
+
+Check 1 passed: Codex named all 16 skills from `.agents/skills/`.
+Check 2 failed: the merge command ran and the stub logged it. Codex skips project hooks until a person trusts them with `/hooks`. The payload shape matches what `merge-guard` reads (`tool_name` Bash, `tool_input.command`). The post-trust block is unproven, because the auto-mode classifier denied the `--dangerously-bypass-hook-trust` rerun.
+Harness defect: Codex runs commands in a login shell that resets `PATH`. A stub `gh` needs a `ZDOTDIR` `.zprofile` to come first.
