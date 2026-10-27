@@ -38,6 +38,7 @@ responsibilities:
   - "Enforce one question at a time across all phase skills"
   - "Run an approved initiative as a chain of feature steps, with the merge-guard hook limiting agent merges to squash merges into initiative branches"
   - "Write each hook block reason to stderr and stdout, so the agent sees why a write stopped"
+  - "Cut every plan line that the ratchet block message and the consistency check echo to 200 characters, and mark the cut"
   - "Derive four workflow metrics at ship from build-log marker lines, and report each threshold breach in the build report and PR description without blocking"
   - "Refuse a symlinked entry path in park, and prune installed hooks named on the retired list, and the settings.json entries that run them, in setup"
   - "Run each initiative step with a model, an optional turn cap, a step log, and telemetry labels"
@@ -139,6 +140,7 @@ quality:
     - "release-tag.mjs reads only top-level version and feature scalars, the same constrained shape."
     - "The consistency check and ratchet-check read Gherkin steps with regular expressions, not a Gherkin parser. Only the bullet form in the requirement template counts."
     - "The commit-msg hook and check-attribution.mjs hold separate pattern lists. A test checks that both hold the host lines."
+    - "ratchet-check.mjs and consistency-check.mjs each hold their own cap function for echoed lines, because the hook installs as one file beside read-stdin.mjs. A parity test checks that both cut a line the same way."
     - "read-stdin.mjs lives in hooks/enforcement/, which installs unconditionally, so every enforcement hook can import it."
     - "The em dash guard only matches the Write and Edit tools and only inspects paths resolving under 5 relative prefixes. A write made through Bash is not inspected. This is a style rule, not an authorisation control."
 
