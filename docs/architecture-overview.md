@@ -106,7 +106,7 @@ The implement phase dispatches a TDD trio per requirement: ravintio-test-writer,
 
 ## Install flow
 
-Setup targets Claude Code only. It copies skills and hooks into `.claude/`, prunes retired skills, writes the boot file, and wires the git hooks.
+Setup targets Claude Code and Codex. It copies skills into the tool folder, prunes retired skills, writes the boot file, wires the hooks, and wires the git hooks. The Claude Code flow follows.
 
 ```
 ravintio-zero/          setup.sh claude-code          target project
@@ -119,6 +119,8 @@ ravintio-zero/          setup.sh claude-code          target project
 ```
 
 Setup installs only each skill's own folder. Skills read templates, standards, and schemas from the one copy in `ravintio-zero/`, named by full path, such as `ravintio-zero/templates/requirement.template.md` (0000171 ADR-004). A suite fails when a skill names a pack file by a short path or names one that does not exist. A rerun removes bundled files that an older install left.
+
+For Codex, `setup.sh codex` and `setup.ps1 codex` install skills in `.agents/skills/`, write `AGENTS.md` from `templates/codex-boot.md`, and wire only `merge-guard` in `.codex/hooks.json`. The Codex docs confirm its `Bash` hook contract. They don't state the `apply_patch` input or the prompt hook context, so the other rules stay instructions in `AGENTS.md` (0000207 ADR-002). Setup prints the active and fallback hooks.
 
 Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from the template, then re-appends the contents of `ravintio-overrides/instructions/` between sentinel markers. Durable local customisation lives in the overrides directory, never in the boot file.
 
