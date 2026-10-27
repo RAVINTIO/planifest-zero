@@ -60,5 +60,5 @@ custom-001 to custom-006 in `ravintio-overrides/instructions/`: local git only, 
 ## Confirmation
 Human confirmed this design before proceeding: draft-accepted (initiative) // Date and Time confirmed: 27 Oct 2026 @ 06:36 PM GMT
 
-Version: 0.29.2 (patch from 0.29.1, rises to minor if a check fails)
+Version: 0.30.0 (minor from 0.29.1. Check 2 failed, so the chart bump rule raised it from patch)
 Run mode: autonomous
