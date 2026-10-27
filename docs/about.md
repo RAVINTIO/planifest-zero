@@ -1,6 +1,6 @@
 ---
 version: "0.28.0"
-feature: "0000205-initiative-skill"
+feature: "0000206-chart-time-decisions"
 updated: "27 Oct 2026"
 ---
 # About
@@ -11,7 +11,7 @@ updated: "27 Oct 2026"
 | Field | Value |
 |-------|-------|
 | Version | `0.28.0` |
-| Last feature | `0000205-initiative-skill` |
+| Last feature | `0000206-chart-time-decisions` |
 | Updated | `27 Oct 2026` |
 
 ## What this is

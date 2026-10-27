@@ -96,11 +96,27 @@ P3 Validate: Complete: CI green except the known installed-copies check, 7 of 7 
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T12:27:30Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-27T12:27:57Z` |
+| Wall clock | 0 |
 | Model tier | primary |
 | Skills loaded | ravintio-ship, ravintio-retrospective |
 | Agents spawned | 0 |
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | I-D Advance into the initiative branch |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `0 minutes recorded per phase, see phase blocks` |
+| Total agents spawned | `0` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `0` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `1` |
+| Phases skipped | `none` |
