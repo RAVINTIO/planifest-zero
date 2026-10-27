@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.21.0"
-feature: "0000199-reserve-ids-from-counter"
+version: "0.22.0"
+feature: "0000200-reply-conventions"
 
 versionPolicy: "max-component-version"
 

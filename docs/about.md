@@ -1,6 +1,6 @@
 ---
-version: "0.21.0"
-feature: "0000199-reserve-ids-from-counter"
+version: "0.22.0"
+feature: "0000200-reply-conventions"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.21.0` |
-| Last feature | `0000199-reserve-ids-from-counter` |
+| Version | `0.22.0` |
+| Last feature | `0000200-reply-conventions` |
 | Updated | `27 Oct 2026` |
 
 ## What this is
