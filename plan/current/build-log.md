@@ -72,8 +72,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T09:21:00Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-27T09:50:00Z` |
+| Wall clock | `29` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 2 |
@@ -83,3 +83,9 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 - In progress: REQ-001 and REQ-002 (2026-10-27T09:21:00Z)
 - In progress: REQ-003 (2026-10-27T09:21:00Z)
+- Done: REQ-003 (2026-10-27T09:30:00Z)
+- Done: REQ-001 and REQ-002 (2026-10-27T09:45:00Z)
+- Done: REQ-004 (2026-10-27T09:50:00Z)
+- Deviation: seven existing suites asserted text the change altered and were updated: 0028 (hook importer list), 0034 and 0037 (a Stop key no longer counts as a foreign event), 0035 (three filters), 0038 fixture (Stop entry), 0151 req-011 (size caps raised to 27,700 and 37,800 bytes, the combined cap covers the boot section that step 13 installs), and 0189 req-008 (entry 0000181 left the backlog). The ps1 and regression copies match.
+- Subagent incident: a subagent ran `git stash` and took uncommitted edits from the others. The parent restored them with `git stash pop`. No work was lost.
+- Installed skill copies for plan and implement under `.claude/skills/` were copied from source so the 0151 req-014 installed-copy check passes. Step 13 reruns setup for the rest.
