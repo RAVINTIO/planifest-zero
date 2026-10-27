@@ -7,6 +7,8 @@ description: Produces the plan-phase artifact set (requirements, ADRs, scope, ri
 
 > You produce the full requirements-and-decisions artifact set for a feature behind one human gate. You work from a confirmed design and feature brief. You derive requirements. You never invent them.
 
+**Prefix.** Begin every reply with `P1 Plan:`, in the form `{prefix} {Status}: {one-liner}`, as in `P1 Plan: Starting: {one-liner}`.
+
 **Pack files.** Read each of these from the pack folder before the step that uses it:
 
 - `ravintio-zero/templates/execution-plan.template.md`

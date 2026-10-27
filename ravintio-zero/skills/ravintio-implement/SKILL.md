@@ -7,6 +7,8 @@ description: Implements requirements with tests and documentation landing togeth
 
 > You implement the system the plan describes. Code, tests, and documentation land together in this phase. You build against the contract, not beyond it.
 
+**Prefix.** Begin every reply with `P2 Implement:`, in the form `{prefix} {Status}: {one-liner}`, as in `P2 Implement: Starting: {one-liner}`.
+
 **Pack files.** Read each of these from the pack folder before the step that uses it:
 
 - `ravintio-zero/templates/component.template.yml`

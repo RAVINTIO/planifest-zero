@@ -49,9 +49,11 @@ echo "=== (a) size target ==="
 SKILL_BYTES=$(wc -c < "$SKILL" | tr -d ' ')
 CLAUDE_BYTES=$(wc -c < "$ROOT_DIR/CLAUDE.md" | tr -d ' ')
 assert_equals "36275" "$(wc -c < "$BASE" | tr -d ' ')" "fixture holds the 36,275 byte baseline"
-assert_equals "yes" "$([ "$SKILL_BYTES" -le 27162 ] && echo yes || echo no)" "SKILL.md is 27,162 bytes or fewer ($SKILL_BYTES)"
+assert_equals "yes" "$([ "$SKILL_BYTES" -le 27700 ] && echo yes || echo no)" "SKILL.md is 27,700 bytes or fewer ($SKILL_BYTES)"
 # Cap raised from 35,484 to 35,600 for the initiative rename (0000189).
-assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le 35600 ] && echo yes || echo no)" "CLAUDE.md plus SKILL.md is 35,600 bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
+# Caps raised to 27,700 and 37,800 for the reporting rule and the Supervise prefix (0000200).
+# The combined cap also covers the Reply Conventions section that the boot template adds to CLAUDE.md.
+assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le 37800 ] && echo yes || echo no)" "CLAUDE.md plus SKILL.md is 37,800 bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
 
 echo "=== (a) no rule line was lost ==="
 REF_FILES=$(ls "$REFS"/orchestrator-*.md 2>/dev/null)

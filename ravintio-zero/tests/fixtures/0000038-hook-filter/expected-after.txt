@@ -15,3 +15,4 @@ UserPromptSubmit|.*|node ".claude/hooks/enforcement/auto-trigger-orchestrator.mj
 UserPromptSubmit|.*|node ".claude/hooks/enforcement/check-orchestrator-presence.mjs"
 UserPromptSubmit|.*|node ".claude/hooks/enforcement/check-design.mjs"
 Stop||node tools/on-stop.mjs
+Stop|.*|node ".claude/hooks/enforcement/check-reply-prefix.mjs"

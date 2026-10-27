@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000199-reserve-ids-from-counter
+Last updated: 0000200-reply-conventions
 
 ---
 
@@ -18,6 +18,13 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000200: reply-conventions
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature adds one Node.js hook with built-in modules only. It adds no dependency. |
+| ADR-002 | A warn-only Stop hook | accepted | `check-reply-prefix.mjs` warns and logs a reply without a prefix, and always exits 0. |
+
 ### Feature 0000199: reserve-ids-from-counter
 
 | ADR | Title | Status | Summary |
