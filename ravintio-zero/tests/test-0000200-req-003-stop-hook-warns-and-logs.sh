@@ -136,4 +136,14 @@ assert_equals "0" "$CODE" "req-003 AC-3: no assistant text exits 0"
 assert_equals "" "$OUT" "req-003 AC-3: no assistant text prints nothing"
 assert_equals "0" "$(log_lines "$P")" "req-003 AC-3: no assistant text logs nothing"
 
+echo ""
+echo "=== req-003: the miss log stays out of git ==="
+P=$(new_project)
+mkdir -p "$P/.git/info"
+write_transcript "$TMP/t9.jsonl" string "Plain reply with no prefix"
+run_hook "$P" "$TMP/t9.jsonl"
+run_hook "$P" "$TMP/t9.jsonl"
+assert_equals "1" "$(grep -cxF 'plan/.prefix-misses.log' "$P/.git/info/exclude")" \
+  "req-003: two misses add the log to .git/info/exclude once"
+
 print_summary

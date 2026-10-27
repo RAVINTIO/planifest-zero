@@ -94,6 +94,14 @@ try {
 
   const snippet = reply.trim().replace(/\s+/g, " ").slice(0, LOG_SNIPPET_LENGTH);
   try {
+    // Keep the log out of git. Add it to .git/info/exclude once.
+    const excludePath = join(cwd, ".git", "info", "exclude");
+    if (existsSync(join(cwd, ".git", "info"))) {
+      const held = existsSync(excludePath) ? readFileSync(excludePath, "utf-8") : "";
+      if (!held.split("\n").includes("plan/.prefix-misses.log")) {
+        appendFileSync(excludePath, (held === "" || held.endsWith("\n") ? "" : "\n") + "plan/.prefix-misses.log\n");
+      }
+    }
     appendFileSync(
       join(cwd, "plan", ".prefix-misses.log"),
       `${new Date().toISOString()} ${snippet}\n`,

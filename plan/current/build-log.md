@@ -89,3 +89,22 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Deviation: seven existing suites asserted text the change altered and were updated: 0028 (hook importer list), 0034 and 0037 (a Stop key no longer counts as a foreign event), 0035 (three filters), 0038 fixture (Stop entry), 0151 req-011 (size caps raised to 27,700 and 37,800 bytes, the combined cap covers the boot section that step 13 installs), and 0189 req-008 (entry 0000181 left the backlog). The ps1 and regression copies match.
 - Subagent incident: a subagent ran `git stash` and took uncommitted edits from the others. The parent restored them with `git stash pop`. No work was lost.
 - Installed skill copies for plan and implement under `.claude/skills/` were copied from source so the 0151 req-014 installed-copy check passes. Step 13 reruns setup for the rest.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:51:00Z` |
+| End | `2026-10-27T10:05:00Z` |
+| Wall clock | `14` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | none |
+
+- Rework: REQ-003: the miss log was not excluded from git, so the hook now adds it to `.git/info/exclude` (2026-10-27T09:58:00Z)
+- Verification by execution found the gap. The suite passed before the fix.
+- Security review: no critical or high finding.
+- Autonomous run: no acceptance stop. Evidence is in `acceptance-evidence.md`.
