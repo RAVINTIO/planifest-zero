@@ -69,8 +69,8 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T09:45:00Z)
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T09:42:11Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-27T09:54:54Z` |
+| Wall clock | `8` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 3 |
@@ -81,3 +81,10 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T09:45:00Z)
 - In progress: U1-check-8 (2026-10-27T09:42:11Z)
 - In progress: U2-plan-docs (2026-10-27T09:42:11Z)
 - In progress: U3-dispatch-rule (2026-10-27T09:42:11Z)
+- Done: U1-check-8 (2026-10-27T09:54:54Z)
+- Done: U2-plan-docs (2026-10-27T09:54:54Z)
+- Done: U3-dispatch-rule (2026-10-27T09:54:54Z)
+- In progress: U4-living-docs (2026-10-27T09:54:54Z)
+- Done: U4-living-docs (2026-10-27T09:54:54Z)
+- Rework: REQ-001: the mid-pipeline reference edit changed a base line that test-0000151-req-011 guards, so the new sentence moved to its own line (2026-10-27T09:54:54Z)
+- Full suite: feature suites 177 passed and 2 failed before the fix. One failure was the base-line guard, now fixed. The other is test-0000151-req-014, installed skill copies under `.claude/skills/` differ from source. That folder is git-ignored and refreshes at step 13, as in steps 1 to 5.
