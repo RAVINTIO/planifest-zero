@@ -27,7 +27,18 @@ See `ravintio-zero/setup.sh:1110-1144` and the matching block in `ravintio-zero/
 
 Check the tool argument straight after argument parsing, before any other processing in both scripts. That puts it ahead of the old-folder check and `initialize_repo`. A missing or unknown tool then exits 1 with no change to the repo.
 
+The code to move:
+
+- `setup.sh`: the check at lines 1135 to 1144 moves above the old-folder loop at line 1100.
+- `setup.ps1`: the check at lines 1356 to 1364 moves above the old-folder loop at line 1331.
+
+The usage text and the exit code stay as they are.
+
 Add a test in each shell that runs setup with an unknown tool in a fresh temp repo. The test asserts exit 1, an unchanged tree, and an unset `core.hooksPath`.
+
+## Wanted outcome
+
+`setup.sh` and `setup.ps1` reject a missing or unknown tool straight after argument parsing. The run exits 1 and leaves the repo unchanged. In a fresh temp repo, a test in each shell runs setup with an unknown tool. It asserts exit 1, an unchanged tree, and an unset `core.hooksPath`.
 
 ## Why Deferred
 
