@@ -14,12 +14,15 @@
  *   session_id to plan/.orchestrator-ack before processing anything else.
  *   Once plan/.orchestrator-ack or plan/.initiative-ack contains the matching
  *   session_id, exits 0 silently.
- *   If neither matches and the driver lock plan/.initiative-runner.lock exists,
- *   the banner names the ravintio-initiative skill and plan/.initiative-ack instead.
+ *   If neither matches and an initiative is active, the banner names the
+ *   ravintio-initiative skill and plan/.initiative-ack instead.
+ *
+ * The skill that owns the session decides the banner. The driver lock plays no
+ * part, because it is free between steps and after the driver exits.
  *
  * Environment: RAVINTIO_INITIATIVE_STEP=1 marks a step session started by the
- * initiative driver. The driver sets it. The hook then ignores the lock and
- * keeps the orchestrator banner.
+ * initiative driver. The driver sets it. The hook then keeps the orchestrator
+ * banner even while an initiative is active.
  *
  * Design: REQ-008.
  * Exit codes: 0 always — this hook informs but never blocks via exit 2.
@@ -29,6 +32,18 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { readStdin } from "./read-stdin.mjs";
+
+// True when initiative.md holds status active, in frontmatter or as "**Status:** active".
+// Keep in step with initiativeActive in auto-trigger-orchestrator.mjs.
+function initiativeActive(cwd) {
+  try {
+    const text = readFileSync(join(cwd, "plan", "current-initiative", "initiative.md"), "utf-8");
+    return /^\s*status:\s*["']?active["']?\s*$/im.test(text) ||
+      /^\s*\*\*Status:\*\*\s*active\s*$/im.test(text);
+  } catch {
+    return false;
+  }
+}
 
 try {
   const raw = await readStdin();
@@ -49,11 +64,10 @@ try {
   const strictPath = join(cwd, "plan", ".orchestrator-strict");
   const isStrict = existsSync(strictPath);
 
-  // The driver lock marks an initiative session. A step session sets
+  // An active initiative gives the initiative banner. A step session sets
   // RAVINTIO_INITIATIVE_STEP=1 and gets the orchestrator banner instead.
   const initiativeDriver =
-    existsSync(join(cwd, "plan", ".initiative-runner.lock")) &&
-    process.env.RAVINTIO_INITIATIVE_STEP !== "1";
+    process.env.RAVINTIO_INITIATIVE_STEP !== "1" && initiativeActive(cwd);
 
   if (!isStrict) {
     // Advisory mode: brief banner, always passes.

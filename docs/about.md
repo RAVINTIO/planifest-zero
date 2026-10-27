@@ -1,6 +1,6 @@
 ---
-version: "0.30.0"
-feature: "0000217-verify-codex-setup"
+version: "0.30.1"
+feature: "0000218-strict-hook-follows-active-skill"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.30.0` |
-| Last feature | `0000217-verify-codex-setup` |
+| Version | `0.30.1` |
+| Last feature | `0000218-strict-hook-follows-active-skill` |
 | Updated | `27 Oct 2026` |
 
 ## What this is
