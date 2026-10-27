@@ -33,11 +33,17 @@ Do not proceed to Step 2. Do not ask "which tool" in this branch. That question 
 
 Skip this step if Step 2 produced a recovered flag set.
 
+A retired flag is one that an earlier release removed: `--structured-telemetry-mcp`, `--context-mode-mcp`, `--include-full-skill-library`, and `--backend-url`. Each exits 1 because setup rejects it (0000196 ADR-002). A record or marker from an older install can still hold one.
+
+- If `plan/state/{tool}.md` holds a retired flag, report its name, say that an earlier release removed it, and say that setup rejects it. Omit the flag, then validate the rest of the record as below.
+- If `{tool-dir}/.ravintio-setup-flags` holds a retired flag, report it the same way and omit it from the flags you read from the marker.
+- Never put a retired flag in the command you propose in Step 4. A `--backend-url` value never appears in your report.
+
 1. Check `plan/state/{tool}.md` first. This is the tracked record and, when valid, the highest-confidence source available. Read it and validate it:
    - It must contain a fenced ```json block that parses as well-formed JSON.
    - The parsed object must hold all three fields: `tool`, `flags`, `writtenAt`.
    - The `tool` field matches the target tool from Step 1.
-   - Every entry in `flags` belongs to the allowed set: `--strict-orchestrator`. Reject the record if any other value appears.
+   - Every entry in `flags`, after you omit any retired flag, belongs to the allowed set: `--strict-orchestrator`. Reject the record if any other value appears.
    - Validate the values, not only the shape. The record is git-tracked, so a hostile commit could otherwise place a shell metacharacter in `flags`, and Step 4 builds a shell command from them.
    - If all of the above hold, the record is valid: report every flag it holds at **high** confidence, source: `plan/state/{tool}.md`. The marker file is not consulted, and Step 3 skips straight to sub-step 4 below.
    - If the record is absent, unreadable, fails to parse, is missing any of the three fields, names a different tool, or carries an unknown flag, treat it as missing. This does not stop the run: continue to sub-step 2.
