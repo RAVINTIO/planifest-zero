@@ -1,6 +1,6 @@
 ---
-version: "0.29.1"
-feature: "0000207-codex-support"
+version: "0.30.0"
+feature: "0000217-verify-codex-setup"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.29.1` |
-| Last feature | `0000207-codex-support` |
+| Version | `0.30.0` |
+| Last feature | `0000217-verify-codex-setup` |
 | Updated | `27 Oct 2026` |
 
 ## What this is
