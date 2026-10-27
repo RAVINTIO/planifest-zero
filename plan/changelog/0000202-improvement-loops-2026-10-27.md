@@ -2,7 +2,7 @@
 
 **Feature:** improvement loops
 **Version:** 0.24.0
-**PR:** pending, updated at Step 9
+**PR:** #45
 
 ## What changed
 
