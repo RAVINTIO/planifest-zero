@@ -8,7 +8,7 @@ status: "active"
 **Goal:** Clear every valid open backlog entry from 2026-10-26, one feature release per step. A final chore step refreshes the setup record and commits the backlog entries that the steps queued.
 **Branch:** initiative/0000195-backlog-clearance
 **Status:** active
-**Position:** 7
+**Position:** 8
 **Speed:** standard
 
 The human asked for this draft on 2026-10-26. The human approved the chart on 2026-10-27, and I-B Activate ran the same day.
@@ -81,7 +81,7 @@ Backlog entry 0000174 (skill evaluation suite) stays in the backlog. It needs a 
 | 4 | 0000199-reserve-ids-from-counter | 0000183 | minor | 0.21.0 | merged |
 | 5 | 0000200-reply-conventions | 0000181, 0000209 | minor | 0.22.0 | merged |
 | 6 | 0000201-plan-concurrent-work | 0000180 | minor | 0.23.0 | merged |
-| 7 | 0000202-improvement-loops | 0000179 | minor | | pending |
+| 7 | 0000202-improvement-loops | 0000179 | minor | 0.24.0 | merged |
 | 8 | 0000203-blameless-postmortems | 0000177 | minor | | pending |
 | 9 | 0000204-run-and-initiative-retrospectives | 0000178 | minor | | pending |
 | 10 | 0000205-initiative-skill | 0000182 | minor | | pending |
