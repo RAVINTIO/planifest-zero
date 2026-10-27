@@ -44,3 +44,14 @@ Design confirmed: draft-accepted (initiative). Version 0.30.1.
 ### P1: Plan
 
 Skipped: the backlog entry fixes the spec, and its wanted outcome lists the six checks.
+
+### P2: Implement
+
+In progress: REQ-001: skill-owner rule in both hooks
+Done: REQ-001 (RED with 12 failures, then GREEN with 44 passes in `test-0000218-req-001-002-skill-owner-banner.sh`)
+In progress: REQ-002: ignore `plan/.initiative-ack`
+Done: REQ-002 (`git check-ignore` passes, `plan/.orchestrator-ack` stays tracked)
+
+Deviation: `auto-trigger-orchestrator.mjs` no longer requires an empty `plan/current/`, so both hooks apply one rule. The 0000205 suite changed to match: the lock-held strict case now needs an active initiative, and the open-artifacts case now names the initiative skill.
+Deviation: both suites run the hooks with `env -u RAVINTIO_INITIATIVE_STEP`. A step session sets the variable, and the old suite failed inside one.
+Docs updated: `roadmap-standards.md`, `project-operations.md`. Version 0.30.1 in `product.yml`, `component.yml`, `docs/about.md`.
