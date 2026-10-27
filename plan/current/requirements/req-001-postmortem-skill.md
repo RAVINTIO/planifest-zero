@@ -18,7 +18,7 @@ As the human on the loop, I get one postmortem record per `Blocked:` stop or CI 
 - Each action becomes a backlog entry or a repo instruction. The skill files it and links it from the record.
 - The skill writes the record to `plan/postmortems/{date}-{slug}.md` and creates the folder if it is missing. It writes nothing under `plan/current/`.
 - `ravintio-zero/templates/postmortem.template.md` holds the record format: summary, timeline, 5 whys, and actions.
-- `ravintio-zero/tests/test-0000031-req-003-five-phases.sh` lists the new skill.
+- `ravintio-zero/tests/test-0000031-req-003-five-phases.sh` lists the new skill and raises the skill-text line budget from 1447 to 1520. `test-0000031-req-004-setup-execution.sh` and `test-0000160-req-001-pack-identifiers.sh` count 14 skills.
 
 ## Acceptance Criteria
 - [ ] AC-1: the skill exists and is short
