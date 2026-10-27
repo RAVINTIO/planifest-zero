@@ -2,7 +2,7 @@
 
 **Feature:** plan concurrent work
 **Version:** 0.23.0
-**PR:** pending
+**PR:** #44
 
 ## What changed
 
