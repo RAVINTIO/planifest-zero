@@ -64,3 +64,72 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T10:10:00Z)
 - Consistency check: clean over `plan/current`.
 - The execution plan holds a concurrency plan for P2: two units in batch 1, one docs unit in batch 2.
 - Autonomous run: no plan gate stop.
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T10:21:00Z` |
+| End | `2026-10-27T10:40:00Z` |
+| Wall clock | `19` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 2 |
+| Notes | Units are small, share wording, and write Markdown, so they ran inline in parallel batches of writes. A subagent per unit would cost more than the edits. |
+
+- In progress: U1-loop-skills (2026-10-27T10:21:00Z)
+- In progress: U2-marker-standard (2026-10-27T10:21:00Z)
+- Done: U1-loop-skills (2026-10-27T10:33:00Z)
+- Done: U2-marker-standard (2026-10-27T10:33:00Z)
+- In progress: U3-living-docs (2026-10-27T10:34:00Z)
+- Done: U3-living-docs (2026-10-27T10:36:00Z)
+- Rework: REQ-001: the first draft added 23 lines to the skills and breached the 1447-line budget in test 0000031. The cycle steps moved to the dispatch standard and the skills keep short pointers. Plan artifacts updated to match. (2026-10-27T10:37:00Z)
+- Full suite: feature suites 180 passed and 1 failed. The failure is test-0000151-req-014, installed skill copies under `.claude/skills/` differ from source. That folder is git-ignored and refreshes at step 13, as in steps 1 to 6.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T10:41:00Z` |
+| End | `2026-10-27T10:44:00Z` |
+| Wall clock | `3` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Checks and the security review are small and ran inline. |
+
+- Self-correct cycles: 1 (recorded under P2).
+- Security: no finding above low.
+- Autonomous run: no acceptance stop. Evidence is in `acceptance-evidence.md`.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T10:45:00Z` |
+| End | `2026-10-27T10:50:00Z` |
+| Wall clock | `5` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `about 46 minutes across P0 to P4 blocks` |
+| Total agents spawned | `0` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `2` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `1` |
+| Phases skipped | `none` |
