@@ -36,3 +36,12 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | initiative 0000195 step 14 |
 
 Run mode: autonomous (2026-10-27T18:34:00Z, initiative step)
+Decision applied (initiative chart): none needed, no Decisions rows.
+
+### P1: Plan
+
+Skipped: chore with a fixed spec in initiative.md. Requirements are the four acceptance criteria in feature-brief.md.
+
+### P2: Implement
+
+REQ-001: verify the codex target against real Codex (codex-cli 0.163.0).
