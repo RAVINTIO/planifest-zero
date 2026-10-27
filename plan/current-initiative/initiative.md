@@ -8,7 +8,7 @@ status: "active"
 **Goal:** Clear every valid open backlog entry from 2026-10-26, one feature release per step. A final chore step refreshes the setup record and commits the backlog entries that the steps queued.
 **Branch:** initiative/0000195-backlog-clearance
 **Status:** active
-**Position:** 13
+**Position:** 14
 **Speed:** standard
 
 The human asked for this draft on 2026-10-26. The human approved the chart on 2026-10-27, and I-B Activate ran the same day.
