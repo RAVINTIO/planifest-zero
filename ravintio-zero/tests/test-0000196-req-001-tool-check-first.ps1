@@ -33,13 +33,13 @@ try {
 Write-Host ""
 Write-Host "=== req-001 AC-1: an unknown tool exits 1 and leaves the repo unchanged ==="
 
-foreach ($tool in @('codex', 'cursor', 'open-code')) {
+foreach ($tool in @('windsurf', 'cursor', 'open-code')) {
     $ws = New-SetupWorkspace
     $before = Get-TreeSnapshot $ws
     $run = Invoke-Setup $ws @($tool)
     Assert-Equal 1 $run.Code "req-001 AC-1: tool $tool exits 1"
     Assert-Contains "Unknown tool: $tool" $run.Output "req-001 AC-1: tool $tool prints the Unknown tool line"
-    Assert-Contains 'Valid tools: claude-code' $run.Output "req-001 AC-1: tool $tool prints the valid tools"
+    Assert-Contains 'Valid tools: claude-code codex' $run.Output "req-001 AC-1: tool $tool prints the valid tools"
     Assert-True ($before -ceq (Get-TreeSnapshot $ws)) "req-001 AC-1: tool $tool leaves the tree unchanged"
     Assert-Equal '' (Get-HooksPath $ws) "req-001 AC-1: tool $tool leaves core.hooksPath unset"
     Remove-SetupWorkspace $ws
@@ -50,9 +50,9 @@ Write-Host "=== req-001 AC-1: an unknown tool beats the old-folder check ==="
 
 $ws = New-SetupWorkspace
 New-Item -ItemType Directory -Path (Join-Path $ws ('plan' + 'ifest-zero')) | Out-Null
-$run = Invoke-Setup $ws @('codex')
+$run = Invoke-Setup $ws @('windsurf')
 Assert-Equal 1 $run.Code "req-001 AC-1: unknown tool with an old folder exits 1"
-Assert-Contains 'Unknown tool: codex' $run.Output "req-001 AC-1: the tool error comes before the old-folder error"
+Assert-Contains 'Unknown tool: windsurf' $run.Output "req-001 AC-1: the tool error comes before the old-folder error"
 Remove-SetupWorkspace $ws
 
 Write-Host ""
