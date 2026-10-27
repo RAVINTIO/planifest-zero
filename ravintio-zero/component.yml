@@ -1,8 +1,8 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000203-blameless-postmortems"
-version: "0.25.0"
+feature: "0000204-run-and-initiative-retrospectives"
+version: "0.26.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
