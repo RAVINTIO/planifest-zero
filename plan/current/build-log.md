@@ -95,3 +95,31 @@ P2 Implement: Complete: 5 units, 7 new suites, older suites aligned.
 | Notes | none |
 
 P3 Validate: Complete: no critical or high findings, acceptance evidence written.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T12:31:00Z` |
+| End | `2026-10-27T12:40:00Z` |
+| Wall clock | `9` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship, ravintio-retrospective |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `about 70 minutes across P0 to P4 blocks` |
+| Total agents spawned | `3` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `1` |
+| Primary tier agent calls | `3` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `2` |
+| Phases skipped | `none` |
