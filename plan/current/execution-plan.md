@@ -51,7 +51,7 @@ Batch 1 holds two units that write disjoint files. Batch 2 holds the docs unit, 
 
 | Unit | Depends on | Writes | Batch | Sequential reason |
 |------|------------|--------|-------|-------------------|
-| U1-loop-skills | none | `ravintio-zero/skills/ravintio-implement/SKILL.md`, `ravintio-zero/skills/ravintio-refactor/SKILL.md`, `ravintio-zero/tests/test-0000202-req-001-improvement-loop.sh` | 1 | |
+| U1-loop-skills | none | `ravintio-zero/skills/ravintio-implement/SKILL.md`, `ravintio-zero/skills/ravintio-refactor/SKILL.md`, `ravintio-zero/standards/agent-dispatch-standards.md`, `ravintio-zero/tests/test-0000202-req-001-improvement-loop.sh` | 1 | |
 | U2-marker-standard | none | `ravintio-zero/standards/workflow-governance-standards.md`, `ravintio-zero/tests/test-0000202-req-002-improve-marker.sh` | 1 | |
 | U3-living-docs | U1-loop-skills, U2-marker-standard | `ravintio-zero/component.yml`, `docs/architecture-overview.md`, `ravintio-zero/pipeline-reference.md` | 2 | Describes the finished behaviour of U1 and U2, so it reads their final wording. |
 

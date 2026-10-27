@@ -6,8 +6,8 @@
 
 ## In Scope
 
-- Add an improvement loop to the implement skill, after refactor, capped at 2 cycles per requirement.
-- Add an improvement mode to the refactor skill.
+- Add an improvement loop to the implement skill, after refactor, capped at 2 cycles per requirement, with the cycle steps in the dispatch standard.
+- Describe an improvement mode in the refactor skill.
 - Add two `Improve:` marker forms to the workflow governance standard.
 - Name the loop in `component.yml`, the architecture overview, and the pipeline reference.
 - Add tests.

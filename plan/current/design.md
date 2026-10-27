@@ -31,7 +31,7 @@
 - API versioning: not applicable
 
 ## Scope
-- In: the improvement loop in the implement skill, the apply mode in the refactor skill, the `Improve:` marker in the workflow governance standard, the fast batch line, `component.yml`, the docs that name the TDD loop, and tests.
+- In: the improvement loop in the implement skill and the dispatch standard, the apply mode in the refactor skill, the `Improve:` marker in the workflow governance standard, the fast batch line, `component.yml`, the docs that name the TDD loop, and tests.
 - Out: an improvement pass in P3, a metric or threshold in `workflow-metrics.mjs`, and a loop toggle.
 - Deferred: nothing deferred.
 
