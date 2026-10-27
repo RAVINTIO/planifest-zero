@@ -50,7 +50,7 @@ $SkillsSrc = Join-Path $ScriptDir 'skills'
 $WorkflowsSrc = Join-Path $ScriptDir 'workflows'
 $SetupDir = Join-Path $ScriptDir 'setup'
 
-$ValidTools = @('claude-code')
+$ValidTools = @('claude-code', 'codex')
 
 # --- Shared functions ---
 
@@ -713,6 +713,81 @@ function Install-EnforcementHooks {
     Merge-EnforcementHookSettings -SettingsPath $settings -HooksDir $HooksDirRel -SettingsRel $SettingsRel
 }
 
+function Install-CodexHooks {
+    # Wire the Codex hooks (0000207 ADR-002). Only merge-guard has a Codex
+    # contract that the Codex docs confirm: a PreToolUse group for Bash, exit
+    # 2, and the reason on stderr. Every other RAVINTIO hook stays an
+    # instruction in AGENTS.md. setup.sh prints the same report.
+    param(
+        [string]$HooksDirRel,
+        [string]$HooksFileRel
+    )
+
+    $src = Join-Path (Join-Path $ScriptDir 'hooks') 'enforcement'
+    $dest = Join-Path $ProjectRoot $HooksDirRel
+    $hooksFile = Join-Path $ProjectRoot $HooksFileRel
+
+    if (-not [System.IO.Directory]::Exists($src)) {
+        Write-Host "  ! Warning: enforcement hook scripts not found at $src - skipping"
+        return
+    }
+
+    Write-Host ""
+    Write-Host "  Installing RAVINTIO Codex hooks"
+
+    [System.IO.Directory]::CreateDirectory($dest) | Out-Null
+    foreach ($name in @('merge-guard.mjs', 'read-stdin.mjs')) {
+        Copy-RavintioItem (Join-Path $src $name) $dest
+        Write-Host "  + $HooksDirRel/$name"
+    }
+
+    $mark = "$HooksDirRel/merge-guard.mjs"
+    $commandLine = 'node "$(git rev-parse --show-toplevel)/' + $mark + '"'
+    $entry = [ordered]@{
+        matcher = 'Bash'
+        hooks   = @([ordered]@{ type = 'command'; command = $commandLine; statusMessage = 'Checking merge command' })
+    }
+
+    if (Test-Path -LiteralPath $hooksFile) {
+        $raw = "$(Get-Content -Raw -Path $hooksFile -Encoding UTF8)"
+        $existing = $null
+        $check = Read-SettingsObject -Raw $raw -Settings ([ref]$existing)
+        if ($check -eq 'invalid') {
+            [Console]::Error.WriteLine("! Error: $HooksFileRel is not valid JSON. Fix it and rerun setup.")
+            exit 1
+        }
+        if ($check -eq 'shape') {
+            [Console]::Error.WriteLine("! Error: $HooksFileRel is valid JSON but not a hooks file setup can read. Fix it and rerun setup.")
+            exit 1
+        }
+        if ($null -eq $existing.PSObject.Properties['hooks'] -or $null -eq $existing.hooks) {
+            $existing | Add-Member -NotePropertyName 'hooks' -NotePropertyValue ([PSCustomObject]@{}) -Force
+        }
+        if (-not $existing.hooks.PreToolUse) {
+            $existing.hooks | Add-Member -NotePropertyName 'PreToolUse' -NotePropertyValue @() -Force
+        }
+        $pattern = '(^|[\s"''/\\])' + [regex]::Escape($mark)
+        $filtered = @(Remove-RavintioHookCommands -Entries $existing.hooks.PreToolUse -Pattern $pattern)
+        $existing.hooks.PreToolUse = $filtered + @($entry)
+        Write-SettingsOrExit -Path $hooksFile -Json ($existing | ConvertTo-Json -Depth 100) -SettingsRel $HooksFileRel
+    }
+    else {
+        $dir = Split-Path -Parent $hooksFile
+        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        $settings = [PSCustomObject]@{ hooks = [PSCustomObject]@{ PreToolUse = @($entry) } }
+        Write-SettingsOrExit -Path $hooksFile -Json ($settings | ConvertTo-Json -Depth 100) -SettingsRel $HooksFileRel
+    }
+    Write-Host "  + $HooksFileRel (merge-guard wired)"
+
+    Write-Host ""
+    Write-Host "  Active hooks:"
+    Write-Host "    merge-guard (PreToolUse: Bash)"
+    Write-Host "  Fallback hooks, stated as instructions in AGENTS.md:"
+    Write-Host "    gate-write, ratchet-check, em-dash-guard, auto-trigger-orchestrator,"
+    Write-Host "    check-orchestrator-presence, check-design, check-reply-prefix"
+    Write-Host "  Review and trust the project hooks with /hooks in Codex."
+}
+
 function Invoke-RavintioGuardrails {
     Write-Host ""
     Write-Host "  Activating RAVINTIO Git Guardrails"
@@ -1168,6 +1243,11 @@ function Invoke-RavintioSetup {
             -HooksSrcRel $toolConfig.EnforcementHooksSrc `
             -HooksDirRel $toolConfig.EnforcementHooksDir `
             -SettingsRel $toolConfig.SettingsFile
+    }
+
+    # Codex wires its own hook set (0000207).
+    if ($toolConfig.CodexHooksFile -and $toolConfig.CodexHooksDir) {
+        Install-CodexHooks -HooksDirRel $toolConfig.CodexHooksDir -HooksFileRel $toolConfig.CodexHooksFile
     }
 
     # Add Agent to allowedTools so sub-agent dispatch works without per-use confirmation (REQ-002)

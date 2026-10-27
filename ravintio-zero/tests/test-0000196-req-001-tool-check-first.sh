@@ -35,7 +35,7 @@ hooks_path() {
 echo ""
 echo "=== req-001 AC-1: an unknown tool exits 1 and leaves the repo unchanged ==="
 
-for tool in codex cursor open-code; do
+for tool in windsurf cursor open-code; do
   WS=$(make_workspace)
   cd "$WS"
   BEFORE="$(snapshot)"
@@ -43,7 +43,7 @@ for tool in codex cursor open-code; do
   EXIT=$?
   assert_equals "1" "$EXIT" "req-001 AC-1: tool $tool exits 1"
   assert_contains "Unknown tool: $tool" "$OUT" "req-001 AC-1: tool $tool prints the Unknown tool line"
-  assert_contains "Valid tools: claude-code" "$OUT" "req-001 AC-1: tool $tool prints the valid tools"
+  assert_contains "Valid tools: claude-code codex" "$OUT" "req-001 AC-1: tool $tool prints the valid tools"
   assert_equals "$BEFORE" "$(snapshot)" "req-001 AC-1: tool $tool leaves the tree unchanged"
   assert_equals "" "$(hooks_path)" "req-001 AC-1: tool $tool leaves core.hooksPath unset"
   cd /; rm -rf "$WS"
@@ -55,10 +55,10 @@ echo "=== req-001 AC-1: an unknown tool beats the old-folder check ==="
 WS=$(make_workspace)
 cd "$WS"
 mkdir "plan""ifest-zero"
-OUT="$(bash ravintio-zero/setup.sh codex 2>&1)"
+OUT="$(bash ravintio-zero/setup.sh windsurf 2>&1)"
 EXIT=$?
 assert_equals "1" "$EXIT" "req-001 AC-1: unknown tool with an old folder exits 1"
-assert_contains "Unknown tool: codex" "$OUT" "req-001 AC-1: the tool error comes before the old-folder error"
+assert_contains "Unknown tool: windsurf" "$OUT" "req-001 AC-1: the tool error comes before the old-folder error"
 cd /; rm -rf "$WS"
 
 echo ""
