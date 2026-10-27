@@ -60,3 +60,15 @@ Bash runner 198 passed, regression 19 passed (with `RAVINTIO_INITIATIVE_STEP` un
 ### P4: Ship
 
 Version 0.30.0.
+
+## Summary
+
+| Phase | Agents | Parallel batches | Wall clock | Self-corrections |
+|-------|--------|------------------|------------|------------------|
+| P0 | 0 | 0 | not recorded | 1 (bash command over the merge-guard length limit, rewritten with the Write tool) |
+| P1 | 0 | 0 | skipped | 0 |
+| P2 | 0 | 0 | not recorded | 1 (first setup run installed into this repo, removed and rerun in the temp repo) |
+| P3 | 0 | 0 | not recorded | 0 |
+| P4 | 0 | 0 | not recorded | 0 |
+
+Total wall clock: not recorded
