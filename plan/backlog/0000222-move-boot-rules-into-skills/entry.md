@@ -35,7 +35,8 @@ Many of these rules apply only to one task:
 
 Keep in the boot file only the rules that every session needs: the hard limits, the phase prefixes, the reply conventions, and escalation. Move the rest to where the agent loads them on demand:
 
-- Move each task-specific override into a skill with a description that triggers on its task. `ravintio-overrides/capability-skills/` already installs repo skills. For example, the GUTD shorthand becomes a `gutd` skill.
+- Move each task-specific override into a skill with a description that triggers on its task. `ravintio-overrides/capability-skills/` already installs repo skills.
+- Move the GUTD shorthand out of `custom-003-git-up-to-date-shorthand.md` into a repo skill named `gutd`, which the human runs as `/gutd`. The human asked for this on 2026-10-27. Skill names must be lowercase, so the command is `/gutd`. The skill's description also matches the bare token `GUTD`, so the existing shorthand still works. Delete `custom-003` in the same change.
 - Let an override target one pack skill, so setup appends it to that skill and not to `CLAUDE.md`. The setup refresh approval then lives in `ravintio-refresh-setup`, and the ship PR rule lives in `ravintio-ship`.
 - Move Hook Enforcement into a reference file. Each hook's block message names that file.
 - Cap `CLAUDE.md` on its own, apart from the orchestrator skill. Revert the combined cap to its pack-only figure, as entry 0000214 asks.
@@ -47,6 +48,7 @@ Keep in the boot file only the rules that every session needs: the hard limits, 
 - The generated `CLAUDE.md` is 6,000 bytes or fewer.
 - An override that targets a pack skill appears in that installed skill and not in `CLAUDE.md`.
 - A repo override written as a capability skill installs to `.claude/skills/` with its description intact.
+- Setup installs `.claude/skills/gutd/SKILL.md`, and `CLAUDE.md` no longer holds the GUTD rule.
 - Each hook block message names the Hook Enforcement reference file.
 
 ## Why Deferred
