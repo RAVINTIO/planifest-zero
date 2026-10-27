@@ -37,3 +37,10 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 Run mode: autonomous (2026-10-27T19:08:00Z, initiative step)
 Decision applied (initiative chart): none needed, no Decisions rows.
+Backlog entry 0000215 pulled in and deleted.
+Scope Lock Challenge: self-confirmed, six acceptance criteria [source: draft-accepted (initiative)].
+Design confirmed: draft-accepted (initiative). Version 0.30.1.
+
+### P1: Plan
+
+Skipped: the backlog entry fixes the spec, and its wanted outcome lists the six checks.
