@@ -1,8 +1,8 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000192-rename-runner-lock-and-archive"
-version: "0.19.0"
+feature: "0000196-setup-argument-checks"
+version: "0.20.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
@@ -149,7 +149,7 @@ pipeline:
 
 metadata:
   createdAt: "2026-05-02"
-  updatedAt: "2026-10-25"
+  updatedAt: "2026-10-27"
   createdBy: "agent"
   lastModifiedBy: "agent"
   skill: "ravintio-implement"

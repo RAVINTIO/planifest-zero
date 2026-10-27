@@ -1,7 +1,7 @@
 ---
-version: "0.19.0"
-feature: "0000185-explain-strict-mode"
-updated: "25 Oct 2026"
+version: "0.20.0"
+feature: "0000196-setup-argument-checks"
+updated: "27 Oct 2026"
 ---
 # About
 
