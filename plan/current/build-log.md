@@ -43,3 +43,9 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Adoption mode: standard-iterative (signal: `plan/_archive/` holds feature directories and `docs/about.md` exists)
 - Backlog pickup: 0000176 pulled into the brief per the initiative row. Folder deleted in the same commit.
 - Version: last known 0.20.1, step bump `patch`, new version 0.20.2.
+- Scope Lock (happy path): a line of 200 characters or fewer prints unchanged in both programs. [source: draft-accepted (initiative)]
+- Scope Lock (first-run path): the first block that holds a long line shows 200 characters and a cut marker. [source: draft-accepted (initiative)]
+- Scope Lock (error path): a hostile line is cut to 200 characters plus the marker, and exit codes stay 2 for the ratchet and 1 for the consistency check. [source: draft-accepted (initiative)]
+- Scope Lock (cross-session continuity): neither program holds state, so each message comes from the file it reads. [source: draft-accepted (initiative)]
+- Scope Lock complete. All four scenario paths captured.
+- Design confirmation: draft-accepted (initiative)
