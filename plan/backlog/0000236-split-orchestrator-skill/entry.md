@@ -38,18 +38,42 @@ Feature 0000151 already moved eight rarely used sections into `references/`. The
 
 The sections every session needs come to 11,930 bytes. The six task-bound sections come to 15,849 bytes, 57% of the file.
 
+Three of the kept sections still hold detail that applies only at one moment:
+
+| Detail | Bytes | Needed when |
+|--------|-------|-------------|
+| Resume Detection checks 2, 4, and 7 to 10, in full | about 3,100 | only when that check finds its signal |
+| Initiative stage prefixes block | 1,093 | only in an initiative, and `CLAUDE.md` Reply Conventions already lists the prefixes |
+| Pack Index template rows | 961 | only before writing that artifact |
+
 ## Suggested Action
 
-- Keep in `SKILL.md`: the preamble, Hard Limits, Phases and Response Prefixes, Resume Detection, the Pack Index, Context Hygiene, Subagent Dispatch, and a short P0 intro.
+- Keep in `SKILL.md`: the preamble, Hard Limits, the P0 to P4 prefix table and status form, a short Resume Detection list, the Pack Index, Context Hygiene, Subagent Dispatch, and a short P0 intro.
 - Move the six task-bound sections into new files under `references/`, each with the `orchestrator-` prefix. Move each line verbatim, as feature 0000151 did.
-- Add a Pack Index row for each new file, with a trigger that names the moment to read it. Examples are "Before a fresh P0 start" and "Before you invoke P1, P2, P3, or P4".
+- Cut Resume Detection to one line per check, in the same order. Each line names the signal and what to do. Move the full text of each check to `references/orchestrator-resume-detection.md`. The agent reads it when a check finds its signal.
+- Move the initiative stage prefixes block to `ravintio-zero/standards/roadmap-standards.md`. Keep one line in `SKILL.md` that says the I-A to I-E prefixes exist and where they live.
+- Replace the template rows of the Pack Index with one rule: before you write an artifact, read `ravintio-zero/templates/{artifact}.template.md`. Keep the rows that do not follow that pattern, such as roadmap standards and the loop runner.
+- Add a Pack Index row for each new reference file, with a trigger that names the moment to read it. Examples are "Before a fresh P0 start" and "Before you invoke P1, P2, P3, or P4".
 - Update `test-0000151-req-011-orchestrator-references-split.sh`:
-  - Set the `SKILL.md` cap to 13,000 bytes.
+  - Set the `SKILL.md` cap to 9,000 bytes.
   - Move the moved headings from case (b) "keeps the heading" into the "now lives in a reference file" list.
   - Keep the no-lost-line check against the base fixture.
-- Update each test that greps `SKILL.md` for a moved line to read `SKILL.md` and `references/` together. On 2026-10-27, 38 suites in `ravintio-zero/tests/` read `SKILL.md`. Backlog entry 0000210 asks plan to list such tests up front.
+- Update each test that greps `SKILL.md` for a moved line to read `SKILL.md`, `references/`, and the roadmap standards together. On 2026-10-27, 38 suites in `ravintio-zero/tests/` read `SKILL.md`. Backlog entry 0000210 asks plan to list such tests up front.
 
-**Target of 13,000 bytes.** The kept sections measure 11,930 bytes. Six new Pack Index rows add about 600 bytes, for about 12,530. The 13,000 target leaves about 470 bytes of headroom for one or two new rules. A rule larger than that belongs in a reference file.
+**Target of 9,000 bytes.** The estimate comes to about 7,800 bytes:
+
+| Change | Bytes |
+|--------|-------|
+| Kept sections | 11,930 |
+| Resume Detection cut to one line per check | about -3,100 |
+| Initiative prefixes moved | about -940 |
+| Template rows replaced by one rule | about -760 |
+| New Pack Index rows | about +700 |
+| **Estimate** | **about 7,830** |
+
+The 9,000 target leaves about 1,170 bytes of headroom. A new rule larger than that belongs in a reference file.
+
+**Risk.** Every session runs Resume Detection, so its one-line checks must stay complete enough to act on. A check that needs more than its line tells the agent to read the reference file first. P0 decides the exact wording of each line.
 
 **Not in scope.** This entry covers `SKILL.md` and its own cap only.
 
@@ -58,16 +82,17 @@ The sections every session needs come to 11,930 bytes. The six task-bound sectio
 
 ## Wanted outcome
 
-The orchestrator core loads in under half its current bytes, with no rule lost. Tests check these conditions:
+The orchestrator core loads in under a third of its current bytes, with no rule lost. Tests check these conditions:
 
-- `SKILL.md` is 13,000 bytes or fewer, and `test-0000151-req-011-orchestrator-references-split.sh` asserts that cap.
-- Every non-blank, non-heading line of the base fixture is in `SKILL.md` or a `references/orchestrator-*.md` file.
+- `SKILL.md` is 9,000 bytes or fewer, and `test-0000151-req-011-orchestrator-references-split.sh` asserts that cap.
+- Every non-blank, non-heading line of the base fixture is in `SKILL.md`, a `references/orchestrator-*.md` file, or `roadmap-standards.md`.
 - Each moved section's heading appears in exactly one reference file, and not in `SKILL.md`.
 - The Pack Index has one row for every file in `references/`, and each row names its trigger.
 - `SKILL.md` keeps the headings Hard Limits, Phases and Response Prefixes, Resume Detection, and Pack Index (JIT Loading).
+- Resume Detection in `SKILL.md` lists all 12 checks in their current order.
 - Setup installs every new reference file, and each installed copy matches its source.
 - The full test suite passes with no other cap raised.
 
 ## Why Deferred
 
-The human asked for it at initiative 0000195 delivery. It pairs with backlog entries 0000214 and 0000222, which cover the combined cap and `CLAUDE.md`.
+The human asked for it at initiative 0000195 delivery, then lowered the target from 13,000 to 9,000 bytes. It pairs with backlog entries 0000214 and 0000222, which cover the combined cap and `CLAUDE.md`.
