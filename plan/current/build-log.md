@@ -66,3 +66,20 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 - Consistency check: clean on the first run over `plan/current`.
 - Autonomous run: no plan gate stop.
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:21:00Z` |
+| End | `` |
+| Wall clock | `` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 2 |
+| MCP calls | 0 |
+| Parallel task batches | 1 |
+| Notes | REQ-001 and REQ-002 (docs) run beside REQ-003 (hook). REQ-004 (setup wiring) waits for REQ-003. |
+
+- In progress: REQ-001 and REQ-002 (2026-10-27T09:21:00Z)
+- In progress: REQ-003 (2026-10-27T09:21:00Z)
