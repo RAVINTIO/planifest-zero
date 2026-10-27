@@ -39,7 +39,7 @@ foreach ($tool in @('windsurf', 'cursor', 'open-code')) {
     $run = Invoke-Setup $ws @($tool)
     Assert-Equal 1 $run.Code "req-001 AC-1: tool $tool exits 1"
     Assert-Contains "Unknown tool: $tool" $run.Output "req-001 AC-1: tool $tool prints the Unknown tool line"
-    Assert-Contains 'Valid tools: claude-code codex' $run.Output "req-001 AC-1: tool $tool prints the valid tools"
+    Assert-Contains 'Valid tools: claude-code, codex' $run.Output "req-001 AC-1: tool $tool prints the valid tools"
     Assert-True ($before -ceq (Get-TreeSnapshot $ws)) "req-001 AC-1: tool $tool leaves the tree unchanged"
     Assert-Equal '' (Get-HooksPath $ws) "req-001 AC-1: tool $tool leaves core.hooksPath unset"
     Remove-SetupWorkspace $ws
