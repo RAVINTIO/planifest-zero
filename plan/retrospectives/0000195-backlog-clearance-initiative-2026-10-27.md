@@ -46,7 +46,7 @@ The initiative merged 15 steps into `initiative/0000195-backlog-clearance`, from
 ### Ids and staging
 
 - The human's session reserved ids 0000214 to 0000216 but left them uncommitted while step 13 ran. Step 13 reserved 0000214 too and committed it. The human's entry became 0000215 (commit `d57472d`). An uncommitted reservation does not protect an id from a concurrent session.
-- A test run in step 13 advanced `plan/backlog/.next-id` from 0000214 to 0000217, and the step restored it by hand (`plan/retrospectives/0000208-refresh-setup-record-2026-10-27.md`).
+- During step 13, `plan/backlog/.next-id` moved from 0000214 to 0000217 in the shared working tree. The step blamed a test run and restored it by hand (`plan/retrospectives/0000208-refresh-setup-record-2026-10-27.md`). The real cause was the human's session, which reserved 0000214 to 0000216 there without a commit. No test writes the real counter. Entry 0000224 covers this.
 - Broad staging swept queued entries into step commits twice. Step 12 committed three queued entries and needed PR #51 to restore 0000212. Step 15 committed 0000220 (`step-12.log`, `step-15.log`). Entry 0000213 covers this.
 - A step 5 subagent ran `git stash` and briefly took the other agents' edits (`step-5.log`).
 
@@ -129,7 +129,6 @@ A blank **Filed as** cell marks a proposal with no backlog entry yet. The last e
 | Restart the driver after a step changes the driver, the initiative skill, or the watcher | pack maintainers | `initiative-run.mjs` | A driver test changes the script mid-run and sees a restart | |
 | Give a plain merge command in the ship skill, with no command substitution | pack maintainers | `ravintio-zero/skills/ravintio-ship/SKILL.md` | A test reads the command, and `merge-guard` allows it | |
 | Clear `RAVINTIO_INITIATIVE_STEP` in the test runner, not only in two suites | pack maintainers | `ravintio-zero/tests/` runner | A step-session run passes every hook suite | |
-| Stop tests from advancing the real `plan/backlog/.next-id` | pack maintainers | `ravintio-zero/tests/` suites that call `reserve-id.mjs` | A full run leaves the counter unchanged | |
 | Forbid `git stash` in subagents during a parallel batch | pack maintainers | `ravintio-zero/standards/agent-dispatch-standards.md` | A test reads the rule | |
 | Ship fails a build log with blank phase wall clocks | pack maintainers | `ravintio-zero/skills/ravintio-ship/SKILL.md` or `consistency-check.mjs` | A check fails a build log with a blank wall clock | |
 | Check `PATH` before a report says a program is missing, and mark any claim drawn only from docs as unverified | pack maintainers | `ravintio-zero/skills/ravintio-validate-and-accept/SKILL.md` | A test reads the rule | |
