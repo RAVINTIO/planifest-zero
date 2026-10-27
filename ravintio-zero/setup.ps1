@@ -14,38 +14,24 @@
 # Manual arg parsing — supports --flag style for cross-platform consistency
 $Tool = $null
 $StrictOrchestrator = $false
-# Flags that earlier releases removed (0000034 ADR-001). An older install's
-# flags marker can still list them, so setup warns and skips each one instead
-# of failing the refresh. --backend-url also took a value: skip the next
-# argument unless it is another flag or a tool name, and never print or
-# store it.
+# Flags that earlier releases removed (0000034 ADR-001). A retired flag does
+# nothing, so setup fails on it during argument parsing, before any change
+# (0000196 ADR-002). The message names the flag and never prints what follows
+# it, so a --backend-url value never reaches the output.
 # Matching is case-sensitive, the same as setup.sh.
 $RetiredFlags = @('--structured-telemetry-mcp', '--backend-url', '--context-mode-mcp', '--include-full-skill-library')
-# Keep in step with $ValidTools below, which is set after argument parsing.
-$RetiredFlagTools = @('claude-code')
+function Stop-OnRetiredFlag {
+    param([string]$Flag)
+    [Console]::Error.WriteLine("! Error: retired flag $Flag was removed in an earlier release and does nothing.")
+    [Console]::Error.WriteLine("  Remove it from the command, then rerun setup.")
+    exit 1
+}
 $i = 0
 while ($i -lt $args.Count) {
-    if ("$($args[$i])".StartsWith('--backend-url=')) {
-        Write-Host "  ! Warning: ignoring retired flag --backend-url (removed in an earlier release)"
-        # PowerShell 7 splits a -File argument such as --backend-url=https://x
-        # at its first colon and drops the colon, so the rest of the value
-        # arrives as the next argument. A form with no colon left was split.
-        # Skip the rest by the spaced-form rule, so it is never taken for the
-        # tool name and never printed (0000036 P3, found by the Windows CI).
-        # A rest that starts with // is skipped too, in case a host keeps the colon.
-        $splitAtColon = -not "$($args[$i])".Contains(':')
-        $i++
-        if ($i -lt $args.Count -and "$($args[$i])".StartsWith('//')) { $i++; continue }
-        if ($splitAtColon -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
-        continue
-    }
-    if ($RetiredFlags -ccontains $args[$i]) {
-        Write-Host "  ! Warning: ignoring retired flag $($args[$i]) (removed in an earlier release)"
-        $isBackendUrl = $args[$i] -ceq '--backend-url'
-        $i++
-        if ($isBackendUrl -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
-        continue
-    }
+    # PowerShell 7 splits a -File argument such as --backend-url=https://x at
+    # its first colon, so match the flag by prefix and print the name only.
+    if ("$($args[$i])".StartsWith('--backend-url=')) { Stop-OnRetiredFlag '--backend-url' }
+    if ($RetiredFlags -ccontains $args[$i]) { Stop-OnRetiredFlag "$($args[$i])" }
     # Case-sensitive, the same as setup.sh (0000035 ADR-003).
     switch -CaseSensitive ($args[$i]) {
         '--strict-orchestrator' { $StrictOrchestrator = $true; $i++ }
@@ -1326,6 +1312,17 @@ if (-not $Tool) {
     exit 0
 }
 
+# Reject an unknown tool before anything changes in the repo (0000196 REQ-001).
+# Exact, case-sensitive match, the same as setup.sh (0000035 S-008).
+if ($ValidTools -cnotcontains $Tool) {
+    # Print only a plain name, so a stray flag value never reaches the
+    # output (0000036 S-003).
+    if ($Tool -cmatch '^[a-z0-9-]+$') { Write-Host "Unknown tool: $Tool" }
+    else { Write-Host "Unknown tool (name not shown)" }
+    Write-Host "Valid tools: $($ValidTools -join ', ')"
+    exit 1
+}
+
 # Stop before installing anything if an old-brand folder is still present
 # (0000160 REQ-002, ADR-003). The migration renames it first.
 foreach ($oldFolder in @('planifest-zero', 'planifest-overrides')) {
@@ -1352,18 +1349,7 @@ if ($StrictOrchestrator) {
     Write-Host "  + plan/.orchestrator-strict (strict orchestrator mode enabled)"
 }
 
-# Exact, case-sensitive match, the same as setup.sh (0000035 S-008).
-if ($ValidTools -ccontains $Tool) {
-    Invoke-RavintioSetup -ToolName $Tool
-}
-else {
-    # Print only a plain name, so a stray flag value never reaches the
-    # output (0000036 S-003).
-    if ($Tool -cmatch '^[a-z0-9-]+$') { Write-Host "Unknown tool: $Tool" }
-    else { Write-Host "Unknown tool (name not shown)" }
-    Write-Host "Valid tools: $($ValidTools -join ', ')"
-    exit 1
-}
+Invoke-RavintioSetup -ToolName $Tool
 
 Write-Host ""
 Write-Host "Setup complete."
