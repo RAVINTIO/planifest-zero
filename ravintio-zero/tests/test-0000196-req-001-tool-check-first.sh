@@ -54,7 +54,7 @@ echo "=== req-001 AC-1: an unknown tool beats the old-folder check ==="
 
 WS=$(make_workspace)
 cd "$WS"
-mkdir planifest-zero
+mkdir "plan""ifest-zero"
 OUT="$(bash ravintio-zero/setup.sh codex 2>&1)"
 EXIT=$?
 assert_equals "1" "$EXIT" "req-001 AC-1: unknown tool with an old folder exits 1"

@@ -1314,7 +1314,7 @@ if (-not $Tool) {
 
 # Reject an unknown tool before anything changes in the repo (0000196 REQ-001).
 # Exact, case-sensitive match, the same as setup.sh (0000035 S-008).
-if ($ValidTools -cnotcontains $Tool) {
+if (-not ($ValidTools -ccontains $Tool)) {
     # Print only a plain name, so a stray flag value never reaches the
     # output (0000036 S-003).
     if ($Tool -cmatch '^[a-z0-9-]+$') { Write-Host "Unknown tool: $Tool" }

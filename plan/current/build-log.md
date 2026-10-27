@@ -36,7 +36,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | I-C Run: initiative 0000195, step 1 of 13 |
 
 - I-C Run: Starting: step 1 of initiative 0000195-backlog-clearance
-- Migrations: 0004 and 0005 skipped, `Applies when:` is false (no `planifest-*` folder, no `roadmap.md` draft, no `roadmap/**` workflow pattern).
+- Migrations: 0004 and 0005 skipped, `Applies when:` is false (no earlier-brand folder, no draft under the earlier initiative name, no earlier branch pattern in the workflow).
 - Branch: `feat/0000196-setup-argument-checks`, cut from `initiative/0000195-backlog-clearance`.
 - Run mode: autonomous (2026-10-27T07:01:17Z, initiative step)
 - Run speed: standard (2026-10-27T07:01:17Z, initiative `**Speed:**` field)

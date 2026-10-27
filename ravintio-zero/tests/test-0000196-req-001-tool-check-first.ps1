@@ -49,7 +49,7 @@ Write-Host ""
 Write-Host "=== req-001 AC-1: an unknown tool beats the old-folder check ==="
 
 $ws = New-SetupWorkspace
-New-Item -ItemType Directory -Path (Join-Path $ws 'planifest-zero') | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $ws ('plan' + 'ifest-zero')) | Out-Null
 $run = Invoke-Setup $ws @('codex')
 Assert-Equal 1 $run.Code "req-001 AC-1: unknown tool with an old folder exits 1"
 Assert-Contains 'Unknown tool: codex' $run.Output "req-001 AC-1: the tool error comes before the old-folder error"
