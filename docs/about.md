@@ -11,8 +11,8 @@ updated: "27 Oct 2026"
 | Field | Value |
 |-------|-------|
 | Version | `0.20.0` |
-| Last feature | `0000192-rename-runner-lock-and-archive` |
-| Updated | `26 Oct 2026` |
+| Last feature | `0000196-setup-argument-checks` |
+| Updated | `27 Oct 2026` |
 
 ## What this is
 
