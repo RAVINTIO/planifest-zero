@@ -118,22 +118,22 @@ Times come from merge commits on the initiative branch, in UTC. Each time runs f
 
 ## Actions
 
-A blank **Filed as** cell marks a proposal with no backlog entry yet. The last eight rows point at entries that already exist.
+Each row names the backlog entry that holds the action.
 
 | Change | Owner | Lives in | Verified by | Filed as |
 |--------|-------|----------|-------------|----------|
-| Chart flags any entry that widens what a guard lets through, and asks the human to approve it | pack maintainers | `ravintio-zero/skills/ravintio-initiative/SKILL.md`, chart rules in `ravintio-zero/standards/roadmap-standards.md` | A test reads the rule in the chart text | |
-| Commit each id reservation as soon as it is made, in step and human sessions | pack maintainers | `ravintio-zero/scripts/reserve-id.mjs`, `ravintio-zero/skills/ravintio-initiative/SKILL.md` | A test reserves an id and finds the counter change committed | |
-| Chart lists each confirmation a step skill asks for, and pre-approves it or plans a human stop | pack maintainers | chart rules, `## Decisions` table | A test reads the rule, and a chore step with a confirmation runs with no stop | |
-| Route a repo instruction that the human asks for mid-run into the next step's scope, as step 13 did. Keep the `gate-write` hook as it is | pack maintainers | `ravintio-zero/skills/ravintio-initiative/SKILL.md` | A test reads the rule in the initiative skill | |
-| Restart the driver after a step changes the driver, the initiative skill, or the watcher | pack maintainers | `initiative-run.mjs` | A driver test changes the script mid-run and sees a restart | |
-| Give a plain merge command in the ship skill, with no command substitution | pack maintainers | `ravintio-zero/skills/ravintio-ship/SKILL.md` | A test reads the command, and `merge-guard` allows it | |
-| Clear `RAVINTIO_INITIATIVE_STEP` in the test runner, not only in two suites | pack maintainers | `ravintio-zero/tests/` runner | A step-session run passes every hook suite | |
-| Forbid `git stash` in subagents during a parallel batch | pack maintainers | `ravintio-zero/standards/agent-dispatch-standards.md` | A test reads the rule | |
-| Ship fails a build log with blank phase wall clocks | pack maintainers | `ravintio-zero/skills/ravintio-ship/SKILL.md` or `consistency-check.mjs` | A check fails a build log with a blank wall clock | |
-| Check `PATH` before a report says a program is missing, and mark any claim drawn only from docs as unverified | pack maintainers | `ravintio-zero/skills/ravintio-validate-and-accept/SKILL.md` | A test reads the rule | |
-| Chart records whether each step may skip P1 | pack maintainers | chart rules, `## Decisions` table | A test reads the column in the template | |
-| Keep each step's full log when the driver re-runs a step | pack maintainers | `initiative-run.mjs` | A driver test re-runs a step and finds both logs | |
+| Chart flags any entry that widens what a guard lets through, and asks the human to approve it | pack maintainers | `ravintio-zero/skills/ravintio-initiative/SKILL.md`, chart rules in `ravintio-zero/standards/roadmap-standards.md` | A test reads the rule in the chart text || `plan/backlog/0000223-chart-flags-guard-widening/` |
+| Commit each id reservation as soon as it is made, in step and human sessions | pack maintainers | `ravintio-zero/scripts/reserve-id.mjs`, `ravintio-zero/skills/ravintio-initiative/SKILL.md` | A test reserves an id and finds the counter change committed || `plan/backlog/0000224-commit-id-reservations-at-once/` |
+| Chart lists each confirmation a step skill asks for, and pre-approves it or plans a human stop | pack maintainers | chart rules, `## Decisions` table | A test reads the rule, and a chore step with a confirmation runs with no stop || `plan/backlog/0000225-chart-plans-step-confirmations/` |
+| Route a repo instruction that the human asks for mid-run into the next step's scope, as step 13 did. Keep the `gate-write` hook as it is | pack maintainers | `ravintio-zero/skills/ravintio-initiative/SKILL.md` | A test reads the rule in the initiative skill || `plan/backlog/0000226-route-mid-run-instructions-to-step-scope/` |
+| Restart the driver after a step changes the driver, the initiative skill, or the watcher | pack maintainers | `initiative-run.mjs` | A driver test changes the script mid-run and sees a restart || `plan/backlog/0000227-restart-driver-after-tooling-change/` |
+| Give a plain merge command in the ship skill, with no command substitution | pack maintainers | `ravintio-zero/skills/ravintio-ship/SKILL.md` | A test reads the command, and `merge-guard` allows it || `plan/backlog/0000228-plain-merge-command-in-ship/` |
+| Clear `RAVINTIO_INITIATIVE_STEP` in the test runner, not only in two suites | pack maintainers | `ravintio-zero/tests/` runner | A step-session run passes every hook suite || `plan/backlog/0000229-runner-clears-step-variable/` |
+| Forbid `git stash` in subagents during a parallel batch | pack maintainers | `ravintio-zero/standards/agent-dispatch-standards.md` | A test reads the rule || `plan/backlog/0000231-no-stash-in-parallel-subagents/` |
+| Ship fails a build log with blank phase wall clocks | pack maintainers | `ravintio-zero/skills/ravintio-ship/SKILL.md` or `consistency-check.mjs` | A check fails a build log with a blank wall clock || `plan/backlog/0000232-ship-fails-blank-wall-clocks/` |
+| Check `PATH` before a report says a program is missing, and mark any claim drawn only from docs as unverified | pack maintainers | `ravintio-zero/skills/ravintio-validate-and-accept/SKILL.md` | A test reads the rule || `plan/backlog/0000233-check-path-before-missing-claims/` |
+| Chart records whether each step may skip P1 | pack maintainers | chart rules, `## Decisions` table | A test reads the column in the template || `plan/backlog/0000234-chart-records-p1-skip/` |
+| Keep each step's full log when the driver re-runs a step | pack maintainers | `initiative-run.mjs` | A driver test re-runs a step and finds both logs || `plan/backlog/0000235-keep-full-step-logs-on-rerun/` |
 | Watcher false events | pack maintainers | `initiative-watch.mjs` | See the entry | `plan/backlog/0000216-watcher-false-events/` |
 | Stream step session activity | pack maintainers | `initiative-run.mjs` | See the entry | `plan/backlog/0000219-stream-step-session-activity/` |
 | Size cap ignores local overrides | pack maintainers | `test-0000151-req-011` | See the entry | `plan/backlog/0000214-size-cap-ignores-local-overrides/` |
