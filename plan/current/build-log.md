@@ -88,3 +88,21 @@ Design confirmed: draft-accepted (initiative) (2026-10-27T09:45:00Z)
 - Done: U4-living-docs (2026-10-27T09:54:54Z)
 - Rework: REQ-001: the mid-pipeline reference edit changed a base line that test-0000151-req-011 guards, so the new sentence moved to its own line (2026-10-27T09:54:54Z)
 - Full suite: feature suites 177 passed and 2 failed before the fix. One failure was the base-line guard, now fixed. The other is test-0000151-req-014, installed skill copies under `.claude/skills/` differ from source. That folder is git-ignored and refreshes at step 13, as in steps 1 to 5.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:55:19Z` |
+| End | `2026-10-27T09:55:19Z` |
+| Wall clock | `3` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Checks and the security review are small and ran inline. |
+
+- Self-correct cycles: 1 (recorded under P2).
+- Security: no finding above low.
+- Autonomous run: no acceptance stop. Evidence is in `acceptance-evidence.md`.
