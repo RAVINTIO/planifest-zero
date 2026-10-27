@@ -112,6 +112,16 @@ The plan phase ends at one human gate. Before presenting the gate summary:
 
 Then present the artifact set summary and stop for human confirmation.
 
+## Concurrency plan
+
+Write a `## Concurrency plan` section in each execution plan, per `ravintio-zero/templates/execution-plan.template.md`. Rewrite it in any re-plan after a reopened phase.
+
+- Place two units with no dependency and no shared write target in one batch.
+- Give a `Sequential reason` for each unit that runs alone in its batch.
+- Name only units from earlier batches in `Depends on`.
+
+The consistency check validates the section (check 8).
+
 ## Parallelism
 
 Dispatch subagents per `ravintio-zero/standards/agent-dispatch-standards.md`.

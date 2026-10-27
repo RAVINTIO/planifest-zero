@@ -1,8 +1,8 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000200-reply-conventions"
-version: "0.22.0"
+feature: "0000201-plan-concurrent-work"
+version: "0.23.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
@@ -42,6 +42,7 @@ responsibilities:
   - "Cut every plan line that the ratchet block message and the consistency check echo to 200 characters, and mark the cut"
   - "Derive four workflow metrics at ship from build-log marker lines, and report each threshold breach in the build report and PR description without blocking"
   - "Refuse a symlinked entry path in park, and prune installed hooks named on the retired list, and the settings.json entries that run them, in setup"
+  - "Plan concurrent work in every execution plan with a Concurrency plan table of units, dependencies, write targets, and batches, check it in the consistency check, and dispatch by its batches"
   - "Run each initiative step with a model, an optional turn cap, a step log, and telemetry labels"
   - "Stop every run, gated or autonomous, when work adds a library or service that is not on the approved list"
   - "Keep the orchestrator skill small by moving rarely used sections into references/ files"

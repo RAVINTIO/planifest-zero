@@ -81,6 +81,17 @@ A small page that the parent needs in full may run in the main session.
 
 ---
 
+## Concurrency plan
+
+Dispatch follows the batches in the `## Concurrency plan` of `plan/current/execution-plan.md`.
+
+- Two units with no dependency and no shared write target share a batch.
+- A unit alone in its batch gives its reason in the `Sequential reason` column.
+- A departure from the plan's batches is recorded in the build log with its reason.
+- Check 8 of `consistency-check.mjs` validates the table.
+
+---
+
 ## Fast batches
 
 The run speed is in `plan/.run-speed`. It holds `fast` or `standard`. A missing or unknown value counts as `standard`. See the orchestrator skill.

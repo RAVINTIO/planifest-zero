@@ -57,6 +57,14 @@ flowchart LR
     B -->|{{method}}| C[{{component}}]
 ```
 
+## Concurrency plan
+
+Units in one batch run at the same time. A unit alone in its batch gives its reason. See the [guide](execution-plan-guide.md).
+
+| Unit | Depends on | Writes | Batch | Sequential reason |
+|------|-----------|--------|-------|-------------------|
+| {{unit-id}} | {{unit-ids in earlier batches, or none}} | {{files the unit writes}} | {{batch-number}} | {{reason, or none when the batch holds other units}} |
+
 ## Assumptions
 
 Each is a risk item with likelihood: medium.

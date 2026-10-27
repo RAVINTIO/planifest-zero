@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000200-reply-conventions
+Last updated: 0000201-plan-concurrent-work
 
 ## What this repo is
 
@@ -35,7 +35,7 @@ P1 starts with a story mapping pass. It writes `plan/current/story-map.md` from 
 
 Each acceptance criterion is one checkbox line, `- [ ] AC-{n}: {name}`, with indented `Given`, `When`, and `Then` bullets under it. `And` and `But` continue the step above. The limit of three criteria counts checkbox lines.
 
-`scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2. Both programs cut an echoed line to 200 characters and append ` …[truncated]` if they cut it, so a long line never floods the agent's context.
+`scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. Every execution plan holds a `## Concurrency plan` table of units, dependencies, write targets, and batches. Check 8 reports a plan that lacks the section, a unit alone in its batch with no reason, two units in one batch that share a write target, and a dependency on a unit in the same or a later batch. The implement phase dispatches by those batches. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2. Both programs cut an echoed line to 200 characters and append ` …[truncated]` if they cut it, so a long line never floods the agent's context.
 
 ### Run modes
 
