@@ -27,7 +27,7 @@ bad_names() {
 }
 
 echo "=== (a) skill names ==="
-assert_equals "13" "$(ls -d "$ZERO_DIR"/skills/ravintio-*/ | wc -l | tr -d ' ')" "the pack ships 13 ravintio- skills"
+assert_equals "14" "$(ls -d "$ZERO_DIR"/skills/ravintio-*/ | wc -l | tr -d ' ')" "the pack ships 14 ravintio- skills"
 assert_equals "" "$(bad_names "$ZERO_DIR/skills")" "every name field matches its folder and starts with ravintio-"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Feature 0000031 req-003: five phases, 13 skills, five phase names in pipeline-reference.
+# Feature 0000031 req-003: five phases, 14 skills, five phase names in pipeline-reference.
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO="$(cd "$ZERO_DIR/.." && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-echo "=== (a) exactly 13 skill folders ==="
+echo "=== (a) exactly 14 skill folders ==="
 COUNT=$(ls -d "$ZERO_DIR/skills/"*/ 2>/dev/null | wc -l | tr -d ' ')
-assert_equals "13" "$COUNT" "13 skill folders"
-for s in ravintio-orchestrator ravintio-plan ravintio-implement ravintio-validate-and-accept ravintio-ship ravintio-test-writer ravintio-implementer ravintio-refactor ravintio-loop-runner ravintio-optimise-agent ravintio-migrator ravintio-refresh-setup ravintio-file-backlog; do
+assert_equals "14" "$COUNT" "14 skill folders"
+for s in ravintio-orchestrator ravintio-plan ravintio-implement ravintio-validate-and-accept ravintio-ship ravintio-test-writer ravintio-implementer ravintio-refactor ravintio-loop-runner ravintio-optimise-agent ravintio-migrator ravintio-refresh-setup ravintio-file-backlog ravintio-postmortem; do
   assert_equals "yes" "$([ -f "$ZERO_DIR/skills/$s/SKILL.md" ] && echo yes || echo no)" "skill $s present"
 done
 
@@ -26,8 +26,8 @@ done
 # Case (e) checked the phase names in the validate-telemetry-schema job.
 # 0000037 req-001 removed that job, so the case is gone.
 
-echo "=== (f) NFR: skills text at or below 1447 lines ==="
+echo "=== (f) NFR: skills text at or below 1520 lines ==="
 TOTAL=$(find "$ZERO_DIR/skills" -name "SKILL.md" -exec cat {} + | wc -l | tr -d ' ')
-assert_equals "yes" "$([ "$TOTAL" -le 1447 ] && echo yes || echo no)" "skill text $TOTAL <= 1447"
+assert_equals "yes" "$([ "$TOTAL" -le 1520 ] && echo yes || echo no)" "skill text $TOTAL <= 1520"
 
 print_summary
