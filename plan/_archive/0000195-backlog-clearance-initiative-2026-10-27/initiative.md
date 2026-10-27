@@ -1,13 +1,13 @@
 ---
 title: "Initiative: 0000195 - backlog clearance"
 summary: "Clears 14 open backlog entries in 12 feature steps, then a chore step refreshes the setup record and commits the queued entries."
-status: "active"
+status: "delivered"
 ---
 # Initiative: 0000195 - backlog clearance
 
 **Goal:** Clear every valid open backlog entry from 2026-10-26, one feature release per step. A final chore step refreshes the setup record and commits the backlog entries that the steps queued.
 **Branch:** initiative/0000195-backlog-clearance
-**Status:** active
+**Status:** delivered
 **Position:** 16
 **Speed:** standard
 
