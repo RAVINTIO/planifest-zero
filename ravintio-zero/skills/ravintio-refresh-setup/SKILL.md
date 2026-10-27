@@ -11,8 +11,8 @@ description: Refreshes a RAVINTIO install by detecting the target tool, reading 
 
 The target tool is always explicit input, never silently guessed:
 
-1. `claude-code` is the only supported tool. It matches `setup.sh`/`setup.ps1`'s `$VALID_TOOLS` / `$ValidTools`.
-2. Scan the repo root for the install signal: a `.claude/` directory.
+1. `claude-code` and `codex` are the supported tools. They match `setup.sh`/`setup.ps1`'s `$VALID_TOOLS` / `$ValidTools`.
+2. Scan the repo root for the install signal: a `.claude/` directory for `claude-code`, or an `.agents/skills/` directory for `codex`.
 3. Install found: proceed to Step 2. No install found: go to Step 1a.
 
 ### Step 1a - No Install Found
@@ -24,7 +24,7 @@ Do not proceed to Step 2. Do not ask "which tool" in this branch. That question 
 
 ## Step 2 - Check for an Interrupted Prior Run
 
-1. Check whether the boot file `CLAUDE.md` is missing (the tool's own directory is `.claude`).
+1. Check whether the boot file is missing. It is `CLAUDE.md` for `claude-code` (tool directory `.claude`) and `AGENTS.md` for `codex` (tool directory `.agents`).
 2. Check `{tool-dir}/.ravintio-setup-flags` for `attemptStatus: "pending"`.
 3. If both are true, this is an interrupted prior run. Report the recovered flags and command from the marker file, at high confidence (source: marker file, not re-inferred). Go directly to Step 4, skipping Step 3.
 4. If either is false, this is a normal run. Continue to Step 3.

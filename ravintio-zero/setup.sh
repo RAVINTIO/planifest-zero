@@ -5,7 +5,7 @@ set -euo pipefail
 #
 # Usage:  ./ravintio-zero/setup.sh <tool>
 #
-# Tools:  claude-code
+# Tools:  claude-code, codex
 #
 # Each tool's specific config lives in setup/<tool>.sh
 # This script handles shared logic only.
@@ -16,7 +16,7 @@ SKILLS_SRC="$SCRIPT_DIR/skills"
 WORKFLOWS_SRC="$SCRIPT_DIR/workflows"
 SETUP_DIR="$SCRIPT_DIR/setup"
 
-VALID_TOOLS="claude-code"
+VALID_TOOLS="claude-code codex"
 STRICT_ORCHESTRATOR=false
 
 # Prepended to every node script that writes settings.json (0000034 ADR-002).
@@ -308,6 +308,80 @@ prune_retired_hooks() {
       fi
     done < <(find "$root" -type f -name "$name.mjs" 2>/dev/null)
   done
+}
+
+# Wire the Codex hooks (0000207 ADR-002). Only merge-guard has a Codex contract
+# that the Codex docs confirm: a PreToolUse group for Bash, exit 2, and the
+# reason on stderr. Every other RAVINTIO hook stays an instruction in
+# AGENTS.md. The report names both lists, so nobody assumes more is enforced.
+install_codex_hooks() {
+  local hooks_dir_rel="$1"   # e.g. .codex/hooks/enforcement
+  local hooks_file_rel="$2"  # e.g. .codex/hooks.json
+  local src="$SCRIPT_DIR/hooks/enforcement"
+  local dest="$PROJECT_ROOT/$hooks_dir_rel"
+  local hooks_file="$PROJECT_ROOT/$hooks_file_rel"
+
+  if [ ! -d "$src" ]; then
+    echo "  ! Warning: enforcement hook scripts not found at $src — skipping"
+    return
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    echo "  ! Warning: node is not installed, so setup wired no Codex hook"
+    return
+  fi
+
+  echo ""
+  echo "  Installing RAVINTIO Codex hooks"
+
+  mkdir -p "$dest"
+  local script_name
+  for script_name in merge-guard.mjs read-stdin.mjs; do
+    cp "$src/$script_name" "$dest/$script_name"
+    echo "  + $hooks_dir_rel/$script_name"
+  done
+
+  local command_line="node \"\$(git rev-parse --show-toplevel)/$hooks_dir_rel/merge-guard.mjs\""
+  RAVINTIO_HOOK_CMD="$command_line" RAVINTIO_HOOK_MARK="$hooks_dir_rel/merge-guard.mjs" \
+    RAVINTIO_SETTINGS="$hooks_file" RAVINTIO_SETTINGS_REL="$hooks_file_rel" \
+    node -e "$RAVINTIO_WRITE_SETTINGS_JS"'
+      const fs = require("fs");
+      const sf = process.env.RAVINTIO_SETTINGS;
+      const rel = process.env.RAVINTIO_SETTINGS_REL;
+      const isObj = v => v !== null && typeof v === "object" && !Array.isArray(v);
+      let s = {};
+      if (fs.existsSync(sf)) {
+        try { s = JSON.parse(fs.readFileSync(sf, "utf8").replace(/^\uFEFF/, "")); } catch (_) {
+          process.stderr.write("! Error: " + rel + " is not valid JSON. Fix it and rerun setup.\n");
+          process.exit(1);
+        }
+      }
+      if (!isObj(s) || !(s.hooks === undefined || s.hooks === null || isObj(s.hooks)) ||
+          !(isObj(s.hooks) ? (s.hooks.PreToolUse === undefined || s.hooks.PreToolUse === null || Array.isArray(s.hooks.PreToolUse)) : true)) {
+        process.stderr.write("! Error: " + rel + " is valid JSON but not a hooks file setup can read. Fix it and rerun setup.\n");
+        process.exit(1);
+      }
+      s.hooks = s.hooks || {};
+      const mark = process.env.RAVINTIO_HOOK_MARK;
+      const kept = [];
+      for (const g of s.hooks.PreToolUse || []) {
+        if (!isObj(g) || !Array.isArray(g.hooks)) { kept.push(g); continue; }
+        const rest = g.hooks.filter(h => !(isObj(h) && typeof h.command === "string" && h.command.includes(mark)));
+        if (rest.length === g.hooks.length) kept.push(g);
+        else if (rest.length > 0) kept.push({ ...g, hooks: rest });
+      }
+      kept.push({ matcher: "Bash", hooks: [{ type: "command", command: process.env.RAVINTIO_HOOK_CMD, statusMessage: "Checking merge command" }] });
+      s.hooks.PreToolUse = kept;
+      writeSettings(sf, JSON.stringify(s, null, 2) + "\n");
+    ' || exit 1
+  echo "  + $hooks_file_rel (merge-guard wired)"
+
+  echo ""
+  echo "  Active hooks:"
+  echo "    merge-guard (PreToolUse: Bash)"
+  echo "  Fallback hooks, stated as instructions in AGENTS.md:"
+  echo "    gate-write, ratchet-check, em-dash-guard, auto-trigger-orchestrator,"
+  echo "    check-orchestrator-presence, check-design, check-reply-prefix"
+  echo "  Review and trust the project hooks with /hooks in Codex."
 }
 
 install_enforcement_hooks() {
@@ -888,6 +962,11 @@ setup_tool() {
   # Not gated on MCP flags — enforcement applies to all RAVINTIO-enabled projects.
   if [ -n "${TOOL_SETTINGS_FILE:-}" ]; then
     install_enforcement_hooks "hooks/enforcement" ".claude/hooks/enforcement" "$TOOL_SETTINGS_FILE"
+  fi
+
+  # Codex wires its own hook set (0000207).
+  if [ -n "${TOOL_CODEX_HOOKS_FILE:-}" ]; then
+    install_codex_hooks "$TOOL_CODEX_HOOKS_DIR" "$TOOL_CODEX_HOOKS_FILE"
   fi
 
   # Add Agent to allowedTools so sub-agent dispatch works without per-use confirmation (REQ-002)

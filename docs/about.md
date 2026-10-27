@@ -1,6 +1,6 @@
 ---
-version: "0.28.0"
-feature: "0000206-chart-time-decisions"
+version: "0.29.0"
+feature: "0000207-codex-support"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,13 +10,13 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.28.0` |
-| Last feature | `0000206-chart-time-decisions` |
+| Version | `0.29.0` |
+| Last feature | `0000207-codex-support` |
 | Updated | `27 Oct 2026` |
 
 ## What this is
 
-RAVINTIO Zero is a specification-first pipeline for Claude Code. The
+RAVINTIO Zero is a specification-first pipeline for Claude Code and Codex. The
 repository holds one component, `ravintio-zero`. It is a component pack of
 standards, skills, hooks, templates, schemas, and setup scripts.
 
