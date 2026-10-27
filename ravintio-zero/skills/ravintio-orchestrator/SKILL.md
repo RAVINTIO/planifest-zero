@@ -281,6 +281,7 @@ At each stop, follow these steps:
 1. Append `Blocked: {exception} ({ISO-8601 timestamp})` to the build log under the current phase block, and commit it.
 2. Print the message for the exception, then wait.
 3. When the human acts, append `Resolved: {exception} ({ISO-8601 timestamp}, {decision})` to the build log, and commit it.
+4. Run `ravintio-postmortem` for the stop, before ship.
 
 After the human acts, the run resumes in the same mode from `plan/.run-mode`.
 

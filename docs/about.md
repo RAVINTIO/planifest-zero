@@ -1,6 +1,6 @@
 ---
-version: "0.24.0"
-feature: "0000202-improvement-loops"
+version: "0.25.0"
+feature: "0000203-blameless-postmortems"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.24.0` |
-| Last feature | `0000202-improvement-loops` |
+| Version | `0.25.0` |
+| Last feature | `0000203-blameless-postmortems` |
 | Updated | `27 Oct 2026` |
 
 ## What this is
