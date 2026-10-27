@@ -65,6 +65,7 @@ Read the archived `build-log.md`. It is now the only copy. Write `build-report.m
 - Parallelism used, and multi-task phases that ran sequentially.
 - Self-corrections, with whether each was avoidable.
 - One improvement suggestion per phase where warranted.
+- The postmortems the run wrote to `plan/postmortems/`, by path, or `Postmortems: none`.
 
 Then run `node ravintio-zero/scripts/workflow-metrics.mjs "{archive-folder}"` and append its output to `build-report.md`. If it exits non-zero, write `Workflow governance: not measured ({reason})` instead. The reason is `build log unreadable` or `thresholds invalid`, never a path or error text. A breach does not stop ship in either run mode.
 

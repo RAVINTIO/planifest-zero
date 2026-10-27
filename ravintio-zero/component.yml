@@ -102,7 +102,7 @@ scope:
     - "Capability skill intake via ravintio-overrides/capability-skills/"
     - "Migration infrastructure for standards propagation"
     - "setup.sh and setup.ps1 for Claude Code registration"
-    - "The 13 skills: 12 pipeline skills across the five phases, and ravintio-file-backlog for filing an uncommitted backlog entry in another repo"
+    - "The 14 skills: 12 pipeline skills across the five phases, ravintio-file-backlog for filing an uncommitted backlog entry in another repo, and ravintio-postmortem for blameless postmortems"
     - "Skills read templates, schemas, and standards from ravintio-zero/ by full path, with no per-skill copies"
     - "Orchestrator references: skills/ravintio-orchestrator/references/orchestrator-*.md"
     - "scripts/: check-attribution.mjs, consistency-check.mjs, product-version.mjs, release-tag.mjs, reserve-id.mjs, initiative-labels.mjs, initiative-run.mjs, self-description-check.mjs, workflow-metrics.mjs, promote-to-regression.sh, refresh-delete-boot-files"
