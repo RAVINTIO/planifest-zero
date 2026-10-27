@@ -12,7 +12,14 @@
  *   On first prompt of a session (or after session change), injects a hard-block
  *   banner that instructs the model to load the orchestrator skill and write the
  *   session_id to plan/.orchestrator-ack before processing anything else.
- *   Once plan/.orchestrator-ack contains the matching session_id, exits 0 silently.
+ *   Once plan/.orchestrator-ack or plan/.initiative-ack contains the matching
+ *   session_id, exits 0 silently.
+ *   If neither matches and the driver lock plan/.initiative-runner.lock exists,
+ *   the banner names the ravintio-initiative skill and plan/.initiative-ack instead.
+ *
+ * Environment: RAVINTIO_INITIATIVE_STEP=1 marks a step session started by the
+ * initiative driver. The driver sets it. The hook then ignores the lock and
+ * keeps the orchestrator banner.
  *
  * Design: REQ-008.
  * Exit codes: 0 always — this hook informs but never blocks via exit 2.
@@ -42,8 +49,23 @@ try {
   const strictPath = join(cwd, "plan", ".orchestrator-strict");
   const isStrict = existsSync(strictPath);
 
+  // The driver lock marks an initiative session. A step session sets
+  // RAVINTIO_INITIATIVE_STEP=1 and gets the orchestrator banner instead.
+  const initiativeDriver =
+    existsSync(join(cwd, "plan", ".initiative-runner.lock")) &&
+    process.env.RAVINTIO_INITIATIVE_STEP !== "1";
+
   if (!isStrict) {
     // Advisory mode: brief banner, always passes.
+    if (initiativeDriver) {
+      process.stdout.write(
+        `RAVINTIO PIPELINE ACTIVE [${featureId}]: ` +
+        `An initiative run is in progress. ` +
+        `If the ravintio-initiative skill is not currently loaded in this session ` +
+        `(e.g. after context compaction or a session resume), load it now before responding.\n`
+      );
+      process.exit(0);
+    }
     process.stdout.write(
       `RAVINTIO PIPELINE ACTIVE [${featureId}]: ` +
       `A RAVINTIO pipeline is in progress. ` +
@@ -54,13 +76,27 @@ try {
     process.exit(0);
   }
 
-  // Strict mode: check session ack.
+  // Strict mode: check session ack. Either ack file silences the hook.
   const sessionId = (input?.session_id ?? "").trim();
-  const ackPath = join(cwd, "plan", ".orchestrator-ack");
+  if (sessionId) {
+    for (const name of [".initiative-ack", ".orchestrator-ack"]) {
+      const p = join(cwd, "plan", name);
+      try {
+        if (existsSync(p) && readFileSync(p, "utf-8").trim() === sessionId) process.exit(0);
+      } catch { /* unreadable ack counts as no ack */ }
+    }
+  }
 
-  if (sessionId && existsSync(ackPath)) {
-    const acked = readFileSync(ackPath, "utf-8").trim();
-    if (acked === sessionId) process.exit(0); // acked for this session — silent
+  if (initiativeDriver) {
+    process.stdout.write(
+      `⛔ RAVINTIO STRICT MODE [${featureId}]: ` +
+      `Initiative presence is required and has not been confirmed for this session. ` +
+      `STOP — do not process the user's request below. ` +
+      `Load the ravintio-initiative skill now, ` +
+      `then write the following session ID to plan/.initiative-ack: ${sessionId || "(session_id unavailable — write current timestamp)"}\n` +
+      `Once plan/.initiative-ack is written, future prompts in this session will pass silently.\n`
+    );
+    process.exit(0);
   }
 
   // Not acked. Inject hard-block banner with session_id so the model can write the ack.

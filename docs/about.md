@@ -1,6 +1,6 @@
 ---
-version: "0.26.0"
-feature: "0000204-run-and-initiative-retrospectives"
+version: "0.27.0"
+feature: "0000205-initiative-skill"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.26.0` |
-| Last feature | `0000204-run-and-initiative-retrospectives` |
+| Version | `0.27.0` |
+| Last feature | `0000205-initiative-skill` |
 | Updated | `27 Oct 2026` |
 
 ## What this is

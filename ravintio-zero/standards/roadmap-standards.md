@@ -1,12 +1,12 @@
 ---
 title: "Roadmap standards"
-summary: "How the orchestrator and ship skills chart, activate, run, advance, and deliver an initiative."
+summary: "How the initiative, orchestrator, and ship skills chart, activate, run, advance, and deliver an initiative."
 status: "active"
 version: "0.1.0"
 ---
 # Roadmap standards
 
-Read this file first when an initiative is involved. The orchestrator and ship skills point here to keep their text short. An initiative is a chain of feature steps that the human approves once. Read `ravintio-zero/templates/initiative.template.md` before you write one.
+Read this file first when an initiative is involved. The initiative, orchestrator, and ship skills point here to keep their text short. An initiative is a chain of feature steps that the human approves once. Read `ravintio-zero/templates/initiative.template.md` before you write one.
 
 For the meaning of "roadmap", "roadmap initiative", and the initiative states, see the [roadmap and initiative glossary](../project-operations.md#roadmap-and-initiative-glossary).
 
@@ -34,13 +34,40 @@ The driver still requires status `active` before it runs a step.
 
 ### Stages
 
-| Stage | Prefix | Runs on | What happens |
-|-------|--------|---------|--------------|
-| Chart | `I-A Chart:` | `main` | Plan the initiative with the human and take their confirmation. |
-| Activate | `I-B Activate:` | initiative branch | Cut the initiative branch, write the active initiative, and offer the driver. |
-| Run | `I-C Run:` | feature branch | Run one step through P0 to P4. |
-| Advance | `I-D Advance:` | initiative branch | Merge the step PR into the initiative branch and tag it. The ship skill owns this stage. |
-| Delivery | `I-E Delivery:` | initiative branch | Archive the initiative and raise the initiative PR to `main`. The ship skill owns this stage. |
+| Stage | Prefix | Owner | Runs on | What happens |
+|-------|--------|-------|---------|--------------|
+| Chart | `I-A Chart:` | `ravintio-initiative` | `main` | Plan the initiative with the human and take their confirmation. |
+| Activate | `I-B Activate:` | `ravintio-initiative` | initiative branch | Cut the initiative branch, write the active initiative, and start the driver and the watch script. |
+| Run | `I-C Run:` | `ravintio-orchestrator` | feature branch | Run one step through P0 to P4. |
+| Advance | `I-D Advance:` | `ravintio-ship` | initiative branch | Merge the step PR into the initiative branch and tag it. |
+| Delivery | `I-E Delivery:` | `ravintio-initiative` | initiative branch | Archive the initiative and raise the initiative PR to `main`. |
+
+### The three parts
+
+Three parts run an initiative. The human talks only to their own session. Step sessions run with no human present.
+
+| Part | What it is | Runs where | Owns |
+|------|-----------|------------|------|
+| `ravintio-initiative` skill | The initiative coordinator | The human's session | Chart, activate, watching the steps, progress reports, and delivery |
+| Driver, `initiative-run.mjs` | A script with no AI | A background task that the initiative skill starts | Starting each step session in turn, and stopping on a `Blocked:` line |
+| `ravintio-orchestrator` skill | The feature coordinator | Each step session, a separate `claude -p` process | One feature from P0 to P4, then the merge into the initiative branch |
+
+An initiative runs in this sequence:
+
+1. **I-A Chart.** The initiative skill plans the steps with the human and takes their approval.
+2. **I-B Activate.** The initiative skill cuts the initiative branch and starts the driver.
+3. **I-C Run.** The driver starts a step session. It loads the orchestrator and builds one feature from P0 to P4.
+4. **I-D Advance.** The step session merges its feature PR into the initiative branch, tags the merge commit, and exits.
+5. The driver starts the next step session. Stages I-C and I-D repeat until no steps remain.
+6. While steps run, the initiative skill watches the build log and git, and reports to the human. It never edits the working tree.
+7. **I-E Delivery.** After the driver exits, the initiative skill archives the initiative and raises the initiative PR to `main`. It then gives the final report.
+
+#### Sessions and ack files
+
+- The initiative skill writes `plan/.initiative-ack`. A step session writes `plan/.orchestrator-ack`. The strict-mode hook accepts either.
+- The orchestrator never resumes an initiative. The initiative skill never resumes a step.
+- A step session has `RAVINTIO_INITIATIVE_STEP=1` in its environment. The auto-trigger hook loads the orchestrator for it and the initiative skill for any other session with an active initiative.
+- While the driver lock `plan/.initiative-runner.lock` is held, the initiative skill holds new backlog entries in `plan/.initiative-queue/`. It commits them to the initiative branch after the step merges.
 
 ### I-A Chart
 
@@ -121,9 +148,9 @@ When the checks pass:
 1. Cut `initiative/{id}-{slug}` from `main`.
 2. In one commit, write `plan/current-initiative/initiative.md` with `status: active` and delete the draft folder `plan/roadmap/{id}-{slug}/`.
 3. Push the initiative branch to `origin`.
-4. Offer to start the driver `ravintio-zero/scripts/initiative-run.mjs`.
+4. Start the driver `ravintio-zero/scripts/initiative-run.mjs` and the watch script `ravintio-zero/scripts/initiative-watch.mjs` as background tasks, because a foreground Bash call times out after 10 minutes.
 
-A Claude session runs the driver as a background task, because a foreground Bash call times out after 10 minutes. Tell the human that the parent session must not edit the working tree while the driver runs.
+The initiative skill's session must not edit the working tree while the driver runs. It queues new backlog entries instead.
 
 ### I-C Run
 
@@ -247,15 +274,15 @@ Consumer CI must trigger on pull requests to `initiative/**`. The pack's workflo
       I-D Advance: Complete: {feature-id} merged as v{version}, step {next} of {n} next
       ```
 
-   4. If no pending step remains, run I-E Delivery in the same session.
+   4. If no pending step remains, end the session. The driver then prints `I-E Delivery: Pending:` and exits, and the initiative skill runs I-E Delivery. If the driver predates this rule and the last step session finds no initiative session to deliver, the step session runs I-E Delivery itself.
 
-After the last step, `position` is one past the last step number. If a session ends in that state with `plan/current/` empty, the orchestrator's resume rule runs I-E Delivery.
+After the last step, `position` is one past the last step number. If a session starts in that state with `plan/current/` empty, the initiative skill runs I-E Delivery.
 
 The tag comes after the merge because a squash creates a new commit. A tag on the feature branch tip, or on the fetched branch tip, could point at the wrong commit. The merge commit is the exact commit the PR created. If a push or merge fails, stop and report the exact error. Do not retry with force.
 
 ### I-E Delivery
 
-Run this stage after the last step merges. Every message begins with `I-E Delivery:` after the `P4 Ship:` prefix. Work on the initiative branch.
+The initiative skill runs this stage after the last step merges. Every message begins with `I-E Delivery:` after the `P4 Ship:` prefix. Work on the initiative branch.
 
 1. Move `plan/current-initiative/` to `plan/_archive/{id}-{slug}-initiative-{date}/` and set the initiative `status: delivered`. Update links that point at the old path. Commit the move on the initiative branch.
 2. Run `ravintio-retrospective` in initiative mode. It writes `plan/retrospectives/{id}-{slug}-initiative-{date}.md`. Commit the record on the initiative branch, so the PR carries it. A missing retrospective never blocks delivery.
