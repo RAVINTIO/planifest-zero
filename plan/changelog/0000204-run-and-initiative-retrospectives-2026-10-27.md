@@ -2,7 +2,7 @@
 
 **Feature:** run and initiative retrospectives
 **Version:** 0.26.0
-**PR:** pending
+**PR:** #47
 
 ## What changed
 
