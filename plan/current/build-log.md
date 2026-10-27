@@ -72,11 +72,35 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T08:03:30Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-27T08:20:00Z` |
+| Wall clock | `16` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 0 |
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | none |
+
+- Decomposition: none dispatched. Two small requirements share one new test file, and each edit is under 10 lines, so subagent overhead exceeds the work. TDD ran inline: RED (5 failing cap cases), then GREEN (16 of 16).
+- In progress: REQ-001, REQ-002 (2026-10-27T08:06:00Z)
+- Done: REQ-001, REQ-002 (2026-10-27T08:14:00Z)
+- Rework: REQ-002: the test label extraction used GNU `\|` that BSD sed ignores, fixed in the test with `sed -E` (2026-10-27T08:09:00Z)
+- Full suite: 172 feature suites and 19 regression suites pass.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T08:20:30Z` |
+| End | `2026-10-27T08:26:00Z` |
+| Wall clock | `6` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | none |
+
+- CI: full suite green, no lint or typecheck for this pack. Self-corrections: 0.
+- Security review: no critical or high finding.
+- Autonomous run: no acceptance gate stop. Evidence is in `plan/current/acceptance-evidence.md`.
