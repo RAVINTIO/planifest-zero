@@ -92,6 +92,21 @@ Dispatch follows the batches in the `## Concurrency plan` of `plan/current/execu
 
 ---
 
+## Improvement loop
+
+After ravintio-refactor confirms all-suite GREEN, ravintio-implement runs up to 2 cycles per requirement. Each cycle asks whether a simpler or cleaner solution meets the same tests.
+
+1. Dispatch a reviewer in a fresh context on the primary tier. Pass it the requirement, the test file, and the implementation files. Do not pass the transcript of earlier dispatches. The reviewer edits nothing.
+2. The reviewer returns one finding worth making, or the text `no change worth making`. It reports only a change that simplifies the code, removes duplication, or picks a cleaner design. It skips style preferences and any change that alters behaviour.
+3. If the reviewer returns `no change worth making`, append the early stop marker. The loop stops early for that requirement.
+4. If the reviewer returns a finding, dispatch ravintio-refactor in improvement mode with that finding, then run the full suite.
+5. If the suite fails, ravintio-refactor reverts the change. The requirement stays GREEN, and the cycle records `suite fail, reverted`.
+6. Append the cycle marker to the build log before the next dispatch.
+
+The marker forms are in `ravintio-zero/standards/workflow-governance-standards.md`. On resume, count the `Improve:` markers for the requirement in the build log and run only the cycles that remain.
+
+---
+
 ## Fast batches
 
 The run speed is in `plan/.run-speed`. It holds `fast` or `standard`. A missing or unknown value counts as `standard`. See the orchestrator skill.

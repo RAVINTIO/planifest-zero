@@ -66,6 +66,7 @@ for each requirement:
     2. dispatch ravintio-implementer  -> wait for GREEN (zero exit)
     if GREEN:
       3. dispatch ravintio-refactor   -> wait for all-suite GREEN
+      4. run the improvement loop     -> up to 2 cycles
       break
     else if attempt >= 5:
       ESCALATE to the human. Do not proceed to the next requirement.
@@ -78,6 +79,10 @@ After 5 failed attempts on one requirement, stop in both run modes with `P2 Impl
 For each attempt on a requirement after the first, append `Rework: REQ-{nnn}: {reason} ({ISO-8601 timestamp})` to the build log. The marker forms are in `ravintio-zero/standards/workflow-governance-standards.md`.
 
 Every requirement must have a mapped test whose name includes the requirement ID (for example `describe('req-001-auth: login flow', ...)`). Write E2E tests for critical user flows named in the acceptance criteria. Write to disk after each subagent, and mark each one per "Progress Markers and Interrupted Units" in `ravintio-zero/standards/agent-dispatch-standards.md`. Do not accumulate work in memory across requirements.
+
+## Improvement loop
+
+After refactor confirms all-suite GREEN, run up to 2 cycles per requirement, as `## Improvement loop` in `ravintio-zero/standards/agent-dispatch-standards.md` describes. Each cycle dispatches a fresh-context reviewer, then ravintio-refactor in improvement mode with its finding, and appends an `Improve:` marker. The loop stops early on `no change worth making`.
 
 ## Rules
 
@@ -141,7 +146,7 @@ Per-component docs for independent components also parallelise. The registry and
 
 When `plan/.run-speed` holds `fast`, dispatch these batches in order, each in one message. Within a batch, every unit writes its own files.
 
-1. One TDD track per leaf requirement whose files no other track writes. Each track runs test-writer, implementer, and refactor in sequence.
+1. One TDD track per leaf requirement whose files no other track writes. Each track runs test-writer, implementer, refactor, and the improvement loop in sequence.
 2. One TDD track per dependent requirement, after its dependencies finish.
 3. One unit per independent living doc and per-component doc set, while the full test suite runs in the background.
 4. Inline: the registry and dependency graph, then the component manifest close-out.
