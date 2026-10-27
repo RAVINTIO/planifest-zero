@@ -1048,26 +1048,24 @@ MARKER_EOF
 
 # --- Main ---
 
-# Flags that earlier releases removed (0000034 ADR-001). An older install's
-# flags marker can still list them, so setup warns and skips each one instead
-# of failing the refresh. --backend-url also took a value: skip the next
-# argument unless it is another flag or a tool name, and never print or
-# store it.
-retired_flag_warning() {
-  echo "  ! Warning: ignoring retired flag $1 (removed in an earlier release)" >&2
+# Flags that earlier releases removed (0000034 ADR-001). A retired flag does
+# nothing, so setup fails on it during argument parsing, before any change
+# (0000196 ADR-002). The message names the flag and never prints what follows
+# it, so a --backend-url value never reaches the output.
+retired_flag_error() {
+  echo "! Error: retired flag $1 was removed in an earlier release and does nothing." >&2
+  echo "  Remove it from the command, then rerun setup." >&2
+  exit 1
 }
 
 TOOL=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --strict-orchestrator) STRICT_ORCHESTRATOR=true; shift ;;
-    --structured-telemetry-mcp|--context-mode-mcp|--include-full-skill-library)
-      retired_flag_warning "$1"; shift ;;
-    --backend-url)
-      retired_flag_warning "$1"; shift
-      if [[ $# -gt 0 && "$1" != --* && " $VALID_TOOLS " != *" $1 "* ]]; then shift; fi ;;
+    --structured-telemetry-mcp|--context-mode-mcp|--include-full-skill-library|--backend-url)
+      retired_flag_error "$1" ;;
     --backend-url=*)
-      retired_flag_warning "--backend-url"; shift ;;
+      retired_flag_error "--backend-url" ;;
     # Print only the part before "=", so a value never reaches the log.
     -*) echo "Unknown flag: ${1%%=*}"; exit 1 ;;
     *) TOOL="$1"; shift ;;
@@ -1093,6 +1091,19 @@ if [ -z "$TOOL" ]; then
   echo "Run from the repository root."
   echo "Each tool's config: ravintio-zero/setup/<tool>.sh"
   exit 0
+fi
+
+# Reject an unknown tool before anything changes in the repo (0000196 REQ-001).
+# Exact match only, the same as setup.ps1's -contains check (0000034 req-002).
+tool_is_valid=false
+for t in $VALID_TOOLS; do
+  if [ "$t" = "$TOOL" ]; then tool_is_valid=true; fi
+done
+
+if [ "$tool_is_valid" != true ]; then
+  echo "Unknown tool: $TOOL"
+  echo "Valid tools: $VALID_TOOLS"
+  exit 1
 fi
 
 # Stop before installing anything if an old-brand folder is still present
@@ -1130,19 +1141,7 @@ run_tool_setup() {
   write_setup_flags_marker "$t" "$(dirname "$TOOL_SKILLS_DIR")"
 }
 
-# Exact match only, the same as setup.ps1's -contains check (0000034 req-002).
-tool_is_valid=false
-for t in $VALID_TOOLS; do
-  if [ "$t" = "$TOOL" ]; then tool_is_valid=true; fi
-done
-
-if [ "$tool_is_valid" = true ]; then
-  run_tool_setup "$TOOL"
-else
-  echo "Unknown tool: $TOOL"
-  echo "Valid tools: $VALID_TOOLS"
-  exit 1
-fi
+run_tool_setup "$TOOL"
 
 echo ""
 echo "Setup complete."
