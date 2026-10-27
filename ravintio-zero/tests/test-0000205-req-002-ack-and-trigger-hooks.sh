@@ -28,7 +28,7 @@ run_hook() {
   local hook="$1" ws="$2"
   shift 2
   local out
-  out="$(printf '{"cwd":"%s","session_id":"sess-1"}' "$ws" | env "$@" node "$hook" 2>/dev/null)"
+  out="$(printf '{"cwd":"%s","session_id":"sess-1"}' "$ws" | env -u RAVINTIO_INITIATIVE_STEP "$@" node "$hook" 2>/dev/null)"
   echo $? > "$TMP_ROOT/rc"
   printf '%s' "$out"
 }
@@ -72,24 +72,26 @@ echo ""
 echo "=== AC-2: the banner names the right ack file ==="
 
 ws="$(strict_ws)"
+make_active_initiative "$ws"
 touch "$ws/plan/.initiative-runner.lock"
 echo "stale" > "$ws/plan/.orchestrator-ack"
 out="$(run_hook "$PRESENCE" "$ws" X=1)"
-assert_contains "plan/.initiative-ack" "$out" "AC-2: lock held names plan/.initiative-ack"
-assert_contains "ravintio-initiative" "$out" "AC-2: lock held names ravintio-initiative"
+assert_contains "plan/.initiative-ack" "$out" "AC-2: active initiative names plan/.initiative-ack"
+assert_contains "ravintio-initiative" "$out" "AC-2: active initiative names ravintio-initiative"
 assert_contains "sess-1" "$out" "AC-2: banner carries the session id"
 assert_equals "0" "$(cat "$TMP_ROOT/rc")" "AC-2: exit 0 (never 2)"
 
 ws="$(strict_ws)"
 out="$(run_hook "$PRESENCE" "$ws" X=1)"
-assert_contains "plan/.orchestrator-ack" "$out" "AC-2: no lock names plan/.orchestrator-ack"
-assert_contains "ravintio-orchestrator" "$out" "AC-2: no lock names ravintio-orchestrator"
+assert_contains "plan/.orchestrator-ack" "$out" "AC-2: no initiative names plan/.orchestrator-ack"
+assert_contains "ravintio-orchestrator" "$out" "AC-2: no initiative names ravintio-orchestrator"
 case "$out" in
-  *ravintio-initiative*) assert_equals "absent" "present" "AC-2: no lock must not name ravintio-initiative" ;;
-  *) assert_equals "absent" "absent" "AC-2: no lock does not name ravintio-initiative" ;;
+  *ravintio-initiative*) assert_equals "absent" "present" "AC-2: no initiative must not name ravintio-initiative" ;;
+  *) assert_equals "absent" "absent" "AC-2: no initiative does not name ravintio-initiative" ;;
 esac
 
 ws="$(strict_ws)"
+make_active_initiative "$ws"
 touch "$ws/plan/.initiative-runner.lock"
 out="$(run_hook "$PRESENCE" "$ws" RAVINTIO_INITIATIVE_STEP=1)"
 assert_contains "plan/.orchestrator-ack" "$out" "AC-2: step session with lock held still gets the orchestrator banner"
@@ -105,9 +107,13 @@ assert_contains "ravintio-orchestrator" "$out" "advisory: names the orchestrator
 
 touch "$ws/plan/.initiative-runner.lock"
 out="$(run_hook "$PRESENCE" "$ws" X=1)"
-assert_contains "RAVINTIO PIPELINE ACTIVE" "$out" "advisory lock: banner present"
-assert_contains "ravintio-initiative" "$out" "advisory lock: names ravintio-initiative"
-assert_equals "0" "$(cat "$TMP_ROOT/rc")" "advisory lock: exit 0"
+assert_contains "ravintio-orchestrator" "$out" "advisory lock without initiative: names the orchestrator"
+
+make_active_initiative "$ws"
+out="$(run_hook "$PRESENCE" "$ws" X=1)"
+assert_contains "RAVINTIO PIPELINE ACTIVE" "$out" "advisory initiative: banner present"
+assert_contains "ravintio-initiative" "$out" "advisory initiative: names ravintio-initiative"
+assert_equals "0" "$(cat "$TMP_ROOT/rc")" "advisory initiative: exit 0"
 
 ws="$(new_ws)"
 out="$(run_hook "$PRESENCE" "$ws" X=1)"
@@ -183,13 +189,13 @@ echo "feat-1" > "$ws/plan/.orchestrator-active"
 out="$(run_hook "$AUTO_TRIGGER" "$ws" X=1)"
 assert_equals "" "$out" "AC-3: sentinel present is silent"
 
-# Non-empty plan/current with active initiative: today's behaviour.
+# Non-empty plan/current with active initiative: the initiative owns the session (0000218).
 ws="$(new_ws)"
 make_active_initiative "$ws"
 touch "$ws/plan/.initiative-runner.lock"
 touch "$ws/plan/current/design.md"
 out="$(run_hook "$AUTO_TRIGGER" "$ws" X=1)"
-assert_contains "ravintio-orchestrator" "$out" "AC-3: artifacts in plan/current keep the orchestrator"
+assert_contains "ravintio-initiative" "$out" "AC-3: artifacts in plan/current do not change the skill"
 
 # Not a ravintio project: silent.
 ws="$(mktemp -d "$TMP_ROOT/bare.XXXXXX")"

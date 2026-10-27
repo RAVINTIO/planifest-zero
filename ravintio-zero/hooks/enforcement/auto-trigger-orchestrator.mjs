@@ -12,15 +12,15 @@
  *
  * If either condition fails, exits 0 silently (no output, no effect).
  *
- * Initiative case: if plan/current-initiative/initiative.md holds status active,
- * plan/.orchestrator-active is absent, and plan/current/ holds only hidden
- * entries, the instruction names the ravintio-initiative skill instead. This
- * covers a held driver lock (plan/.initiative-runner.lock) and a free lock alike.
+ * Initiative case: if plan/current-initiative/initiative.md holds status active
+ * and plan/.orchestrator-active is absent, the instruction names the
+ * ravintio-initiative skill instead. The driver lock (plan/.initiative-runner.lock)
+ * and the contents of plan/current/ play no part. The strict-mode hook
+ * (check-orchestrator-presence.mjs) applies the same rule.
  *
  * Environment: RAVINTIO_INITIATIVE_STEP=1 marks a step session started by the
- * initiative driver (`claude -p "Run initiative step N"`). A step session has
- * the lock held, no sentinel, and an empty plan/current/ at start. That looks
- * the same as a driver session, so the driver sets this variable. When it is
+ * initiative driver (`claude -p "Run initiative step N"`). A step session looks
+ * the same as a human session, so the driver sets this variable. When it is
  * set, the hook keeps the orchestrator instruction.
  *
  * Design: ADR-003 — auto-trigger via UserPromptSubmit + CLAUDE.md fallback.
@@ -30,12 +30,13 @@
  * Never exits 2 — this hook does not block user prompts.
  */
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { readStdin } from "./read-stdin.mjs";
 
 // True when initiative.md holds status active, in frontmatter or as "**Status:** active".
+// Keep in step with initiativeActive in check-orchestrator-presence.mjs.
 function initiativeActive(cwd) {
   try {
     const text = readFileSync(join(cwd, "plan", "current-initiative", "initiative.md"), "utf-8");
@@ -43,15 +44,6 @@ function initiativeActive(cwd) {
       /^\s*\*\*Status:\*\*\s*active\s*$/im.test(text);
   } catch {
     return false;
-  }
-}
-
-// True when plan/current/ holds no entries other than hidden ones.
-function currentIsEmpty(cwd) {
-  try {
-    return readdirSync(join(cwd, "plan", "current")).every((n) => n.startsWith("."));
-  } catch {
-    return true; // a missing directory holds no artifacts
   }
 }
 
@@ -68,11 +60,10 @@ try {
   const sentinelPath = join(cwd, "plan", ".orchestrator-active");
   if (existsSync(sentinelPath)) process.exit(0);
 
-  // Initiative check: an active initiative with an empty plan/current/ means
-  // the session drives the initiative. A step session sets
-  // RAVINTIO_INITIATIVE_STEP=1 and keeps the orchestrator. Whether the driver
-  // lock is held makes no difference here, so the lock is not read.
-  if (process.env.RAVINTIO_INITIATIVE_STEP !== "1" && initiativeActive(cwd) && currentIsEmpty(cwd)) {
+  // Initiative check: an active initiative means the session drives it. A step
+  // session sets RAVINTIO_INITIATIVE_STEP=1 and keeps the orchestrator. Neither
+  // the driver lock nor plan/current/ is read.
+  if (process.env.RAVINTIO_INITIATIVE_STEP !== "1" && initiativeActive(cwd)) {
     process.stdout.write(
       "SYSTEM INSTRUCTION: This is a RAVINTIO project (ravintio-zero/ detected) " +
       "with an active initiative (plan/current-initiative/initiative.md). " +
