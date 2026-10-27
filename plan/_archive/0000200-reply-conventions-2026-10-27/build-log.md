@@ -108,3 +108,31 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Verification by execution found the gap. The suite passed before the fix.
 - Security review: no critical or high finding.
 - Autonomous run: no acceptance stop. Evidence is in `acceptance-evidence.md`.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T10:06:00Z` |
+| End | `2026-10-27T10:16:00Z` |
+| Wall clock | `10` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `76 minutes across P0 to P4 blocks` |
+| Total agents spawned | `2` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `1` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `2` |
+| Self-corrections | `2` |
+| Phases skipped | `none` |
