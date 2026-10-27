@@ -73,6 +73,8 @@ The hook acts only while a pipeline is active, that is while `plan/.orchestrator
 
 Ship deletes the file with the other sentinels, before it raises the pull request. You never write it by hand.
 
+While an initiative is active, the banner names the skill that owns the session. A step session gets the orchestrator and `plan/.orchestrator-ack`. Your own session gets the `ravintio-initiative` skill and `plan/.initiative-ack`, which git ignores.
+
 In an initiative run, each step session writes its own id to `plan/.orchestrator-ack`. The `ravintio-initiative` session writes its own id to `plan/.initiative-ack`. The hook accepts either file, so strict mode stays quiet in every session.
 
 → [Strict mode internals and the session_id protocol](pipeline-reference.md#strict-orchestrator-mode)
