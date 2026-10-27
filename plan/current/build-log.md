@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T09:39:34Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-27T09:45:00Z` |
+| Wall clock | `6` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | `0` |
@@ -45,3 +45,21 @@ Scope Lock (error path): a missing section or an unjustified sequential unit mak
 Scope Lock (cross-session continuity): the table lives in tracked `execution-plan.md`, and a reopened phase rewrites it [source: draft-accepted (initiative)]
 Scope Lock complete. All four scenario paths captured.
 Design confirmed: draft-accepted (initiative) (2026-10-27T09:45:00Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T09:46:00Z` |
+| End | `2026-10-27T09:56:00Z` |
+| Wall clock | `10` |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 1 |
+| Notes | Artifacts are small and share one concept, so they ran inline in one batch of parallel writes. |
+
+- Consistency check: clean over `plan/current`.
+- The execution plan holds a concurrency plan for P2: three units in batch 1, one docs unit in batch 2.
+- Autonomous run: no plan gate stop.
