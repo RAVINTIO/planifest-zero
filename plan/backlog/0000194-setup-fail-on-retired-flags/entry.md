@@ -29,6 +29,13 @@ Unknown flags already fail during argument parsing, before any change.
 
 Make a retired flag exit 1 during argument parsing, before any other processing in both scripts. The repo stays unchanged. The error names the flag and says that it was removed and does nothing. It tells the user to remove the flag from the command. A `--backend-url` value never appears in the output.
 
+The code to change:
+
+- `setup.sh`: `retired_flag_warning()` at line 1056 becomes an error that exits 1. The `case` arms that call it stay, so parsing still sees each retired flag first.
+- `setup.ps1`: the two warning branches at lines 27 and 42 print the same error and exit 1.
+
+The parsers stop at the first retired flag, so they no longer need to skip the `--backend-url` value. The error prints only the flag name, never what follows it.
+
 Add a test in each shell that runs setup with each retired flag in a fresh temp repo. The test asserts exit 1, the error text, an unchanged tree, and an unset `core.hooksPath`.
 
 These tests assert the warning today, so they need to change:
@@ -41,6 +48,14 @@ These tests assert the warning today, so they need to change:
 - `ravintio-zero/tests/test-0000031-req-004-setup-execution.sh`
 
 A tracked `plan/state/{tool}.md` record or a `.ravintio-setup-flags` marker might still hold a retired flag. The `ravintio-refresh-setup` skill already rejects such a record. Check that the refresh path then reports the retired flag plainly instead of failing setup with no explanation.
+
+## Wanted outcome
+
+`setup.sh` and `setup.ps1` exit 1 on any retired flag during argument parsing, and the repo stays unchanged. The error names the flag, says that it does nothing, and tells the user to remove it. Tests check these conditions:
+
+- In a fresh temp repo, each retired flag gives exit 1, the error text, an unchanged tree, and an unset `core.hooksPath`, in each shell.
+- A `--backend-url` value never appears in the output.
+- A setup record that holds a retired flag makes the refresh path name that flag.
 
 ## Why Deferred
 
