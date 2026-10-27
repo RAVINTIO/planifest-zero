@@ -43,3 +43,10 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Adoption mode: standard-iterative (signal: `plan/_archive/` holds feature directories and `docs/about.md` exists)
 - Backlog pickup: 0000193 and 0000194 pulled into the brief per the initiative row. Folders deleted in the same commit.
 - Version: last known 0.19.0, step bump `minor`, new version 0.20.0.
+- Scope Lock (happy path): setup validates every argument, then installs as before. [source: draft-accepted (initiative)]
+- Scope Lock (first-run path): an unknown tool in a fresh repo exits 1 before `initialize_repo`, so the repo stays untouched. [source: draft-accepted (initiative)]
+- Scope Lock (error path): a retired flag exits 1, names the flag, and leaves the tree unchanged. [source: draft-accepted (initiative)]
+- Scope Lock (cross-session continuity): validation precedes every write, so an interrupted or rejected run leaves no partial state. [source: draft-accepted (initiative)]
+- Scope Lock complete. All four scenario paths captured.
+- Design confirmation: draft-accepted (initiative)
+- Skill Map written. Run mode and run speed recorded above.
