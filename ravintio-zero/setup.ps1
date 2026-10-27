@@ -786,6 +786,7 @@ function Install-CodexHooks {
     Write-Host "    gate-write, ratchet-check, em-dash-guard, auto-trigger-orchestrator,"
     Write-Host "    check-orchestrator-presence, check-design, check-reply-prefix"
     Write-Host "  Review and trust the project hooks with /hooks in Codex."
+    Write-Host "  Until you trust it, Codex skips merge-guard, including in codex exec."
 }
 
 function Invoke-RavintioGuardrails {

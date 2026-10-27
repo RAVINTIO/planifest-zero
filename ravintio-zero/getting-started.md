@@ -73,7 +73,7 @@ To install for Codex, run `./ravintio-zero/setup.sh codex` or `.\ravintio-zero\s
 - The `merge-guard` hook in `.codex/hooks.json`, with its scripts in `.codex/hooks/enforcement/`.
 - The git hooks and the orchestrator sentinel machinery, as for Claude Code.
 
-Codex runs only the `merge-guard` hook. Setup prints the active and fallback hooks. `AGENTS.md` states each fallback rule as an instruction. Run `/hooks` in Codex to review and trust the project hook.
+Codex runs only the `merge-guard` hook. Setup prints the active and fallback hooks. `AGENTS.md` states each fallback rule as an instruction. Run `/hooks` in Codex to review and trust the project hook. Until you trust it, Codex skips `merge-guard`, including in `codex exec`.
 
 → **Git guardrails and the orchestrator sentinel** are activated automatically by setup. See [project-operations.md](project-operations.md) for how they work and how to enable strict mode.
 

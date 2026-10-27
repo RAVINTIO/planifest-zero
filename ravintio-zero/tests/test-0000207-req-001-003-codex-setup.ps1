@@ -47,6 +47,9 @@ Assert-True (-not (Test-Path (Join-Path $ws '.codex\hooks\enforcement\gate-write
 Assert-Contains 'Active hooks' $run.Output "req-003 AC-2: the report has an active list"
 Assert-Contains 'Fallback hooks' $run.Output "req-003 AC-2: the report has a fallback list"
 Assert-Contains '/hooks' $run.Output "req-003 AC-2: the report names the /hooks review"
+# 0000217: real Codex 0.163.0 skips project hooks until a person trusts them.
+Assert-Contains 'Until you trust it, Codex skips merge-guard' $run.Output "0000217: the report says merge-guard is off until trusted"
+Assert-Contains 'nothing blocks a merge' (Get-Content -Raw (Join-Path $ws 'AGENTS.md')) "0000217: AGENTS.md says nothing blocks a merge until the hook is trusted"
 
 Write-Host ""
 Write-Host "=== req-003 AC-1: a rerun keeps one entry and other entries ==="

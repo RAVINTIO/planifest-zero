@@ -37,7 +37,7 @@ Fallback hooks, which Codex does not run for RAVINTIO. Follow each rule as an in
 - **check-reply-prefix**: Begin every reply in an active run with a valid prefix, as the next section describes.
 - **commit-msg** (git hook): Blocks commits that break `commit-standards.md`. Exit 1 on violation. Use `git commit --no-verify` to bypass intentionally.
 
-Project hooks run only after you trust them. Run `/hooks` in Codex to review and trust the RAVINTIO hook.
+Project hooks run only after a person trusts them. Run `/hooks` in Codex to review and trust the RAVINTIO hook. Until a person trusts the hook, nothing blocks a merge, including in `codex exec`. Never run a pull request merge command against `main` yourself.
 
 ## Reply Conventions
 
