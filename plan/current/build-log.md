@@ -95,3 +95,31 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | Autonomous, no stop. Evidence in `acceptance-evidence.md`. No self-correction cycles. |
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T08:06:00Z` |
+| End | `2026-10-27T08:15:00Z` |
+| Wall clock | `9` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `42 minutes across P0 to P4 blocks` |
+| Total agents spawned | `0` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `0` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `0` |
+| Phases skipped | `none` |

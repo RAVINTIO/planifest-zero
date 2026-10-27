@@ -1,8 +1,8 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000196-setup-argument-checks"
-version: "0.20.0"
+feature: "0000197-merge-guard-block-message"
+version: "0.20.1"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"

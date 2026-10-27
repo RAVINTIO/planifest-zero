@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000196-setup-argument-checks
+Last updated: 0000197-merge-guard-block-message
 
 ---
 
@@ -18,6 +18,12 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 ---
 
 ## All Architecture Decision Records
+### Feature 0000197: merge-guard-block-message
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Stack choice | accepted | The feature edits message text only and adds no dependency. |
+
 ### Feature 0000196: setup-argument-checks
 
 | ADR | Title | Status | Summary |
