@@ -1,6 +1,6 @@
 ---
-version: "0.20.1"
-feature: "0000197-merge-guard-block-message"
+version: "0.20.2"
+feature: "0000198-cap-echoed-plan-text"
 updated: "27 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.20.1` |
-| Last feature | `0000197-merge-guard-block-message` |
+| Version | `0.20.2` |
+| Last feature | `0000198-cap-echoed-plan-text` |
 | Updated | `27 Oct 2026` |
 
 ## What this is

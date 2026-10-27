@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.20.1"
-feature: "0000197-merge-guard-block-message"
+version: "0.20.2"
+feature: "0000198-cap-echoed-plan-text"
 
 versionPolicy: "max-component-version"
 
