@@ -29,7 +29,10 @@ sed -e "s/PLANIFEST/RAVINTIO/g" -e "s/Planifest\([A-Z]\)/Ravintio\1/g" \
 # Apply the same rewrite to the base lines.
 sed -e "/^bundle_templates:/d" -e "/^bundle_standards:/d" \
   -e 's|(see `roadmap-standards.md`)|(see `ravintio-zero/standards/roadmap-standards.md`)|' \
-  "$BASE_RENAMED.tmp" > "$BASE_RENAMED"
+  "$BASE_RENAMED.tmp" > "$BASE_RENAMED.tmp2"
+# 0000199 replaced the folder-scan id rule in backlog pickup with the counter file.
+sed -e 's|Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids\. Check `plan/_archive/` and `plan/changelog/` for the high-water mark\.|Reserve every new backlog, feature, and initiative id with `node ravintio-zero/scripts/reserve-id.mjs [qty]`. It takes ids from the counter file `plan/backlog/.next-id`, so spent ids never return.|' \
+  "$BASE_RENAMED.tmp2" > "$BASE_RENAMED"
 
 # Print every non-blank, non-heading line of $1 that no later file holds as a
 # whole line. Usage: missing_lines base file...
