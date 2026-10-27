@@ -25,8 +25,9 @@ The driver still requires status `active` before it runs a step.
 ### Filing a draft
 
 - A draft lives at `plan/roadmap/{id}-{slug}/initiative.md`, one folder per draft.
-- Initiative ids share the backlog's seven-digit sequence. The next id is the highest ever allocated plus one.
-- The high-water mark covers `plan/backlog/`, `plan/_archive/`, `plan/changelog/`, and `plan/roadmap/`.
+- Initiative ids share the backlog's seven-digit sequence. Reserve each id with `node ravintio-zero/scripts/reserve-id.mjs [qty]`, which takes it from the counter file `plan/backlog/.next-id`.
+- To reserve ids for the initiative and its step features, ask for one block of `qty` ids in a single call.
+- If two branches reserve the same ids, git shows a conflict on `.next-id`. Keep the higher value and renumber the entries on the branch that merges second. This answer is pre-approved.
 - Filing a draft has no prefix. It works on any branch and in any phase, as filing a backlog entry does.
 - You may suggest a draft and help the human structure it. Write the draft only after the human confirms.
 - The draft reaches `main` with the PR of the branch that holds it.

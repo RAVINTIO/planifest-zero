@@ -45,6 +45,7 @@ responsibilities:
   - "Stop every run, gated or autonomous, when work adds a library or service that is not on the approved list"
   - "Keep the orchestrator skill small by moving rarely used sections into references/ files"
   - "Hide passing test lines when RAVINTIO_TEST_QUIET=1 is set, and keep every failure line"
+  - "Reserve every backlog, feature, and initiative id from the counter file plan/backlog/.next-id with scripts/reserve-id.mjs, under an exclusive lock"
 
 exceptions:
   - "Does not generate application code. That is the implement phase's job in consumer projects."
@@ -101,7 +102,7 @@ scope:
     - "The 13 skills: 12 pipeline skills across the five phases, and ravintio-file-backlog for filing an uncommitted backlog entry in another repo"
     - "Skills read templates, schemas, and standards from ravintio-zero/ by full path, with no per-skill copies"
     - "Orchestrator references: skills/ravintio-orchestrator/references/orchestrator-*.md"
-    - "scripts/: check-attribution.mjs, consistency-check.mjs, product-version.mjs, release-tag.mjs, initiative-labels.mjs, initiative-run.mjs, self-description-check.mjs, workflow-metrics.mjs, promote-to-regression.sh, refresh-delete-boot-files"
+    - "scripts/: check-attribution.mjs, consistency-check.mjs, product-version.mjs, release-tag.mjs, reserve-id.mjs, initiative-labels.mjs, initiative-run.mjs, self-description-check.mjs, workflow-metrics.mjs, promote-to-regression.sh, refresh-delete-boot-files"
     - "tests/ and tests/regression/ for the pack's own behaviour"
   outOfScope:
     - "Application-level code generation (handled by the implement phase in consumer projects)"
@@ -141,6 +142,7 @@ quality:
     - "The consistency check and ratchet-check read Gherkin steps with regular expressions, not a Gherkin parser. Only the bullet form in the requirement template counts."
     - "The commit-msg hook and check-attribution.mjs hold separate pattern lists. A test checks that both hold the host lines."
     - "ratchet-check.mjs and consistency-check.mjs each hold their own cap function for echoed lines, because the hook installs as one file beside read-stdin.mjs. A parity test checks that both cut a line the same way."
+    - "reserve-id.mjs never clears a stale lock. If a stopped process leaves plan/backlog/.next-id.lock behind, the next reservation exits 1 after 5 seconds and names the lock, and the human removes it."
     - "read-stdin.mjs lives in hooks/enforcement/, which installs unconditionally, so every enforcement hook can import it."
     - "The em dash guard only matches the Write and Edit tools and only inspects paths resolving under 5 relative prefixes. A write made through Bash is not inspected. This is a style rule, not an authorisation control."
 

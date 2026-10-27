@@ -7,8 +7,15 @@ status: "open"  # open | parked
 
 > Path: `plan/backlog/{id}-{slug}/entry.md`: one folder per entry, `{id}` zero-padded sequence, `{slug}` kebab-case.
 >
-> **`{id}` is its own sequence; collisions with feature IDs are expected.** Next
-> `{id}` = highest ever allocated + 1, including picked-up and discarded entries.
+> **`{id}` comes from the counter file.** Reserve it with
+> `node ravintio-zero/scripts/reserve-id.mjs` before you write the entry. The script
+> reads `plan/backlog/.next-id` under a lock and never hands out an id twice, so
+> picked-up and discarded ids stay spent. Backlog, feature, and initiative ids share
+> the counter.
+>
+> **A copied entry gets a local id.** If you copy an entry from another repo, reserve
+> a new id from this repo's counter and name the source repo and the source id in the
+> entry text. Each repo keeps its own sequence.
 >
 > **Deferral source** distinguishes why the entry exists: `discovered mid-flight`
 > (a surprise found during a run, judged out of scope on the spot; today's only

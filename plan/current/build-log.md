@@ -66,3 +66,25 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 - Consistency check: first run found two requirements over the 3-criteria cap. Split into three requirements. Second run clean over `plan/current`.
 - Autonomous run: no plan gate stop.
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T08:34:30Z` |
+| End | `2026-10-27T08:52:00Z` |
+| Wall clock | `17` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | none |
+
+- Decomposition: none dispatched. The script, six doc edits, and one test suite share one new test file and each edit is small, so subagent overhead exceeds the work. TDD runs inline.
+- In progress: REQ-001, REQ-002, REQ-003 (2026-10-27T08:35:00Z)
+- Done: REQ-001, REQ-002, REQ-003 (2026-10-27T08:50:00Z)
+- Rework: reserve-id.mjs: `process.exit` inside `try` skipped the `finally`, so a failure after the lock was taken left the lock behind. Fixed by throwing and releasing before exit (2026-10-27T08:41:00Z).
+- Rework: five suites asserted the old wording. Updated 0000025, 0000043, 0000164, and 0000151 (base-line rewrite, as 0000171 did). Reworded the dispatch standard to keep "pre-computes" for 0000027 (2026-10-27T08:48:00Z).
+- Full suite: 173 feature suites and 19 regression suites pass.
+- Phase times from P2 on are estimates read from the session clock.
