@@ -73,7 +73,7 @@ The hook acts only while a pipeline is active, that is while `plan/.orchestrator
 
 Ship deletes the file with the other sentinels, before it raises the pull request. You never write it by hand.
 
-In a roadmap initiative run, each step session writes its own id. The session that started the driver then sees the banner on every prompt. Leave the file alone, because writing your own id replaces the step session's id. Backlog entry 0000182 covers this case.
+In an initiative run, each step session writes its own id to `plan/.orchestrator-ack`. The `ravintio-initiative` session writes its own id to `plan/.initiative-ack`. The hook accepts either file, so strict mode stays quiet in every session.
 
 → [Strict mode internals and the session_id protocol](pipeline-reference.md#strict-orchestrator-mode)
 
@@ -91,6 +91,26 @@ This section defines the roadmap terms once. Other pack files link here.
   - `active`: I-B Activate sets it.
   - `delivered`: I-E Delivery sets it.
   - `blocked`: any exception stop sets it.
+
+### How an initiative runs
+
+Three parts run an initiative. The human talks only to their own session. Step sessions run with no human present.
+
+| Part | What it is | Runs where | Owns |
+|------|-----------|------------|------|
+| `ravintio-initiative` skill | The initiative coordinator | The human's session | Chart, activate, watching the steps, progress reports, and delivery |
+| Driver, `initiative-run.mjs` | A script with no AI | A background task that the initiative skill starts | Starting each step session in turn, and stopping on a `Blocked:` line |
+| `ravintio-orchestrator` skill | The feature coordinator | Each step session, a separate `claude -p` process | One feature from P0 to P4, then the merge into the initiative branch |
+
+An initiative runs in this sequence:
+
+1. **I-A Chart.** The initiative skill plans the steps with the human and takes their approval.
+2. **I-B Activate.** The initiative skill cuts the initiative branch and starts the driver.
+3. **I-C Run.** The driver starts a step session. It loads the orchestrator and builds one feature from P0 to P4.
+4. **I-D Advance.** The step session merges its feature PR into the initiative branch, tags the merge commit, and exits.
+5. The driver starts the next step session. Stages I-C and I-D repeat until no steps remain.
+6. While steps run, the initiative skill watches the build log and git, and reports to the human. It never edits the working tree.
+7. **I-E Delivery.** After the driver exits, the initiative skill archives the initiative and raises the initiative PR to `main`. It then gives the final report.
 
 → [Initiative stages and rules](standards/roadmap-standards.md)
 

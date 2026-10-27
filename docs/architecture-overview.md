@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000202-improvement-loops
+Last updated: 0000205-initiative-skill
 
 ## What this repo is
 
@@ -100,7 +100,7 @@ An initiative is a chain of feature steps that the human approves once. The stan
 - **Driver.** `ravintio-zero/scripts/initiative-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.initiative-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `I-C Run: Blocked:`. Each step writes `plan/.initiative-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.initiative`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/initiative-labels.mjs`.
 - **Merge guard.** The `merge-guard` hook blocks any `gh pr merge` unless the command uses `--squash` and the PR base starts with `initiative/`. It reads the base with `gh pr view` and blocks when it cannot read one. Merging into `main` stays human-only. A command that names a merge in text, such as a heredoc line, also blocks. The message says so and tells the agent to write files with the Write tool.
 
-The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. After GREEN and refactor, an improvement loop of up to 2 cycles per requirement runs a fresh-context reviewer and applies its finding through ravintio-refactor. Each cycle writes an `Improve:` marker to the build log. Seven support skills complete the set of fifteen: ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, ravintio-refresh-setup, ravintio-file-backlog, ravintio-postmortem, and ravintio-retrospective. After a `Resolved:` line, the orchestrator runs ravintio-postmortem, which writes a blameless record to `plan/postmortems/`. Ship runs ravintio-retrospective after the build report, and I-E Delivery runs it before the initiative PR. Both write to `plan/retrospectives/`, which P0 discovery and I-A Chart read.
+The implement phase dispatches a TDD trio per requirement: ravintio-test-writer, ravintio-implementer, and ravintio-refactor. After GREEN and refactor, an improvement loop of up to 2 cycles per requirement runs a fresh-context reviewer and applies its finding through ravintio-refactor. Each cycle writes an `Improve:` marker to the build log. Eight support skills complete the set of sixteen: ravintio-initiative, ravintio-loop-runner, ravintio-optimise-agent, ravintio-migrator, ravintio-refresh-setup, ravintio-file-backlog, ravintio-postmortem, and ravintio-retrospective. After a `Resolved:` line, the orchestrator runs ravintio-postmortem, which writes a blameless record to `plan/postmortems/`. Ship runs ravintio-retrospective after the build report, and I-E Delivery runs it before the initiative PR. Both write to `plan/retrospectives/`, which P0 discovery and I-A Chart read. In the human's session, ravintio-initiative charts, activates, watches, and delivers an initiative. It starts the driver and the read-only watch script, and it never resumes a step. The orchestrator runs each step in its own session.
 
 ---
 
