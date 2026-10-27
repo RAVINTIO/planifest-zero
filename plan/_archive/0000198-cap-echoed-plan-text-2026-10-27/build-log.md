@@ -72,8 +72,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-27T08:03:30Z` |
-| End | `2026-10-27T08:20:00Z` |
-| Wall clock | `16` |
+| End | `2026-10-27T08:08:00Z` |
+| Wall clock | `5` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 0 |
@@ -82,18 +82,19 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | none |
 
 - Decomposition: none dispatched. Two small requirements share one new test file, and each edit is under 10 lines, so subagent overhead exceeds the work. TDD ran inline: RED (5 failing cap cases), then GREEN (16 of 16).
-- In progress: REQ-001, REQ-002 (2026-10-27T08:06:00Z)
-- Done: REQ-001, REQ-002 (2026-10-27T08:14:00Z)
-- Rework: REQ-002: the test label extraction used GNU `\|` that BSD sed ignores, fixed in the test with `sed -E` (2026-10-27T08:09:00Z)
+- In progress: REQ-001, REQ-002 (2026-10-27T08:04:00Z)
+- Done: REQ-001, REQ-002 (2026-10-27T08:07:00Z)
+- Rework: REQ-002: the test label extraction used GNU `\|` that BSD sed ignores, fixed in the test with `sed -E` (2026-10-27T08:05:30Z)
 - Full suite: 172 feature suites and 19 regression suites pass.
+- Phase times from P2 on are estimates read from the session clock.
 
 ### P3: Validate and Accept
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-27T08:20:30Z` |
-| End | `2026-10-27T08:26:00Z` |
-| Wall clock | `6` |
+| Start | `2026-10-27T08:08:30Z` |
+| End | `2026-10-27T08:10:30Z` |
+| Wall clock | `2` |
 | Model tier | primary |
 | Skills loaded | ravintio-validate-and-accept |
 | Agents spawned | 0 |
@@ -104,3 +105,31 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - CI: full suite green, no lint or typecheck for this pack. Self-corrections: 0.
 - Security review: no critical or high finding.
 - Autonomous run: no acceptance gate stop. Evidence is in `plan/current/acceptance-evidence.md`.
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-27T08:11:00Z` |
+| End | `2026-10-27T08:14:00Z` |
+| Wall clock | `3` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | I-D Advance follows. |
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `20 minutes across P0 to P4 blocks` |
+| Total agents spawned | `0` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `0` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `1` |
+| Phases skipped | `none` |
