@@ -59,3 +59,19 @@ Docs updated: `roadmap-standards.md`, `project-operations.md`. Version 0.30.1 in
 ### P3: Validate and Accept
 
 Bash runner 199 feature suites and 19 regression checks passed. No security finding above informational. Evidence in `acceptance-evidence.md`.
+
+### P4: Ship
+
+Version 0.30.1.
+
+## Summary
+
+| Phase | Agents | Parallel batches | Wall clock | Self-corrections |
+|-------|--------|------------------|------------|------------------|
+| P0 | 0 | 0 | not recorded | 1 (`git rm --cached` left the backlog folder on disk, removed by hand) |
+| P1 | 0 | 0 | skipped | 0 |
+| P2 | 0 | 0 | not recorded | 1 (new suite failed because the step session sets `RAVINTIO_INITIATIVE_STEP`, fixed with `env -u`) |
+| P3 | 0 | 0 | not recorded | 0 |
+| P4 | 0 | 0 | not recorded | 0 |
+
+Total wall clock: not recorded

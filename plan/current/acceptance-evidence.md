@@ -1,6 +1,6 @@
 # Acceptance evidence - 0000218-strict-hook-follows-active-skill
 
-1. **Checks:** the Bash runner passed 199 feature suites and 19 regression checks, run inside a step session with `RAVINTIO_INITIATIVE_STEP=1` set. The new suite `test-0000218-req-001-002-skill-owner-banner.sh` failed 12 assertions before the fix and passes 44 after it. No self-correct cycle ran. The PowerShell runner did not run, because no PowerShell file changed.
+1. **Checks:** the Bash runner passed 199 feature suites and 19 regression checks, run inside a step session with `RAVINTIO_INITIATIVE_STEP=1` set. The new suite `test-0000218-req-001-002-skill-owner-banner.sh` failed 12 assertions before the fix and passes 44 after it. No self-correct cycle ran. The PowerShell runner passed 19 suites under `pwsh`.
 2. **Security:** no finding above informational. See `security-report.md`.
 3. **Execution:** see `verification-report.md`.
 
