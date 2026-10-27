@@ -1,6 +1,6 @@
 # Component Registry
 
-Last updated: 0000173-workflow-governance-gates
+Last updated: 0000196-setup-argument-checks
 
 ## Registry
 

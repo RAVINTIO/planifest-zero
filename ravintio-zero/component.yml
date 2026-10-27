@@ -1,8 +1,8 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000192-rename-runner-lock-and-archive"
-version: "0.19.0"
+feature: "0000196-setup-argument-checks"
+version: "0.20.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
@@ -24,7 +24,7 @@ responsibilities:
   - "Track installed skill directories via .ravintio-manifest for safe re-runs"
   - "Copy skill and hook files in setup.ps1 with System.IO calls, and check each installed skill against its source folder"
   - "Record the active setup flags in plan/state/{tool}.md, tracked, and retract any legacy setup-config record on the next run"
-  - "Accept retired setup flags with one warning each, so a refresh of an older install completes"
+  - "Fail setup on a retired flag during argument parsing, naming the flag and leaving the repo unchanged, and check the tool before any other processing"
   - "Write settings.json through a same-folder temporary file and a rename, so a failed write never truncates it"
   - "Wire the same six enforcement hooks from setup.sh and setup.ps1, and check the match with a parity suite"
   - "Run every test suite, Bash and PowerShell, and fail the run on any test file it would otherwise skip without a word"
@@ -149,7 +149,7 @@ pipeline:
 
 metadata:
   createdAt: "2026-05-02"
-  updatedAt: "2026-10-25"
+  updatedAt: "2026-10-27"
   createdBy: "agent"
   lastModifiedBy: "agent"
   skill: "ravintio-implement"
