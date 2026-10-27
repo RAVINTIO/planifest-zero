@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000192-rename-runner-lock-and-archive
+Last updated: 0000196-setup-argument-checks
 
 ## What this repo is
 
@@ -170,9 +170,11 @@ Setup is safe to re-run on a project that an older release installed.
 - `--context-mode-mcp`
 - `--include-full-skill-library`
 
-Each prints one warning and setup skips it. After `--backend-url`, setup also skips the next argument, unless that argument is a flag or a tool name. Setup never prints or stores that value, in either the spaced or the `=` form. Any other unknown flag still exits 1, and its error shows the flag name only. Matching is exact and case-sensitive in both scripts. The tool name also matches exactly.
+Each exits 1 during argument parsing, before setup changes anything. The error names the flag, says that it was removed and does nothing, and tells the user to remove it. Setup never prints or stores a `--backend-url` value, in either the spaced or the `=` form. Any other unknown flag also exits 1, and its error shows the flag name only. Matching is exact and case-sensitive in both scripts.
 
-PowerShell 7 splits an argument such as `--backend-url=https://x` at its first colon. `setup.ps1` skips the rest of the value too, and never prints a tool name that isn't a plain name.
+Setup checks the tool straight after argument parsing, ahead of the old-folder check. An unknown tool exits 1 and leaves the repo unchanged. A missing tool prints the usage text and exits 0, also with no change. The `ravintio-refresh-setup` skill names a retired flag that a record or marker holds, and leaves it out of the command it proposes.
+
+`setup.ps1` never prints a tool name that isn't a plain name.
 
 **Retired hooks.** Both scripts prune a hook only if its name is on the retired list, which `setup.sh` keeps as `RETIRED_HOOK_NAMES` and `setup.ps1` as `$RetiredHookNames`. Pruning deletes the installed hook file. The hook install step also drops each `settings.json` entry that runs a retired hook, on every event. A hook that is not on the list stays.
 

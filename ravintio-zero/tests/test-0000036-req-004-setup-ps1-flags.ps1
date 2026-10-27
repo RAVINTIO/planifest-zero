@@ -1,5 +1,5 @@
 # Tests for feature 0000036-test-runner-coverage, req-004: setup.ps1 flag
-# handling at runtime. Retired flags warn and exit 0 (0000034 ADR-001), and
+# handling at runtime. Retired flags exit 1 (0000196 ADR-002), and
 # never print a --backend-url value. Flags and the tool name match case
 # (0000035 ADR-003, S-008). Keep this file ASCII.
 
@@ -11,18 +11,17 @@ try {
 $ws = New-SetupWorkspace
 
 Write-Host ""
-Write-Host "=== req-004 (f): retired flags warn and continue ==="
+Write-Host "=== req-004 (f): retired flags exit 1 and name the flag ==="
 
 foreach ($flag in @('--structured-telemetry-mcp', '--context-mode-mcp', '--include-full-skill-library')) {
     $run = Invoke-Setup $ws @('claude-code', $flag)
-    Assert-Equal 0 $run.Code "req-004 (f): $flag exits 0"
-    Assert-Contains "ignoring retired flag $flag" $run.Output "req-004 (f): $flag prints the retired-flag warning"
+    Assert-Equal 1 $run.Code "req-004 (f): $flag exits 1"
+    Assert-Contains "retired flag $flag" $run.Output "req-004 (f): $flag prints the retired-flag error"
 }
 
 foreach ($form in @(@('claude-code', '--backend-url', 'https://example.invalid/token-abc'), @('claude-code', '--backend-url=https://example.invalid/token-abc'))) {
     $run = Invoke-Setup $ws $form
-    Assert-Equal 0 $run.Code "req-004 (f): $($form[1]) exits 0"
-    if ($run.Code -ne 0) { Write-Host ($run.Output -replace 'token-abc', 'TOKEN') }
+    Assert-Equal 1 $run.Code "req-004 (f): $($form[1]) exits 1"
     Assert-True (-not $run.Output.Contains('token-abc')) "req-004 (f): $($form[1]) never prints the URL"
 }
 
