@@ -55,3 +55,7 @@ Done: REQ-002 (`git check-ignore` passes, `plan/.orchestrator-ack` stays tracked
 Deviation: `auto-trigger-orchestrator.mjs` no longer requires an empty `plan/current/`, so both hooks apply one rule. The 0000205 suite changed to match: the lock-held strict case now needs an active initiative, and the open-artifacts case now names the initiative skill.
 Deviation: both suites run the hooks with `env -u RAVINTIO_INITIATIVE_STEP`. A step session sets the variable, and the old suite failed inside one.
 Docs updated: `roadmap-standards.md`, `project-operations.md`. Version 0.30.1 in `product.yml`, `component.yml`, `docs/about.md`.
+
+### P3: Validate and Accept
+
+Bash runner 199 feature suites and 19 regression checks passed. No security finding above informational. Evidence in `acceptance-evidence.md`.
