@@ -35,4 +35,4 @@ Every reply and every driver or watcher line in a run starts with the local time
 
 ## Why Deferred
 
-The human asked for it while initiative 0000238 step 2 was in P4. The charted steps don't cover it. A matching entry is filed in the `framework` repo, which has no initiative stages.
+The human asked for it while initiative 0000238 step 2 was in P4. The charted steps don't cover it. The sibling pack repo holds a matching entry, 0000294. That repo has no initiative stages.
