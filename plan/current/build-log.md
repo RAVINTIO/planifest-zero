@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T19:41:00Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T19:43:00Z` |
+| Wall clock | `2` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -45,3 +45,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock (cross-session continuity): the test list lives in the execution plan on disk, so a resumed P1 reads it back [source: draft-accepted (initiative)]
 - Scope Lock complete. All four scenario paths captured.
 - Version: 0.35.0 (minor bump from 0.34.0, initiative chart)
+- Design confirmed: draft-accepted (initiative) (2026-10-28T19:43:00Z)
