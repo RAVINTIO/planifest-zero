@@ -252,6 +252,7 @@ async function main() {
       "immediately in its own dedicated commit before this write proceeds.)",
     ].join("\n");
   }
+  reason += "\nSee ravintio-zero/standards/hook-enforcement.md.";
   // Claude Code shows the agent only stderr on exit 2. Stdout keeps the JSON deny.
   process.stderr.write(reason + "\n");
   console.log(JSON.stringify({
