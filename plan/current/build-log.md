@@ -52,8 +52,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T22:17:29Z` |
-| End | `2026-10-28T22:19:00Z` |
-| Wall clock | `2` |
+| End | `2026-10-28T22:18:53Z` |
+| Wall clock | `1` |
 | Model tier | primary |
 | Skills loaded | ravintio-plan |
 | Agents spawned | 0 |
@@ -61,4 +61,18 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Parallel task batches | 0 |
 | Notes | three small requirements, so no decomposition |
 
-- Plan complete: consistency check clean (2026-10-28T22:19:00Z)
+- Plan complete: consistency check clean (2026-10-28T22:18:53Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T22:18:53Z` |
+| End | `` |
+| Wall clock | `` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | five units of short edits done inline, because a subagent costs more than the edits |
