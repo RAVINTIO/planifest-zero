@@ -2,7 +2,7 @@
 
 **Feature:** PATH check before a missing-program claim
 **Version:** 0.38.0
-**PR:** pending
+**PR:** #67
 
 ## What changed
 
