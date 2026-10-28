@@ -34,3 +34,4 @@ Postmortems: none
 | Human corrections at gates | 0 | 2 | ok |
 
 Breaches: 0. The gate reports and does not block. Counts come from marker lines only.
+Retrospective: plan/retrospectives/0000240-stream-step-session-activity-2026-10-28.md
