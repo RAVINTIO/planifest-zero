@@ -70,9 +70,19 @@ A progress report, on request and at each phase end, has two parts:
 
 If the driver prints `Blocked:` or exits non-zero, report the stop line and the step log path `plan/.initiative-logs/step-{position}.log`. Never resume the step. Ask the human how to proceed. After the human acts, offer to restart the driver.
 
+A `Restart:` line is not a failure. It means a merged step changed the driver, the watcher, or this skill, and the running code is old. Report the line. Then start a new driver and a new watcher without asking. Read this skill again first if the line names it.
+
 ## Backlog queue
 
 While the lock is held, write each new backlog entry to `plan/.initiative-queue/{id}-{slug}/entry.md`. Reserve its id with `node ravintio-zero/scripts/reserve-id.mjs --commit`, which commits `plan/backlog/.next-id` alone at once. When a step merges and the driver is between steps or has exited, move the queued entries to `plan/backlog/` on the initiative branch. Commit each entry on its own. Never touch the queue while a step runs.
+
+## Repo instructions during a run
+
+If the human asks for a repo instruction while a step runs, add it to the scope of the current or next pending step in `plan/current-initiative/initiative.md`. The skill never writes the override from the initiative session, because `gate-write` blocks that write. The step writes the file.
+
+- If the driver lock is held, queue the instruction in `plan/.initiative-queue/{slug}/instruction.md`. The step that runs has already read its scope, so the instruction goes to the next pending step.
+- When the driver is between steps or has exited, add the instruction to that step's scope in `initiative.md`. Commit the edit on the initiative branch.
+- Tell the human which step took the instruction.
 
 ## I-E Delivery
 

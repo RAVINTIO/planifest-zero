@@ -1,6 +1,6 @@
 ---
-version: "0.38.0"
-feature: "0000249-check-path-before-missing-claims"
+version: "0.39.0"
+feature: "0000250-initiative-mid-run-changes"
 updated: "28 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "28 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.38.0` |
-| Last feature | `0000249-check-path-before-missing-claims` |
+| Version | `0.39.0` |
+| Last feature | `0000250-initiative-mid-run-changes` |
 | Updated | `28 Oct 2026` |
 
 ## What this is

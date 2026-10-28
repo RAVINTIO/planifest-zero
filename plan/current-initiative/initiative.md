@@ -8,7 +8,7 @@ status: "active"
 **Goal:** Clear every open backlog entry filed during and after initiative 0000195 that needs no human-run check or paid service. Each step ships one feature release. A final chore step refreshes the installed setup so `.claude/skills/` matches the pack.
 **Branch:** initiative/0000238-backlog-clearance-two
 **Status:** active
-**Position:** 12
+**Position:** 13
 **Speed:** standard
 
 The human asked for this draft on 2026-10-27, after merging PR #55 for initiative 0000195. The human approved the chart on 2026-10-28, and I-B Activate ran the same day.
@@ -110,7 +110,7 @@ All pack skills share a 1,720-line cap, with 35 lines of headroom on 2026-10-28.
 | 9 | 0000247-git-state-hygiene | 0000213, 0000224, 0000231 | minor | 0.36.0 | merged |
 | 10 | 0000248-ship-merge-and-wall-clocks | 0000228, 0000232 | minor | 0.37.0 | merged |
 | 11 | 0000249-check-path-before-missing-claims | 0000233 | minor | 0.38.0 | merged |
-| 12 | 0000250-initiative-mid-run-changes | 0000226, 0000227 | minor | | pending |
+| 12 | 0000250-initiative-mid-run-changes | 0000226, 0000227 | minor | 0.39.0 | merged |
 | 13 | 0000251-driver-step-fixes | 0000229, 0000235 | patch | | pending |
 | 14 | 0000252-chart-rules | 0000223, 0000225, 0000234 | minor | | pending |
 | 15 | 0000253-refresh-setup | none (chore) | patch | | pending |
