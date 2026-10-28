@@ -31,8 +31,8 @@ As a maintainer, I see the ship skill give one plain merge line with a literal P
   - When the guard reads `gh pr merge --squash --delete-branch 52`
   - Then it exits 0
 - [ ] AC-3: merge-guard is unchanged
-  - Given the branch diff against its base
-  - When the test lists changed files
+  - Given the branch diff against the initiative branch
+  - When P3 lists changed files with `git diff --name-only`
   - Then neither `merge-guard.mjs` nor its test file appears
 
 ## Dependencies
