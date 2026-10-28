@@ -92,3 +92,4 @@ P2 Implement: Complete: U-001 test change landed, U-002 found no docs naming the
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | Full suite run with RAVINTIO_INITIATIVE_STEP unset, per the chart decision. |
+P3 Validate: Complete: suite green, 0 security findings, evidence written (2026-10-28T13:20:23Z)
