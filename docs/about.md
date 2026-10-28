@@ -1,6 +1,6 @@
 ---
-version: "0.37.0"
-feature: "0000248-ship-merge-and-wall-clocks"
+version: "0.38.0"
+feature: "0000249-check-path-before-missing-claims"
 updated: "28 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "28 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.37.0` |
-| Last feature | `0000248-ship-merge-and-wall-clocks` |
+| Version | `0.38.0` |
+| Last feature | `0000249-check-path-before-missing-claims` |
 | Updated | `28 Oct 2026` |
 
 ## What this is
