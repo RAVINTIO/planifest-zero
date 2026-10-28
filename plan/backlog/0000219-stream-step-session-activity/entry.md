@@ -37,6 +37,9 @@ While a step runs, the human's session reports each tool call and subagent start
 - A stub step session that emits stream-json events produces one summary line per tool call in the order received.
 - A summary line never exceeds 200 characters.
 - The driver still prints no step session content to its own output.
+- The initiative skill relays each summary line to the human's chat.
+
+The human added the last condition at initiative 0000238 chart, on 2026-10-27.
 
 ## Why Deferred
 
