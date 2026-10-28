@@ -38,3 +38,11 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 Run mode: autonomous (2026-10-28T13:35:38Z, initiative step)
 Run speed: standard (2026-10-28T13:35:38Z, initiative step)
 I-C Run: Starting: step 5 of initiative 0000238 (2026-10-28T13:35:38Z)
+Scope lock: in scope: the script, the hook change, the reference file, the short rule, the initiative skill change, tests [source: draft-accepted (initiative)]
+Scope lock: out of scope: splitting the rest of SKILL.md, any fail-closed hook change, strict-mode hook beyond its initiative rule [source: draft-accepted (initiative)]
+Scope lock: deferred: nothing [source: draft-accepted (initiative)]
+Scope lock: assumption: the 12 checks stay the source of the order [source: draft-accepted (initiative)]
+Decision applied (initiative chart): script runs inside auto-trigger-orchestrator.mjs on the load-instruction prompt
+Version: 0.32.0 (minor bump from 0.31.2, step row)
+Gate: design self-confirmed, draft-accepted (initiative)
+P0 Discovery: Complete: design self-confirmed, draft-accepted (initiative)
