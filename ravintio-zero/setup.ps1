@@ -1092,36 +1092,111 @@ function Copy-CapabilitySkills {
     }
 }
 
-function Append-OverrideInstructions {
-    # Appends project-specific instructions from ravintio-overrides/instructions/
-    # to the tool's boot file. Idempotent — strips and replaces the override block
-    # on every re-run so changes in ravintio-overrides/ are always reflected.
-    param($BootFilePath)
+function Remove-OverrideBlock {
+    # Removes any ravintio-overrides:instructions marker block from one file.
+    param([string]$Path)
+    $item = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    if (-not $item -or $item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) { return }
+    $startMarker = '<!-- ravintio-overrides:instructions:start -->'
+    $endMarker   = '<!-- ravintio-overrides:instructions:end -->'
+    $current = Get-Content -Path $Path -Raw -Encoding UTF8
+    if ($current -and $current -match [regex]::Escape($startMarker)) {
+        $pattern = "(?s)\r?\n?$([regex]::Escape($startMarker)).*?$([regex]::Escape($endMarker))\r?\n?"
+        $current = [regex]::Replace($current, $pattern, '')
+        Set-Content -Path $Path -Value $current.TrimEnd() -Encoding UTF8 -NoNewline
+    }
+}
 
-    $bootPath = Join-Path $ProjectRoot $BootFilePath
-    if (-not (Test-Path $bootPath)) { return }
+function Get-OverrideParts {
+    # Returns @{ Target; Body } for an override file. Target is $null when the
+    # frontmatter has no `target:` key, and '(empty)' when the key has no value.
+    param([string]$Path)
+    $raw = (Get-Content -Path $Path -Raw -Encoding UTF8)
+    $lines = $raw -split "`r?`n"
+    $target = $null
+    $body = $raw
+    if ($lines.Count -gt 0 -and $lines[0] -match '^---\s*$') {
+        $end = -1
+        for ($i = 1; $i -lt $lines.Count; $i++) {
+            if ($lines[$i] -match '^---\s*$') { $end = $i; break }
+            if ($null -eq $target -and $lines[$i] -match '^target:\s*(.*?)\s*$') {
+                $v = $Matches[1].Trim('"', "'")
+                $target = if ($v -eq '') { '(empty)' } else { $v }
+            }
+        }
+        if ($end -ge 0) {
+            $body = ($lines[($end + 1)..($lines.Count - 1)] -join "`n")
+        } else {
+            $target = $null
+        }
+    }
+    return @{ Target = $target; Body = $body }
+}
+
+function Append-OverrideInstructions {
+    # Appends project-specific instructions from ravintio-overrides/instructions/.
+    # An override with `target: {skill}` goes to {skills dir}/{skill}/SKILL.md with
+    # its frontmatter stripped. Every other override, and any with a bad target,
+    # goes to the boot file. Idempotent: strips and replaces each block on every
+    # run (0000245 REQ-002, parity with setup.sh append_override_instructions).
+    param($BootFilePath, $SkillsDir)
 
     $startMarker = '<!-- ravintio-overrides:instructions:start -->'
     $endMarker   = '<!-- ravintio-overrides:instructions:end -->'
+    $bootPath = if ($BootFilePath) { Join-Path $ProjectRoot $BootFilePath } else { $null }
 
-    # Strip any existing override block from a previous run
-    $current = Get-Content -Path $bootPath -Raw -Encoding UTF8
-    if ($current -match [regex]::Escape($startMarker)) {
-        $pattern = "(?s)\r?\n$([regex]::Escape($startMarker)).*?$([regex]::Escape($endMarker))\r?\n?"
-        $current = [regex]::Replace($current, $pattern, '')
-        Set-Content -Path $bootPath -Value $current.TrimEnd() -Encoding UTF8 -NoNewline
+    # Drop stale blocks from every installed skill and the boot file
+    if ($SkillsDir -and (Test-Path $SkillsDir)) {
+        foreach ($sd in @(Get-ChildItem -Path $SkillsDir -Directory -Force)) {
+            if ($sd.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
+            Remove-OverrideBlock -Path (Join-Path $sd.FullName 'SKILL.md')
+        }
     }
+    if ($bootPath) { Remove-OverrideBlock -Path $bootPath }
 
     $instrDir = Join-Path $ProjectRoot 'ravintio-overrides\instructions'
     if (-not (Test-Path $instrDir)) { return }
     $files = @(Get-ChildItem -Path $instrDir -File -Filter '*.md' | Sort-Object Name)
     if ($files.Count -eq 0) { return }
 
+    $bootFiles = @()
+    $skillBlocks = [ordered]@{}
+    foreach ($file in $files) {
+        $parts = Get-OverrideParts -Path $file.FullName
+        if ($null -eq $parts.Target) { $bootFiles += $file; continue }
+        $t = $parts.Target
+        $skillMd = if ($SkillsDir) { Join-Path (Join-Path $SkillsDir $t) 'SKILL.md' } else { $null }
+        $ok = $false
+        if ($t -cmatch '^[a-z0-9][a-z0-9-]*$' -and $skillMd) {
+            $dirItem = Get-Item -LiteralPath (Join-Path $SkillsDir $t) -Force -ErrorAction SilentlyContinue
+            $fileItem = Get-Item -LiteralPath $skillMd -Force -ErrorAction SilentlyContinue
+            $ok = $dirItem -and $fileItem -and -not $fileItem.PSIsContainer `
+                -and -not ($dirItem.Attributes -band [IO.FileAttributes]::ReparsePoint) `
+                -and -not ($fileItem.Attributes -band [IO.FileAttributes]::ReparsePoint)
+        }
+        if ($ok) {
+            if (-not $skillBlocks.Contains($t)) { $skillBlocks[$t] = '' }
+            $skillBlocks[$t] += "`n" + $parts.Body.TrimEnd() + "`n"
+        } else {
+            Write-Warning "override $($file.Name) has target '$t' that names no installed skill; appending to the boot file"
+            $bootFiles += $file
+        }
+    }
+
+    foreach ($t in $skillBlocks.Keys) {
+        $skillMd = Join-Path (Join-Path $SkillsDir $t) 'SKILL.md'
+        $block = "`n`n$startMarker`n" + $skillBlocks[$t] + "`n$endMarker"
+        Add-Content -Path $skillMd -Value $block -Encoding UTF8
+        Write-Host "  Appending override instructions to $t/SKILL.md"
+    }
+
+    if (-not $bootPath -or -not (Test-Path $bootPath) -or $bootFiles.Count -eq 0) { return }
+
     Write-Host ""
     Write-Host "  Appending override instructions from ravintio-overrides/instructions/"
 
     $block = "`n`n$startMarker`n"
-    foreach ($file in $files) {
+    foreach ($file in $bootFiles) {
         $block += "`n" + (Get-Content -Path $file.FullName -Raw -Encoding UTF8).TrimEnd() + "`n"
         Write-Host "  + $($file.Name)"
     }
@@ -1228,9 +1303,8 @@ function Invoke-RavintioSetup {
     }
 
     # Append project-specific instructions to boot file (idempotent on re-run)
-    if ($toolConfig.BootFile) {
-        Append-OverrideInstructions -BootFilePath $toolConfig.BootFile
-    }
+    # Targeted overrides go to their skill, so this runs after the skill copies.
+    Append-OverrideInstructions -BootFilePath $toolConfig.BootFile -SkillsDir $skillsDir
 
     # Ordered BEFORE the enforcement hook install so that install is the last
     # writer of settings.json this run.

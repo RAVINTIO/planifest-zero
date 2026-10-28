@@ -210,14 +210,69 @@ copy_capability_skills() {
   fi
 }
 
+strip_override_block() {
+  # Removes any ravintio-overrides:instructions marker block from one file.
+  local file="$1"
+  [ -f "$file" ] && [ ! -L "$file" ] || return 0
+  command -v node >/dev/null 2>&1 || return 0
+  RAVINTIO_BOOT="$file" node -e '
+    const fs = require("fs");
+    const b = process.env.RAVINTIO_BOOT;
+    let c = fs.readFileSync(b, "utf8");
+    const s = "<!-- ravintio-overrides:instructions:start -->";
+    const e = "<!-- ravintio-overrides:instructions:end -->";
+    const re = new RegExp("\\n?" + s.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&") +
+      "[\\s\\S]*?" + e.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&") + "\\n?", "g");
+    const n = c.replace(re, "");
+    if (n !== c) fs.writeFileSync(b, n, "utf8");
+  '
+}
+
+override_target() {
+  # Prints the `target:` value from an override file's YAML frontmatter, if any.
+  awk '
+    NR == 1 { if ($0 ~ /^---[ \t\r]*$/) { fm = 1; next } else exit }
+    fm && /^---[ \t\r]*$/ { exit }
+    fm && /^target:/ {
+      v = $0; sub(/^target:[ \t]*/, "", v); sub(/[ \t\r]*$/, "", v)
+      gsub(/^["\047]|["\047]$/, "", v); print (v == "" ? "(empty)" : v); exit
+    }
+  ' "$1"
+}
+
+override_body() {
+  # Prints an override file with its YAML frontmatter removed.
+  awk '
+    NR == 1 && /^---[ \t\r]*$/ { fm = 1; next }
+    fm && /^---[ \t\r]*$/ { fm = 0; next }
+    !fm { print }
+  ' "$1"
+}
+
 append_override_instructions() {
-  # Appends project-specific instructions from ravintio-overrides/instructions/
-  # into the boot file between sentinel markers (idempotent). (REQ-006, REQ-007,
-  # parity with setup.ps1 Append-OverrideInstructions).
-  local boot_file="$PROJECT_ROOT/$1"
+  # Appends project-specific instructions from ravintio-overrides/instructions/.
+  # An override with `target: {skill}` goes to {skills dir}/{skill}/SKILL.md,
+  # frontmatter stripped. Every other override, and any with a bad target, goes
+  # to the boot file. Both blocks sit between sentinel markers and are replaced
+  # on every run (REQ-006, REQ-007, 0000245 REQ-002, parity with setup.ps1
+  # Append-OverrideInstructions).
+  # $1 = boot file relative to the project root (may be empty), $2 = skills dir.
+  local boot_file=""
+  [ -n "${1:-}" ] && boot_file="$PROJECT_ROOT/$1"
+  local skills_dir="${2:-}"
   local instr_dir="$PROJECT_ROOT/ravintio-overrides/instructions"
   local start_marker="<!-- ravintio-overrides:instructions:start -->"
   local end_marker="<!-- ravintio-overrides:instructions:end -->"
+
+  # Drop stale blocks from every installed skill and the boot file.
+  if [ -n "$skills_dir" ] && [ -d "$skills_dir" ]; then
+    local sd
+    for sd in "$skills_dir"/*/; do
+      [ -d "$sd" ] && [ ! -L "${sd%/}" ] || continue
+      strip_override_block "${sd}SKILL.md"
+    done
+  fi
+  [ -n "$boot_file" ] && strip_override_block "$boot_file"
 
   if [ ! -d "$instr_dir" ]; then
     return
@@ -233,26 +288,54 @@ append_override_instructions() {
     return
   fi
 
-  # Idempotent: strip existing override block before re-appending
-  if [ -f "$boot_file" ] && command -v node >/dev/null 2>&1; then
-    RAVINTIO_BOOT="$boot_file" node -e '
-      const fs = require("fs");
-      const b = process.env.RAVINTIO_BOOT;
-      if (!fs.existsSync(b)) process.exit(0);
-      let c = fs.readFileSync(b, "utf8");
-      const s = "<!-- ravintio-overrides:instructions:start -->";
-      const e = "<!-- ravintio-overrides:instructions:end -->";
-      const re = new RegExp("\\n?" + s.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&") +
-        "[\\s\\S]*?" + e.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&") + "\\n?", "g");
-      fs.writeFileSync(b, c.replace(re, ""), "utf8");
-    '
+  # Route each file: targeted ones to a skill, the rest to the boot file.
+  local boot_files=() skill_targets=() skill_files=()
+  local f target skill_md
+  for f in "${files[@]}"; do
+    target="$(override_target "$f")"
+    if [ -z "$target" ]; then
+      boot_files+=("$f")
+      continue
+    fi
+    skill_md="$skills_dir/$target/SKILL.md"
+    if [[ "$target" =~ ^[a-z0-9][a-z0-9-]*$ ]] && [ -n "$skills_dir" ] \
+       && [ ! -L "$skills_dir/$target" ] && [ -f "$skill_md" ] && [ ! -L "$skill_md" ]; then
+      skill_targets+=("$target")
+      skill_files+=("$f")
+    else
+      echo "  ! Warning: override $(basename "$f") has target '$target' that names no installed skill; appending to the boot file" >&2
+      boot_files+=("$f")
+    fi
+  done
+
+  # Append one fresh block per targeted skill
+  local i t done_targets=" "
+  for t in "${skill_targets[@]+"${skill_targets[@]}"}"; do
+    case "$done_targets" in *" $t "*) continue ;; esac
+    done_targets="$done_targets$t "
+    {
+      echo ""
+      echo "$start_marker"
+      for i in "${!skill_targets[@]}"; do
+        [ "${skill_targets[$i]}" = "$t" ] || continue
+        echo ""
+        override_body "${skill_files[$i]}"
+      done
+      echo ""
+      echo "$end_marker"
+    } >> "$skills_dir/$t/SKILL.md"
+    echo "  Appending override instructions to $t/SKILL.md"
+  done
+
+  if [ -z "$boot_file" ] || [ "${#boot_files[@]}" -eq 0 ]; then
+    return
   fi
 
   # Append fresh block
   {
     echo ""
     echo "$start_marker"
-    for f in "${files[@]}"; do
+    for f in "${boot_files[@]}"; do
       echo ""
       cat "$f"
     done
@@ -262,7 +345,6 @@ append_override_instructions() {
 
   echo "  Appending override instructions from ravintio-overrides/instructions/"
 }
-
 
 copy_workflow() {
   local workflow_file="$1"
@@ -949,8 +1031,11 @@ setup_tool() {
   fi
 
   # Append project-specific override instructions to boot file (REQ-006, REQ-007)
+  # Targeted overrides go to their skill, so this runs after the skill copies.
   if [ -n "${TOOL_BOOT_FILE:-}" ]; then
-    append_override_instructions "$TOOL_BOOT_FILE"
+    append_override_instructions "$TOOL_BOOT_FILE" "$skills_dir"
+  else
+    append_override_instructions "" "$skills_dir"
   fi
 
   # Ordered BEFORE the enforcement hook install so that install is the last
