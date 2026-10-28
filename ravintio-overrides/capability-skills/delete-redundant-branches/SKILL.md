@@ -1,4 +1,8 @@
-### Delete redundant local branches
+---
+name: delete-redundant-branches
+description: Delete redundant local git branches without asking. Use when tidying local branches, or after a pull request merges or an upstream shows as gone.
+---
+# Delete redundant local branches
 
 You may delete a redundant local branch at any time, without asking. A local branch is redundant when either of these is true:
 

@@ -1,3 +1,6 @@
+---
+target: ravintio-refresh-setup
+---
 ### Standing approval for the setup refresh
 
 You may run the `ravintio-refresh-setup` skill without asking first, if the command is exactly this:
