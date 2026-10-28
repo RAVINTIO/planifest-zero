@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T21:35:06Z` |
-| End | `2026-10-28T21:37:30Z` |
-| Wall clock | `2` |
+| End | `2026-10-28T21:36:04Z` |
+| Wall clock | `1` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -46,15 +46,15 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock (cross-session continuity): a new driver reads position from the branch ref and carries no other state [source: draft-accepted (initiative)]
 - Scope Lock complete. All four scenario paths captured.
 - Version: 0.39.0 (minor bump from 0.38.0, initiative chart)
-- Design confirmed: draft-accepted (initiative) (2026-10-28T21:37:30Z)
+- Design confirmed: draft-accepted (initiative) (2026-10-28T21:36:04Z)
 
 ### P1: Plan
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-28T21:37:30Z` |
+| Start | `2026-10-28T21:36:04Z` |
 | End | `2026-10-28T21:36:52Z` |
-| Wall clock | `3` |
+| Wall clock | `1` |
 | Model tier | primary |
 | Skills loaded | ravintio-plan |
 | Agents spawned | 0 |
