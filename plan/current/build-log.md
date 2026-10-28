@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T20:28:00Z` |
-| End | `2026-10-28T20:34:00Z` |
-| Wall clock | `6` |
+| End | `2026-10-28T20:30:00Z` |
+| Wall clock | `2` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -45,15 +45,15 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock (cross-session continuity): a resumed log is read as it stands [source: draft-accepted (initiative)]
 - Scope Lock complete. All four scenario paths captured.
 - Version: 0.37.0 (minor bump from 0.36.0, initiative chart)
-- Design confirmed: draft-accepted (initiative) (2026-10-28T20:34:00Z)
+- Design confirmed: draft-accepted (initiative) (2026-10-28T20:30:00Z)
 
 ### P1: Plan
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-28T20:35:00Z` |
-| End | `2026-10-28T20:41:00Z` |
-| Wall clock | `6` |
+| Start | `2026-10-28T20:30:00Z` |
+| End | `2026-10-28T20:32:00Z` |
+| Wall clock | `2` |
 | Model tier | primary |
 | Skills loaded | ravintio-plan |
 | Agents spawned | 0 |
@@ -61,4 +61,25 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Parallel task batches | 0 |
 | Notes | two small units, no decomposition: the edits are short and U-002 reads U-001's script |
 
-- Plan complete: consistency check clean (2026-10-28T20:41:00Z)
+- Plan complete: consistency check clean (2026-10-28T20:32:00Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T20:32:00Z` |
+| End | `2026-10-28T20:58:00Z` |
+| Wall clock | `26` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | two small units done inline, no subagents: each edits a few lines and U-002 reads U-001's script |
+
+- In progress: U-001 build log check (2026-10-28T20:32:00Z)
+- Done: U-001 build log check (2026-10-28T20:45:00Z)
+- In progress: U-002 plain merge line (2026-10-28T20:45:00Z)
+- Done: U-002 plain merge line (2026-10-28T20:52:00Z)
+- Deviation: req-001 AC-3 (merge-guard unchanged) moved from the test to a P3 `git diff` check, because a live diff in a test breaks later branches. The requirement file now says so.
+- Known failure: `test-0000042-req-006` and `test-0000043-req-009` fail in this session only. The phase guard scans the git-ignored step log, which is backlog entry 0000264. Both pass on a clean archive of HEAD.
