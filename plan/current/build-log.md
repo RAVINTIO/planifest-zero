@@ -68,8 +68,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T21:57:00Z` |
-| End | `2026-10-28T22:10:00Z` |
-| Wall clock | `13` |
+| End | `2026-10-28T22:07:00Z` |
+| Wall clock | `10` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 0 |
@@ -78,7 +78,23 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | two units of short edits done inline, because a subagent costs more than the edits |
 
 - In progress: U-001 runners, U-002 driver attempt logs (2026-10-28T21:57:00Z)
-- Done: U-001 runners, U-002 driver attempt logs, U-003 standards and docs (2026-10-28T22:10:00Z)
-- Rework: REQ-001: the nested runners inherited RAVINTIO_TEST_QUIET=1 in a quiet full run and hid the probe lines, so the test now unsets it (2026-10-28T22:10:00Z)
+- Done: U-001 runners, U-002 driver attempt logs, U-003 standards and docs (2026-10-28T22:07:00Z)
+- Rework: REQ-001: the nested runners inherited RAVINTIO_TEST_QUIET=1 in a quiet full run and hid the probe lines, so the test now unsets it (2026-10-28T22:07:00Z)
 - Known failure: `test-0000042-req-006` and `test-0000043-req-009` fail in this session only. The phase guard scans the git-ignored step log, which is backlog entry 0000264. Both pass on a clean archive of HEAD.
 - Note: the running driver predates this change, so a re-run of a step under it still truncates. The human restarts the driver and the watcher to load the new code.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T22:07:00Z` |
+| End | `2026-10-28T22:08:00Z` |
+| Wall clock | `1` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | checks ran inline: the full suite ran in P2 and the evidence is short |
+
+- Validate complete: 218 feature suites passed and 3 failed in the first run. Two are entry 0000264 and pass on a clean archive of HEAD. The third was fixed (2026-10-28T22:08:00Z)
