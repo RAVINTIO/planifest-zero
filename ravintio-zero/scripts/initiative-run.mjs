@@ -42,7 +42,7 @@
 //   1. Reads plan/current-initiative/initiative.md and stops unless status is "active".
 //   2. Takes plan/.initiative-runner.lock. If the lock exists, it refuses to start
 //      and leaves the lock alone.
-//   3. Runs `claude -p --permission-mode auto --model {model} [--max-turns {n}]
+//   3. Runs `claude -p --output-format stream-json --verbose --permission-mode auto --model {model} [--max-turns {n}]
 //      "Run initiative step {position}"`
 //      and waits. It never passes --continue or --resume, so each step gets a
 //      fresh session. The position goes to claude as one argument, never
@@ -323,7 +323,7 @@ function delivered(root, id, slug) {
 function runStep(root, position, cfg, fd, labels) {
   return new Promise((resolveStep) => {
     const bin = process.env.CLAUDE_BIN || 'claude';
-    const args = ['-p', '--permission-mode', 'auto', '--model', cfg.model];
+    const args = ['-p', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'auto', '--model', cfg.model];
     if (cfg.turns) args.push('--max-turns', cfg.turns);
     args.push(`Run initiative step ${position}`);
     const child = spawn(bin, args, {

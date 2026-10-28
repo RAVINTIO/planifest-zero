@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000239-test-suite-reliability
+Last updated: 0000240-stream-step-session-activity
 
 ---
 
@@ -297,3 +297,9 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
 | ADR-001 | Scan the suite for undefined asserts | accepted | `print_summary` scans the running suite for lines that start with an `assert_*` word and fails each name that is not a function. macOS Bash 3.2 has no not-found handler. |
+
+### Feature 0000240: stream-step-session-activity
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Read the stream in the watcher | accepted | The driver only switches the output format. The watcher reads the step log by byte offset and prints one activity line per event, so one monitor carries every line. |

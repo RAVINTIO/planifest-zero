@@ -61,13 +61,13 @@ echo ""
 echo "=== req-006 (a): arguments ==="
 R="$(make_fixture a-default)"
 run_driver "$R" ok
-assert_equals "-p --permission-mode auto --model sonnet Run initiative step 1" "$(cat "$R/stub.log")" "req-006 (a): default model and no cap"
+assert_equals "-p --output-format stream-json --verbose --permission-mode auto --model sonnet Run initiative step 1" "$(cat "$R/stub.log")" "req-006 (a): default model and no cap"
 R="$(make_fixture a-empty)"
 run_driver "$R" ok RAVINTIO_INITIATIVE_MODEL= RAVINTIO_INITIATIVE_MAX_TURNS=
-assert_equals "-p --permission-mode auto --model sonnet Run initiative step 1" "$(cat "$R/stub.log")" "req-006 (a): empty variables use the defaults"
+assert_equals "-p --output-format stream-json --verbose --permission-mode auto --model sonnet Run initiative step 1" "$(cat "$R/stub.log")" "req-006 (a): empty variables use the defaults"
 R="$(make_fixture a-set)"
 run_driver "$R" ok RAVINTIO_INITIATIVE_MODEL=haiku RAVINTIO_INITIATIVE_MAX_TURNS=40
-assert_equals "-p --permission-mode auto --model haiku --max-turns 40 Run initiative step 1" "$(cat "$R/stub.log")" "req-006 (a): model and cap passed before the prompt"
+assert_equals "-p --output-format stream-json --verbose --permission-mode auto --model haiku --max-turns 40 Run initiative step 1" "$(cat "$R/stub.log")" "req-006 (a): model and cap passed before the prompt"
 
 echo ""
 echo "=== req-006 (a): input validation ==="
