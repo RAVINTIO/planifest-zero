@@ -97,3 +97,17 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Parallel task batches | 0 |
 | Notes | initiative step |
 - Validate complete (2026-10-28T19:25:19Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T19:25:23Z` |
+| End | `` |
+| Wall clock | `` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | initiative step |
