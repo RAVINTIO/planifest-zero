@@ -69,7 +69,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 |-------|-------|
 | Start | `2026-10-28T21:18:02Z` |
 | End | `2026-10-28T21:27:07Z` |
-| Wall clock | `1` |
+| Wall clock | `9` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 0 |
@@ -79,4 +79,21 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 - In progress: U-001 PATH check and docs-only status (2026-10-28T21:18:02Z)
 - Done: U-001 PATH check and docs-only status (2026-10-28T21:27:07Z)
+- Rework: REQ-001: Acceptance gate item 4 used a capital letter that the test did not match, so I reworded the item (2026-10-28T21:18:30Z)
 - Known failure: `test-0000042-req-006` and `test-0000043-req-009` fail in this session only. The phase guard scans the git-ignored step log, which is backlog entry 0000264. Both pass on a clean archive of HEAD.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T21:27:07Z` |
+| End | `2026-10-28T21:27:23Z` |
+| Wall clock | `0` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | checks ran inline: the full suite ran in P2 and the evidence is short |
+
+- Validate complete: 215 feature suites passed and 2 failed on entry 0000264 only. Both pass on a clean archive of HEAD (2026-10-28T21:27:23Z)
