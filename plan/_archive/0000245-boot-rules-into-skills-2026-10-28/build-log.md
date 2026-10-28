@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T18:43:13Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T18:44:17Z` |
+| Wall clock | `1` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -52,8 +52,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T18:44:17Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T18:45:16Z` |
+| Wall clock | `1` |
 | Model tier | primary |
 | Skills loaded | ravintio-plan |
 | Agents spawned | 0 |
@@ -67,13 +67,13 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T18:45:16Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T19:08:18Z` |
+| Wall clock | `23` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
-| Agents spawned | 0 |
+| Agents spawned | 2 |
 | MCP calls | 0 |
-| Parallel task batches | 0 |
+| Parallel task batches | 1 |
 | Notes | initiative step |
 - In progress: U-001 and U-002 batch 1 (2026-10-28T18:45:38Z)
 - Deviation: design.md gained a Component Paths section so gate-write covers the files the plan names (2026-10-28T18:47:13Z)
@@ -88,8 +88,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T19:08:18Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T19:25:19Z` |
+| Wall clock | `17` |
 | Model tier | primary |
 | Skills loaded | ravintio-validate-and-accept |
 | Agents spawned | 0 |
@@ -103,11 +103,27 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T19:25:23Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T19:30:00Z` |
+| Wall clock | `5` |
 | Model tier | primary |
 | Skills loaded | ravintio-ship |
 | Agents spawned | 0 |
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | initiative step |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | 5 |
+| Total wall clock | 47 |
+| Total agents spawned | 2 |
+| Total MCP calls | 0 |
+| Phases using parallelism | 1 |
+| Primary tier agent calls | 2 |
+| Cheaper tier agent calls | 0 |
+| Self-corrections | 5 |
+| Phases skipped | none |
