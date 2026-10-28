@@ -46,3 +46,18 @@ Decision applied (initiative chart): none apply to this step except the planned 
 Version: 0.31.1 (patch bump from 0.31.0, step row)
 Gate: design self-confirmed, draft-accepted (initiative)
 P0 Discovery: Complete: design self-confirmed, draft-accepted (initiative)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T07:12:10Z` |
+| End | `2026-10-28T07:12:34Z` |
+| Wall clock | 3 minutes |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | none |
+P1 Plan: Complete: 4 requirements, 1 ADR, consistency check clean
