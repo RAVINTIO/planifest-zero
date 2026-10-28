@@ -11,6 +11,7 @@ ZERO_DIR="$SCRIPT_DIR/../.."
 SETUP_SH="$ZERO_DIR/setup.sh"
 SETUP_PS1="$ZERO_DIR/setup.ps1"
 ORCHESTRATOR="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH_RESUME_REF="$ZERO_DIR/skills/ravintio-orchestrator/references/orchestrator-resume-detection.md"
 SHIP_AGENT="$ZERO_DIR/skills/ravintio-ship/SKILL.md"
 GATE_WRITE="$ZERO_DIR/hooks/enforcement/gate-write.mjs"
 AUTO_TRIGGER="$ZERO_DIR/hooks/enforcement/auto-trigger-orchestrator.mjs"
@@ -31,7 +32,7 @@ echo ""
 echo "=== REQ-001: .skips path corrected to plan/current/.skips ==="
 
 assert_contains "plan/current/.skips" \
-  "$(grep_str "\.skips" "$ORCHESTRATOR")" \
+  "$(grep_str "\.skips" "$ORCHESTRATOR")$(grep_str "\.skips" "$ORCH_RESUME_REF")" \
   "REQ-001: orchestrator references plan/current/.skips"
 
 # ── REQ-002: auto-trigger-orchestrator hook ───────────────────────────────────

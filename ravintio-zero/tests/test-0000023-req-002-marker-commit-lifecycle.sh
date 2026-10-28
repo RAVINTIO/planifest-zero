@@ -24,7 +24,7 @@ for f in "$ORCHESTRATOR" "$SHIP"; do
   fi
 done
 
-ORCH_CONTENT=$(cat "$ORCHESTRATOR")
+ORCH_CONTENT=$(cat "$ORCHESTRATOR" "$(dirname "$ORCHESTRATOR")/references/orchestrator-resume-detection.md")
 SHIP_CONTENT=$(cat "$SHIP")
 
 echo ""
