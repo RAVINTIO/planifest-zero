@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T13:35:38Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-28T13:52:00Z` |
+| Wall clock | 17 min |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -46,3 +46,18 @@ Decision applied (initiative chart): script runs inside auto-trigger-orchestrato
 Version: 0.32.0 (minor bump from 0.31.2, step row)
 Gate: design self-confirmed, draft-accepted (initiative)
 P0 Discovery: Complete: design self-confirmed, draft-accepted (initiative)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T13:55:00Z` |
+| End | `2026-10-28T14:05:00Z` |
+| Wall clock | 10 min |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | none |
+P1 Plan: Complete: 6 requirements, 1 ADR, consistency check clean (2026-10-28T14:05:00Z)
