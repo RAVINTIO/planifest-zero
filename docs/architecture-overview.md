@@ -37,6 +37,10 @@ Each acceptance criterion is one checkbox line, `- [ ] AC-{n}: {name}`, with ind
 
 `scripts/consistency-check.mjs` reports a criterion that lacks a step or holds steps out of order, with the file and criterion. It also reports a plan that has requirements but no `story-map.md`, and a story map that misses a requirement's story. Every execution plan holds a `## Concurrency plan` table of units, dependencies, write targets, and batches. Check 8 reports a plan that lacks the section, a unit alone in its batch with no reason, two units in one batch that share a write target, and a dependency on a unit in the same or a later batch. The implement phase dispatches by those batches. `ratchet-check` guards each step line, so a loop edit that removes or rewords one exits 2. Both programs cut an echoed line to 200 characters and append ` …[truncated]` if they cut it, so a long line never floods the agent's context.
 
+### Resume findings
+
+`hooks/enforcement/auto-trigger-orchestrator.mjs` runs `scripts/resume-detect.mjs` with a 2 second timeout on the prompt where it injects the load instruction. The script prints one fixed line per signal for the 12 Resume Detection checks, in check order, and `no resume signals` when it finds none. It prints no repo text. An id that fails its pattern prints as `unreadable`. If the script is missing, exits non-zero, or passes the timeout, the hook injects `resume detection did not run` and the skill runs every check. A step session and an initiative session get the same findings, and each names its own skill. `skills/ravintio-orchestrator/references/orchestrator-resume-detection.md` holds the 12 checks in full, and the Resume Detection rule in the orchestrator `SKILL.md` points there.
+
 ### Run modes
 
 At the end of P0, the orchestrator asks how to run P1 to P4. It writes the answer, `gated` or `autonomous`, to `plan/.run-mode` and logs it. No other value is valid.

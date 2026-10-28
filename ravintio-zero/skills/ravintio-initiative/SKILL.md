@@ -29,11 +29,11 @@ description: Coordinates an initiative from chart to delivery in the human's ses
 
 ## Session start
 
-1. If a migration is pending, run `ravintio-migrator` first.
-2. Read `plan/current-initiative/initiative.md`.
-3. If no initiative is `active`, offer I-A Chart. Say whether an earlier initiative exists.
-4. If one is `active` and the driver lock is held, report and start the monitor. Do not start a second driver.
-5. If one is `active` and the lock is free, report the position and offer to restart the driver.
+1. Read the resume findings that the session start hook injected. If none are in context, run `node ravintio-zero/scripts/resume-detect.mjs`. If a finding reads `resume detection did not run`, check the files yourself.
+2. If a `pending migration` finding names a migration whose `Applies when:` condition is true, run `ravintio-migrator` first.
+3. Read `plan/current-initiative/initiative.md`. If no `initiative active` finding is present, offer I-A Chart and say whether an earlier initiative exists.
+4. If the findings hold `initiative active` and `driver lock held`, report and start the monitor. Do not start a second driver.
+5. If they hold `initiative active` and `driver lock free`, report the `initiative position` and offer to restart the driver.
 6. If `position` is past the last step and `initiative.md` remains, run I-E Delivery.
 
 ## I-A Chart and I-B Activate
