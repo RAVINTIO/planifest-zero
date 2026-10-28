@@ -73,6 +73,17 @@ Resolve each gap by this rule:
 
 In a gated run, ask the human about a gap of the second kind. Ask one question at a time.
 
+## Test impact scan
+
+Run this scan before you write the execution plan. Grep `ravintio-zero/tests/` for each cause below that the run triggers, and list every match under `## Test impact` in the execution plan, in the unit that edits the file.
+
+- **Skill count:** the run adds or removes a skill. Grep for `skills/` with `wc -l`.
+- **Skill-text budget:** the run edits any `SKILL.md`. Grep for the line cap.
+- **Size cap:** the run edits a skill that a cap test measures, such as the orchestrator. Grep for the skill name and `-le`.
+- **Backlog entry id:** the run pulls in an entry. Grep for the entry id.
+
+If a grep matches nothing, write `none found` in the row.
+
 ## Requirements rules
 
 - Derive requirements directly from user stories in the brief. Do not invent requirements not stated or implied.
