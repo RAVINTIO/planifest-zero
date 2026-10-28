@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T07:47:05Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-28T07:48:19Z` |
+| Wall clock | 1 min |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -52,8 +52,8 @@ P0 Discovery: Complete: design self-confirmed, draft-accepted (initiative)
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T07:48:19Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-28T07:48:38Z` |
+| Wall clock | 0 min |
 | Model tier | primary |
 | Skills loaded | ravintio-plan |
 | Agents spawned | 0 |
@@ -67,8 +67,8 @@ P1 Plan: Complete: 2 requirements, 1 ADR, consistency check clean
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T07:48:38Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-28T13:20:13Z` |
+| Wall clock | 332 min |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 0 |
@@ -84,8 +84,8 @@ P2 Implement: Complete: U-001 test change landed, U-002 found no docs naming the
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T13:20:13Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-28T13:20:37Z` |
+| Wall clock | 0 min |
 | Model tier | primary |
 | Skills loaded | ravintio-validate-and-accept |
 | Agents spawned | 0 |
@@ -93,3 +93,33 @@ P2 Implement: Complete: U-001 test change landed, U-002 found no docs naming the
 | Parallel task batches | 0 |
 | Notes | Full suite run with RAVINTIO_INITIATIVE_STEP unset, per the chart decision. |
 P3 Validate: Complete: suite green, 0 security findings, evidence written (2026-10-28T13:20:23Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T13:20:37Z` |
+| End | `2026-10-28T13:20:37Z` |
+| Wall clock | 0 min |
+| Model tier | primary |
+| Skills loaded | ravintio-ship, ravintio-retrospective |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Initiative step: Step 9 gives way to I-D Advance. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `353 min, including a 5 hour stop on a pre-existing test failure` |
+| Total agents spawned | `0` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `0` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `0` |
+| Self-corrections | `0` |
+| Phases skipped | `none` |

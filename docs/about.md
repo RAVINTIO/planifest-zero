@@ -1,5 +1,5 @@
 ---
-version: "0.31.1"
+version: "0.31.2"
 feature: "0000241-watcher-false-events"
 updated: "28 Oct 2026"
 ---
@@ -10,7 +10,7 @@ updated: "28 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.31.1` |
+| Version | `0.31.2` |
 | Last feature | `0000241-watcher-false-events` |
 | Updated | `28 Oct 2026` |
 
