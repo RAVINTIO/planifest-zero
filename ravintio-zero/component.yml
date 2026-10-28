@@ -56,6 +56,7 @@ responsibilities:
   - "Reserve every backlog, feature, and initiative id from the counter file plan/backlog/.next-id with scripts/reserve-id.mjs, under an exclusive lock"
   - "Report the Resume Detection signals as fixed lines from scripts/resume-detect.mjs, injected by the session start hook"
   - "Give the ship skill a plain squash-merge line with a literal PR number, and fail the build log at ship Step 3 when a phase has a blank or wrong wall clock, with scripts/build-log-check.mjs"
+  - "Require a PATH search before a P3 report says a program is missing, and give a claim that only documentation backs the outcome unverified (docs only), which never counts as verified"
 
 exceptions:
   - "Does not generate application code. That is the implement phase's job in consumer projects."
