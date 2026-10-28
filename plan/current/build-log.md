@@ -46,3 +46,18 @@ Decision applied (initiative chart): size cap row allows step 4 to change the ca
 Version: 0.31.2 (patch bump from 0.31.1, step row)
 Gate: design self-confirmed, draft-accepted (initiative)
 P0 Discovery: Complete: design self-confirmed, draft-accepted (initiative)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T07:48:19Z` |
+| End | |
+| Wall clock | |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | none |
+P1 Plan: Complete: 2 requirements, 1 ADR, consistency check clean
