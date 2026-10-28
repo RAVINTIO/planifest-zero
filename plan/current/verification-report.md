@@ -6,7 +6,7 @@
 |-----------|--------|---------|----------|
 | REQ-001 AC-1 orchestrator carries the rule | `test-0000247-req-001` | verified | 10 of 10 checks pass |
 | REQ-001 AC-2 ship skill carries the rule | `test-0000247-req-001` | verified | Step 4 names the explicit paths and the ban |
-| REQ-001 AC-3 orchestrator under its cap | `test-0000247-req-001`, `test-0000151-req-011` | verified | 8,121 bytes or fewer against 9,000 |
+| REQ-001 AC-3 orchestrator under its cap | `test-0000247-req-001`, `test-0000151-req-011` | verified | 8,098 bytes against 9,000 |
 | REQ-002 AC-1 counter in its own commit | Invoke the script in a temp repo with a second staged file | verified | The new commit holds `plan/backlog/.next-id` alone and the other file stays staged |
 | REQ-002 AC-2 failure keeps the counter | Invoke the script outside a git repository | verified | Exit 1, one stderr line, counter holds the new value |
 | REQ-002 AC-3 three skills carry the rule | `test-0000247-req-002` | verified | Initiative, retrospective, and postmortem each name `reserve-id.mjs --commit` |

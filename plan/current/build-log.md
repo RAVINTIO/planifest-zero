@@ -98,3 +98,33 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | initiative step |
 - Rework: REQ-001: rule moved to its own line after the base-line check failed on Hard Limit 8 (2026-10-28T20:42:00Z)
 - Validate complete (2026-10-28T20:56:00Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T20:57:00Z` |
+| End | `2026-10-28T21:08:00Z` |
+| Wall clock | `11` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship, ravintio-retrospective |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | initiative step |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | 5 |
+| Total wall clock | 45 |
+| Total agents spawned | 0 |
+| Total MCP calls | 0 |
+| Phases using parallelism | 0 |
+| Primary tier agent calls | 0 |
+| Cheaper tier agent calls | 0 |
+| Self-corrections | 1 |
+| Phases skipped | none |
