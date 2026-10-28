@@ -83,10 +83,25 @@ P2 Implement: Complete: 5 requirements, tests green (203 feature suites, 19 regr
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T06:56:59Z` |
+| End | `2026-10-28T06:57:37Z` |
+| Wall clock | 0 minutes |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | none |
+P3 Validate: Complete: CI green, 0 critical or high findings, evidence in acceptance-evidence.md
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T06:57:37Z` |
 | End | |
 | Wall clock | |
 | Model tier | primary |
-| Skills loaded | ravintio-validate-and-accept |
+| Skills loaded | ravintio-ship |
 | Agents spawned | 0 |
 | MCP calls | 0 |
 | Parallel task batches | 0 |
