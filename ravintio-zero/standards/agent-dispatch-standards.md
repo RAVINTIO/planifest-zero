@@ -115,6 +115,7 @@ At `fast`, a phase dispatches every unit of its fast batch in one message. It ma
 
 - Units in one batch write disjoint files. A dependency manifest or lock file counts as shared, so at most one unit in a batch may add a dependency.
 - Units share one working tree, so they commit one at a time. Each unit stages its own files by path, never with `git add -A` or `git add .`. If a commit meets `.git/index.lock`, wait and retry it.
+- Never run `git stash`, `git checkout`, or `git reset` in a subagent during a batch. A stash takes the uncommitted work of every other subagent in the tree.
 - The Cannot parallelise table still applies.
 - Phases run in order. No unit of phase N+1 starts before phase N ends.
 - Gates, exception stops, and progress markers stay as they are. Write one `In progress:` line per unit in a single commit before the batch.
@@ -133,10 +134,10 @@ Agent spawning is level-2 parallelism (the Agent tool for independent sub-tasks 
 
 ```
 Agent({ description: "Implement REQ-001: {one-liner}", subagent_type: "general-purpose", model: "haiku",
-  prompt: "Requirement: plan/current/requirements/req-001-{slug}.md. ADR: plan/current/adr/ADR-00N-{slug}.md. Stack: {constraint}. Task: {what to build}. If you discover an out-of-scope bug/gap, file it at plan/backlog/{backlog-id-1}-{slug}/entry.md per templates/backlog-entry.template.md; do not report it back for me to relay. Confirm: files modified, what changed." })
+  prompt: "Requirement: plan/current/requirements/req-001-{slug}.md. ADR: plan/current/adr/ADR-00N-{slug}.md. Stack: {constraint}. Task: {what to build}. If you discover an out-of-scope bug/gap, file it at plan/backlog/{backlog-id-1}-{slug}/entry.md per templates/backlog-entry.template.md; do not report it back for me to relay. Never run git stash, git checkout, or git reset: a stash takes the uncommitted work of every other subagent. Confirm: files modified, what changed." })
 
 Agent({ description: "Implement REQ-002: {one-liner}", subagent_type: "general-purpose", model: "haiku",
-  prompt: "Requirement: plan/current/requirements/req-002-{slug}.md. ADR: plan/current/adr/ADR-00N-{slug}.md. Stack: {constraint}. Task: {what to build}. If you discover an out-of-scope bug/gap, file it at plan/backlog/{backlog-id-2}-{slug}/entry.md per templates/backlog-entry.template.md; do not report it back for me to relay. Confirm: files modified, what changed." })
+  prompt: "Requirement: plan/current/requirements/req-002-{slug}.md. ADR: plan/current/adr/ADR-00N-{slug}.md. Stack: {constraint}. Task: {what to build}. If you discover an out-of-scope bug/gap, file it at plan/backlog/{backlog-id-2}-{slug}/entry.md per templates/backlog-entry.template.md; do not report it back for me to relay. Never run git stash, git checkout, or git reset: a stash takes the uncommitted work of every other subagent. Confirm: files modified, what changed." })
 ```
 
 **Self-contained prompt rule:** include the requirement file path, relevant ADR paths, stack declaration or relevant constraint, the backlog ID to use if filing an out-of-scope discovery, and what "done" looks like. Do NOT rely on shared conversation history: the spawned agent has no memory of this session.

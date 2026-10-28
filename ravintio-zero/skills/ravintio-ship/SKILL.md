@@ -55,6 +55,7 @@ Fill the Summary table in `plan/current/build-log.md`: one row per phase with ag
 2. Search the repo for links pointing at `plan/current/...` (living docs, `docs/decisions-index.md`, `src/*/docs/`). Update each to the archive path.
 3. Copy all of `plan/current/` to the archive path, then delete the `plan/current/` contents. Never use an atomic move.
 4. `git add` everything: the archive, the deletions, and the link updates. Untracked artifacts must not be left behind. Check with `git status --porcelain` before committing.
+   - In an active initiative, stage by explicit path: `plan/current/`, `plan/changelog/`, `plan/_archive/`, and each link update. Never stage a `plan/backlog/` entry the step did not write. The initiative skill queues those, and they stay untracked.
 
 ### Step 5: Build assessment
 
