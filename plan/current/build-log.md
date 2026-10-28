@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T20:20:00Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T20:24:00Z` |
+| Wall clock | `4` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -46,3 +46,19 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock complete. All four scenario paths captured.
 - Version: 0.36.0 (minor bump from 0.35.0, initiative chart)
 - Design confirmed: draft-accepted (initiative) (2026-10-28T20:24:00Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T20:25:00Z` |
+| End | `2026-10-28T20:33:00Z` |
+| Wall clock | `8` |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | three small units, no decomposition: the edits are short and the plan holds one batch |
+
+- Plan complete: consistency check clean (2026-10-28T20:33:00Z)
