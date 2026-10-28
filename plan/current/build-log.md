@@ -38,3 +38,10 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Run mode: autonomous (2026-10-28T19:41:00Z, initiative step)
 - Migrations 0004 and 0005 stay pending: their Applies when conditions are false in this repo.
 - Pre-flight: cut feat/0000246-plan-checks-count-and-cap-tests from initiative/0000238-backlog-clearance-two.
+- Decision applied (initiative chart): a count or budget test fails because of the step's own additions, so update the expected count and log it as rework.
+- Scope Lock (happy path): a plan that adds a skill, edits the orchestrator skill, or pulls in a backlog entry lists each test that holds the count, budget, cap or id [source: draft-accepted (initiative)]
+- Scope Lock (first-run path): a plan that touches none of those causes lists no tests and the step records "none found" [source: draft-accepted (initiative)]
+- Scope Lock (error path): a grep that finds no test for a pulled-in id records "none found" and the plan proceeds [source: draft-accepted (initiative)]
+- Scope Lock (cross-session continuity): the test list lives in the execution plan on disk, so a resumed P1 reads it back [source: draft-accepted (initiative)]
+- Scope Lock complete. All four scenario paths captured.
+- Version: 0.35.0 (minor bump from 0.34.0, initiative chart)
