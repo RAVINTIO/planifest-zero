@@ -76,3 +76,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Parallel task batches | 0 |
 | Notes | initiative step |
 - In progress: U-001 and U-002 batch 1 (2026-10-28T18:45:38Z)
+- Deviation: design.md gained a Component Paths section so gate-write covers the files the plan names (2026-10-28T18:47:13Z)

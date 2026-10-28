@@ -33,6 +33,16 @@
 - Deployment: files installed by setup.
 - API versioning: not applicable
 
+## Component Paths
+- ravintio-zero/standards
+- ravintio-zero/templates
+- ravintio-zero/hooks
+- ravintio-zero/tests
+- ravintio-zero/setup.sh
+- ravintio-zero/setup.ps1
+- ravintio-overrides
+- docs
+
 ## Scope
 - In:
   - `ravintio-zero/standards/hook-enforcement.md` holds the Hook Enforcement rules. Both boot templates point to it.
