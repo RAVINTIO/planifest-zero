@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T06:19:23Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-28T06:34:28Z` |
+| Wall clock | 6 |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -88,3 +88,33 @@ Decision applied (initiative chart): RAVINTIO_INITIATIVE_STEP leak avoided by ru
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | 0 self-correct cycles. Full runner: 201 feature suites and 19 regression checks passed. |
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T06:34:28Z` |
+| End | `2026-10-28T06:34:28Z` |
+| Wall clock | 3 |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | initiative step 1 |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | 5 |
+| Total wall clock | 30 |
+| Total agents spawned | 0 |
+| Total MCP calls | 0 |
+| Phases using parallelism | 0 |
+| Primary tier agent calls | 0 |
+| Cheaper tier agent calls | 0 |
+| Self-corrections | 2 |
+| Phases skipped | none |
