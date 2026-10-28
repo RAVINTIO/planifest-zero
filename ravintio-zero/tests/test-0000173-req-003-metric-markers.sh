@@ -9,7 +9,7 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 
 IMPL="$ZERO_DIR/skills/ravintio-implement/SKILL.md"
 VAL="$ZERO_DIR/skills/ravintio-validate-and-accept/SKILL.md"
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 MID="$ZERO_DIR/skills/ravintio-orchestrator/references/orchestrator-mid-pipeline-changes.md"
 STD="$ZERO_DIR/standards/workflow-governance-standards.md"
 STD_NAME='workflow-governance-standards.md'

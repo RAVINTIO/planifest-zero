@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 ZERO_DIR="$SCRIPT_DIR/.."
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 ORCH_CONTENT="$(cat "$ORCH")"
 
 QUESTION='How should the agent run P1 to P4?

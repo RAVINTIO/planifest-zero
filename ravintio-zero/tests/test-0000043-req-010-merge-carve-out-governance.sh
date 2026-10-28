@@ -13,7 +13,7 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 ZERO_DIR="$SCRIPT_DIR/.."
 OVR="$ZERO_DIR/../ravintio-overrides/instructions"
 STD="$ZERO_DIR/standards/roadmap-standards.md"
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 SHIP="$ZERO_DIR/skills/ravintio-ship/SKILL.md"
 
 ORULE="$(grep -F '**Merge is human-only.**' "$ORCH")"

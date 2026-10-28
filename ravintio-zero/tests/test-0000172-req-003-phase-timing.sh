@@ -8,7 +8,7 @@ ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 TPL="$ZERO_DIR/templates/build-log.template.md"
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 SHIP="$ZERO_DIR/skills/ravintio-ship/SKILL.md"
 
 echo ""

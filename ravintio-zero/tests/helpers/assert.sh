@@ -147,7 +147,8 @@ orch_combined() {
   local dir="$1" out tmp
   out="${TMPDIR:-/tmp}/ravintio-orch-combined-$(id -u).md"
   tmp="$(mktemp "${TMPDIR:-/tmp}/orch-combined.XXXXXX")"
-  cat "$dir/SKILL.md" "$dir"/references/orchestrator-*.md > "$tmp" 2>/dev/null
+  # 0000244 moved the initiative stage prefix block to the roadmap standards, so they join the text.
+  cat "$dir/SKILL.md" "$dir"/references/orchestrator-*.md "$dir/../../standards/roadmap-standards.md" > "$tmp" 2>/dev/null
   mv -f "$tmp" "$out"
   echo "$out"
 }

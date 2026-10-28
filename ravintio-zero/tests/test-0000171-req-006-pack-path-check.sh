@@ -58,6 +58,8 @@ check_pack_paths() {
         rest = substr(rest, RSTART + RLENGTH)
         sub(/\.+$/, "", tok)
         if (tok == "") continue
+        # A placeholder such as {artifact} names a family of files, so it is not one path (0000244).
+        if (tok ~ /\{/) continue
         if (tok ~ /^ravintio-zero\/(templates|standards|schemas)(\/|$)/) {
           rel = substr(tok, 15); sub(/\/+$/, "", rel)
           if (!(rel in exists)) {

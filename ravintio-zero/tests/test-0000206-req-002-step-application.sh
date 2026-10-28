@@ -11,8 +11,7 @@ ZERO_DIR="$SCRIPT_DIR/.."
 STD="$ZERO_DIR/standards/roadmap-standards.md"
 RUN=$(sed -n '/^### I-C Run/,/^### Driver environment/p' "$STD")
 INIT=$(cat "$ZERO_DIR/skills/ravintio-initiative/SKILL.md")
-ORCH=$(cat "$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md")
-
+ORCH=$(cat "$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")")
 echo ""
 echo "=== req-002 AC-1: a step applies a row ==="
 assert_contains "## Decisions" "$RUN" "req-002 AC-1: I-C Run reads the Decisions table"
