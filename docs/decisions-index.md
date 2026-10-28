@@ -322,3 +322,9 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
 | ADR-001 | The plan skill scans tests by grep | accepted | The plan skill greps `ravintio-zero/tests/` for tests that hold a skill count, a skill-text budget, a size cap or a backlog entry id. The execution plan lists each match under `## Test impact`. |
+
+### Feature 0000247: git-state-hygiene
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | reserve-id commits the counter by path | accepted | `reserve-id.mjs --commit` runs `git commit -m {subject} -- {counter}`, so the commit holds the counter file alone. The initiative, retrospective, and postmortem skills pass the flag. |
