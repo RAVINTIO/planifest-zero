@@ -16,7 +16,7 @@ version: "0.1.0"
 As a maintainer, I find each id reservation in a commit as soon as it is made, so that a session on another branch never reuses the id.
 
 ## Functional Requirements
-- `reserve-id.mjs --commit` commits the counter file after it writes the counter, with the message `chore: reserve ids {first} to {last}`. A single id reads `chore: reserve id {id}`.
+- `reserve-id.mjs --commit` commits the counter file after it writes the counter, with the message `chore(ids): reserve ids {first} to {last}`. A single id reads `chore(ids): reserve id {id}`.
 - The commit holds the counter file alone, even when other paths are staged.
 - If the commit fails, the script prints one line to stderr and exits 1. The counter keeps the new value, so no id is reused.
 - The initiative, retrospective, and postmortem skills tell the agent to reserve with `--commit`. The entry itself stays uncommitted where a skill says so.
