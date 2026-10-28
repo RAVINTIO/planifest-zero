@@ -62,7 +62,10 @@ pack_claude_bytes() {
        /<!-- ravintio-overrides:instructions:end -->/ {skip=0}' "$1" | wc -c | tr -d ' '
 }
 SKILL_BYTES=$(wc -c < "$SKILL" | tr -d ' ')
-CLAUDE_BYTES=$(pack_claude_bytes "$ROOT_DIR/CLAUDE.md")
+# CLAUDE.md is gitignored, so a fresh checkout has none. The boot template matches its pack content.
+BOOT_FILE="$ROOT_DIR/CLAUDE.md"
+[ -f "$BOOT_FILE" ] || BOOT_FILE="$ZERO_DIR/templates/standard-boot.md"
+CLAUDE_BYTES=$(pack_claude_bytes "$BOOT_FILE")
 assert_equals "36275" "$(wc -c < "$BASE" | tr -d ' ')" "fixture holds the 36,275 byte baseline"
 assert_equals "yes" "$([ "$SKILL_BYTES" -le 27800 ] && echo yes || echo no)" "SKILL.md is 27,800 bytes or fewer ($SKILL_BYTES)"
 # Cap raised from 35,484 to 35,600 for the initiative rename (0000189).
@@ -77,7 +80,7 @@ assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le "$COMBINED_CAP" ] &
 echo "=== (a) overrides never change the size cap result ==="
 printf 'plain boot text\n' > "$TMP/nomarkers.md"
 assert_equals "$(wc -c < "$TMP/nomarkers.md" | tr -d ' ')" "$(pack_claude_bytes "$TMP/nomarkers.md")" "a file with no markers is counted whole"
-cp "$ROOT_DIR/CLAUDE.md" "$TMP/with-override.md"
+cp "$BOOT_FILE" "$TMP/with-override.md"
 {
   echo ""
   echo "<!-- ravintio-overrides:instructions:start -->"
@@ -85,7 +88,7 @@ cp "$ROOT_DIR/CLAUDE.md" "$TMP/with-override.md"
   echo ""
   echo "<!-- ravintio-overrides:instructions:end -->"
 } >> "$TMP/with-override.md"
-assert_equals "$(pack_claude_bytes "$ROOT_DIR/CLAUDE.md")" "$(pack_claude_bytes "$TMP/with-override.md")" "an appended 5,000 byte override block leaves the measure unchanged"
+assert_equals "$(pack_claude_bytes "$BOOT_FILE")" "$(pack_claude_bytes "$TMP/with-override.md")" "an appended 5,000 byte override block leaves the measure unchanged"
 
 echo "=== (a) mutation: pack growth fails the combined cap ==="
 GROWN=$((SKILL_BYTES + CLAUDE_BYTES + 104))

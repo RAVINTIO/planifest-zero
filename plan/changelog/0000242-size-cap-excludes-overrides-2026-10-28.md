@@ -2,7 +2,7 @@
 
 **Feature:** Size cap excludes overrides
 **Version:** 0.31.2
-**PR:** pending
+**PR:** #59
 
 ## What changed
 
@@ -19,6 +19,7 @@ Each new override in `ravintio-overrides/instructions/` counted against the cap,
 - The TDD loop ran inline because one test file holds every change.
 - U-002 found no docs that name the cap, so it changed nothing.
 - P2 stopped for a pre-existing wording failure in backlog entry 0000257. The human approved the reword in f2838fa.
+- CI on PR #59 failed twice. `CLAUDE.md` is gitignored, so the test now falls back to `templates/standard-boot.md` when it is absent. The version bump also missed `ravintio-zero/component.yml`.
 
 ## Validation results
 

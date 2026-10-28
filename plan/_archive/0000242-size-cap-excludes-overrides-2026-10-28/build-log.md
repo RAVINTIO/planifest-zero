@@ -123,3 +123,4 @@ P3 Validate: Complete: suite green, 0 security findings, evidence written (2026-
 | Cheaper tier agent calls | `0` |
 | Self-corrections | `0` |
 | Phases skipped | `none` |
+Rework: REQ-002: CI had no gitignored CLAUDE.md, so the test falls back to standard-boot.md (2026-10-28T13:27:23Z)
