@@ -54,7 +54,7 @@ assert_contains "Run initiative step 1" "$ARGS" "req-001 AC-1: claude gets the s
 
 LOG="$WORK/r/plan/.initiative-logs/step-1.log"
 assert_contains "SECRET-MARKER-7731" "$(cat "$LOG" 2>/dev/null)" "req-001 AC-2: the log holds the stream line"
-MODE="$(stat -f %Lp "$LOG" 2>/dev/null || stat -c %a "$LOG" 2>/dev/null)"
+MODE="$(stat -c %a "$LOG" 2>/dev/null || stat -f %Lp "$LOG" 2>/dev/null)"
 assert_equals "600" "$MODE" "req-001 AC-2: the log has mode 600"
 
 echo ""

@@ -122,3 +122,4 @@ P3 Validate: Complete: CI green, 0 critical or high findings, evidence in accept
 | Cheaper tier agent calls | 0 |
 | Self-corrections | 0 |
 | Phases skipped | none |
+Rework: REQ-001: mode check used a macOS-only stat form, CI on Linux failed (2026-10-28T07:04:16Z)
