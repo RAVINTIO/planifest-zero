@@ -88,11 +88,27 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T22:29:19Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T22:29:37Z` |
+| Wall clock | `0` |
 | Model tier | primary |
 | Skills loaded | ravintio-validate-and-accept |
 | Agents spawned | 0 |
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | checks ran inline: the full suite ran in P2 and the evidence is short |
+
+- Validate complete: 222 feature suites passed and 2 failed on entry 0000264 only. Both pass on a clean archive of HEAD (2026-10-28T22:29:37Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T22:29:37Z` |
+| End | `` |
+| Wall clock | `` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship, ravintio-retrospective |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | End recorded at Step 3, before the archive. The CI wait comes after |
