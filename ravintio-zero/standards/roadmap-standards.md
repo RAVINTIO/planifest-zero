@@ -197,6 +197,8 @@ When the checks pass:
 
 The initiative skill's session must not edit the working tree while the driver runs. It queues new backlog entries instead.
 
+A repo instruction that the human asks for while a step runs goes into the scope of the current or next pending step in `plan/current-initiative/initiative.md`. The initiative session never writes the override itself, because `gate-write` blocks that write. While the lock is held, it queues the instruction in `plan/.initiative-queue/` and adds it to the next pending step when the driver is between steps or has exited.
+
 ### I-C Run
 
 Run executes one initiative step from `position`. Ship owns the merge that ends it (see I-D Advance under Ship stages). The step differs from a normal run in these ways:
@@ -237,6 +239,16 @@ The driver appends three labels to `OTEL_RESOURCE_ATTRIBUTES` in the child envir
 - `ravintio.step={position}`
 
 The driver keeps the old value byte for byte and joins the labels with commas. It percent-encodes each label value (`%` first, then `,`, `=`, and space). The labels hold identifiers only.
+
+#### Restart stop
+
+The driver loads its code once. After a merged step, it compares the initiative branch ref before and after the step. If the step changed `ravintio-zero/scripts/initiative-run.mjs`, `ravintio-zero/scripts/initiative-watch.mjs`, or `ravintio-zero/skills/ravintio-initiative/SKILL.md`, the driver stops.
+
+- The stop line is `I-D Advance: Restart: step {n} changed {files}. Start a new driver so step {next} runs the new code.` The driver releases the lock and exits 1.
+- The check runs after the delivery, block, and not-merged checks, so a delivered initiative never restarts.
+- If git or the branch ref is unreadable, the driver skips the check.
+- The initiative skill treats the line as a restart and not a failure. It starts a new driver and a new watcher without asking.
+- The new driver reads the position from the branch ref and carries no other state. Its final report lists only the steps it ran.
 
 #### Step logs
 
