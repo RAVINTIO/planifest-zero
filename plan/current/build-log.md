@@ -75,3 +75,4 @@ P1 Plan: Complete: 2 requirements, 1 ADR, consistency check clean
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | TDD loop run inline: one test file holds every change. |
+Blocked: test-0000042-req-010 fails on plan/backlog/0000257-timestamp-reply-prefixes/entry.md:38, filed by commit 05abbb9 before this step (2026-10-28T08:00:51Z)
