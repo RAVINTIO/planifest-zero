@@ -72,7 +72,7 @@ If the driver prints `Blocked:` or exits non-zero, report the stop line and the 
 
 ## Backlog queue
 
-While the lock is held, write each new backlog entry to `plan/.initiative-queue/{id}-{slug}/entry.md`. Reserve its id with `node ravintio-zero/scripts/reserve-id.mjs`. When a step merges and the driver is between steps or has exited, move the queued entries to `plan/backlog/` on the initiative branch. Commit each entry on its own. Never touch the queue while a step runs.
+While the lock is held, write each new backlog entry to `plan/.initiative-queue/{id}-{slug}/entry.md`. Reserve its id with `node ravintio-zero/scripts/reserve-id.mjs --commit`, which commits `plan/backlog/.next-id` alone at once. When a step merges and the driver is between steps or has exited, move the queued entries to `plan/backlog/` on the initiative branch. Commit each entry on its own. Never touch the queue while a step runs.
 
 ## I-E Delivery
 
