@@ -1,6 +1,6 @@
 ---
-version: "0.34.0"
-feature: "0000245-boot-rules-into-skills"
+version: "0.35.0"
+feature: "0000246-plan-checks-count-and-cap-tests"
 updated: "28 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "28 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.34.0` |
-| Last feature | `0000245-boot-rules-into-skills` |
+| Version | `0.35.0` |
+| Last feature | `0000246-plan-checks-count-and-cap-tests` |
 | Updated | `28 Oct 2026` |
 
 ## What this is

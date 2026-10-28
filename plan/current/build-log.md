@@ -94,3 +94,33 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | initiative step |
 - Rework: REQ-001: test needle case and order assertion fixed before first green run (2026-10-28T19:54:00Z)
 - Validate complete (2026-10-28T20:05:00Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T20:06:00Z` |
+| End | `2026-10-28T20:14:00Z` |
+| Wall clock | `8` |
+| Model tier | primary |
+| Skills loaded | ravintio-ship |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | initiative step |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | 5 |
+| Total wall clock | 35 |
+| Total agents spawned | 0 |
+| Total MCP calls | 0 |
+| Phases using parallelism | 0 |
+| Primary tier agent calls | 0 |
+| Cheaper tier agent calls | 0 |
+| Self-corrections | 1 |
+| Phases skipped | none |
