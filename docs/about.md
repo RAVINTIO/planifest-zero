@@ -1,6 +1,6 @@
 ---
-version: "0.32.0"
-feature: "0000241-watcher-false-events"
+version: "0.33.0"
+feature: "0000244-split-orchestrator-skill"
 updated: "28 Oct 2026"
 ---
 # About
