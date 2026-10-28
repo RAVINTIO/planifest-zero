@@ -7,8 +7,13 @@
 #   RAVINTIO_TEST_QUIET=1   hide PASS lines and banners, keep every failure and the summary
 #   RAVINTIO_TIMING_FILE    set by this script (0000171 req-003). Invoke-Setup appends
 #                           one setup.ps1 time per run, and the total prints before the summary.
+#
+# The runner clears RAVINTIO_INITIATIVE_STEP before it starts any suite (0000251). The initiative
+# driver sets it in every step session, and the hooks read it, so an inherited value fails hook
+# tests. A suite that needs the variable sets it for its own hook call.
 
 $ErrorActionPreference = 'Stop'
+Remove-Item Env:RAVINTIO_INITIATIVE_STEP -ErrorAction SilentlyContinue
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $hostExe = (Get-Process -Id $PID).Path
