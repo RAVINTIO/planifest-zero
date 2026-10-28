@@ -1,16 +1,15 @@
 ---
 title: "Initiative: 0000238 - backlog clearance two"
 summary: "Clears 22 open backlog entries in 14 feature steps, then a chore step refreshes the installed setup."
-status: "blocked"
+status: "active"
 ---
 # Initiative: 0000238 - backlog clearance two
 
 **Goal:** Clear every open backlog entry filed during and after initiative 0000195 that needs no human-run check or paid service. Each step ships one feature release. A final chore step refreshes the installed setup so `.claude/skills/` matches the pack.
 **Branch:** initiative/0000238-backlog-clearance-two
-**Status:** blocked
+**Status:** active
 **Position:** 4
 **Speed:** standard
-**Blocked reason:** planned driver restart. The human sets the status back to `active`, then restarts the driver and the watcher.
 
 The human asked for this draft on 2026-10-27, after merging PR #55 for initiative 0000195. The human approved the chart on 2026-10-28, and I-B Activate ran the same day.
 
