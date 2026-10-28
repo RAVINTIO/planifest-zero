@@ -77,3 +77,7 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | initiative step |
 - In progress: U-001 and U-002 batch 1 (2026-10-28T18:45:38Z)
 - Deviation: design.md gained a Component Paths section so gate-write covers the files the plan names (2026-10-28T18:47:13Z)
+- Done: U-001, U-002, U-003 (2026-10-28T19:07:25Z)
+- Rework: REQ-001: 0000009, 0000164, 0000200, 0000207 (sh and ps1) suites read moved boot text (2026-10-28T19:07:25Z)
+- Parallel task batches: 1 (U-001 and U-002), 2 subagents
+- Note: test-0000042-req-006 (a) and 0000043 (c) fail only while plan/.initiative-logs holds test text from this step's own greps. Recheck without the log at P3.
