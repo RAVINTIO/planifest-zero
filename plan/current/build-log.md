@@ -62,3 +62,39 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | three small units, no decomposition: the edits are short and the plan holds one batch |
 
 - Plan complete: consistency check clean (2026-10-28T20:33:00Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T20:34:00Z` |
+| End | `2026-10-28T20:50:00Z` |
+| Wall clock | `16` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | three small units done inline, no subagents: each edits a few lines and the tests share one suite run |
+
+- Done: U-001 stage by path (2026-10-28T20:41:00Z)
+- Done: U-002 reserve-id --commit (2026-10-28T20:45:00Z)
+- Done: U-003 no stash in batch (2026-10-28T20:47:00Z)
+- Full suite: 214 passed, 0 failed with `plan/.initiative-logs/` moved aside (stale-cite guard, entry 0000264).
+- Left alone: the human session's uncommitted `plan/backlog/.next-id` change (0000265 to 0000266). It is not this step's write.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T20:50:00Z` |
+| End | `2026-10-28T20:56:00Z` |
+| Wall clock | `6` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | initiative step |
+- Rework: REQ-001: rule moved to its own line after the base-line check failed on Hard Limit 8 (2026-10-28T20:42:00Z)
+- Validate complete (2026-10-28T20:56:00Z)
