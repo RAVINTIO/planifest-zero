@@ -28,6 +28,7 @@ responsibilities:
   - "Write settings.json through a same-folder temporary file and a rename, so a failed write never truncates it"
   - "Wire the same six enforcement hooks from setup.sh and setup.ps1, and check the match with a parity suite"
   - "Run every test suite, Bash and PowerShell, and fail the run on any test file it would otherwise skip without a word"
+  - "Fail a Bash suite that calls an undefined assert function, and skip the installed-copies check while an initiative is active and the install lags the pack"
   - "Repair the hook entries setup owns: remove RAVINTIO PreToolUse entries on any matcher, and replace a non-array hook event value with a warning"
   - "Detect and recommend adoption mode at discovery, and state standard-iterative mode without asking when it is the only signal"
   - "Suggest and confirm the version number at discovery"

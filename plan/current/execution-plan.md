@@ -50,7 +50,7 @@ flowchart LR
 
 | ID | Assumption | Impact if Wrong |
 |----|-----------|----------------|
-| A-001 | `command_not_found_handle` runs in a forked child | The guard needs a file, and a test shows it works |
+| A-001 | Suites call assert helpers at the start of a line | A call in another position passes unseen |
 
 ## Open Questions
 

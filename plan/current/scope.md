@@ -12,7 +12,7 @@ version: "0.1.0"
 
 ## In Scope
 
-- `assert_not_contains` and the undefined-assert failure in `ravintio-zero/tests/helpers/assert.sh`.
+- `assert_not_contains` and the undefined-assert scan in `ravintio-zero/tests/helpers/assert.sh`.
 - `stale_install_skip_reason` in the same file, used by section (c) of `test-0000151-req-014`.
 - One new suite that covers both helpers.
 - A line in the tests README about both behaviours.

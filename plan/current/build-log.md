@@ -56,3 +56,21 @@ Version: 0.30.2 (patch from 0.30.1, per the initiative row)
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | small feature, artifacts written inline |
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T06:20:46Z` |
+| End | `2026-10-28T06:33:53Z` |
+| Wall clock | 12 |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Both requirements edit helpers/assert.sh, so the two batches run in order inline. No parallelism. Subagents skipped: units too small. |
+
+Rework: REQ-001: Bash 3.2 has no command_not_found_handle, replaced by a suite scan (2026-10-28T06:33:53Z)
+Rework: REQ-001: process-substitution loop banned by test-0000164-req-008, replaced by a for loop (2026-10-28T06:33:53Z)
+Decision applied (initiative chart): RAVINTIO_INITIATIVE_STEP leak avoided by running the full suite with the variable unset.

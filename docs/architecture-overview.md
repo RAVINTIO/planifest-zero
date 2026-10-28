@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000205-initiative-skill
+Last updated: 0000239-test-suite-reliability
 
 ## What this repo is
 
@@ -213,6 +213,8 @@ A wording test greps every tracked file outside history for the retired word tha
 `ravintio-zero/tests/run-tests.sh` runs every Bash and PowerShell suite. Before any suite runs, it checks every file under `tests/`. A file that is neither a suite nor on its known list fails the run, and the runner names it. Without `pwsh`, it prints how many PowerShell suites it skipped.
 
 Set `RAVINTIO_TEST_QUIET=1` to hide PASS lines and banners. The runner then keeps every FAIL line with its detail, the failing suite name, the summary, and the exit codes. A quiet full run prints about 3 KB. Skills that run the full suite set it.
+
+`helpers/assert.sh` fails a Bash suite that calls an undefined `assert_*` function, and it offers `assert_not_contains`. The installed-copies check in `test-0000151-req-014` skips while an initiative is active and `.claude/skills/.ravintio-manifest` is older than the newest pack skill.
 
 The PowerShell suites run `setup.ps1` in temporary projects. In CI, the `windows-powershell` job runs them as a two-entry matrix, one entry for Windows PowerShell 5.1 and one for PowerShell 7. The entries run in parallel and neither cancels the other. Helpers print per-case timing. `run-tests.ps1` also prints `[timing] setup.ps1 total: {ms} ms over {n} cases` before its summary. Suites append each setup time to the file that `RAVINTIO_TIMING_FILE` names, and the runner deletes it at the end. The `bash-suites` job runs `run-tests.sh` on `ubuntu-latest` with `RAVINTIO_REQUIRE_PWSH=1`. So it runs every Bash suite and fails if `pwsh` is missing.
 

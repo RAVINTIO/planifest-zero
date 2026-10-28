@@ -36,10 +36,10 @@
 - Deferred: none
 
 ## Assumptions
-- `command_not_found_handle` runs in a forked child, so a counter there is lost. The handler records failures in a temp file that `print_summary` reads - impact if wrong: undefined calls pass again. A test covers it.
+- Suites call assert helpers at the start of a line. `print_summary` scans for that form because Bash 3.2 has no not-found handler - impact if wrong: an undefined call in another position passes. A test covers the line-start form.
 
 ## Risks
-- A suite that sets its own `command_not_found_handle` loses the guard - likelihood low, impact low.
+- A call to an undefined assert inside `$(...)` or after `&&` is not scanned - likelihood low, impact low.
 - The skip hides a real stale install during an initiative - likelihood low, impact low. `ravintio-refresh-setup` runs in the last step.
 
 ## Dependencies

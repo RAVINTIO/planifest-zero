@@ -17,9 +17,9 @@ As a maintainer, I see a suite fail when it calls an undefined `assert_*` functi
 
 ## Functional Requirements
 - `helpers/assert.sh` defines `assert_not_contains needle haystack message`, which passes when the needle is absent.
-- A call to an undefined function whose name starts with `assert_` prints a `FAIL` line that names the function.
-- `print_summary` counts each such call as a failure and exits 1.
-- A name that does not start with `assert_` keeps the shell default behaviour.
+- `print_summary` scans the running suite for lines that start with an `assert_*` word.
+- For each name that is not a defined function, it prints `FAIL: undefined assert function: {name}`, counts one failure, and the suite exits 1.
+- A name that does not start with `assert_` is not scanned.
 
 ## Acceptance Criteria
 - [ ] AC-1: undefined assert fails the suite
