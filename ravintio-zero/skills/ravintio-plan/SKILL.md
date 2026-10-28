@@ -75,7 +75,7 @@ In a gated run, ask the human about a gap of the second kind. Ask one question a
 
 ## Test impact scan
 
-Run this scan before you write the execution plan. Grep `ravintio-zero/tests/` for each cause below that the run triggers, and list every match under `## Test impact` in the execution plan, in the unit that edits the file.
+Run this scan before you write the execution plan. For each cause below that the run triggers, grep `ravintio-zero/tests/`. List every match under `## Test impact` in the execution plan, in the unit that edits the file.
 
 - **Skill count:** the run adds or removes a skill. Grep for `skills/` with `wc -l`.
 - **Skill-text budget:** the run edits any `SKILL.md`. Grep for the line cap.
