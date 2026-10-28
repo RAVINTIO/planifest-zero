@@ -61,7 +61,13 @@
 //      stayed at {n}". If the ref is unreadable or the root is not a git work tree, it
 //      reads the working-tree file. The driver passes git its arguments as an array, with
 //      no shell.
-//   6. It repeats until delivery: initiative.md is gone and
+//   6. After a merged step it compares the initiative branch ref before and after the step.
+//      If the step changed initiative-run.mjs, initiative-watch.mjs, or the initiative skill,
+//      the running driver and its watcher hold old code. The driver prints
+//      "I-D Advance: Restart: step {n} changed {files}. Start a new driver so step {next}
+//      runs the new code.", releases the lock, and exits 1. The initiative skill starts a new
+//      driver and watcher at once. If git or the ref is unreadable, the check is skipped.
+//   7. It repeats until delivery: initiative.md is gone and
 //      plan/_archive/{id}-{slug}-initiative-*/ exists. It then exits 0.
 //      If every step in the "## Steps" table has merged but the archive is not there yet,
 //      it prints "I-E Delivery: Pending: all {n} steps merged, initiative delivery runs
@@ -87,7 +93,7 @@
 // Exit codes:
 //   0  Delivery is complete.
 //   1  A stop: invalid or inactive initiative, existing lock, block, stalled
-//      position, failed claude call, or interruption.
+//      position, failed claude call, interruption, or a restart for a tooling change.
 //
 // The lock is released on every exit path, including SIGINT and SIGTERM.
 // The driver never edits the working tree. The steps it launches do that.
@@ -104,6 +110,12 @@ const LOGS = 'plan/.initiative-logs';
 const QUEUE = 'plan/.initiative-queue/';
 const BUILD_LOG = 'plan/current/build-log.md';
 const ARCHIVE = 'plan/_archive';
+// Files whose change leaves the running driver, or the session that relays its output, on old code.
+const WATCHED = [
+  'ravintio-zero/scripts/initiative-run.mjs',
+  'ravintio-zero/scripts/initiative-watch.mjs',
+  'ravintio-zero/skills/ravintio-initiative/SKILL.md',
+];
 const STATUS = /^(proposed|charted|draft|active|blocked|delivered|done)$/;
 const POSITION = /^[1-9][0-9]{0,2}$/;
 const BRANCH = /^initiative\/([0-9]{7})-([a-z0-9]+(-[a-z0-9]+)*)$/;
@@ -311,6 +323,22 @@ function archivedBlock(root, featureId, since) {
   return null;
 }
 
+// Returns the commit that the branch ref points to, or '' if git or the ref is unreadable.
+function branchHead(root, branch) {
+  const r = spawnSync('git', ['rev-parse', '--verify', '--quiet', `refs/heads/${branch}`], { cwd: root, encoding: 'utf8' });
+  return !r.error && r.status === 0 ? r.stdout.trim() : '';
+}
+
+// Returns the watched files that changed between two commits. Returns [] if either commit is
+// missing, the two are equal, or git cannot compare them.
+function changedWatched(root, before, after) {
+  if (!before || !after || before === after) return [];
+  const r = spawnSync('git', ['diff', '--name-only', before, after, '--', ...WATCHED], { cwd: root, encoding: 'utf8' });
+  if (r.error || r.status !== 0) return [];
+  const names = new Set(r.stdout.split(/\r?\n/).filter(Boolean));
+  return WATCHED.filter((f) => names.has(f));
+}
+
 function delivered(root, id, slug) {
   if (existsSync(join(root, INITIATIVE))) return false;
   const dir = join(root, ARCHIVE);
@@ -390,6 +418,7 @@ async function main() {
     const position = rm.position;
     const featureId = featureIdFor(rm.text, position);
     const started = Date.now();
+    const headBefore = branchHead(root, rm.branch);
     currentLog = null;
     const log = openLog(root, position);
     currentLog = log.rel;
@@ -428,6 +457,10 @@ async function main() {
       return;
     }
     out(`I-D Advance: Complete: step ${position} done, position now ${rm.position}`);
+    const changed = changedWatched(root, headBefore, branchHead(root, rm.branch));
+    if (changed.length > 0) {
+      throw new Stop(`I-D Advance: Restart: step ${position} changed ${changed.join(', ')}. Start a new driver so step ${rm.position} runs the new code.`);
+    }
   }
 }
 
