@@ -1,6 +1,6 @@
 ---
-version: "0.33.0"
-feature: "0000244-split-orchestrator-skill"
+version: "0.34.0"
+feature: "0000245-boot-rules-into-skills"
 updated: "28 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "28 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.32.0` |
-| Last feature | `0000241-watcher-false-events` |
+| Version | `0.34.0` |
+| Last feature | `0000245-boot-rules-into-skills` |
 | Updated | `28 Oct 2026` |
 
 ## What this is
