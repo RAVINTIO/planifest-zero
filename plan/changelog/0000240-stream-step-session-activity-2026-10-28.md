@@ -2,7 +2,7 @@
 
 **Feature:** Stream step session activity
 **Version:** 0.31.0
-**PR:** pending
+**PR:** #57
 
 ## What changed
 
