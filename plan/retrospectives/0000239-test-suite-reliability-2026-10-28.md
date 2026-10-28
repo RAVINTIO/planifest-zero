@@ -25,7 +25,7 @@ The step shipped two test helper fixes as version 0.30.2. Two rework loops came 
 
 ## Keep
 
-- Putting a helper behind a small unit suite with a fixture copy of the helpers (plan/_archive/0000239-test-suite-reliability-2026-10-28/../../../ravintio-zero/tests/test-0000239-req-001-undefined-assert-fails.sh).
+- Putting a helper behind a small unit suite with a fixture copy of the helpers (ravintio-zero/tests/test-0000239-req-001-undefined-assert-fails.sh).
 
 ## Change
 

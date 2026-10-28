@@ -23,7 +23,7 @@ A suite that called an undefined assert function printed `command not found` and
 
 ## Validation results
 
-See `acceptance-evidence.md` in the archive.
+Bash runner: 201 feature suites and 19 regression checks passed. See `acceptance-evidence.md` in the archive.
 
 ## Skipped phases
 
