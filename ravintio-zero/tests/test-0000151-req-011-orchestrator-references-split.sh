@@ -91,8 +91,10 @@ cp "$BOOT_FILE" "$TMP/with-override.md"
 assert_equals "$(pack_claude_bytes "$BOOT_FILE")" "$(pack_claude_bytes "$TMP/with-override.md")" "an appended 5,000 byte override block leaves the measure unchanged"
 
 echo "=== (a) mutation: pack growth fails the combined cap ==="
-GROWN=$((SKILL_BYTES + CLAUDE_BYTES + 104))
-assert_equals "no" "$([ "$GROWN" -le "$COMBINED_CAP" ] && echo yes || echo no)" "104 extra pack bytes break the cap ($GROWN)"
+# 0000243 shrank SKILL.md, so the growth that breaks the cap is the remaining margin plus one byte.
+MARGIN=$((COMBINED_CAP - SKILL_BYTES - CLAUDE_BYTES))
+GROWN=$((SKILL_BYTES + CLAUDE_BYTES + MARGIN + 1))
+assert_equals "no" "$([ "$GROWN" -le "$COMBINED_CAP" ] && echo yes || echo no)" "$((MARGIN + 1)) extra pack bytes break the cap ($GROWN)"
 
 echo "=== (a) no rule line was lost ==="
 REF_FILES=$(ls "$REFS"/orchestrator-*.md 2>/dev/null)
@@ -120,7 +122,10 @@ section_lines() { # file heading: lines of the section, without the heading
 for h in '## Hard Limits' '## Resume Detection' '## Exception Stops' '## Phase Invocation (P1 to P4)'; do
   section_lines "$BASE_RENAMED" "$h" > "$TMP/sec.base"
   assert_equals "yes" "$([ -s "$TMP/sec.base" ] && echo yes || echo no)" "base has $h"
-  assert_equals "" "$(missing_lines "$TMP/sec.base" "$SKILL")" "$h: every base line is still in SKILL.md"
+  # 0000243 moved the Resume Detection checks into a reference file.
+  HOLDERS=("$SKILL")
+  [ "$h" = '## Resume Detection' ] && HOLDERS+=("$REFS/orchestrator-resume-detection.md")
+  assert_equals "" "$(missing_lines "$TMP/sec.base" "${HOLDERS[@]}")" "$h: every base line is still in SKILL.md${HOLDERS[1]:+ or its reference}"
 done
 for h in '### Discovery Start Actions'; do
   awk -v h="$h" '$0==h {on=1; next} on && /^### / {exit} on {print}' "$BASE_RENAMED" > "$TMP/sec.base"
