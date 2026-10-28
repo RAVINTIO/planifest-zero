@@ -33,7 +33,7 @@
 - Deployment: none
 - API versioning: not applicable
 - Design decisions:
-  - D-1: New files `orchestrator-discovery-coaching`-style names are taken: How You Coach goes to `orchestrator-p0-coaching.md`, Discovery Start Actions to `orchestrator-p0-start-actions.md`, Discovery Gate Checklist and Design Confirmation to `orchestrator-p0-gate.md`, Phase Invocation to `orchestrator-phase-invocation.md`, Exception Stops to `orchestrator-exception-stops.md`.
+  - D-1: New reference files: How You Coach goes to `orchestrator-p0-coaching.md`, Discovery Start Actions to `orchestrator-p0-start-actions.md`, Discovery Gate Checklist and Design Confirmation to `orchestrator-p0-gate.md`, Phase Invocation to `orchestrator-phase-invocation.md`, Exception Stops to `orchestrator-exception-stops.md`.
   - D-2: Each moved section keeps its heading and lines verbatim in exactly one reference file.
   - D-3: The initiative stage prefix block moves to `roadmap-standards.md`. `SKILL.md` keeps the prefix table, the status form, and one pointer line.
   - D-4: The Pack Index template rows become one rule: before you write an artifact, read `ravintio-zero/templates/{artifact}.template.md`. Rows that do not follow the pattern stay.
