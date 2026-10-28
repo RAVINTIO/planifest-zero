@@ -8,7 +8,7 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 
 FILES=(
   "CLAUDE.md"
-  "ravintio-zero/templates/standard-boot.md"
+  "ravintio-zero/standards/hook-enforcement.md"
   "ravintio-zero/pipeline-reference.md"
   "ravintio-zero/project-operations.md"
 )

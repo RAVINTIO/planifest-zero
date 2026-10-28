@@ -34,7 +34,7 @@ Assert-True (Test-Path (Join-Path $ws 'plan\state\codex.md')) "req-001 AC-1: pla
 $boot = Get-Content -Raw -Path (Join-Path $ws 'AGENTS.md')
 Assert-Contains 'No code without a confirmed design' $boot "req-002 AC-1: AGENTS.md holds the hard limits"
 Assert-Contains 'ravintio-overrides:instructions:start' $boot "req-002 AC-1: AGENTS.md holds the override instructions"
-Assert-Contains 'gate-write' $boot "req-003: AGENTS.md states the gate-write fallback"
+Assert-Contains 'gate-write' (Get-Content -Raw (Join-Path $ws 'ravintio-zero/standards/hook-enforcement.md')) "req-003: the hook reference states the gate-write fallback"
 Assert-True (Test-Path (Join-Path $ws '.agents\skills\ravintio-orchestrator\SKILL.md')) "req-002 AC-2: the orchestrator skill is installed"
 Assert-True (Test-Path (Join-Path $ws '.agents\skills\.ravintio-manifest')) "req-002 AC-2: the manifest is written"
 Assert-True (-not (Test-Path (Join-Path $ws 'CLAUDE.md'))) "req-002 AC-3: CLAUDE.md is absent"
@@ -49,7 +49,7 @@ Assert-Contains 'Fallback hooks' $run.Output "req-003 AC-2: the report has a fal
 Assert-Contains '/hooks' $run.Output "req-003 AC-2: the report names the /hooks review"
 # 0000217: real Codex 0.163.0 skips project hooks until a person trusts them.
 Assert-Contains 'Until you trust it, Codex skips merge-guard' $run.Output "0000217: the report says merge-guard is off until trusted"
-Assert-Contains 'nothing blocks a merge' (Get-Content -Raw (Join-Path $ws 'AGENTS.md')) "0000217: AGENTS.md says nothing blocks a merge until the hook is trusted"
+Assert-Contains 'nothing blocks a merge' (Get-Content -Raw (Join-Path $ws 'ravintio-zero/standards/hook-enforcement.md')) "0000217: the hook reference says nothing blocks a merge until the hook is trusted"
 
 Write-Host ""
 Write-Host "=== req-003 AC-1: a rerun keeps one entry and other entries ==="
