@@ -2,7 +2,7 @@
 
 **Feature:** Move boot file rules into skills
 **Version:** 0.34.0
-**PR:** pending
+**PR:** #62
 
 ## What changed
 
