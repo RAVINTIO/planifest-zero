@@ -99,3 +99,33 @@ P2 Implement: Complete: 6 requirements built, suite green (207 feature, 19 regre
 | Parallel task batches | 0 |
 | Notes | Full suite run with RAVINTIO_INITIATIVE_STEP unset, per the chart decision. |
 P3 Validate: Complete: suite green, 0 security findings, evidence written (2026-10-28T14:50:00Z)
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T14:51:00Z` |
+| End | `2026-10-28T15:05:00Z` |
+| Wall clock | 14 min |
+| Model tier | primary |
+| Skills loaded | ravintio-ship, ravintio-retrospective |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Initiative step: Step 9 gives way to I-D Advance. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | `5` |
+| Total wall clock | `84 min` |
+| Total agents spawned | `3` |
+| Total MCP calls | `0` |
+| Phases using parallelism | `1` |
+| Primary tier agent calls | `0` |
+| Cheaper tier agent calls | `3` |
+| Self-corrections | `0` |
+| Phases skipped | `none` |
