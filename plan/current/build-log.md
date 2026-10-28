@@ -38,3 +38,11 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 Run mode: autonomous (2026-10-28T07:47:05Z, initiative step)
 Run speed: standard (2026-10-28T07:47:05Z, initiative step)
 I-C Run: Starting: step 4 of initiative 0000238 (2026-10-28T07:47:05Z)
+Scope lock: in scope: strip the override block, pack-only cap, two tests [source: draft-accepted (initiative)]
+Scope lock: out of scope: SKILL.md cap, setup scripts, boot templates, CLAUDE.md cap [source: draft-accepted (initiative)]
+Scope lock: deferred: nothing [source: draft-accepted (initiative)]
+Scope lock: assumption: CLAUDE.md outside the markers equals the boot template [source: draft-accepted (initiative)]
+Decision applied (initiative chart): size cap row allows step 4 to change the cap
+Version: 0.31.2 (patch bump from 0.31.1, step row)
+Gate: design self-confirmed, draft-accepted (initiative)
+P0 Discovery: Complete: design self-confirmed, draft-accepted (initiative)
