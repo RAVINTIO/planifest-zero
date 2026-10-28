@@ -1,6 +1,6 @@
 ---
-version: "0.36.0"
-feature: "0000247-git-state-hygiene"
+version: "0.37.0"
+feature: "0000248-ship-merge-and-wall-clocks"
 updated: "28 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "28 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.36.0` |
-| Last feature | `0000247-git-state-hygiene` |
+| Version | `0.37.0` |
+| Last feature | `0000248-ship-merge-and-wall-clocks` |
 | Updated | `28 Oct 2026` |
 
 ## What this is
