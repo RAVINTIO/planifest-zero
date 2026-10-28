@@ -14,4 +14,4 @@
 
 **Not verifiable.** None.
 
-**Test run.** `run-tests.sh` ran 217 feature suites passed, 2 failed, and 19 regression suites passed. The two failures are `test-0000042-req-006` and `test-0000043-req-009`. Both read the git-ignored step log (entry 0000264). Both pass on a clean `git archive` of `HEAD`, with 12 of 12 and 25 of 25 checks. No change here causes them.
+**Test run.** `run-tests.sh` ran 219 feature suites and 19 regression suites. 217 feature suites passed and 2 failed. The two failures are `test-0000042-req-006` and `test-0000043-req-009`. Both read the git-ignored step log (entry 0000264). Both pass on a clean `git archive` of `HEAD`, with 12 of 12 and 25 of 25 checks. No change here causes them.
