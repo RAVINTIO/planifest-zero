@@ -26,6 +26,8 @@ Non-negotiable. They apply in every session, every phase.
 11. **Every run archives `plan/current/`.** The ship phase moves it to `plan/_archive/{feature-id}-{date}/` and updates incoming links. Never leave a permanent working folder behind.
 12. **`discovery.md` exists and is complete before the first coaching question.** A missing or incomplete `plan/current/discovery.md` at that point is a pipeline error: stop and write it.
 
+In an active initiative, stage by explicit path and never stage a `plan/backlog/` entry the step did not write.
+
 ---
 
 ## Phases and Response Prefixes
