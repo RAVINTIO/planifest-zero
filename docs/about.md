@@ -1,6 +1,6 @@
 ---
-version: "0.30.2"
-feature: "0000239-test-suite-reliability"
+version: "0.31.0"
+feature: "0000240-stream-step-session-activity"
 updated: "28 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "28 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.30.2` |
-| Last feature | `0000239-test-suite-reliability` |
+| Version | `0.31.0` |
+| Last feature | `0000240-stream-step-session-activity` |
 | Updated | `28 Oct 2026` |
 
 ## What this is

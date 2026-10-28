@@ -57,6 +57,8 @@ An interval report names:
 - any stop
 - whether the driver still runs
 
+While the step runs, the monitor also prints `I-C Run: activity:` lines, one per tool call, subagent start, or assistant text. Relay each one to the human at once, in the order received. Do not wait for the next interval report.
+
 If nothing changed, say so and give the time since the last change. If the step keeps committing and its build log has not changed for 15 minutes, say the log is stale.
 
 A progress report, on request and at each phase end, has two parts:

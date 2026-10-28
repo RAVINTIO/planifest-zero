@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000239-test-suite-reliability
+Last updated: 0000240-stream-step-session-activity
 
 ## What this repo is
 
@@ -95,6 +95,7 @@ An initiative is a chain of feature steps that the human approves once. The stan
 - **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/initiative.md` on any branch. The one active initiative lives in `plan/current-initiative/initiative.md` on the branch `initiative/{id}-{slug}`. Initiative ids share the backlog sequence.
 - **Chart and activate.** I-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the initiative's `## Schema changes` table. I-B Activate cuts the initiative branch, writes the active initiative, and offers the driver. One initiative is active per working tree.
 - **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the initiative branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
+- **Watch.** The driver starts each step with `--output-format stream-json --verbose`, so the step log holds one JSON event per line. `scripts/initiative-watch.mjs` reads new bytes of the current step log every 10 seconds. It prints one `I-C Run: activity:` line per tool call, subagent start, and assistant text, each at 200 characters or fewer, and never prints tool results. The initiative skill relays each line to the human.
 - **Advance.** At P4, the agent raises the step PR against the initiative branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside an initiative, the CI `release-tag` job tags the merge commit after the human merges.
 - **Delivery.** I-E Delivery archives the initiative and raises one PR to `main` that asks for a merge commit. The human merges it.
 - **Driver.** `ravintio-zero/scripts/initiative-run.mjs` runs each step as its own `claude -p` session. A lock file at `plan/.initiative-runner.lock` stops a second driver. The driver stops on a `Blocked:` line, a stalled `position`, or a failed `claude` call, and a restart resumes the same step. It passes `--model` (default `sonnet`) and an optional `--max-turns` to each child. A capped step that exits non-zero stops with `I-C Run: Blocked:`. Each step writes `plan/.initiative-logs/step-{position}.log`, and the driver appends `work.kind`, `ravintio.initiative`, and `ravintio.step` labels to the child's `OTEL_RESOURCE_ATTRIBUTES`. The label encoder is `scripts/initiative-labels.mjs`.

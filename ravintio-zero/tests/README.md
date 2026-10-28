@@ -89,3 +89,8 @@ The runner picks the file up automatically. Nothing else needs registering.
 - `print_summary` fails a Bash suite that calls an undefined `assert_*` function. It scans the suite for lines that start with an `assert_*` word and prints `FAIL: undefined assert function: {name}` for each name that is not a function. A call after `&&` or inside `$(...)` is not scanned.
 - `assert_not_contains needle haystack message` passes when the needle is absent.
 - `stale_install_skip_reason root` returns 0 and prints a reason when an initiative is active and `.claude/skills/.ravintio-manifest` is older than the newest pack skill. A suite that compares installed copies prints `SKIP: {reason}` instead of comparing.
+
+### Step activity
+
+- `test-0000240-req-001-driver-stream-args.sh` checks the driver passes `--output-format stream-json --verbose`, keeps the log at mode 600, and prints no step content.
+- `test-0000240-req-002-activity-lines.sh` checks that the watcher prints one `I-C Run: activity:` line per event, in order, at 200 characters or fewer, and that the skill and standards describe them. `--since-bytes {n}` treats the first n bytes of the step log as seen.
