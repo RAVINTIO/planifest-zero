@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T14:21:38Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-28T14:23:45Z` |
+| Wall clock | 5 min |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -38,3 +38,31 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 Run mode: autonomous (2026-10-28T14:21:38Z, initiative step)
 Run speed: standard (2026-10-28T14:21:38Z, initiative step)
 I-C Run: Starting: step 6 of initiative 0000238 (2026-10-28T14:21:38Z)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T14:23:45Z` |
+| End | `2026-10-28T14:23:45Z` |
+| Wall clock | 1 min |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Consistency check clean. Autonomous run, no gate stop. |
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T14:23:45Z` |
+| End | |
+| Wall clock | |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Text moves done inline, because one shared file (SKILL.md) is the write target for every unit. |
