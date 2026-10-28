@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000240-stream-step-session-activity
+Last updated: 0000241-watcher-false-events
 
 ---
 
@@ -303,3 +303,9 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
 | ADR-001 | Read the stream in the watcher | accepted | The driver only switches the output format. The watcher reads the step log by byte offset and prints one activity line per event, so one monitor carries every line. |
+
+### Feature 0000241: watcher-false-events
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Track commits by ancestry and stale by key | accepted | The watcher lists new commits with `git log {last-seen}..HEAD` when the last-seen commit is an ancestor of `HEAD`. Otherwise it prints one branch-change line. A stale state prints once. |
