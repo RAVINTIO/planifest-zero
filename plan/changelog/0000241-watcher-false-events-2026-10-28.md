@@ -2,7 +2,7 @@
 
 **Feature:** Watcher false events
 **Version:** 0.31.1
-**PR:** pending
+**PR:** #58
 
 ## What changed
 
