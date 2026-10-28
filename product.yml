@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.33.0"
-feature: "0000244-split-orchestrator-skill"
+version: "0.34.0"
+feature: "0000245-boot-rules-into-skills"
 
 versionPolicy: "max-component-version"
 

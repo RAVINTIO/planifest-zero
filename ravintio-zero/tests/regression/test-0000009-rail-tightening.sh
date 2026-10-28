@@ -55,8 +55,8 @@ assert_equals "yes" "$(grep_has "auto-trigger-orchestrator" "$SETUP_SH")" \
 assert_equals "yes" "$(grep_has "RAVINTIO_TRIGGER" "$SETUP_SH")" \
   "REQ-002: setup.sh passes trigger cmd to UserPromptSubmit wiring"
 
-assert_equals "yes" "$(grep_has "auto-trigger-orchestrator" "$STANDARD_BOOT")" \
-  "REQ-002: standard-boot.md documents auto-trigger hook"
+assert_equals "yes" "$(grep_has "auto-trigger-orchestrator" "$ZERO_DIR/standards/hook-enforcement.md")" \
+  "REQ-002: hook-enforcement.md documents auto-trigger hook"
 
 assert_equals "yes" "$(grep_has "ravintio-orchestrator skill" "$STANDARD_BOOT")" \
   "REQ-002: standard-boot.md has fallback instruction"

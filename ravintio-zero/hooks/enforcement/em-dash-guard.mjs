@@ -119,7 +119,8 @@ try {
     `[RAVINTIO] Em dash (U+2014) found in '${relTarget}' at line(s): ${listed}${more}. ` +
     "Replace with a comma, colon, semicolon, full stop, or parentheses depending " +
     "on the sentence. If the character is genuinely required (a literal quotation, " +
-    `for example), add ${SENTINEL} anywhere in the content to bypass.\n`;
+    `for example), add ${SENTINEL} anywhere in the content to bypass. ` +
+    "See ravintio-zero/standards/hook-enforcement.md.\n";
   // Claude Code shows the agent only stderr on exit 2. Stdout keeps the tests' view.
   process.stderr.write(message);
   process.stdout.write(message);

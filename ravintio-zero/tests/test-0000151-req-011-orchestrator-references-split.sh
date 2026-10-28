@@ -71,9 +71,8 @@ pack_claude_bytes() {
        /<!-- ravintio-overrides:instructions:end -->/ {skip=0}' "$1" | wc -c | tr -d ' '
 }
 SKILL_BYTES=$(wc -c < "$SKILL" | tr -d ' ')
-# CLAUDE.md is gitignored, so a fresh checkout has none. The boot template matches its pack content.
-BOOT_FILE="$ROOT_DIR/CLAUDE.md"
-[ -f "$BOOT_FILE" ] || BOOT_FILE="$ZERO_DIR/templates/standard-boot.md"
+# 0000245 caps the boot file on its own. The boot template is the pack content, so the measure ignores a stale install.
+BOOT_FILE="$ZERO_DIR/templates/standard-boot.md"
 CLAUDE_BYTES=$(pack_claude_bytes "$BOOT_FILE")
 assert_equals "36275" "$(wc -c < "$BASE" | tr -d ' ')" "fixture holds the 36,275 byte baseline"
 # 0000244 moved the task-bound sections to references/, so the SKILL.md cap fell from 27,800 to 9,000 bytes.
@@ -82,13 +81,11 @@ assert_equals "yes" "$([ "$SKILL_BYTES" -le "$SKILL_CAP" ] && echo yes || echo n
 # Cap raised from 35,484 to 35,600 for the initiative rename (0000189).
 # Caps raised to 27,700 and 37,800 for the reporting rule and the Supervise prefix (0000200).
 # Cap raised to 27,800 for the initiative resume split (0000205).
-# 0000242 stopped counting the override block, so the combined cap covers pack content only. The pack-only sum
-# was 32,697 bytes on 2026-10-28, and the cap leaves 103 bytes of margin.
-# The combined cap also covers the Reply Conventions section that the boot template adds to CLAUDE.md.
-# 0000244 cut SKILL.md to 9,000 bytes or fewer, so the combined cap falls with it. The pack-only sum
-# was 14,785 bytes on 2026-10-28, and the cap leaves margin for the step that trims CLAUDE.md.
-COMBINED_CAP=15000
-assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le "$COMBINED_CAP" ] && echo yes || echo no)" "pack-only CLAUDE.md plus SKILL.md is $COMBINED_CAP bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
+# 0000245 split the combined cap. The boot template has its own cap, as backlog entry 0000222 asked. The pack-only
+# boot template measured 3,414 bytes on 2026-10-28, and the cap leaves margin. The generated CLAUDE.md has a separate
+# 6,000 byte cap in test-0000245-req-003-004.
+CLAUDE_CAP=3600
+assert_equals "yes" "$([ "$CLAUDE_BYTES" -le "$CLAUDE_CAP" ] && echo yes || echo no)" "pack-only boot template is $CLAUDE_CAP bytes or fewer ($CLAUDE_BYTES)"
 
 echo "=== (a) overrides never change the size cap result ==="
 printf 'plain boot text\n' > "$TMP/nomarkers.md"
@@ -103,11 +100,13 @@ cp "$BOOT_FILE" "$TMP/with-override.md"
 } >> "$TMP/with-override.md"
 assert_equals "$(pack_claude_bytes "$BOOT_FILE")" "$(pack_claude_bytes "$TMP/with-override.md")" "an appended 5,000 byte override block leaves the measure unchanged"
 
-echo "=== (a) mutation: pack growth fails the combined cap ==="
-# 0000243 shrank SKILL.md, so the growth that breaks the cap is the remaining margin plus one byte.
-MARGIN=$((COMBINED_CAP - SKILL_BYTES - CLAUDE_BYTES))
-GROWN=$((SKILL_BYTES + CLAUDE_BYTES + MARGIN + 1))
-assert_equals "no" "$([ "$GROWN" -le "$COMBINED_CAP" ] && echo yes || echo no)" "$((MARGIN + 1)) extra pack bytes break the cap ($GROWN)"
+echo "=== (a) mutation: pack growth fails each cap ==="
+MARGIN=$((CLAUDE_CAP - CLAUDE_BYTES))
+GROWN=$((CLAUDE_BYTES + MARGIN + 1))
+assert_equals "no" "$([ "$GROWN" -le "$CLAUDE_CAP" ] && echo yes || echo no)" "$((MARGIN + 1)) extra boot template bytes break the cap ($GROWN)"
+SMARGIN=$((SKILL_CAP - SKILL_BYTES))
+SGROWN=$((SKILL_BYTES + SMARGIN + 1))
+assert_equals "no" "$([ "$SGROWN" -le "$SKILL_CAP" ] && echo yes || echo no)" "$((SMARGIN + 1)) extra SKILL.md bytes break the cap ($SGROWN)"
 
 echo "=== (a) no rule line was lost ==="
 REF_FILES=$(ls "$REFS"/orchestrator-*.md 2>/dev/null)

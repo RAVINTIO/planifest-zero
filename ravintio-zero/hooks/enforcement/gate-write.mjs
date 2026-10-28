@@ -97,6 +97,7 @@ function matchesComponentPath(relPath, componentPaths) {
 
 // Claude Code shows the agent only stderr on exit 2. Stdout keeps the tests' view.
 function block(message) {
+  message = message.replace(/\n$/, "") + " See ravintio-zero/standards/hook-enforcement.md.\n";
   process.stderr.write(message);
   process.stdout.write(message);
   process.exit(2);

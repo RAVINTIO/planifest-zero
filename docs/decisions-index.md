@@ -309,3 +309,10 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
 | ADR-001 | Track commits by ancestry and stale by key | accepted | The watcher lists new commits with `git log {last-seen}..HEAD` when the last-seen commit is an ancestor of `HEAD`. Otherwise it prints one branch-change line. A stale state prints once. |
+
+### Feature 0000245: boot-rules-into-skills
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Targeted overrides append to the named skill | accepted | An override with `target: {skill}` is appended to that installed skill between markers. A bad target falls back to the boot file. |
+| ADR-002 | Hook Enforcement lives in a reference file | accepted | The hook list moves to `standards/hook-enforcement.md`. The boot files point to it and each blocking hook message names it. |
