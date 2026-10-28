@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000200-reply-conventions
+Last updated: 0000239-test-suite-reliability
 
 ---
 
@@ -291,3 +291,9 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | 0000160 ADR-001 (version decision only) | 0000164 ADR-005 | The rename release is 0.12.0, not 1.0.0. The rename map stays in force. |
 | 0000160 ADR-002 (removal point only) | 0000164 ADR-005 | The legacy fallbacks go at 1.0.0, not 2.0.0. |
 | 0000033 ADR-002 | 0000164 ADR-003 | Setup no longer removes legacy telemetry wiring. A pre-0000033 consumer removes it by hand. |
+
+### Feature 0000239: test-suite-reliability
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Scan the suite for undefined asserts | accepted | `print_summary` scans the running suite for lines that start with an `assert_*` word and fails each name that is not a function. macOS Bash 3.2 has no not-found handler. |

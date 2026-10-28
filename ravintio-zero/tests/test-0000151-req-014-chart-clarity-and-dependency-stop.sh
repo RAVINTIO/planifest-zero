@@ -65,13 +65,18 @@ done
 
 echo "=== (c) installed copies ==="
 # .claude/ exists only after setup, so a clean CI checkout skips this loop.
-DIFFS=0
-for src in "$IMPL" "$PLAN"; do
-  n=$(basename "$(dirname "$src")")
-  inst="$ROOT_DIR/.claude/skills/$n/SKILL.md"
-  [ -e "$inst" ] || continue
-  cmp -s "$src" "$inst" || DIFFS=$((DIFFS + 1))
-done
-assert_equals "0" "$DIFFS" "installed skill copies match the source"
+# In an active initiative the install lags the pack by design (0000239 req-002).
+if SKIP_REASON="$(stale_install_skip_reason "$ROOT_DIR")"; then
+  echo "  SKIP: $SKIP_REASON"
+else
+  DIFFS=0
+  for src in "$IMPL" "$PLAN"; do
+    n=$(basename "$(dirname "$src")")
+    inst="$ROOT_DIR/.claude/skills/$n/SKILL.md"
+    [ -e "$inst" ] || continue
+    cmp -s "$src" "$inst" || DIFFS=$((DIFFS + 1))
+  done
+  assert_equals "0" "$DIFFS" "installed skill copies match the source"
+fi
 
 print_summary
