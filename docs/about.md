@@ -1,6 +1,6 @@
 ---
-version: "0.39.1"
-feature: "0000251-driver-step-fixes"
+version: "0.40.0"
+feature: "0000252-chart-rules"
 updated: "28 Oct 2026"
 ---
 # About
@@ -10,8 +10,8 @@ updated: "28 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.39.1` |
-| Last feature | `0000251-driver-step-fixes` |
+| Version | `0.40.0` |
+| Last feature | `0000252-chart-rules` |
 | Updated | `28 Oct 2026` |
 
 ## What this is

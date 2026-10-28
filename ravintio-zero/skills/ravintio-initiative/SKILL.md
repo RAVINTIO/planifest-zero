@@ -38,7 +38,12 @@ description: Coordinates an initiative from chart to delivery in the human's ses
 
 ## I-A Chart and I-B Activate
 
-Follow the I-A Chart and I-B Activate sections of the roadmap standards. Take the human's confirmation per item. Chart builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. At Activate, start two background tasks:
+Follow the I-A Chart and I-B Activate sections of the roadmap standards. Take the human's confirmation per item. Chart builds the `## Decisions`, `## Baselines`, `## Criteria`, and `## P1 skips` tables. Chart also does these:
+
+- **Guard.** Run a guard check on each entry. Check whether it widens a guard, such as `merge-guard`, `gate-write`, `ratchet-check`, or another fail-closed hook. Name the guard and the new forms it would allow. Ask for a separate approval for each widening, apart from the chart confirmation.
+- **Confirmation.** Plan each step confirmation. List each confirmation that a step's skills ask for. Record the exact command as a `Confirmation:` row in `## Decisions`, or plan a human stop for that step.
+
+At Activate, start two background tasks:
 
 - The driver: `node ravintio-zero/scripts/initiative-run.mjs`.
 - The monitor: `node ravintio-zero/scripts/initiative-watch.mjs`. It prints one line per event and a heartbeat every 5 minutes.

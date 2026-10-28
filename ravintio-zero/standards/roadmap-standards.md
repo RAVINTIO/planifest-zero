@@ -110,9 +110,18 @@ Chart runs a clarity check on each backlog entry of each step:
 - The human's confirmation of the chart covers only entries that pass or that the human sharpens.
 - Chart never rewrites an entry itself.
 
+Chart runs a guard check on each backlog entry of each step. A guard is `merge-guard`, `gate-write`, `ratchet-check`, or any other fail-closed hook.
+
+- An entry widens a guard if its wanted outcome lets the guard pass a form that it blocks today.
+- If an entry widens a guard, chart says so plainly. It names the guard and the new forms the guard would allow.
+- Chart asks the human to approve each widening on its own. Each widening entry needs a separate approval. The chart confirmation never covers one.
+- If the human does not approve, chart cuts the entry back to a fix that widens nothing, or strikes the step.
+- Chart records each approved widening as a `## Decisions` row whose Fork starts with `Widening:`.
+- The check adds chart text only. It changes no hook.
+
 Before it coaches, Chart reads the latest records in `plan/retrospectives/`, newest first, and names any change they filed that is still open. If the folder is empty, Chart says so.
 
-Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval. It builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. See Chart-time decisions.
+Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval. It builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. See Chart-time decisions. It lists the step confirmations. See Chart-time confirmations. It fills the `## P1 skips` table. See Chart-time P1 skips.
 
 ### Chart-time schema approval
 
@@ -177,6 +186,32 @@ Roadmap 0000168 stopped step 3 four times. These rows would have answered each s
 
 The criterion critic would have caught the last row at Chart. A fixed total grows with the step's new tests, and runner noise exceeded the margin. The environment check would have caught the first failure of step 1. The machine had no `pwsh`, so the PowerShell criterion belongs to CI.
 
+### Chart-time confirmations
+
+A skill that a step loads can ask the human to confirm. A step session has no human to answer, so it stops and waits. Chart lists these confirmations up front.
+
+At Chart, for each step:
+
+1. Read the skills the step loads. Find each confirmation that a step's skills ask for, such as Step 4 of `ravintio-refresh-setup`.
+2. Handle each confirmation in one of two ways:
+   - Record a pre-approval as a `## Decisions` row. The Fork starts with `Confirmation:` and names the skill and its step. The answer holds the exact command.
+   - Plan a human stop for that step, and say so in the row.
+3. Take the human's confirmation of the chart as approval of every row.
+
+A pre-approval covers its exact command only. A step that would run a different command takes the human stop.
+
+| Step | Fork | Pre-approved answer | Bump effect |
+|------|------|---------------------|-------------|
+| 15 | Confirmation: `ravintio-refresh-setup` Step 4 | Run the exact command `ravintio-zero/setup.sh claude-code --strict-orchestrator` | none |
+
+### Chart-time P1 skips
+
+A step skips P1 only when chart allowed it. Chart fills the `## P1 skips` table with one row for each step. The Skip P1 column holds `yes` or `no`, and the Reason column says why.
+
+- Chart may mark `yes` only for a chore with exact tasks in `initiative.md`, or a change with no code.
+- A step that changes code, such as a hook, a script, or a test, gets `no`.
+- The human's confirmation of the chart approves the column.
+
 ### I-B Activate
 
 Activate turns a charted initiative into a live branch. Run these checks first:
@@ -211,6 +246,9 @@ Run executes one initiative step from `position`. Ship owns the merge that ends 
 - A schema change that matches a chart-approved row does not stop the step. See Chart-time schema approval.
 - A fork that matches a `## Decisions` row does not stop the step. Apply the row's answer and its bump effect, and log `Decision applied (initiative chart): {fork}` in the build log. The downgrade block still applies. The step stops only for a fork no row covers. A missing table counts as an empty one.
 - A criterion marked `CI` in `## Criteria` counts as validated only after the step's first CI run.
+- A confirmation that a skill asks for counts as a fork. If a `Confirmation:` row in `## Decisions` names the skill, its step, and the exact command, run that command with no stop and log `Decision applied (initiative chart): {fork}`. If the command differs in any way, the step stops.
+- P1 runs unless the step's row in `## P1 skips` says `yes`. A step with no `yes` row that would skip P1 prints `I-C Run: Blocked: step {n} has no P1 skip row marked yes.` and stops. A missing table counts as an empty one.
+- If a step skips P1 on a `yes` row, the build log holds `Skipped: P1 (chart row: step {n}, {reason})`.
 - P0 stops only when a backlog entry is too vague to draft a brief from. Print `Blocked:` with the entry and what is missing. The exception stops in Exception Stops still apply, including the credential stop.
 - P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the initiative branch's version. That is the last known version from Discovery Start Actions step 8. The initiative branch's version comes from `product.yml`, or from `docs/about.md` when `product.yml` is absent. The downgrade block still applies.
 
