@@ -28,7 +28,7 @@ section() {
 }
 
 STOPS="$(section '## Exception Stops' "$ORCH")"
-RESUME="$(section '## Resume Detection' "$ORCH")"
+RESUME="$(section '## Resume Detection' "$ORCH")"$'\n'"$(cat "$ZERO_DIR/skills/ravintio-orchestrator/references/orchestrator-resume-detection.md")"
 GATE="$(section '## Acceptance gate' "$VAL")"
 PR_STEP="$(section '### Step 9: PR' "$SHIP")"
 CRED_MSG='Blocked: possible credential in {path}. Remove it or confirm it is not a secret.'

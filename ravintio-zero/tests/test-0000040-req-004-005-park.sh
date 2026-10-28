@@ -15,7 +15,7 @@ PARK_TPL="$ROOT/templates/park.template.md"
 ENTRY_TPL="$ROOT/templates/backlog-entry.template.md"
 S=$(cat "$ORCH")
 PARK_SEC=$(printf '%s\n' "$S" | sed -n '/^## Park Command/,/^# Orchestrator reference:/p')
-RESUME_SEC=$(printf '%s\n' "$S" | sed -n '/^## Resume Detection/,/^## Pack Index/p')
+RESUME_SEC=$(printf '%s\n' "$S" | sed -n '/^## Resume Detection/,/^## Pack Index/p')$'\n'$(cat "$ROOT/skills/ravintio-orchestrator/references/orchestrator-resume-detection.md")
 STEP10=$(printf '%s\n' "$S" | sed -n '/^10\. \*\*Backlog pickup\*\*/,/^11\. /p')
 
 echo "=== req-004: the skill has a Park Command section after Pause Command ==="

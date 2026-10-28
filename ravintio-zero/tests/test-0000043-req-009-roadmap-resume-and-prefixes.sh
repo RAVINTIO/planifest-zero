@@ -14,7 +14,7 @@ STD="$ZERO_DIR/standards/roadmap-standards.md"
 
 # The section from a heading to the next "---" rule.
 section() { awk -v h="$1" '$0 == h {on=1; next} on && /^---$/ {exit} on {print}' "$2"; }
-RES="$(section '## Resume Detection' "$ORCH")"
+RES="$(section '## Resume Detection' "$ORCH")"$'\n'"$(cat "$ZERO_DIR/skills/ravintio-orchestrator/references/orchestrator-resume-detection.md")"
 ORCH_SEC="$(section '## Phases and Response Prefixes' "$ORCH")"
 REF_SEC="$(section '## Phase Indicators' "$REF")"
 
