@@ -57,6 +57,11 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 
 -->
 
+<!-- Skipped phase. A phase with no block needs a line "Skipped: P<n> ({reason})".
+     Ship runs ravintio-zero/scripts/build-log-check.mjs, which fails a missing
+     block that has no such line.
+-->
+
 <!-- Progress markers. Each dispatched unit adds these lines under its phase
      block, per "Progress Markers and Interrupted Units" in
      ravintio-zero/standards/agent-dispatch-standards.md:

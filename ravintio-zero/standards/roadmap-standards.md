@@ -297,7 +297,7 @@ Every message in this stage begins with `I-D Advance:` after the `P4 Ship:` pref
       I-D Advance: Blocked: CI failed on PR #{n}. Fix the failing check, then tell me to retry.
       ```
 
-4. If every check is green, squash-merge the PR. The `--delete-branch` flag removes the feature branch from `origin`.
+4. If every check is green, squash-merge the PR. The `--delete-branch` flag removes the feature branch from `origin`. Write `{n}` as the literal PR number from the `gh pr create` output. Use no command substitution, variables, or pipes on this line, or `merge-guard` blocks it.
 
    ```bash
    gh pr merge --squash --delete-branch {n}

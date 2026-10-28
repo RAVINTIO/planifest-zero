@@ -49,6 +49,14 @@ If `plan/current/.skips` exists, record its contents in the changelog under `## 
 
 Fill the Summary table in `plan/current/build-log.md`: one row per phase with agent counts, parallel batches, wall-clock time, and self-corrections. First fill the P4 block's `End` and `Wall clock` rows, then the `Total wall clock` row.
 
+Then run the check before Step 4:
+
+```bash
+node ravintio-zero/scripts/build-log-check.mjs plan/current/build-log.md
+```
+
+Stop if it exits non-zero, in both run modes. Fix each phase it names, then rerun. A phase with no block needs a `Skipped: P{n}` line in the log. Never archive a log that fails.
+
 ### Step 4: Archive
 
 1. Determine the archive path: `plan/_archive/{feature-id}-{YYYY-MM-DD}/`. If it exists, suffix `-2`, `-3`, and so on.
@@ -179,3 +187,9 @@ Each unit commits its own files by path, one commit at a time, per `## Fast batc
 ## Initiative steps
 
 When `plan/current-initiative/initiative.md` has `status: active`, read `ravintio-zero/standards/roadmap-standards.md` first. Step 9 gives way to its I-D Advance stage, and I-E Delivery follows the last step. Outside an initiative, ignore this section.
+
+To merge the step PR, copy this plain line. Replace `{n}` with the literal PR number from the `gh pr create` output. Use no command substitution, variables, or pipes on the line, or `merge-guard` cannot confirm the squash and blocks it.
+
+```bash
+gh pr merge --squash --delete-branch {n}
+```
