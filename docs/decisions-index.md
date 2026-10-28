@@ -328,3 +328,9 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | ADR | Title | Status | Summary |
 |-----|-------|--------|---------|
 | ADR-001 | reserve-id commits the counter by path | accepted | `reserve-id.mjs --commit` runs `git commit -m {subject} -- {counter}`, so the commit holds the counter file alone. The initiative, retrospective, and postmortem skills pass the flag. |
+
+### Feature 0000248: ship-merge-and-wall-clocks
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | the build log check is its own script | accepted | `build-log-check.mjs` checks the build log at ship Step 3, before Archive. `consistency-check.mjs` runs at P1, before the phase blocks exist, so it stays apart. |
