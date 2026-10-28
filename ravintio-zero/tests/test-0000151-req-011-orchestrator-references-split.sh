@@ -53,16 +53,46 @@ missing_lines() {
 }
 
 echo "=== (a) size target ==="
+# Byte size of a boot file without its override block: every line from the
+# ravintio-overrides:instructions start marker to the end marker is dropped.
+# Setup appends that block, so counting it makes each override a pack change.
+pack_claude_bytes() {
+  awk '/<!-- ravintio-overrides:instructions:start -->/ {skip=1; held=""}
+       !skip { if ($0 == "") held = held "\n"; else { printf "%s%s\n", held, $0; held = "" } }
+       /<!-- ravintio-overrides:instructions:end -->/ {skip=0}' "$1" | wc -c | tr -d ' '
+}
 SKILL_BYTES=$(wc -c < "$SKILL" | tr -d ' ')
-CLAUDE_BYTES=$(wc -c < "$ROOT_DIR/CLAUDE.md" | tr -d ' ')
+# CLAUDE.md is gitignored, so a fresh checkout has none. The boot template matches its pack content.
+BOOT_FILE="$ROOT_DIR/CLAUDE.md"
+[ -f "$BOOT_FILE" ] || BOOT_FILE="$ZERO_DIR/templates/standard-boot.md"
+CLAUDE_BYTES=$(pack_claude_bytes "$BOOT_FILE")
 assert_equals "36275" "$(wc -c < "$BASE" | tr -d ' ')" "fixture holds the 36,275 byte baseline"
 assert_equals "yes" "$([ "$SKILL_BYTES" -le 27800 ] && echo yes || echo no)" "SKILL.md is 27,800 bytes or fewer ($SKILL_BYTES)"
 # Cap raised from 35,484 to 35,600 for the initiative rename (0000189).
 # Caps raised to 27,700 and 37,800 for the reporting rule and the Supervise prefix (0000200).
 # Cap raised to 27,800 for the initiative resume split (0000205).
-# Cap raised to 38,200 for the standing setup refresh override that the repo CLAUDE.md carries (0000208).
+# 0000242 stopped counting the override block, so the combined cap covers pack content only. The pack-only sum
+# was 32,697 bytes on 2026-10-28, and the cap leaves 103 bytes of margin.
 # The combined cap also covers the Reply Conventions section that the boot template adds to CLAUDE.md.
-assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le 38200 ] && echo yes || echo no)" "CLAUDE.md plus SKILL.md is 38,200 bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
+COMBINED_CAP=32800
+assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le "$COMBINED_CAP" ] && echo yes || echo no)" "pack-only CLAUDE.md plus SKILL.md is $COMBINED_CAP bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
+
+echo "=== (a) overrides never change the size cap result ==="
+printf 'plain boot text\n' > "$TMP/nomarkers.md"
+assert_equals "$(wc -c < "$TMP/nomarkers.md" | tr -d ' ')" "$(pack_claude_bytes "$TMP/nomarkers.md")" "a file with no markers is counted whole"
+cp "$BOOT_FILE" "$TMP/with-override.md"
+{
+  echo ""
+  echo "<!-- ravintio-overrides:instructions:start -->"
+  head -c 5000 /dev/zero | tr '\0' 'x'
+  echo ""
+  echo "<!-- ravintio-overrides:instructions:end -->"
+} >> "$TMP/with-override.md"
+assert_equals "$(pack_claude_bytes "$BOOT_FILE")" "$(pack_claude_bytes "$TMP/with-override.md")" "an appended 5,000 byte override block leaves the measure unchanged"
+
+echo "=== (a) mutation: pack growth fails the combined cap ==="
+GROWN=$((SKILL_BYTES + CLAUDE_BYTES + 104))
+assert_equals "no" "$([ "$GROWN" -le "$COMBINED_CAP" ] && echo yes || echo no)" "104 extra pack bytes break the cap ($GROWN)"
 
 echo "=== (a) no rule line was lost ==="
 REF_FILES=$(ls "$REFS"/orchestrator-*.md 2>/dev/null)
