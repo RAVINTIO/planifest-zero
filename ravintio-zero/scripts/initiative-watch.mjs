@@ -14,6 +14,9 @@
 //   --since-commit <sha>
 //                  Test aid, with --once. Treat commits up to and including sha as already
 //                  seen, to simulate an earlier pass.
+//   --since-bytes <n>
+//                  Test aid, with --once. Treat the first n bytes of the step log as already
+//                  seen. Without it the first pass starts at the end of the log.
 //   --now <iso>    Test aid. Use this time as the clock instead of the system clock.
 //   There is no --state flag. The script keeps its state in memory and writes no file.
 //
@@ -27,6 +30,14 @@
 //     - a new commit, with its subject only
 //   When the watched build log is a different file from the last pass, it also prints the
 //   "Complete:" lines already in the new file.
+//
+//   Activity: the driver starts each step with --output-format stream-json, so the step log
+//   (plan/.initiative-logs/step-{position}.log) holds one JSON event per line. The watcher
+//   reads new bytes of that log each pass and prints one "I-C Run: activity: ..." line per
+//   tool call ("tool: {name} {detail}"), subagent start ("agent: started {type} {description}"),
+//   and assistant text ("text: {first line}"), in the order received. Each line is cut to
+//   200 characters in total. A partial last line waits for the next pass. A line that is
+//   not valid JSON or has an unknown shape is skipped. Tool results are never printed.
 //
 //   Stale log: if a commit is newer than the build log and the build log has not changed for
 //   STALE_MS, it prints "I-C Run: stale: ...".
@@ -51,14 +62,16 @@
 // It has no dependencies beyond Node.
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, lstatSync, readFileSync, readdirSync, statSync, writeSync } from 'node:fs';
+import { closeSync, existsSync, lstatSync, openSync, readFileSync, readSync, readdirSync, statSync, writeSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-const POLL_MS = 30000;
+const POLL_MS = 10000;
 const HEARTBEAT_MS = 300000;
 const STALE_MS = 900000;
 const MAX_LINE = 500;
 const MAX_TAIL = 200;
+const MAX_ACTIVITY = 200;
+const LOGS = 'plan/.initiative-logs';
 const MAX_COMMITS = 100;
 
 const INITIATIVE = 'plan/current-initiative/initiative.md';
@@ -78,13 +91,14 @@ const out = (line) => {
 };
 
 function parseArgs(argv) {
-  const opts = { root: process.cwd(), once: false, sinceLines: null, sinceCommit: null, now: null };
+  const opts = { root: process.cwd(), once: false, sinceLines: null, sinceCommit: null, sinceBytes: null, now: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--once') opts.once = true;
     else if (a === '--root' && argv[i + 1]) opts.root = argv[++i];
     else if (a === '--since-lines' && /^[0-9]{1,9}$/.test(argv[i + 1] || '')) opts.sinceLines = Number(argv[++i]);
     else if (a === '--since-commit' && /^[0-9a-f]{4,64}$/i.test(argv[i + 1] || '')) opts.sinceCommit = argv[++i];
+    else if (a === '--since-bytes' && /^[0-9]{1,12}$/.test(argv[i + 1] || '')) opts.sinceBytes = Number(argv[++i]);
     else if (a === '--now' && argv[i + 1] && !Number.isNaN(Date.parse(argv[i + 1]))) opts.now = Date.parse(argv[++i]);
     else throw new Stop(`I-C Run: Blocked: unknown argument "${a.slice(0, 40)}"`);
   }
@@ -179,7 +193,78 @@ function ago(ms) {
   return m < 1 ? 'under 1 minute' : `${m} minute${m === 1 ? '' : 's'}`;
 }
 
-const state = { path: null, seen: 0, head: null, lastBeat: null };
+const state = { path: null, seen: 0, head: null, lastBeat: null, logPath: null, logOffset: 0, logRest: '' };
+
+// Collapses control characters and whitespace runs to one space.
+const oneLine = (text) => String(text).replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+// The first string input worth showing for a tool call.
+function toolDetail(input) {
+  if (!input || typeof input !== 'object') return '';
+  for (const k of ['command', 'file_path', 'path', 'pattern', 'url', 'query', 'description', 'prompt']) {
+    if (typeof input[k] === 'string' && input[k] !== '') return input[k];
+  }
+  return '';
+}
+
+// Turns one parsed stream event into zero or more summaries.
+function summarise(event) {
+  const out = [];
+  if (!event || event.type !== 'assistant' || !event.message || !Array.isArray(event.message.content)) return out;
+  for (const item of event.message.content) {
+    if (!item || typeof item !== 'object') continue;
+    if (item.type === 'tool_use' && typeof item.name === 'string') {
+      const input = item.input || {};
+      if (item.name === 'Task' || item.name === 'Agent') {
+        out.push(`agent: started ${oneLine(input.subagent_type ?? '')} ${oneLine(input.description ?? '')}`.trim());
+      } else {
+        out.push(`tool: ${item.name} ${oneLine(toolDetail(input).split('\n')[0])}`.trim());
+      }
+    } else if (item.type === 'text' && typeof item.text === 'string' && item.text.trim() !== '') {
+      out.push(`text: ${oneLine(item.text.trim().split('\n')[0])}`);
+    }
+  }
+  return out;
+}
+
+// Prints the activity lines for stream events added to the step log since the last pass.
+function activity(opts, rel) {
+  if (!existsSync(join(opts.root, rel))) return;
+  refuseLinks(opts.root, rel);
+  const file = join(opts.root, rel);
+  const size = statSync(file).size;
+  if (state.logPath !== rel) {
+    state.logPath = rel;
+    state.logOffset = Math.min(opts.sinceBytes ?? size, size);
+    state.logRest = '';
+  }
+  if (size < state.logOffset) {
+    state.logOffset = 0;
+    state.logRest = '';
+  }
+  if (size === state.logOffset) return;
+  const fd = openSync(file, 'r');
+  let chunk;
+  try {
+    chunk = Buffer.alloc(size - state.logOffset);
+    readSync(fd, chunk, 0, chunk.length, state.logOffset);
+  } finally {
+    closeSync(fd);
+  }
+  state.logOffset = size;
+  const lines = (state.logRest + chunk.toString('utf8')).split('\n');
+  state.logRest = lines.pop();
+  for (const l of lines) {
+    if (l.trim() === '') continue;
+    let event;
+    try {
+      event = JSON.parse(l);
+    } catch {
+      continue;
+    }
+    for (const s of summarise(event)) out(cut(`I-C Run: activity: ${s}`, MAX_ACTIVITY));
+  }
+}
 
 function pass(opts) {
   const root = opts.root;
@@ -218,6 +303,10 @@ function pass(opts) {
     state.path = rel;
     state.seen = lines.length;
   }
+
+  // Step log activity.
+  const position = initText === null ? '' : field(initText, 'position');
+  if (/^[0-9]{1,4}$/.test(position)) activity(opts, `${LOGS}/step-${position}.log`);
 
   // Commit events.
   const commits = readCommits(root);

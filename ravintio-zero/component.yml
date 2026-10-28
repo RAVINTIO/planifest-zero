@@ -1,8 +1,8 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000239-test-suite-reliability"
-version: "0.30.2"
+feature: "0000240-stream-step-session-activity"
+version: "0.31.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
@@ -31,6 +31,7 @@ responsibilities:
   - "Fail a Bash suite that calls an undefined assert function, and skip the installed-copies check while an initiative is active and the install lags the pack"
   - "Repair the hook entries setup owns: remove RAVINTIO PreToolUse entries on any matcher, and replace a non-array hook event value with a warning"
   - "Detect and recommend adoption mode at discovery, and state standard-iterative mode without asking when it is the only signal"
+  - "Stream step session activity: the driver starts each step with stream-json output and the watcher prints one activity line per tool call, subagent start, and assistant text"
   - "Suggest and confirm the version number at discovery"
   - "Reject AI attribution lines in PR descriptions at ship and in CI, and turn off host attribution in setup when unset"
   - "Tag the merge commit on main from CI with the product version, never a feature-branch commit"

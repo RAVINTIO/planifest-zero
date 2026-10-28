@@ -104,7 +104,7 @@ assert_equals "$BEFORE_HASH" "$(hash_tree)" "req-003 AC-3: file hashes unchanged
 
 # --- Constants, flags, refusals ----------------------------------------
 assert_contains "HEARTBEAT_MS = 300000" "$(grep 'HEARTBEAT_MS' "$WATCH")" "req-003: heartbeat constant is 300000"
-assert_contains "POLL_MS = 30000" "$(grep 'POLL_MS' "$WATCH")" "req-003: poll constant is 30000"
+assert_contains "POLL_MS = 10000" "$(grep 'POLL_MS' "$WATCH")" "req-003: poll constant is 10000"
 assert_contains "STALE_MS = 900000" "$(grep 'STALE_MS' "$WATCH")" "req-003: stale constant is 900000"
 
 watch "$R" --state "$WORK/state.json"
