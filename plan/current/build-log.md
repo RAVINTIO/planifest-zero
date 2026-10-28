@@ -46,6 +46,7 @@ Decision applied (initiative chart): driver switches to --output-format stream-j
 Decision applied (initiative chart): reader goes in initiative-watch.mjs (step 2)
 Version: 0.31.0 (minor bump from 0.30.2, step row)
 Gate: design self-confirmed, draft-accepted (initiative)
+P0 Discovery: Complete: design self-confirmed, draft-accepted (initiative)
 
 ### P1: Plan
 
