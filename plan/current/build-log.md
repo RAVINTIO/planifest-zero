@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T21:55:09Z` |
-| End | `2026-10-28T22:00:00Z` |
-| Wall clock | `5` |
+| End | `2026-10-28T21:56:10Z` |
+| Wall clock | `1` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -45,15 +45,15 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Scope Lock (cross-session continuity): a new driver counts the existing attempt files and uses the next free number [source: draft-accepted (initiative)]
 - Scope Lock complete. All four scenario paths captured.
 - Version: 0.39.1 (patch bump from 0.39.0, initiative chart)
-- Design confirmed: draft-accepted (initiative) (2026-10-28T22:00:00Z)
+- Design confirmed: draft-accepted (initiative) (2026-10-28T21:56:10Z)
 
 ### P1: Plan
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-28T22:00:00Z` |
-| End | `2026-10-28T22:05:00Z` |
-| Wall clock | `5` |
+| Start | `2026-10-28T21:56:10Z` |
+| End | `2026-10-28T21:57:00Z` |
+| Wall clock | `1` |
 | Model tier | primary |
 | Skills loaded | ravintio-plan |
 | Agents spawned | 0 |
@@ -61,4 +61,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Parallel task batches | 0 |
 | Notes | two small requirements, so no decomposition |
 
-- Plan complete: consistency check clean (2026-10-28T22:05:00Z)
+- Plan complete: consistency check clean (2026-10-28T21:57:00Z)
