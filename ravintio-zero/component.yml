@@ -1,8 +1,8 @@
 # RAVINTIO Component Manifest
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-feature: "0000251-driver-step-fixes"
-version: "0.39.1"
+feature: "0000252-chart-rules"
+version: "0.40.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"
@@ -32,6 +32,7 @@ responsibilities:
   - "Repair the hook entries setup owns: remove RAVINTIO PreToolUse entries on any matcher, and replace a non-array hook event value with a warning"
   - "Detect and recommend adoption mode at discovery, and state standard-iterative mode without asking when it is the only signal"
   - "Stream step session activity: the driver starts each step with stream-json output and the watcher prints one activity line per tool call, subagent start, and assistant text"
+  - "Check each initiative entry at chart for a guard widening, list the confirmations that a step's skills ask for, and record in a P1 skips table whether each step may skip P1"
   - "Suggest and confirm the version number at discovery"
   - "Reject AI attribution lines in PR descriptions at ship and in CI, and turn off host attribution in setup when unset"
   - "Tag the merge commit on main from CI with the product version, never a feature-branch commit"
@@ -164,7 +165,7 @@ pipeline:
 
 metadata:
   createdAt: "2026-05-02"
-  updatedAt: "2026-10-27"
+  updatedAt: "2026-10-28"
   createdBy: "agent"
   lastModifiedBy: "agent"
   skill: "ravintio-implement"

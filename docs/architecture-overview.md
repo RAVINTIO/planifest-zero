@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Last updated: 0000241-watcher-false-events
+Last updated: 0000252-chart-rules
 
 ## What this repo is
 
@@ -97,7 +97,7 @@ Ship adds the resulting `## Workflow governance` section to `build-report.md` an
 An initiative is a chain of feature steps that the human approves once. The standard `ravintio-zero/standards/roadmap-standards.md` holds the detail, and the orchestrator and ship skills point to it. Five stage prefixes sit beside the five phases: `I-A Chart:`, `I-B Activate:`, `I-C Run:`, `I-D Advance:`, and `I-E Delivery:`. They are stage letters, not phase numbers. The pipeline keeps exactly five phases.
 
 - **Storage.** A draft lives in `plan/roadmap/{id}-{slug}/initiative.md` on any branch. The one active initiative lives in `plan/current-initiative/initiative.md` on the branch `initiative/{id}-{slug}`. Initiative ids share the backlog sequence.
-- **Chart and activate.** I-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the initiative's `## Schema changes` table. I-B Activate cuts the initiative branch, writes the active initiative, and offers the driver. One initiative is active per working tree.
+- **Chart and activate.** I-A Chart runs on `main`, checks that each entry is clear enough to draft from, collects the approved dependency list, and ends with the human's single approval. That approval covers each step's predicted schema change, listed in the initiative's `## Schema changes` table. I-B Activate cuts the initiative branch, writes the active initiative, and offers the driver. One initiative is active per working tree. Chart also runs a guard check on each entry. If an entry widens `merge-guard`, `gate-write`, `ratchet-check`, or another fail-closed hook, chart names the guard and asks for a separate approval. Chart lists each confirmation that a step's skills ask for and records the exact command as a `Confirmation:` row in `## Decisions`, or plans a human stop. The `## P1 skips` table says whether each step may skip P1. A step with no `yes` row stops with `I-C Run: Blocked:` if it would skip P1 (0000252).
 - **Run.** Each step runs P0 to P4 in `autonomous` mode on a feature branch cut from the initiative branch. P0 builds the brief from the step's backlog entries and self-confirms the design and scope lock, marked `[source: draft-accepted (roadmap)]`.
 - **Watch.** The driver starts each step with `--output-format stream-json --verbose`, so the step log holds one JSON event per line. `scripts/initiative-watch.mjs` reads new bytes of the current step log every 10 seconds. It prints one `I-C Run: activity:` line per tool call, subagent start, and assistant text, each at 200 characters or fewer, and never prints tool results. It reports a stale log once per stale state, reports a branch switch in one line, and reads the lock state on each heartbeat. The initiative skill relays each line to the human.
 - **Advance.** At P4, the agent raises the step PR against the initiative branch and waits for green CI. It squash-merges the PR, fetches, and tags the squash commit. Outside an initiative, the CI `release-tag` job tags the merge commit after the human merges.
