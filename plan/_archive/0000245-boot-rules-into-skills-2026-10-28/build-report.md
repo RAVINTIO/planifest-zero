@@ -15,8 +15,8 @@
 **Self-corrections.** 5 rework cycles. Each was a suite that read text the step moved, so each was unavoidable once the text moved. A single helper for section lookup (entry 0000261) would remove most of them.
 
 **Improvements.**
-- P0: write `## Component Paths` into the design (entry 0000263 0000264 ).
-- P3: keep the step log out of the stale cite guard (entry ).
+- P0: write `## Component Paths` into the design (entry 0000263).
+- P3: keep the step log out of the stale cite guard (entry 0000264).
 
 **Postmortems:** none
 

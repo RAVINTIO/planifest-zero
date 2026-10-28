@@ -31,14 +31,14 @@ The generated `CLAUDE.md` fell from 10,317 to 4,701 bytes with every override st
 
 ## Change
 
-- Write `## Component Paths` into the design at P0, so P2 subagents are not blocked (`plan/backlog/0000263 0000264 -component-paths-in-design-template/entry.md`).
-- Keep the step log out of the stale cite guard (`plan/backlog/-step-log-trips-stale-cite-guard/entry.md`).
+- Write `## Component Paths` into the design at P0, so P2 subagents are not blocked (`plan/backlog/0000263-component-paths-in-design-template/entry.md`).
+- Keep the step log out of the stale cite guard (`plan/backlog/0000264-step-log-trips-stale-cite-guard/entry.md`).
 - Find what empties `.claude/skills/` (`plan/backlog/0000262-find-what-empties-installed-skills/entry.md`).
 
 ## Actions
 
 | Change | Owner | Lives in | Verified by | Filed as |
 |--------|-------|----------|-------------|----------|
-| Component Paths in the design template | pack maintainer | `plan/backlog/0000263 0000264 -component-paths-in-design-template/entry.md` | review of the entry's Wanted outcome | 0000263 0000264  |
-| Step log and the stale cite guard | pack maintainer | `plan/backlog/-step-log-trips-stale-cite-guard/entry.md` | step 8 tests |  |
+| Component Paths in the design template | pack maintainer | `plan/backlog/0000263-component-paths-in-design-template/entry.md` | review of the entry's Wanted outcome | 0000263 |
+| Step log and the stale cite guard | pack maintainer | `plan/backlog/0000264-step-log-trips-stale-cite-guard/entry.md` | step 8 tests | 0000264 |
 | Find what empties installed skills | pack maintainer | `plan/backlog/0000262-find-what-empties-installed-skills/entry.md` | review of the entry's Wanted outcome | 0000262 |
