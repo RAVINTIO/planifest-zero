@@ -2,7 +2,7 @@
 
 **Feature:** Ship merge command and wall clock check
 **Version:** 0.37.0
-**PR:** pending, updated at Step 9
+**PR:** #66
 
 ## What changed
 
