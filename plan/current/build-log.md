@@ -67,13 +67,20 @@ P1 Plan: Complete: 6 requirements, 1 ADR, consistency check clean (2026-10-28T14
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T14:06:00Z` |
-| End | |
-| Wall clock | |
+| End | `2026-10-28T14:40:00Z` |
+| Wall clock | 34 min |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
-| Agents spawned | 1 |
+| Agents spawned | 3 |
 | MCP calls | 0 |
 | Parallel task batches | 1 |
-| Notes | Batch 1 runs U-001 in a subagent and U-003 inline. |
+| Notes | Batch 1 ran U-001 in a subagent and U-003 inline. A third subagent repointed ten older tests that read the moved section. |
 - In progress: U-001 (2026-10-28T14:06:00Z)
 - In progress: U-003 (2026-10-28T14:06:00Z)
+- Done: U-001 (2026-10-28T14:20:00Z)
+- Done: U-003 (2026-10-28T14:25:00Z)
+- In progress: U-002 (2026-10-28T14:28:00Z)
+- Done: U-002 (2026-10-28T14:33:00Z)
+Rework: test-0000151-req-011 mutation check grew by the remaining margin, not a fixed 104 bytes, because SKILL.md shrank (2026-10-28T14:25:00Z)
+Rework: ten older tests read the Resume Detection text from SKILL.md and the new reference (2026-10-28T14:38:00Z)
+P2 Implement: Complete: 6 requirements built, suite green (207 feature, 19 regression) (2026-10-28T14:40:00Z)
