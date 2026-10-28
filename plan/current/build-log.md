@@ -75,3 +75,4 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | initiative step |
+- In progress: U-001 and U-002 batch 1 (2026-10-28T18:45:38Z)
