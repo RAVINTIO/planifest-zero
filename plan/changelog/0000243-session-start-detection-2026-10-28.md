@@ -2,7 +2,7 @@
 
 **Feature:** Session start detection
 **Version:** 0.32.0
-**PR:** pending
+**PR:** #60
 
 ## What changed
 
