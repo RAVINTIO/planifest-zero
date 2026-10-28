@@ -62,3 +62,23 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Notes | two small requirements, so no decomposition |
 
 - Plan complete: consistency check clean (2026-10-28T21:57:00Z)
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T21:57:00Z` |
+| End | `2026-10-28T22:10:00Z` |
+| Wall clock | `13` |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | two units of short edits done inline, because a subagent costs more than the edits |
+
+- In progress: U-001 runners, U-002 driver attempt logs (2026-10-28T21:57:00Z)
+- Done: U-001 runners, U-002 driver attempt logs, U-003 standards and docs (2026-10-28T22:10:00Z)
+- Rework: REQ-001: the nested runners inherited RAVINTIO_TEST_QUIET=1 in a quiet full run and hid the probe lines, so the test now unsets it (2026-10-28T22:10:00Z)
+- Known failure: `test-0000042-req-006` and `test-0000043-req-009` fail in this session only. The phase guard scans the git-ignored step log, which is backlog entry 0000264. Both pass on a clean archive of HEAD.
+- Note: the running driver predates this change, so a re-run of a step under it still truncates. The human restarts the driver and the watcher to load the new code.

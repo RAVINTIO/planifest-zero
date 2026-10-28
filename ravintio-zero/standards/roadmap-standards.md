@@ -258,13 +258,13 @@ The driver writes the child's stdout and stderr to `plan/.initiative-logs/step-{
 - The watcher prints a stale line only when a commit is at least 15 minutes newer than the last build log write, and it prints each stale state once. If the last-seen commit is not an ancestor of `HEAD`, it prints one `branch changed` line instead of a line for each commit. Each heartbeat reads the lock file again.
 - The initiative skill relays each activity line to the human.
 
-- Each step start will truncate its log, so a rerun leaves only the latest attempt.
+- If `step-{position}.log` exists when a step starts, the driver renames it to `step-{position}.attempt-{k}.log` first. `k` is the lowest number whose path is free. The driver then opens a fresh `step-{position}.log`, so a rerun keeps every earlier attempt and the latest attempt keeps the plain name.
 - The driver copies the child's stderr to its own stderr. It never prints the child's stdout or any log content.
 - The driver adds `plan/.initiative-logs/` to `.git/info/exclude`, not `.gitignore`, and adds the line once.
-- Every stop after a step starts ends with `Log: plan/.initiative-logs/step-{position}.log`. Stops before any step starts name no log.
+- Every stop after a step starts ends with `Log: plan/.initiative-logs/step-{position}.log`. Stops before any step starts name no log. If attempt logs exist for the step, the stop line also names them as `Earlier: {paths}.` before the `Log:` field.
 - If the driver cannot open the log, it stops with `I-C Run: Blocked: could not open the step log` and launches no `claude`.
-- The driver refuses a symlink at `plan`, at `plan/.initiative-logs`, or at the log file. It stops with `I-C Run: Blocked: refused a symlinked step log path`, releases the lock, and launches no `claude`.
-- Logs are private to the user. The driver creates the folder with mode 700 and each log with mode 600.
+- The driver refuses a symlink at `plan`, at `plan/.initiative-logs`, at the log file, or at an attempt path. It stops with `I-C Run: Blocked: refused a symlinked step log path`, releases the lock, and launches no `claude`.
+- Logs are private to the user. The driver creates the folder with mode 700 and each log with mode 600, and each attempt log keeps mode 600.
 - A log may hold file content the session read. Treat it as private.
 
 ## Merge carve-out

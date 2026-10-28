@@ -7,6 +7,8 @@
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# The nested runners must print probe lines, so a quiet outer run must not reach them.
+unset RAVINTIO_TEST_QUIET
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 WORK="$(mktemp -d)"

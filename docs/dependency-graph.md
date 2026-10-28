@@ -80,7 +80,7 @@ graph TD
 
 **The driver passes a model and labels to each child.** It passes `--model` from `RAVINTIO_INITIATIVE_MODEL`, which defaults to `sonnet`. It passes `--max-turns` only when `RAVINTIO_INITIATIVE_MAX_TURNS` is set. If a `RAVINTIO_*` name is unset, the driver reads the legacy `PLANIFEST_ROADMAP_MODEL` or `PLANIFEST_ROADMAP_MAX_TURNS` in 0.x, and the `RAVINTIO_*` value wins if both are set. It appends `work.kind`, `ravintio.initiative`, and `ravintio.step` labels to `OTEL_RESOURCE_ATTRIBUTES` in the child environment.
 
-**The driver writes one log per step.** Each step writes stdout and stderr to `plan/.initiative-logs/step-{position}.log`. The driver excludes the folder through `.git/info/exclude` and leaves `.gitignore` alone. Every stop line names the log.
+**The driver writes one log per step.** Each step writes stdout and stderr to `plan/.initiative-logs/step-{position}.log`. The driver excludes the folder through `.git/info/exclude` and leaves `.gitignore` alone. Every stop line names the log. If the driver re-runs a step, it first renames the existing log to `step-{position}.attempt-{k}.log`, so a stop line also names the earlier attempts. Both test runners clear `RAVINTIO_INITIATIVE_STEP` before they start a suite, so a step session's own variable never reaches a hook test (0000251).
 
 **The orchestrator reads seven reference files on demand.** Rarely used sections live in `skills/ravintio-orchestrator/references/orchestrator-*.md`, and the Pack Index lists each one. The Exception Stops table stays in `SKILL.md`.
 

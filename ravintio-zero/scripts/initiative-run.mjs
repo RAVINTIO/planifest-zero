@@ -30,8 +30,11 @@
 // Only the child sees the change. The labels hold identifiers, never prompt or file text.
 //
 // Logs: each step writes the child's stdout and stderr, in arrival order, to
-// plan/.initiative-logs/step-{position}.log. Each step start will truncate its log, so a
-// rerun leaves only the latest attempt. The driver copies the child's stderr to its own
+// plan/.initiative-logs/step-{position}.log. If that log already exists, the driver first
+// renames it to step-{position}.attempt-{k}.log, with the lowest k whose path is free, and
+// then opens a fresh step-{position}.log. A rerun keeps every earlier attempt, and the
+// latest attempt keeps the plain name. A stop line that names a log also names the earlier
+// attempts, as "Earlier: {paths}. Log: {path}". The driver copies the child's stderr to its own
 // stderr and never prints the child's stdout or any log content. It excludes the folder
 // through .git/info/exclude. The driver refuses a symlink at plan, at the log folder, or at
 // the log file, and stops with "I-C Run: Blocked: refused a symlinked step log path". Logs
@@ -100,7 +103,7 @@
 // It has no dependencies beyond Node.
 
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, closeSync, constants as fsConstants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
+import { appendFileSync, chmodSync, closeSync, constants as fsConstants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, renameSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve } from 'node:path';
 import { withInitiativeLabels } from './initiative-labels.mjs';
 
@@ -254,11 +257,36 @@ function isLink(path) {
   }
 }
 
-// Opens plan/.initiative-logs/step-{position}.log for writing and truncates it.
-// Refuses a symlink at plan, at the log folder, or at the log file, and a log folder
-// whose real path leaves the real root. The open adds O_NOFOLLOW where the platform has it.
-// The folder gets mode 0o700 and the log 0o600. Returns the file descriptor and the
-// root-relative path.
+// True when anything sits at the path, including a dangling symlink.
+function present(path) {
+  try {
+    lstatSync(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Returns the root-relative paths of the kept attempt logs for a step, in attempt order.
+function attemptLogs(root, position) {
+  const re = new RegExp(`^step-${position}\\.attempt-([1-9][0-9]*)\\.log$`);
+  try {
+    return readdirSync(join(root, LOGS))
+      .map((name) => ({ name, k: Number((re.exec(name) || [])[1]) }))
+      .filter((e) => e.k)
+      .sort((a, b) => a.k - b.k)
+      .map((e) => `${LOGS}/${e.name}`);
+  } catch {
+    return [];
+  }
+}
+
+// Opens plan/.initiative-logs/step-{position}.log for writing. If the log exists, it first
+// renames it to the next free step-{position}.attempt-{k}.log, so a rerun keeps the earlier
+// output. Refuses a symlink at plan, at the log folder, at the log file, or at an attempt
+// path, and a log folder whose real path leaves the real root. The open adds O_NOFOLLOW
+// where the platform has it. The folder gets mode 0o700 and each log 0o600. Returns the file
+// descriptor, the root-relative path, and the root-relative paths of the attempt logs.
 function openLog(root, position) {
   const rel = `${LOGS}/step-${position}.log`;
   const refuse = () => new Stop('I-C Run: Blocked: refused a symlinked step log path');
@@ -271,8 +299,18 @@ function openLog(root, position) {
     if (within.startsWith('..') || isAbsolute(within)) throw refuse();
     const file = join(root, rel);
     if (isLink(file)) throw refuse();
+    if (present(file)) {
+      let k = 1;
+      let kept = join(dir, `step-${position}.attempt-${k}.log`);
+      while (present(kept)) {
+        if (isLink(kept)) throw refuse();
+        kept = join(dir, `step-${position}.attempt-${++k}.log`);
+      }
+      renameSync(file, kept);
+      chmodSync(kept, 0o600);
+    }
     const { O_WRONLY, O_CREAT, O_TRUNC, O_NOFOLLOW = 0 } = fsConstants;
-    return { fd: openSync(file, O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW, 0o600), rel };
+    return { fd: openSync(file, O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW, 0o600), rel, earlier: attemptLogs(root, position) };
   } catch (e) {
     if (e instanceof Stop) throw e;
     throw new Stop('I-C Run: Blocked: could not open the step log');
@@ -372,8 +410,13 @@ function runStep(root, position, cfg, fd, labels) {
 
 let activeChild = null;
 let currentLog = null;
+let earlierLogs = [];
 
-const withLog = (line) => (currentLog ? `${line} Log: ${currentLog}` : line);
+const withLog = (line) => {
+  if (!currentLog) return line;
+  const earlier = earlierLogs.length > 0 ? ` Earlier: ${earlierLogs.join(', ')}.` : '';
+  return `${line}${earlier} Log: ${currentLog}`;
+};
 let lockPath = null;
 
 function releaseLock() {
@@ -420,8 +463,10 @@ async function main() {
     const started = Date.now();
     const headBefore = branchHead(root, rm.branch);
     currentLog = null;
+    earlierLogs = [];
     const log = openLog(root, position);
     currentLog = log.rel;
+    earlierLogs = log.earlier;
     out(`I-C Run: Starting: initiative step ${position} in a fresh session`);
     let res;
     try {

@@ -94,7 +94,8 @@ R="$(make_fixture a-rerun active)"
 run_driver "$R" block
 run_driver "$R" short
 rm -f "$R/plan/.initiative-runner.lock"
-assert_equals "short out" "$(cat "$R/plan/.initiative-logs/step-1.log")" "req-012 (a): a rerun truncates the log"
+assert_equals "short out" "$(cat "$R/plan/.initiative-logs/step-1.log")" "req-012 (a): a rerun writes a fresh current log"
+assert_contains "stub stdout line step 1" "$(cat "$R/plan/.initiative-logs/step-1.attempt-1.log")" "req-012 (a): a rerun keeps the first log as attempt-1"
 
 R="$(make_fixture a-draft draft)"
 run_driver "$R" ok
@@ -165,7 +166,7 @@ echo "=== req-012 (c): documentation ==="
 HEAD_TXT="$(sed -n '1,60p' "$DRIVER")"
 for f in "$HEAD_TXT" "$(cat "$STANDARDS")"; do
   assert_contains "plan/.initiative-logs/" "$f" "req-012 (c): names the log folder"
-  assert_contains "truncate" "$f" "req-012 (c): names the truncate rule"
+  assert_contains "attempt" "$f" "req-012 (c): names the attempt rule"
   assert_contains "symlink" "$f" "req-012 (c): names the symlink refusal"
   assert_contains "private" "$f" "req-012 (c): says logs are private"
 done
