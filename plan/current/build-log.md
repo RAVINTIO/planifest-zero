@@ -42,3 +42,17 @@ Backlog entries 0000211 and 0000212 pulled in and deleted.
 Migrations 0004 and 0005 stay pending: their `Applies when:` conditions are false in the pack source.
 Scope Lock Challenge: all four paths drafted inline from the initiative row. Each line ends with [source: draft-accepted (initiative)].
 Version: 0.30.2 (patch from 0.30.1, per the initiative row)
+
+### P1: Plan
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T06:20:32Z` |
+| End | `2026-10-28T06:20:35Z` |
+| Wall clock | 5 |
+| Model tier | primary |
+| Skills loaded | ravintio-plan |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | small feature, artifacts written inline |
