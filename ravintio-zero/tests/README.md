@@ -36,6 +36,10 @@ the runner names it. If you add a helper or data file, add it to
 `KNOWN_NON_SUITES` in `run-tests.sh`. To run only this check, set
 `RAVINTIO_PREFLIGHT_ONLY=1`.
 
+Both runners clear `RAVINTIO_INITIATIVE_STEP` before they start a suite. The
+initiative driver sets it in every step session, and the hooks read it. A suite
+that needs the variable sets it for its own hook call.
+
 You can also run a single suite directly:
 
 ```bash
