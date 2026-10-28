@@ -43,7 +43,7 @@ The change edits files in one component, `ravintio-zero`. No interactions.
 | Skill-text budget (edit to `ravintio-plan/SKILL.md`) | `test-0000031-req-003-five-phases.sh` | U-001 |
 | Skill count (no skill added) | none found | none |
 | Size cap on an edited skill (plan skill has no cap test) | none found | none |
-| Pulled-in entry id 0000210 | none found in `ravintio-zero/tests/` | none |
+| Pulled-in entry id 0000210 | none found. `test-0000199-req-001-003` mentions 210 as a seed floor only | none |
 | Template headings (edit to `execution-plan.template.md`) | `test-0000201-req-001-concurrency-section.sh` | U-001 |
 
 ## Concurrency plan
