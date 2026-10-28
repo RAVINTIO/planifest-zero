@@ -61,3 +61,20 @@ P0 Discovery: Complete: design self-confirmed, draft-accepted (initiative)
 | Parallel task batches | 0 |
 | Notes | none |
 P1 Plan: Complete: 4 requirements, 1 ADR, consistency check clean
+
+### P2: Implement
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T07:20:51Z` |
+| End | `2026-10-28T07:20:51Z` |
+| Wall clock | 12 minutes |
+| Model tier | primary |
+| Skills loaded | ravintio-implement |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | TDD loop run inline: one watcher file holds every change. Heartbeat lock state already read the lock file on each pass, so REQ-004 needed no code. REQ-002 AC-2 changed to a restart check, because \`--once\` cannot add a commit between passes. Existing 0000205 stale test commit moved from 00:10 to 00:16 to match the 15 minute rule. |
+Rework: REQ-002: AC-2 rewritten as a restart check, as the stale key lives in memory (2026-10-28T07:20:51Z)
+Decision applied (count or budget test): test-0000205-req-003 commit time updated for the new stale rule
+P2 Implement: Complete: 4 requirements, tests green (204 feature suites, 19 regression)

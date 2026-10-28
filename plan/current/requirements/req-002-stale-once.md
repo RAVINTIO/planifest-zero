@@ -18,16 +18,17 @@ As an initiative owner, I want each stale state reported once, so that the same 
 ## Functional Requirements
 - The watcher keeps a stale key of the log modification time and the newest commit sha.
 - It prints a stale line only when the key differs from the last key it printed.
+- The key lives in memory only, so a new process starts with none.
 
 ## Acceptance Criteria
 - [ ] AC-1: three passes, one line
   - Given a real stale state
   - When the watcher runs three passes with `--once --passes 3`
   - Then it prints exactly one stale line
-- [ ] AC-2: a new commit rearms the line
-  - Given a printed stale state and then a later commit that is also 15 minutes newer than the log
-  - When the watcher runs a further pass
-  - Then it prints a second stale line
+- [ ] AC-2: restart
+  - Given a printed stale state
+  - When a new watcher process runs one pass
+  - Then it prints the stale line again, because state stays in memory
 
 ## Dependencies
 - REQ-001

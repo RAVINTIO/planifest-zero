@@ -71,7 +71,7 @@ assert_contains "add the x file" "$OUT" "req-003 AC-1: commit event carries the 
 R="$(make_repo ac2)"
 node -e "const t=new Date('2026-01-01T00:00:00Z');require('fs').utimesSync(process.argv[1],t,t)" "$R/plan/current/build-log.md"
 echo y > "$R/y.txt"; git -C "$R" add y.txt
-GIT_COMMITTER_DATE="2026-01-01T00:10:00Z" git -C "$R" commit -q -m "newer commit"
+GIT_COMMITTER_DATE="2026-01-01T00:16:00Z" git -C "$R" commit -q -m "newer commit"
 watch "$R" --now "2026-01-01T00:16:30Z"
 assert_contains "I-C Run: stale:" "$OUT" "req-003 AC-2: stale line printed"
 assert_contains "I-C Run: heartbeat:" "$OUT" "req-003 AC-2: heartbeat printed"

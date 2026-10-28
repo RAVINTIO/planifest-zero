@@ -228,6 +228,7 @@ The driver keeps the old value byte for byte and joins the labels with commas. I
 The driver writes the child's stdout and stderr to `plan/.initiative-logs/step-{position}.log`, in arrival order. It starts `claude` with `--output-format stream-json --verbose`, so stdout holds one JSON event per line.
 
 - `initiative-watch.mjs` reads new bytes of the current step's log every 10 seconds. It prints one `I-C Run: activity:` line per tool call, subagent start, and assistant text, in the order received. Each line is 200 characters or fewer. It never prints tool results.
+- The watcher prints a stale line only when a commit is at least 15 minutes newer than the last build log write, and it prints each stale state once. If the last-seen commit is not an ancestor of `HEAD`, it prints one `branch changed` line instead of a line for each commit. Each heartbeat reads the lock file again.
 - The initiative skill relays each activity line to the human.
 
 - Each step start will truncate its log, so a rerun leaves only the latest attempt.
