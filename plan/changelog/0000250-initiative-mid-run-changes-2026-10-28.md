@@ -2,7 +2,7 @@
 
 **Feature:** Initiative mid-run changes
 **Version:** 0.39.0
-**PR:** pending
+**PR:** #68
 
 ## What changed
 
