@@ -12,8 +12,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-SKILL="$SCRIPT_DIR/../skills/ravintio-orchestrator/SKILL.md"
-
+SKILL="$(orch_combined "$SCRIPT_DIR/../skills/ravintio-orchestrator")"
 if [ ! -f "$SKILL" ]; then
   echo "  FAIL: $SKILL not found"
   ((FAIL++)) || true

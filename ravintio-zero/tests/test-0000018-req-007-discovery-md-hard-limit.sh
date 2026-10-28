@@ -8,8 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-ORCHESTRATOR="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
-
+ORCHESTRATOR="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 grep_has() { grep -q "$1" "$2" 2>/dev/null && echo "yes" || echo "no"; }
 
 # ── AC-1: new Hard Limit entry, matching build-log.md's pattern ─────────────

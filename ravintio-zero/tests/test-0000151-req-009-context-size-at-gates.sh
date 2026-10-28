@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 PI=$(sed -n '/^## Phase Invocation/,/^## Exception Stops/p' "$ORCH")
 DC=$(sed -n '/^### Design Confirmation/,/^## Phase Invocation/p' "$ORCH")
 

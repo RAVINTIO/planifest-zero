@@ -42,6 +42,21 @@ The driver still requires status `active` before it runs a step.
 | Advance | `I-D Advance:` | `ravintio-ship` | initiative branch | Merge the step PR into the initiative branch and tag it. |
 | Delivery | `I-E Delivery:` | `ravintio-initiative` | initiative branch | Archive the initiative and raise the initiative PR to `main`. |
 
+#### Reply prefixes
+
+Initiative stages use five more prefixes. They use the same `{prefix} {Status}: {one-liner}` form.
+
+| Prefix | Stage |
+|--------|-------|
+| `I-A Chart:` | Chart |
+| `I-B Activate:` | Activate |
+| `I-C Run:` | Run |
+| `I-D Advance:` | Advance |
+| `I-E Delivery:` | Delivery |
+
+- Example: `I-C Run: Starting: step 2 of initiative 0000050`
+- Example: `I-B Activate: Blocked: no remote named origin`
+
 ### The three parts
 
 Three parts run an initiative. The human talks only to their own session. Step sessions run with no human present.

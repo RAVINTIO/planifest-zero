@@ -16,7 +16,7 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 
 ZERO_DIR="$SCRIPT_DIR/.."
 REPO_ROOT="$(cd "$ZERO_DIR/.." && pwd)"
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 REF="$ZERO_DIR/pipeline-reference.md"
 REF_CONTENT="$(cat "$REF")"
 
