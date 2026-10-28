@@ -316,3 +316,9 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 |-----|-------|--------|---------|
 | ADR-001 | Targeted overrides append to the named skill | accepted | An override with `target: {skill}` is appended to that installed skill between markers. A bad target falls back to the boot file. |
 | ADR-002 | Hook Enforcement lives in a reference file | accepted | The hook list moves to `standards/hook-enforcement.md`. The boot files point to it and each blocking hook message names it. |
+
+### Feature 0000246: plan-checks-count-and-cap-tests
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The plan skill scans tests by grep | accepted | The plan skill greps `ravintio-zero/tests/` for tests that hold a skill count, a skill-text budget, a size cap or a backlog entry id. The execution plan lists each match under `## Test impact`. |
