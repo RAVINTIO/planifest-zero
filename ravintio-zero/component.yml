@@ -2,7 +2,7 @@
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
 feature: "0000240-stream-step-session-activity"
-version: "0.32.0"
+version: "0.33.0"
 status: "active"
 type: "component-pack"
 domain: "developer-tooling"

@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 ZERO_DIR="$SCRIPT_DIR/.."
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 REF="$ZERO_DIR/pipeline-reference.md"
 TPL="$ZERO_DIR/templates/initiative.template.md"
 STD="$ZERO_DIR/standards/roadmap-standards.md"
@@ -31,7 +31,8 @@ assert_contains 'load `ravintio-initiative` and stop' "$RES" "req-009 (a): a non
 echo ""
 echo "=== req-009 (b): prefix tables ==="
 for label in orchestrator pipeline-reference; do
-  if [ "$label" = orchestrator ]; then SEC="$ORCH_SEC"; else SEC="$REF_SEC"; fi
+  # 0000244 moved the I-A to I-E prefix block from the orchestrator to the roadmap standards.
+  if [ "$label" = orchestrator ]; then SEC="$ORCH_SEC"$'\n'"$(cat "$STD")"; else SEC="$REF_SEC"; fi
   for p in 'I-A Chart:' 'I-B Activate:' 'I-C Run:' 'I-D Advance:' 'I-E Delivery:'; do
     assert_contains "\`$p\`" "$SEC" "req-009 (b): $label lists \`$p\`"
   done

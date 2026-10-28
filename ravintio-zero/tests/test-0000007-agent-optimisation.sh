@@ -181,7 +181,7 @@ assert_contains "feature-id"    "$DESIGN_T" "req-007: design.template.md has fea
 assert_contains "Build target"  "$DESIGN_T" "req-007: design.template.md has Build target in Stack row"
 assert_contains "Components"    "$DESIGN_T" "req-007: design.template.md has Components field"
 
-ORCH=$(cat "$SKILLS/ravintio-orchestrator/SKILL.md")
+ORCH=$(cat "$(orch_combined "$SKILLS/ravintio-orchestrator")")
 assert_contains "design.template.md" "$ORCH" "req-007: orchestrator JIT Loading table references design.template.md"
 assert_not_contains "## Design - {feature-id}" "$ORCH" "req-007: orchestrator has no inline design template block"
 

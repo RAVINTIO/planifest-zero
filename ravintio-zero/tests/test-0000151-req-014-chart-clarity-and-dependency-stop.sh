@@ -12,7 +12,7 @@ ROOT_DIR="$(cd "$ZERO_DIR/.." && pwd)"
 STD="$ZERO_DIR/standards/roadmap-standards.md"
 ENTRY="$ZERO_DIR/templates/initiative.template.md"
 DESIGN="$ZERO_DIR/templates/design.template.md"
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 IMPL="$ZERO_DIR/skills/ravintio-implement/SKILL.md"
 PLAN="$ZERO_DIR/skills/ravintio-plan/SKILL.md"
 

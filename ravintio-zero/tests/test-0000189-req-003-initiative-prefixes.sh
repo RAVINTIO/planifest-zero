@@ -19,6 +19,11 @@ echo "=== req-003 AC-1: stage tables ==="
 for f in "$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md" "$ZERO_DIR/standards/roadmap-standards.md"; do
   n="$(basename "$(dirname "$f")")/$(basename "$f")"
   t="$(cat "$f")"
+  # 0000244 moved the prefix block from the orchestrator skill to the roadmap standards. The skill keeps a pointer.
+  case "$f" in */SKILL.md)
+    assert_contains "roadmap-standards.md" "$(grep -F 'Initiative stages use the prefixes I-A to I-E' "$f")" "req-003 AC-1: $n points at the roadmap standards for I-A to I-E"
+    t="$t"$'\n'"$(cat "$ZERO_DIR/standards/roadmap-standards.md")";;
+  esac
   for p in "I-A Chart" "I-B Activate" "I-C Run" "I-D Advance" "I-E Delivery"; do
     assert_contains "$p" "$t" "req-003 AC-1: $n lists $p"
   done

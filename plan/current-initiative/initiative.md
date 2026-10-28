@@ -8,7 +8,7 @@ status: "active"
 **Goal:** Clear every open backlog entry filed during and after initiative 0000195 that needs no human-run check or paid service. Each step ships one feature release. A final chore step refreshes the installed setup so `.claude/skills/` matches the pack.
 **Branch:** initiative/0000238-backlog-clearance-two
 **Status:** active
-**Position:** 6
+**Position:** 7
 **Speed:** standard
 
 The human asked for this draft on 2026-10-27, after merging PR #55 for initiative 0000195. The human approved the chart on 2026-10-28, and I-B Activate ran the same day.
@@ -104,7 +104,7 @@ All pack skills share a 1,720-line cap, with 35 lines of headroom on 2026-10-28.
 | 3 | 0000241-watcher-false-events | 0000216 | patch | 0.31.1 | merged |
 | 4 | 0000242-size-cap-excludes-overrides | 0000214 | patch | 0.31.2 | merged |
 | 5 | 0000243-session-start-detection | 0000237 | minor | 0.32.0 | merged |
-| 6 | 0000244-split-orchestrator-skill | 0000236 | minor | | pending |
+| 6 | 0000244-split-orchestrator-skill | 0000236 | minor | 0.33.0 | merged |
 | 7 | 0000245-boot-rules-into-skills | 0000222 | minor | | pending |
 | 8 | 0000246-plan-checks-count-and-cap-tests | 0000210 | minor | | pending |
 | 9 | 0000247-git-state-hygiene | 0000213, 0000224, 0000231 | minor | | pending |
