@@ -68,11 +68,31 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T22:18:53Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T22:29:19Z` |
+| Wall clock | `10` |
 | Model tier | primary |
 | Skills loaded | ravintio-implement |
 | Agents spawned | 0 |
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | five units of short edits done inline, because a subagent costs more than the edits |
+
+- In progress: U-001 guard rule, U-002 confirmation rule, U-003 P1 skip record, U-004 initiative skill (2026-10-28T22:19:30Z)
+- Done: U-001 guard rule, U-002 confirmation rule, U-003 P1 skip record, U-004 initiative skill, U-005 docs (2026-10-28T22:29:19Z)
+- Rework: REQ-001: skill test needle matched a capitalised heading, so the skill wording changed (2026-10-28T22:20:02Z)
+- Known failure: `test-0000042-req-006` and `test-0000043-req-009` fail in this session only. The phase guard scans the git-ignored step log, which is backlog entry 0000264. Both pass on a clean archive of HEAD.
+- Note: this step edits `ravintio-initiative/SKILL.md`, so the driver prints `I-D Advance: Restart:` after the merge. The initiative skill starts a new driver and watcher.
+
+### P3: Validate and Accept
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-28T22:29:19Z` |
+| End | `` |
+| Wall clock | `` |
+| Model tier | primary |
+| Skills loaded | ravintio-validate-and-accept |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | checks ran inline: the full suite ran in P2 and the evidence is short |
