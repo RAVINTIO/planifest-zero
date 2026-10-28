@@ -1,7 +1,7 @@
 ---
-version: "0.30.1"
-feature: "0000218-strict-hook-follows-active-skill"
-updated: "27 Oct 2026"
+version: "0.30.2"
+feature: "0000239-test-suite-reliability"
+updated: "28 Oct 2026"
 ---
 # About
 
@@ -10,9 +10,9 @@ updated: "27 Oct 2026"
 
 | Field | Value |
 |-------|-------|
-| Version | `0.30.1` |
-| Last feature | `0000218-strict-hook-follows-active-skill` |
-| Updated | `27 Oct 2026` |
+| Version | `0.30.2` |
+| Last feature | `0000239-test-suite-reliability` |
+| Updated | `28 Oct 2026` |
 
 ## What this is
 

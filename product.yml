@@ -10,8 +10,8 @@
 
 id: "ravintio-zero"
 name: "RAVINTIO Zero"
-version: "0.30.1"
-feature: "0000218-strict-hook-follows-active-skill"
+version: "0.30.2"
+feature: "0000239-test-suite-reliability"
 
 versionPolicy: "max-component-version"
 

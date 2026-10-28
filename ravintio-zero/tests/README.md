@@ -83,3 +83,9 @@ when a manifest entry has no file, or a suite has no entry.
    ANSI, so build non-ASCII test text from `[char]` codes.
 
 The runner picks the file up automatically. Nothing else needs registering.
+
+### Helper guards
+
+- `print_summary` fails a Bash suite that calls an undefined `assert_*` function. It scans the suite for lines that start with an `assert_*` word and prints `FAIL: undefined assert function: {name}` for each name that is not a function. A call after `&&` or inside `$(...)` is not scanned.
+- `assert_not_contains needle haystack message` passes when the needle is absent.
+- `stale_install_skip_reason root` returns 0 and prints a reason when an initiative is active and `.claude/skills/.ravintio-manifest` is older than the newest pack skill. A suite that compares installed copies prints `SKIP: {reason}` instead of comparing.
