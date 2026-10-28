@@ -127,7 +127,7 @@ Setup installs only each skill's own folder. Skills read templates, standards, a
 
 For Codex, `setup.sh codex` and `setup.ps1 codex` install skills in `.agents/skills/`, write `AGENTS.md` from `templates/codex-boot.md`, and wire only `merge-guard` in `.codex/hooks.json`. The Codex docs confirm its `Bash` hook contract. They don't state the `apply_patch` input or the prompt hook context, so the other rules stay instructions in `AGENTS.md` (0000207 ADR-002). Setup prints the active and fallback hooks.
 
-Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from the template, then re-appends the contents of `ravintio-overrides/instructions/` between sentinel markers. Durable local customisation lives in the overrides directory, never in the boot file.
+Boot files are disposable build outputs. Every run regenerates `CLAUDE.md` from the template, then re-appends the contents of `ravintio-overrides/instructions/` between sentinel markers. Durable local customisation lives in the overrides directory, never in the boot file. An override with a `target:` field goes to that installed skill instead of the boot file (0000245 ADR-001). The hook rules live in `standards/hook-enforcement.md` (0000245 ADR-002).
 
 ---
 
