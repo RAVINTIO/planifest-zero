@@ -26,8 +26,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-28T22:16:17Z` |
-| End | `` |
-| Wall clock | `` |
+| End | `2026-10-28T22:20:30Z` |
+| Wall clock | `4` |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -39,3 +39,10 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 - Migrations 0004 and 0005 stay pending: their Applies when conditions are false in this repo.
 - Pre-flight: cut feat/0000252-chart-rules from initiative/0000238-backlog-clearance-two.
 - Decision applied (initiative chart): none of the Decisions rows cover this step. No fork arose.
+- Scope Lock (happy path): chart flags a widening entry, lists a skill confirmation, and fills the P1 skips table, and the human approves each [source: draft-accepted (initiative)]
+- Scope Lock (alternative path): the human declines a widening, or a confirmation has no command, so chart strikes the entry or plans a human stop [source: draft-accepted (initiative)]
+- Scope Lock (error path): an initiative with no `## P1 skips` section counts as an empty table, so a step that would skip P1 stops [source: draft-accepted (initiative)]
+- Scope Lock (cross-session continuity): a restarted step session reads the `## P1 skips` table from `initiative.md` and keeps no other state [source: draft-accepted (initiative)]
+- Scope Lock complete. All four scenario paths captured.
+- Version: 0.40.0 (minor bump from 0.39.1, initiative chart)
+- Design confirmed: draft-accepted (initiative) (2026-10-28T22:20:30Z)
