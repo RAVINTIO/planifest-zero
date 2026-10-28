@@ -13,6 +13,8 @@ ROOT_DIR="$(cd "$ZERO_DIR/.." && pwd)"
 SKILL_DIR="$ZERO_DIR/skills/ravintio-orchestrator"
 SKILL="$SKILL_DIR/SKILL.md"
 REFS="$SKILL_DIR/references"
+# 0000244 moved the initiative stage prefix block here.
+ROADMAP_STD="$ZERO_DIR/standards/roadmap-standards.md"
 # SKILL.md at the base commit 8b1e929 (36,275 bytes after the 0000189 rename), kept as a fixture so the
 # check does not depend on git history.
 BASE="$SCRIPT_DIR/fixtures/0000151-orchestrator-skill-base.md"
@@ -39,7 +41,14 @@ sed -e '/^   - If an initiative is `active` and `plan\/current\/` holds artifact
   -e '/^   - If an initiative is `active`, `plan\/current\/` is empty, and `position` is past/d' \
   -e '/^   - If an initiative is `active` and `plan\/current\/` is empty, start the step/d' \
   -e 's|^3\. \*\*Check the initiative, then scan `plan/current/`\.\*\* Check `plan/current-initiative/` first\.$|3. **Check the initiative, then scan `plan/current/`.** Check `plan/current-initiative/` first. The orchestrator never resumes an initiative.\n   - A step session has `RAVINTIO_INITIATIVE_STEP=1` or the prompt `Run initiative step {n}`. With `plan/current/` artifacts, resume that step through the rest of this list.\n   - A step session with `plan/current/` empty starts the step at `position` and opens with `I-C Run: Starting: {step}`.\n   - If an initiative is `active` and this is not a step session, load `ravintio-initiative` and stop. It owns I-A, I-B, and I-E.|' \
-  "$BASE_RENAMED.tmp3" > "$BASE_RENAMED"
+  "$BASE_RENAMED.tmp3" > "$BASE_RENAMED.tmp4"
+# 0000244 replaced the Pack Index template rows with one rule that names {artifact}.template.md.
+sed -e '/^| Discovery findings | `ravintio-zero\/templates\//d' -e '/^| A feature brief request |/d' \
+  -e '/^| The build log | `ravintio-zero\/templates\//d' -e '/^| `plan\/current\/design.md` | `ravintio-zero\/templates\//d' \
+  -e '/^| A backlog entry | `ravintio-zero\/templates\//d' -e '/^| An initiative draft or plan | `ravintio-zero\/templates\//d' \
+  -e '/^| A pause record |/d' -e '/^| A park record |/d' \
+  -e "/^Never assume you know a template's format\\./d" \
+  "$BASE_RENAMED.tmp4" > "$BASE_RENAMED"
 
 # Print every non-blank, non-heading line of $1 that no later file holds as a
 # whole line. Usage: missing_lines base file...
@@ -47,7 +56,7 @@ missing_lines() {
   local base="$1"; shift
   local all="$TMP/all.$$"
   cat "$@" > "$all"
-  grep -v '^[[:space:]]*$' "$base" | grep -v '^#' | while IFS= read -r line; do
+  grep -v '^[[:space:]]*$' "$base" | grep -v '^#' | grep -vx -- '---' | while IFS= read -r line; do
     grep -Fxq -- "$line" "$all" || printf '%s\n' "$line"
   done
 }
@@ -67,14 +76,18 @@ BOOT_FILE="$ROOT_DIR/CLAUDE.md"
 [ -f "$BOOT_FILE" ] || BOOT_FILE="$ZERO_DIR/templates/standard-boot.md"
 CLAUDE_BYTES=$(pack_claude_bytes "$BOOT_FILE")
 assert_equals "36275" "$(wc -c < "$BASE" | tr -d ' ')" "fixture holds the 36,275 byte baseline"
-assert_equals "yes" "$([ "$SKILL_BYTES" -le 27800 ] && echo yes || echo no)" "SKILL.md is 27,800 bytes or fewer ($SKILL_BYTES)"
+# 0000244 moved the task-bound sections to references/, so the SKILL.md cap fell from 27,800 to 9,000 bytes.
+SKILL_CAP=9000
+assert_equals "yes" "$([ "$SKILL_BYTES" -le "$SKILL_CAP" ] && echo yes || echo no)" "SKILL.md is $SKILL_CAP bytes or fewer ($SKILL_BYTES)"
 # Cap raised from 35,484 to 35,600 for the initiative rename (0000189).
 # Caps raised to 27,700 and 37,800 for the reporting rule and the Supervise prefix (0000200).
 # Cap raised to 27,800 for the initiative resume split (0000205).
 # 0000242 stopped counting the override block, so the combined cap covers pack content only. The pack-only sum
 # was 32,697 bytes on 2026-10-28, and the cap leaves 103 bytes of margin.
 # The combined cap also covers the Reply Conventions section that the boot template adds to CLAUDE.md.
-COMBINED_CAP=32800
+# 0000244 cut SKILL.md to 9,000 bytes or fewer, so the combined cap falls with it. The pack-only sum
+# was 14,785 bytes on 2026-10-28, and the cap leaves margin for the step that trims CLAUDE.md.
+COMBINED_CAP=15000
 assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le "$COMBINED_CAP" ] && echo yes || echo no)" "pack-only CLAUDE.md plus SKILL.md is $COMBINED_CAP bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
 
 echo "=== (a) overrides never change the size cap result ==="
@@ -100,7 +113,7 @@ echo "=== (a) no rule line was lost ==="
 REF_FILES=$(ls "$REFS"/orchestrator-*.md 2>/dev/null)
 assert_equals "yes" "$([ -n "$REF_FILES" ] && echo yes || echo no)" "reference files exist"
 # shellcheck disable=SC2086
-MISSING="$(missing_lines "$BASE_RENAMED" "$SKILL" $REF_FILES)"
+MISSING="$(missing_lines "$BASE_RENAMED" "$SKILL" $REF_FILES "$ROADMAP_STD")"
 assert_equals "" "$MISSING" "every base line is in SKILL.md or a reference file"
 
 echo "=== (a) mutation: removing one moved line makes the check fail ==="
@@ -112,7 +125,7 @@ mkdir -p "$TMP/mut"
 for f in $REF_FILES; do cp "$f" "$TMP/mut/"; done
 grep -vF -- "$MUT_LINE" "$MUT_FILE" > "$TMP/mut/orchestrator-scope-lock.md"
 # shellcheck disable=SC2046
-MUT_MISSING="$(missing_lines "$BASE_RENAMED" "$SKILL" $(ls "$TMP"/mut/orchestrator-*.md))"
+MUT_MISSING="$(missing_lines "$BASE_RENAMED" "$SKILL" $(ls "$TMP"/mut/orchestrator-*.md) "$ROADMAP_STD")"
 assert_contains "Confirmation is human-only" "$MUT_MISSING" "the check reports the removed line"
 
 echo "=== (b) inline sections keep their original text ==="
@@ -125,14 +138,25 @@ for h in '## Hard Limits' '## Resume Detection' '## Exception Stops' '## Phase I
   # 0000243 moved the Resume Detection checks into a reference file.
   HOLDERS=("$SKILL")
   [ "$h" = '## Resume Detection' ] && HOLDERS+=("$REFS/orchestrator-resume-detection.md")
-  assert_equals "" "$(missing_lines "$TMP/sec.base" "${HOLDERS[@]}")" "$h: every base line is still in SKILL.md${HOLDERS[1]:+ or its reference}"
+  # 0000244 moved Exception Stops and Phase Invocation into reference files.
+  [ "$h" = '## Exception Stops' ] && HOLDERS=("$REFS/orchestrator-exception-stops.md")
+  [ "$h" = '## Phase Invocation (P1 to P4)' ] && HOLDERS=("$REFS/orchestrator-phase-invocation.md")
+  assert_equals "" "$(missing_lines "$TMP/sec.base" "${HOLDERS[@]}")" "$h: every base line is still in ${HOLDERS[*]##*/}"
 done
-for h in '### Discovery Start Actions'; do
-  awk -v h="$h" '$0==h {on=1; next} on && /^### / {exit} on {print}' "$BASE_RENAMED" > "$TMP/sec.base"
-  assert_equals "" "$(missing_lines "$TMP/sec.base" "$SKILL")" "$h: every base line is still in SKILL.md"
+# 0000244 moved the P0 subsections into reference files: Discovery Start Actions, Discovery Gate Checklist, and Design Confirmation.
+for pair in 'How You Coach|orchestrator-p0-coaching.md' 'Discovery Start Actions|orchestrator-p0-start-actions.md' 'Discovery Gate Checklist|orchestrator-p0-gate.md' 'Design Confirmation (the discovery gate)|orchestrator-p0-gate.md'; do
+  h="### ${pair%%|*}"; f="$REFS/${pair##*|}"
+  awk -v h="$h" '$0==h {on=1; next} on && /^###? / {exit} on {print}' "$BASE_RENAMED" > "$TMP/sec.base"
+  assert_equals "" "$(missing_lines "$TMP/sec.base" "$f")" "$h: every base line is in ${f##*/}"
+  assert_equals "1" "$(grep -cxF -- "$h" "$f")" "$h is a heading in ${f##*/}"
+  assert_equals "0" "$(grep -cxF -- "$h" "$SKILL")" "$h is no longer a heading in SKILL.md"
 done
-for h in '## Hard Limits' '## Resume Detection' '### Discovery Start Actions' '## Exception Stops' '## Phase Invocation (P1 to P4)' '## Subagent Dispatch' '## Pack Index (JIT Loading)'; do
+for h in '## Hard Limits' '## Resume Detection' '## Phases and Response Prefixes' '## Pack Index (JIT Loading)' '## Subagent Dispatch'; do
   assert_equals "1" "$(grep -cxF -- "$h" "$SKILL")" "SKILL.md keeps the heading $h"
+done
+for h in '## Exception Stops' '## Phase Invocation (P1 to P4)'; do
+  assert_equals "0" "$(grep -cxF -- "$h" "$SKILL")" "$h is no longer a heading in SKILL.md"
+  assert_equals "1" "$(cat "$REFS"/orchestrator-*.md | grep -cxF -- "$h")" "$h is a heading in exactly one reference file"
 done
 
 echo "=== (b) Pack Index lists every reference file ==="
@@ -150,6 +174,14 @@ assert_contains "Before you act on" "$INDEX" "Pack Index states the read-before-
 for h in 'Adoption Modes' 'Retrofit Scan' 'Pause Command' 'Park Command' 'Phase Skip Protocol' 'Standalone and Subagent Skills' 'Capability Skills' 'Mid-Pipeline Requirement Changes'; do
   assert_equals "yes" "$(grep -qE "^#+ $h" $REF_FILES && echo yes || echo no)" "$h now lives in a reference file"
   assert_equals "0" "$(grep -cE "^#+ $h" "$SKILL")" "$h is no longer a heading in SKILL.md"
+done
+
+echo "=== (b) 0000244: template rule and initiative prefixes ==="
+assert_contains 'ravintio-zero/templates/{artifact}.template.md' "$INDEX" "Pack Index holds the template rule"
+assert_equals "0" "$(printf '%s\n' "$INDEX" | grep -c '^| .*\.template\.md` |$')" "Pack Index has no per-template row"
+assert_contains 'roadmap-standards.md' "$(grep -F 'Initiative stages use the prefixes I-A to I-E' "$SKILL")" "SKILL.md points at the roadmap standards for the I-A to I-E prefixes"
+for p in 'I-A Chart:' 'I-B Activate:' 'I-C Run:' 'I-D Advance:' 'I-E Delivery:'; do
+  assert_equals "yes" "$(grep -qF "| \`$p\` |" "$ROADMAP_STD" && echo yes || echo no)" "roadmap-standards.md lists $p"
 done
 
 echo "=== (c) setup installs the reference files ==="

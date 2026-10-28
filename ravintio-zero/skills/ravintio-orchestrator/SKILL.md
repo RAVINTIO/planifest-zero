@@ -65,19 +65,11 @@ The session start hook injects resume findings. If none are in context, run `nod
 
 ## Pack Index (JIT Loading)
 
-Never assume you know a template's format. Read the relevant file immediately before generating that output.
+Never assume you know a template's format. Before you write an artifact, read `ravintio-zero/templates/{artifact}.template.md` immediately before generating it. The artifacts are `discovery`, `feature-brief`, `build-log`, `design`, `backlog-entry`, `initiative`, `pause`, and `park`.
 
 | Before you write… | Read first |
 |-------------------|------------|
-| Discovery findings | `ravintio-zero/templates/discovery.template.md` |
-| A feature brief request | `ravintio-zero/templates/feature-brief.template.md` |
-| The build log | `ravintio-zero/templates/build-log.template.md` |
-| `plan/current/design.md` | `ravintio-zero/templates/design.template.md` |
-| A backlog entry | `ravintio-zero/templates/backlog-entry.template.md` |
-| An initiative draft or plan | `ravintio-zero/templates/initiative.template.md` |
 | Any roadmap work (chart, activate, run, advance, delivery) | `ravintio-zero/standards/roadmap-standards.md` |
-| A pause record | `ravintio-zero/templates/pause.template.md` |
-| A park record | `ravintio-zero/templates/park.template.md` |
 | Any loop (before entering it) | Load the `ravintio-loop-runner` skill |
 
 Read these reference files before you act on their topic. Each holds rules moved from this file, so none is optional.
@@ -93,6 +85,11 @@ Read these reference files before you act on their topic. Each holds rules moved
 | A requirement change during P1 to P3 | `references/orchestrator-mid-pipeline-changes.md` |
 | The run speed | `references/orchestrator-run-speed.md` |
 | Resume Detection, on any finding | `references/orchestrator-resume-detection.md` |
+| Before the first coaching question in P0 | `references/orchestrator-p0-coaching.md` |
+| Starting a fresh P0, before anything else in it | `references/orchestrator-p0-start-actions.md` |
+| Presenting the design for confirmation | `references/orchestrator-p0-gate.md` |
+| Invoking P1, P2, P3, or P4, or stating context size at a gate | `references/orchestrator-phase-invocation.md` |
+| An exception stop, or writing a `Blocked:` line | `references/orchestrator-exception-stops.md` |
 
 ---
 
