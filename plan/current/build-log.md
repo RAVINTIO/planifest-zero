@@ -24,8 +24,8 @@ summary: "Working record of the pipeline run, maintained by the orchestrator."
 | Field | Value |
 |-------|-------|
 | Start | `2026-10-29T00:06:50Z` |
-| End | `2026-10-29T00:08:30Z` |
-| Wall clock | 2 |
+| End | `2026-10-29T00:07:16Z` |
+| Wall clock | 1 |
 | Model tier | primary |
 | Skills loaded | ravintio-orchestrator |
 | Agents spawned | 0 |
@@ -43,9 +43,9 @@ Decision applied (initiative chart): Confirmation: `ravintio-refresh-setup` Step
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-29T00:08:30Z` |
-| End | `2026-10-29T00:10:00Z` |
-| Wall clock | 2 |
+| Start | `2026-10-29T00:07:16Z` |
+| End | `2026-10-29T00:07:48Z` |
+| Wall clock | 1 |
 | Model tier | primary |
 | Skills loaded | ravintio-refresh-setup |
 | Agents spawned | 0 |
@@ -57,9 +57,9 @@ Decision applied (initiative chart): Confirmation: `ravintio-refresh-setup` Step
 
 | Field | Value |
 |-------|-------|
-| Start | `2026-10-29T00:10:00Z` |
-| End | `2026-10-29T00:16:00Z` |
-| Wall clock | 6 |
+| Start | `2026-10-29T00:07:48Z` |
+| End | `2026-10-29T00:57:41Z` |
+| Wall clock | 50 |
 | Model tier | primary |
 | Skills loaded | ravintio-validate-and-accept |
 | Agents spawned | 0 |
