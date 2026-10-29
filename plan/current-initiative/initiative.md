@@ -28,8 +28,8 @@ Chart can pull any of these in if the human approves.
 - **Shared files.** Steps 4, 6, 7, and 8 all touch `test-0000151-req-011-orchestrator-references-split.sh`. They run in that order, so each step builds on the last.
 - **Driver changes mid-run.** Steps 2, 3, 12, and 13 change `initiative-run.mjs` or `initiative-watch.mjs`. The running driver loaded its code at activation, so it keeps the old code. Step 12 holds entry 0000227, which covers this case.
 - **Visibility first.** The human moved steps 2 and 3 forward at chart on 2026-10-27, so steps 4 to 15 run with step activity in the human's chat. The driver loads its code once at launch, so step 3 ends with a planned stop. See the step 3 row in `## Decisions`.
-- **Step confirmations.** Step 15 runs `ravintio-refresh-setup`, and override `custom-006` pre-approves its exact command. No other step loads a skill that asks the human for a confirmation. The human approved this record at chart on 2026-10-28.
-- **P1 skips.** Only step 15 may skip P1, because it is a chore. The human approved this record at chart on 2026-10-28.
+- **Step confirmations.** Step 15 runs `ravintio-refresh-setup`, and override `custom-006` pre-approves its exact command. No other step loads a skill that asks the human for a confirmation. The human approved this record at chart on 2026-10-28. On 2026-10-29 the human approved recording it as the step 15 `Confirmation:` row in `## Decisions`.
+- **P1 skips.** Only step 15 may skip P1, because it is a chore. The human approved this record at chart on 2026-10-28. On 2026-10-29 the human approved recording it in the `## P1 skips` table.
 - **Security guards.** No step may widen `merge-guard`, `gate-write`, or another fail-closed hook. Entry 0000228 changes the ship skill's merge command only. It must not change what `merge-guard` allows.
 - **Clarity check.** Confirm that every pulled-in entry has a **Wanted outcome** section before approval.
 
@@ -69,6 +69,7 @@ Chart fills this table.
 | 3 | The running driver keeps its launch code, so steps 4 to 15 would miss the step 2 and step 3 changes | At I-D Advance, in the same commit that moves the position to 4, set the initiative status to `blocked` with the reason "planned driver restart". The driver stops when it reads that status. The human sets the status back to `active` and restarts the driver and the watcher. | none |
 | 5 | Where the detection script runs: inside `auto-trigger-orchestrator.mjs`, or as its own hook | Inside `auto-trigger-orchestrator.mjs`, on the prompt where it injects the load instruction | none |
 | 7 | Whether override instructions can target one pack skill | Yes. An override names its target skill in a frontmatter field, such as `target: ravintio-ship`. Setup appends it to that installed skill and leaves it out of `CLAUDE.md`. An override with no target still goes to `CLAUDE.md`. May also change `test-0000151-req-014` to ignore appended override blocks. | none |
+| 15 | Confirmation: `ravintio-refresh-setup` Step 4 | Run the exact command `ravintio-zero/setup.sh claude-code --strict-orchestrator`, as override `custom-006` approves. If the command differs in any way, the step stops. | none |
 
 ## Baselines
 
@@ -94,6 +95,26 @@ Chart fills this table from each entry's **Wanted outcome**.
 | 15 | `.claude/skills/` matches `ravintio-zero/skills/`, and `CLAUDE.md` is still 6,000 bytes or fewer | Deterministic | local |
 
 All pack skills share a 1,720-line cap, with 35 lines of headroom on 2026-10-28. Steps 2 and 5 add skill text before step 6 moves orchestrator text into reference files. The size cap row in `## Decisions` applies to this cap.
+
+## P1 skips
+
+| Step | Skip P1 | Reason |
+|------|---------|--------|
+| 1 | no | The step changes code, so P1 runs |
+| 2 | no | The step changes code, so P1 runs |
+| 3 | no | The step changes code, so P1 runs |
+| 4 | no | The step changes code, so P1 runs |
+| 5 | no | The step changes code, so P1 runs |
+| 6 | no | The step changes code, so P1 runs |
+| 7 | no | The step changes code, so P1 runs |
+| 8 | no | The step changes code, so P1 runs |
+| 9 | no | The step changes code, so P1 runs |
+| 10 | no | The step changes code, so P1 runs |
+| 11 | no | The step changes code, so P1 runs |
+| 12 | no | The step changes code, so P1 runs |
+| 13 | no | The step changes code, so P1 runs |
+| 14 | no | The step changes code, so P1 runs |
+| 15 | yes | A chore with exact tasks in `## Step 15 chore` |
 
 ## Steps
 
