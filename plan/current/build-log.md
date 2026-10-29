@@ -66,3 +66,33 @@ Decision applied (initiative chart): Confirmation: `ravintio-refresh-setup` Step
 | MCP calls | 0 |
 | Parallel task batches | 0 |
 | Notes | The clean clone passed 224 and 19. The working tree failed 3 suites for two causes outside this step. Entry 0000267 filed for the stale `CLAUDE.md` check. |
+
+### P4: Ship
+
+| Field | Value |
+|-------|-------|
+| Start | `2026-10-29T00:57:41Z` |
+| End | `2026-10-29T00:58:19Z` |
+| Wall clock | 1 |
+| Model tier | primary |
+| Skills loaded | ravintio-ship, ravintio-retrospective |
+| Agents spawned | 0 |
+| MCP calls | 0 |
+| Parallel task batches | 0 |
+| Notes | Version 0.40.1. The PR goes to the initiative branch. |
+
+---
+
+## Summary (filled at ship, P4)
+
+| Metric | Value |
+|--------|-------|
+| Total phases completed | 4 |
+| Total wall clock | 51 |
+| Total agents spawned | 0 |
+| Total MCP calls | 0 |
+| Phases using parallelism | 0 |
+| Primary tier agent calls | 0 |
+| Cheaper tier agent calls | 0 |
+| Self-corrections | 0 |
+| Phases skipped | P1 |
