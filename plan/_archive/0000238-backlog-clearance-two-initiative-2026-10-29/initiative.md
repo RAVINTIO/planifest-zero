@@ -1,13 +1,13 @@
 ---
 title: "Initiative: 0000238 - backlog clearance two"
 summary: "Clears 22 open backlog entries in 14 feature steps, then a chore step refreshes the installed setup."
-status: "active"
+status: "delivered"
 ---
 # Initiative: 0000238 - backlog clearance two
 
 **Goal:** Clear every open backlog entry filed during and after initiative 0000195 that needs no human-run check or paid service. Each step ships one feature release. A final chore step refreshes the installed setup so `.claude/skills/` matches the pack.
 **Branch:** initiative/0000238-backlog-clearance-two
-**Status:** active
+**Status:** delivered
 **Position:** 16
 **Speed:** standard
 
