@@ -11,7 +11,7 @@ status: "open"
 
 ## Summary
 
-The initiative branch should show one squash commit per feature, so the merge commit to `main` reads as a list of features. Of its 38 first-parent commits, 15 are step squashes and 23 are direct commits with other titles. The merge commit `79acc85` carries all 38 to `main`, so the feature list is hard to read.
+The initiative branch should show one squash commit per feature, so the merge commit to `main` reads as a list of features. Of its 38 first-parent commits, 15 are step squashes and 23 are direct commits with other titles. The merge commit `79acc85` carried all 38 to `main`, so the feature list was hard to read. Initiative 0000195 had the same shape. Both histories were rebuilt on 2026-10-31.
 
 ## Timeline
 
@@ -26,6 +26,7 @@ The initiative branch should show one squash commit per feature, so the merge co
 | 2026-10-29 00:05 to 01:22 | The coordinator commits the plan fix, seven backlog entries, an id reservation, the archive, and the retrospective directly | `8d0703d` to `04b9976` |
 | 2026-10-29 | PR #72 to `main` lists all 38 commits | PR #72 |
 | 2026-10-31 | PR #74 replaces PR #72 and lands as merge commit `79acc85` | `git log -1 79acc85` |
+| 2026-10-31 | The human resets `main` to `359b154`. Rebuilt histories for 0000195 and 0000238 land as merge commits `bd21c03` and `2eb10b9`, and all 30 step tags move. | PR #75, PR #76 |
 
 First missed chance to catch it: `e7dd1a2`, the first direct commit. No check requires each first-parent commit on `initiative/*` to come from a titled PR.
 
@@ -45,5 +46,7 @@ First missed chance to catch it: `e7dd1a2`, the first direct commit. No check re
 |------|--------|-------|----------|-------------|----------|
 | preventive | Route all coordinator and post-squash work through a titled PR into `initiative/*`. Never commit directly on the initiative branch. | roadmap standards, initiative skill, ship skill | `ravintio-zero/standards/roadmap-standards.md`, `ravintio-zero/skills/ravintio-initiative/SKILL.md` | skill text tests | backlog entry 0000274 |
 | detective | Fail a PR from `initiative/*` to `main` when a first-parent commit isn't a titled squash, and run the same check at I-E Delivery | CI, initiative skill | `.github/workflows/`, `ravintio-zero/scripts/` | check tests on a sample history | backlog entry 0000275 |
+| preventive | Allow only merge commits for PRs into `main`, and flag a single-parent commit from an `initiative/*` PR | repository settings, CI | GitHub ruleset on `main`, `.github/workflows/` | CI check tests | backlog entry 0000278 |
+| corrective | Rebuild both initiative histories as one titled commit per feature, land them as merge commits, and move the step tags. Done on 2026-10-31. | human, coordinator | `main` | final trees match the old tips `88ef2a7` and `b9019b9`, and `main` reaches every step tag | PR #75, PR #76 |
 
-Initiative 0000238 can't be corrected now without rewriting `main` again.
+The rebuilt commits lost GitHub's **Verified** badge. PRs #39 to #54 and #56 to #71 link to commits that are no longer on `main`.
