@@ -48,9 +48,9 @@ The human added the ruleset `Protect Main Branch` (id `26272513`) on 2026-10-31.
 | Require conversation resolution | on |
 | Required status checks | `bash-suites`, `windows-powershell (powershell)`, `windows-powershell (pwsh)`, `validate-branch`, `self-description-check` |
 
-The agent pushes with the human's account. The bypass therefore covers PRs only, so the agent can't push to `main` directly. If the human needs a force push to `main`, they set the ruleset to **Disabled**, push, then set it back to **Active**.
+The bypass covers PRs only, so no account can push to `main` directly. If the human needs a force push to `main`, they set the ruleset to **Disabled**, push, then set it back to **Active**.
 
-Required approvals is `1`. GitHub doesn't let the author approve their own PR, so each PR into `main` needs the admin bypass to land. That bypass also skips the required status checks. Setting approvals to `0` keeps the checks binding.
+Required approvals stays at `1` by the human's decision. The agent moves to its own GitHub account with fewer permissions. The human then approves the agent's PRs as a second person, and the status checks stay binding. A PR the human authors still needs the admin bypass, which also skips the checks.
 
 ## Suggested Action
 
@@ -65,7 +65,7 @@ Security settings:
 
 Repo settings:
 
-- Set required approvals in the `main` ruleset to `0`.
+- Create a GitHub account for the agent with the **Write** role on this repo. Point the agent's `gh` and `git` credentials at it.
 - After CodeQL runs, add **Require code scanning results** to the ruleset.
 - Turn on **Automatically delete head branches**.
 - Add topics, and consider turning on Discussions.
