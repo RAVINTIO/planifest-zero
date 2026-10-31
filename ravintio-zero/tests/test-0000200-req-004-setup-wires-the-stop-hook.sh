@@ -60,8 +60,8 @@ assert_contains "check-reply-prefix" "$PS1" "req-004 AC-3: setup.ps1 wires the h
 assert_contains "'Stop'" "$PS1" "req-004 AC-3: setup.ps1 handles the Stop event"
 assert_contains "check-reply-prefix" "$(cat "$ZERO_DIR/component.yml")" \
   "req-004 AC-3: component.yml names the hook"
-assert_contains "check-reply-prefix" "$(cat "$ZERO_DIR/templates/standard-boot.md")" \
-  "req-004 AC-3: the boot template lists the hook"
+assert_contains "check-reply-prefix" "$(cat "$ZERO_DIR/standards/hook-enforcement.md")" \
+  "req-004 AC-3: the hook reference lists the hook"
 assert_contains "check-reply-prefix" "$(cat "$ZERO_DIR/pipeline-reference.md")" \
   "req-004 AC-3: the pipeline reference names the hook"
 assert_contains "check-reply-prefix" "$(cat "$ZERO_DIR/project-operations.md")" \

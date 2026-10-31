@@ -75,6 +75,9 @@ Per-criterion outcomes:
 - `verified`: observed behaviour matches the criterion
 - `failed`: behaviour contradicts the criterion. This feeds the self-correct loop even with green tests.
 - `not-verifiable`: recorded with the reason and surfaced at the gate
+- `unverified (docs only)`: the claim rests on documentation alone and no run observed it. It never counts as `verified`.
+
+**Missing programs.** Run `command -v {program}` before a report says a program is missing. Then look in the common install folders, such as `/opt/homebrew/bin`, `/usr/local/bin`, and `~/.local/bin`. If a search finds the program, run it. A report that names a program as missing lists each command it ran.
 
 Write `plan/current/verification-report.md`: what was started and how, then per criterion the method, outcome, and observation evidence.
 
@@ -103,6 +106,7 @@ Read `plan/.run-mode`. The evidence is the same in both modes:
 1. Checks run and their results, with the self-correction count
 2. Security findings, led by critical and high
 3. Execution evidence: what was run, what was observed, any `not-verifiable` criteria
+4. Search evidence: for any program reported missing, the `PATH` check commands with a found or not-found result, and each unverified claim by name
 
 In `gated`, this gate stops for the human. Present the evidence. The human accepts, requests changes, or rejects.
 

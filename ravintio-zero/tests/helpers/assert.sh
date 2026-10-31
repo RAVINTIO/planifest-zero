@@ -107,6 +107,22 @@ assert_contains() {
   fi
 }
 
+assert_not_contains() {
+  local needle="$1"
+  local haystack="$2"
+  local message="${3:-not-contains assertion}"
+
+  if [[ "$haystack" != *"$needle"* ]]; then
+    _pass_line "$message"
+    ((PASS++)) || true
+  else
+    _fail_line "$message"
+    echo "        needle:   $needle"
+    echo "        haystack: $haystack"
+    ((FAIL++)) || true
+  fi
+}
+
 assert_exit_zero() {
   local actual_exit="$1"
   local message="${2:-exit code assertion}"
@@ -131,12 +147,46 @@ orch_combined() {
   local dir="$1" out tmp
   out="${TMPDIR:-/tmp}/ravintio-orch-combined-$(id -u).md"
   tmp="$(mktemp "${TMPDIR:-/tmp}/orch-combined.XXXXXX")"
-  cat "$dir/SKILL.md" "$dir"/references/orchestrator-*.md > "$tmp" 2>/dev/null
+  # 0000244 moved the initiative stage prefix block to the roadmap standards, so they join the text.
+  cat "$dir/SKILL.md" "$dir"/references/orchestrator-*.md "$dir/../../standards/roadmap-standards.md" > "$tmp" 2>/dev/null
   mv -f "$tmp" "$out"
   echo "$out"
 }
 
+# 0000239 req-001: a call to an undefined assert_* function counts as a failure.
+# macOS ships Bash 3.2, which has no command_not_found_handle, so this scans the
+# running suite for lines that start with an assert_* word and checks that each
+# name is a defined function.
+_count_undefined_asserts() {
+  local suite="${BASH_SOURCE[${#BASH_SOURCE[@]}-1]}" name names count=0
+  [ -f "$suite" ] || { echo 0; return 0; }
+  names="$(sed -n 's/^[[:space:]]*\(assert_[A-Za-z0-9_]*\)\([[:space:]].*\)\{0,1\}$/\1/p' "$suite" | sort -u)"
+  for name in $names; do
+    if ! declare -F "$name" >/dev/null 2>&1; then
+      echo "  FAIL: undefined assert function: $name" >&2
+      count=$((count + 1))
+    fi
+  done
+  echo "$count"
+}
+
+# 0000239 req-002: .claude/skills/ changes only when setup runs, so an active
+# initiative leaves it behind the pack in every step. Prints a reason and
+# returns 0 when the installed-copies check should skip. Prints nothing and
+# returns 1 otherwise.
+# Usage: reason="$(stale_install_skip_reason "$ROOT_DIR")" && echo "SKIP: $reason"
+stale_install_skip_reason() {
+  local root="$1"
+  local init="$root/plan/current-initiative/initiative.md"
+  local manifest="$root/.claude/skills/.ravintio-manifest"
+  [ -f "$init" ] && [ -f "$manifest" ] || return 1
+  grep -qE '^status: "?active"?[[:space:]]*$' "$init" || return 1
+  [ -n "$(find "$root/ravintio-zero/skills" -type f -newer "$manifest" -print -quit 2>/dev/null)" ] || return 1
+  echo "an initiative is active and the install manifest is older than the newest pack skill"
+}
+
 print_summary() {
+  FAIL=$((FAIL + $(_count_undefined_asserts)))
   echo ""
   if [ "$FAIL" -eq 0 ]; then
     echo "Results: $PASS passed, $FAIL failed ✓"

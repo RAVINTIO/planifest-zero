@@ -18,7 +18,7 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 TEMPLATE="$ZERO_DIR/templates/backlog-entry.template.md"
-ORCHESTRATOR="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCHESTRATOR="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 DISPATCH="$ZERO_DIR/standards/agent-dispatch-standards.md"
 
 grep_has() { grep -q "$1" "$2" 2>/dev/null && echo "yes" || echo "no"; }

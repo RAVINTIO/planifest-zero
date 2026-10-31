@@ -420,9 +420,24 @@ ravintio-overrides/
 
 Files are sorted alphabetically and appended between HTML comment markers.
 
+Keep in `instructions/` only the rules that every session needs. The boot file loads whole in each session. A rule that serves one task belongs in a skill.
+
+To send an override to one pack skill, add a `target:` field to its frontmatter:
+
+```
+---
+target: ravintio-ship
+---
+### Ship: push and raise the PR, never merge
+```
+
+Setup removes the frontmatter and appends the text to the installed `ravintio-ship` skill between the same markers. The boot file does not hold it. The value must be lowercase letters, digits, and hyphens, and must name an installed skill. If it does not, setup warns and appends the override to the boot file, so no rule is lost. An override with no `target:` goes to the boot file as before.
+
+The hook rules live in `ravintio-zero/standards/hook-enforcement.md`. The boot files point to it, and each blocking hook names it in its message.
+
 ### capability-skills/
 
-Permanent agent skills for this project. Each skill is a directory containing a `SKILL.md` with standard frontmatter. Setup copies them into `.claude/skills/` alongside the built-in RAVINTIO skills:
+Permanent agent skills for this project. Each skill is a directory containing a `SKILL.md` with standard frontmatter. A task rule that runs on demand fits here, such as a `gutd` skill that syncs `main`. Setup copies them into `.claude/skills/` alongside the built-in RAVINTIO skills:
 
 ```
 ravintio-overrides/

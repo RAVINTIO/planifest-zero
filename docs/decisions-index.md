@@ -3,7 +3,7 @@
 > Change record. Index of all ADRs across all features. Updated after every pipeline run.
 > Do not archive this file. Update it in place.
 
-Last updated: 0000200-reply-conventions
+Last updated: 0000241-watcher-false-events
 
 ---
 
@@ -291,3 +291,46 @@ Rows for features before 0000160 use the product name and paths of their time. 0
 | 0000160 ADR-001 (version decision only) | 0000164 ADR-005 | The rename release is 0.12.0, not 1.0.0. The rename map stays in force. |
 | 0000160 ADR-002 (removal point only) | 0000164 ADR-005 | The legacy fallbacks go at 1.0.0, not 2.0.0. |
 | 0000033 ADR-002 | 0000164 ADR-003 | Setup no longer removes legacy telemetry wiring. A pre-0000033 consumer removes it by hand. |
+
+### Feature 0000239: test-suite-reliability
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Scan the suite for undefined asserts | accepted | `print_summary` scans the running suite for lines that start with an `assert_*` word and fails each name that is not a function. macOS Bash 3.2 has no not-found handler. |
+
+### Feature 0000240: stream-step-session-activity
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Read the stream in the watcher | accepted | The driver only switches the output format. The watcher reads the step log by byte offset and prints one activity line per event, so one monitor carries every line. |
+
+### Feature 0000241: watcher-false-events
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Track commits by ancestry and stale by key | accepted | The watcher lists new commits with `git log {last-seen}..HEAD` when the last-seen commit is an ancestor of `HEAD`. Otherwise it prints one branch-change line. A stale state prints once. |
+
+### Feature 0000245: boot-rules-into-skills
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | Targeted overrides append to the named skill | accepted | An override with `target: {skill}` is appended to that installed skill between markers. A bad target falls back to the boot file. |
+| ADR-002 | Hook Enforcement lives in a reference file | accepted | The hook list moves to `standards/hook-enforcement.md`. The boot files point to it and each blocking hook message names it. |
+
+### Feature 0000246: plan-checks-count-and-cap-tests
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | The plan skill scans tests by grep | accepted | The plan skill greps `ravintio-zero/tests/` for tests that hold a skill count, a skill-text budget, a size cap or a backlog entry id. The execution plan lists each match under `## Test impact`. |
+
+### Feature 0000247: git-state-hygiene
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | reserve-id commits the counter by path | accepted | `reserve-id.mjs --commit` runs `git commit -m {subject} -- {counter}`, so the commit holds the counter file alone. The initiative, retrospective, and postmortem skills pass the flag. |
+
+### Feature 0000248: ship-merge-and-wall-clocks
+
+| ADR | Title | Status | Summary |
+|-----|-------|--------|---------|
+| ADR-001 | the build log check is its own script | accepted | `build-log-check.mjs` checks the build log at ship Step 3, before Archive. `consistency-check.mjs` runs at P1, before the phase blocks exist, so it stays apart. |

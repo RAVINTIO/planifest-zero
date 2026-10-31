@@ -20,24 +20,9 @@ This project uses RAVINTIO Zero, a confirmed-design pipeline. These rules are no
 
 ## Hook Enforcement
 
-Codex runs fewer RAVINTIO hooks than Claude Code. Setup wires the hook below. You enforce every other rule yourself.
+Codex runs fewer RAVINTIO hooks than Claude Code. You enforce the other rules yourself. Read `ravintio-zero/standards/hook-enforcement.md` for the active and fallback hooks.
 
-Active hooks, wired in `.codex/hooks.json`:
-
-- **merge-guard** (PreToolUse: Bash): Blocks any pull request merge command unless it squash-merges your own feature PR into an `initiative/*` base. Merging into `main` is human-only.
-
-Fallback hooks, which Codex does not run for RAVINTIO. Follow each rule as an instruction:
-
-- **gate-write**: Before you write any file, confirm that `plan/current/design.md` exists and that the path belongs to a declared component. `plan/current/` also needs `plan/.orchestrator-active`. `plan/`, `docs/`, and always-permitted basenames pass. Never write application code without a confirmed design.
-- **ratchet-check**: While a loop is active (a `plan/current/loop-state-*.md` with `status: active`), never remove acceptance-criteria or in-scope lines from `plan/current/` artifacts. Never write `plan/current/.ratchet-approve`.
-- **em-dash-guard**: Write no em dash (U+2014) in RAVINTIO prose paths.
-- **auto-trigger-orchestrator**: At the start of every session in a RAVINTIO project (`ravintio-zero/` present and `plan/.orchestrator-active` absent), load the `ravintio-orchestrator` skill before you process the first prompt.
-- **check-orchestrator-presence**: In strict mode (`plan/.orchestrator-strict` present), load the orchestrator and write your session ID to `plan/.orchestrator-ack` before you act.
-- **check-design**: At the start of each prompt, read the active component scope in `plan/current/design.md`.
-- **check-reply-prefix**: Begin every reply in an active run with a valid prefix, as the next section describes.
-- **commit-msg** (git hook): Blocks commits that break `commit-standards.md`. Exit 1 on violation. Use `git commit --no-verify` to bypass intentionally.
-
-Project hooks run only after a person trusts them. Run `/hooks` in Codex to review and trust the RAVINTIO hook. Until a person trusts the hook, nothing blocks a merge, including in `codex exec`. Never run a pull request merge command against `main` yourself.
+Project hooks run only after a person trusts them. Run `/hooks` in Codex to trust the RAVINTIO hook. Never run a pull request merge command against `main` yourself.
 
 ## Reply Conventions
 

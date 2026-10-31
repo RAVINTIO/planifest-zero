@@ -13,7 +13,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-ORCHESTRATOR="$SCRIPT_DIR/../skills/ravintio-orchestrator/SKILL.md"
+ORCHESTRATOR="$(orch_combined "$SCRIPT_DIR/../skills/ravintio-orchestrator")"
 SHIP="$SCRIPT_DIR/../skills/ravintio-ship/SKILL.md"
 
 for f in "$ORCHESTRATOR" "$SHIP"; do
@@ -24,7 +24,7 @@ for f in "$ORCHESTRATOR" "$SHIP"; do
   fi
 done
 
-ORCH_CONTENT=$(cat "$ORCHESTRATOR")
+ORCH_CONTENT=$(cat "$ORCHESTRATOR" "$(dirname "$ORCHESTRATOR")/references/orchestrator-resume-detection.md")
 SHIP_CONTENT=$(cat "$SHIP")
 
 echo ""

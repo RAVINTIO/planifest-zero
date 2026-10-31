@@ -18,6 +18,10 @@
  * and the contents of plan/current/ play no part. The strict-mode hook
  * (check-orchestrator-presence.mjs) applies the same rule.
  *
+ * Resume findings: both instructions end with the lines that
+ * ravintio-zero/scripts/resume-detect.mjs prints (0000243). A run that fails or
+ * passes 2 seconds adds "resume detection did not run" instead.
+ *
  * Environment: RAVINTIO_INITIATIVE_STEP=1 marks a step session started by the
  * initiative driver (`claude -p "Run initiative step N"`). A step session looks
  * the same as a human session, so the driver sets this variable. When it is
@@ -30,6 +34,7 @@
  * Never exits 2 — this hook does not block user prompts.
  */
 
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -44,6 +49,27 @@ function initiativeActive(cwd) {
       /^\s*\*\*Status:\*\*\s*active\s*$/im.test(text);
   } catch {
     return false;
+  }
+}
+
+// Resume findings: fixed lines from resume-detect.mjs, run with a 2 second timeout.
+// A missing script, a non-zero exit, or a timeout gives the failure line, so a
+// failed run never reads as "no resume signals". The script prints no repo text.
+function resumeFindings(cwd) {
+  const failed = "Resume findings: resume detection did not run\n";
+  try {
+    const script = join(cwd, "ravintio-zero", "scripts", "resume-detect.mjs");
+    if (!existsSync(script)) return failed;
+    const run = spawnSync(process.execPath, [script, cwd], {
+      encoding: "utf-8",
+      timeout: 2000,
+      env: process.env,
+    });
+    if (run.error || run.status !== 0 || !run.stdout.trim()) return failed;
+    const lines = run.stdout.trim().split("\n").map((l) => `- ${l}`).join("\n");
+    return `Resume findings (fixed text from resume-detect.mjs, act on them in order):\n${lines}\n`;
+  } catch {
+    return failed;
   }
 }
 
@@ -68,7 +94,8 @@ try {
       "SYSTEM INSTRUCTION: This is a RAVINTIO project (ravintio-zero/ detected) " +
       "with an active initiative (plan/current-initiative/initiative.md). " +
       "Load the ravintio-initiative skill now, before responding to the user's prompt. " +
-      "Begin with resume detection as described in the skill.\n"
+      "Begin with resume detection as described in the skill.\n" +
+      resumeFindings(cwd)
     );
     process.exit(0);
   }
@@ -79,7 +106,8 @@ try {
     "SYSTEM INSTRUCTION: This is a RAVINTIO project (ravintio-zero/ detected) " +
     "and the orchestrator has not been loaded yet for this session. " +
     "Load the ravintio-orchestrator skill now, before responding to the user's prompt. " +
-    "Begin with resume detection as described in the skill.\n"
+    "Begin with resume detection as described in the skill.\n" +
+    resumeFindings(cwd)
   );
 
   process.exit(0);

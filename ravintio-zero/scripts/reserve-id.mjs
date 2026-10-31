@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 // Reserves a block of ids from a counter file under an exclusive lock (0000199).
 //
-// Usage: node reserve-id.mjs [qty] [--file path] [--init]
+// Usage: node reserve-id.mjs [qty] [--file path] [--init] [--commit]
 //   qty     how many ids to reserve, 1 to 1000. Default 1.
 //   --file  the counter file. Default plan/backlog/.next-id under the current folder.
 //   --init  if the counter is missing, create it from the highest id in the
 //           backlog, archive, changelog, and roadmap folders beside it, plus one.
+//   --commit  after the reservation, commit the counter file alone (0000247).
 //
 // Prints one id per line and exits 0. On any failure it prints one line to
-// stderr, exits 1, and leaves the counter file as it was.
+// stderr and exits 1. A failure before the counter write leaves the counter as
+// it was. A failed --commit keeps the new counter value, so no id is reused.
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const MAX_QTY = 1000;
 const LOCK_WAIT_MS = 5000;
@@ -23,10 +26,11 @@ function fail(message) {
 }
 
 function parseArgs(argv) {
-  const opts = { qty: 1, file: path.join('plan', 'backlog', '.next-id'), init: false };
+  const opts = { qty: 1, file: path.join('plan', 'backlog', '.next-id'), init: false, commit: false };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--init') opts.init = true;
+    else if (arg === '--commit') opts.commit = true;
     else if (arg === '--file') {
       if (i + 1 >= argv.length) fail('--file needs a path');
       opts.file = argv[++i];
@@ -115,6 +119,21 @@ function reserve() {
   return ids;
 }
 
+// Commits the counter file alone. The path after the double dash limits the
+// commit to that file, whatever else is staged.
+function commitCounter(reserved) {
+  const dir = path.dirname(file);
+  const subject = reserved.length === 1
+    ? `chore(ids): reserve id ${reserved[0]}`
+    : `chore(ids): reserve ids ${reserved[0]} to ${reserved[reserved.length - 1]}`;
+  try {
+    execFileSync('git', ['add', '--', file], { cwd: dir, stdio: 'pipe' });
+    execFileSync('git', ['commit', '-m', subject, '--', file], { cwd: dir, stdio: 'pipe' });
+  } catch {
+    fail('the ids stay reserved, but git could not commit the counter file');
+  }
+}
+
 if (opts.init) fs.mkdirSync(path.dirname(file), { recursive: true });
 const lockFd = takeLock(lockPath);
 let ids;
@@ -128,4 +147,5 @@ try {
   fs.rmSync(lockPath, { force: true });
 }
 if (failure) fail(failure);
+if (opts.commit) commitCounter(ids);
 process.stdout.write(`${ids.join('\n')}\n`);

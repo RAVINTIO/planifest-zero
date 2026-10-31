@@ -15,7 +15,7 @@ PARK_TPL="$ROOT/templates/park.template.md"
 ENTRY_TPL="$ROOT/templates/backlog-entry.template.md"
 S=$(cat "$ORCH")
 PARK_SEC=$(printf '%s\n' "$S" | sed -n '/^## Park Command/,/^# Orchestrator reference:/p')
-RESUME_SEC=$(printf '%s\n' "$S" | sed -n '/^## Resume Detection/,/^## Pack Index/p')
+RESUME_SEC=$(printf '%s\n' "$S" | sed -n '/^## Resume Detection/,/^## Pack Index/p')$'\n'$(cat "$ROOT/skills/ravintio-orchestrator/references/orchestrator-resume-detection.md")
 STEP10=$(printf '%s\n' "$S" | sed -n '/^10\. \*\*Backlog pickup\*\*/,/^11\. /p')
 
 echo "=== req-004: the skill has a Park Command section after Pause Command ==="
@@ -57,8 +57,9 @@ for field in 'phase:' 'last_artifact:' 'head_commit:' 'reason:'; do
   assert_contains "$field" "$T" "req-004: park.template.md holds $field"
 done
 assert_equals "" "$(grep -n '—' "$PARK_TPL" 2>/dev/null)" "req-004: park.template.md has no em dash"
-assert_contains '| A park record | `ravintio-zero/templates/park.template.md` |' "$S" \
-  "req-004: the Pack Index names the park template"
+# 0000244 replaced the per-template Pack Index rows with one {artifact}.template.md rule.
+assert_contains '`ravintio-zero/templates/{artifact}.template.md`' "$S" "req-004: the Pack Index holds the template rule"
+assert_contains '`park`' "$(grep -F 'The artifacts are' "$ORCH")" "req-004: the Pack Index rule names the park template"
 
 echo "=== req-004: the backlog entry template allows parked ==="
 E=$(cat "$ENTRY_TPL")

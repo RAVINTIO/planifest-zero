@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 ZERO_DIR="$SCRIPT_DIR/.."
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 VAL="$ZERO_DIR/skills/ravintio-validate-and-accept/SKILL.md"
 SHIP="$ZERO_DIR/skills/ravintio-ship/SKILL.md"
 REF="$ZERO_DIR/pipeline-reference.md"
@@ -28,7 +28,7 @@ section() {
 }
 
 STOPS="$(section '## Exception Stops' "$ORCH")"
-RESUME="$(section '## Resume Detection' "$ORCH")"
+RESUME="$(section '## Resume Detection' "$ORCH")"$'\n'"$(cat "$ZERO_DIR/skills/ravintio-orchestrator/references/orchestrator-resume-detection.md")"
 GATE="$(section '## Acceptance gate' "$VAL")"
 PR_STEP="$(section '### Step 9: PR' "$SHIP")"
 CRED_MSG='Blocked: possible credential in {path}. Remove it or confirm it is not a secret.'

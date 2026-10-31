@@ -42,6 +42,21 @@ The driver still requires status `active` before it runs a step.
 | Advance | `I-D Advance:` | `ravintio-ship` | initiative branch | Merge the step PR into the initiative branch and tag it. |
 | Delivery | `I-E Delivery:` | `ravintio-initiative` | initiative branch | Archive the initiative and raise the initiative PR to `main`. |
 
+#### Reply prefixes
+
+Initiative stages use five more prefixes. They use the same `{prefix} {Status}: {one-liner}` form.
+
+| Prefix | Stage |
+|--------|-------|
+| `I-A Chart:` | Chart |
+| `I-B Activate:` | Activate |
+| `I-C Run:` | Run |
+| `I-D Advance:` | Advance |
+| `I-E Delivery:` | Delivery |
+
+- Example: `I-C Run: Starting: step 2 of initiative 0000050`
+- Example: `I-B Activate: Blocked: no remote named origin`
+
 ### The three parts
 
 Three parts run an initiative. The human talks only to their own session. Step sessions run with no human present.
@@ -95,9 +110,18 @@ Chart runs a clarity check on each backlog entry of each step:
 - The human's confirmation of the chart covers only entries that pass or that the human sharpens.
 - Chart never rewrites an entry itself.
 
+Chart runs a guard check on each backlog entry of each step. A guard is `merge-guard`, `gate-write`, `ratchet-check`, or any other fail-closed hook.
+
+- An entry widens a guard if its wanted outcome lets the guard pass a form that it blocks today.
+- If an entry widens a guard, chart says so plainly. It names the guard and the new forms the guard would allow.
+- Chart asks the human to approve each widening on its own. Each widening entry needs a separate approval. The chart confirmation never covers one.
+- If the human does not approve, chart cuts the entry back to a fix that widens nothing, or strikes the step.
+- Chart records each approved widening as a `## Decisions` row whose Fork starts with `Widening:`.
+- The check adds chart text only. It changes no hook.
+
 Before it coaches, Chart reads the latest records in `plan/retrospectives/`, newest first, and names any change they filed that is still open. If the folder is empty, Chart says so.
 
-Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval. It builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. See Chart-time decisions.
+Chart also collects the schema approvals the steps need. See Chart-time schema approval. It collects the dependency approvals too. See Chart-time dependency approval. It builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. See Chart-time decisions. It lists the step confirmations. See Chart-time confirmations. It fills the `## P1 skips` table. See Chart-time P1 skips.
 
 ### Chart-time schema approval
 
@@ -162,6 +186,32 @@ Roadmap 0000168 stopped step 3 four times. These rows would have answered each s
 
 The criterion critic would have caught the last row at Chart. A fixed total grows with the step's new tests, and runner noise exceeded the margin. The environment check would have caught the first failure of step 1. The machine had no `pwsh`, so the PowerShell criterion belongs to CI.
 
+### Chart-time confirmations
+
+A skill that a step loads can ask the human to confirm. A step session has no human to answer, so it stops and waits. Chart lists these confirmations up front.
+
+At Chart, for each step:
+
+1. Read the skills the step loads. Find each confirmation that a step's skills ask for, such as Step 4 of `ravintio-refresh-setup`.
+2. Handle each confirmation in one of two ways:
+   - Record a pre-approval as a `## Decisions` row. The Fork starts with `Confirmation:` and names the skill and its step. The answer holds the exact command.
+   - Plan a human stop for that step, and say so in the row.
+3. Take the human's confirmation of the chart as approval of every row.
+
+A pre-approval covers its exact command only. A step that would run a different command takes the human stop.
+
+| Step | Fork | Pre-approved answer | Bump effect |
+|------|------|---------------------|-------------|
+| 15 | Confirmation: `ravintio-refresh-setup` Step 4 | Run the exact command `ravintio-zero/setup.sh claude-code --strict-orchestrator` | none |
+
+### Chart-time P1 skips
+
+A step skips P1 only when chart allowed it. Chart fills the `## P1 skips` table with one row for each step. The Skip P1 column holds `yes` or `no`, and the Reason column says why.
+
+- Chart may mark `yes` only for a chore with exact tasks in `initiative.md`, or a change with no code.
+- A step that changes code, such as a hook, a script, or a test, gets `no`.
+- The human's confirmation of the chart approves the column.
+
 ### I-B Activate
 
 Activate turns a charted initiative into a live branch. Run these checks first:
@@ -182,6 +232,8 @@ When the checks pass:
 
 The initiative skill's session must not edit the working tree while the driver runs. It queues new backlog entries instead.
 
+A repo instruction that the human asks for while a step runs goes into the scope of the current or next pending step in `plan/current-initiative/initiative.md`. The initiative session never writes the override itself, because `gate-write` blocks that write. While the lock is held, it queues the instruction in `plan/.initiative-queue/` and adds it to the next pending step when the driver is between steps or has exited.
+
 ### I-C Run
 
 Run executes one initiative step from `position`. Ship owns the merge that ends it (see I-D Advance under Ship stages). The step differs from a normal run in these ways:
@@ -194,6 +246,9 @@ Run executes one initiative step from `position`. Ship owns the merge that ends 
 - A schema change that matches a chart-approved row does not stop the step. See Chart-time schema approval.
 - A fork that matches a `## Decisions` row does not stop the step. Apply the row's answer and its bump effect, and log `Decision applied (initiative chart): {fork}` in the build log. The downgrade block still applies. The step stops only for a fork no row covers. A missing table counts as an empty one.
 - A criterion marked `CI` in `## Criteria` counts as validated only after the step's first CI run.
+- A confirmation that a skill asks for counts as a fork. If a `Confirmation:` row in `## Decisions` names the skill, its step, and the exact command, run that command with no stop and log `Decision applied (initiative chart): {fork}`. If the command differs in any way, the step stops.
+- P1 runs unless the step's row in `## P1 skips` says `yes`. A step with no `yes` row that would skip P1 prints `I-C Run: Blocked: step {n} has no P1 skip row marked yes.` and stops. A missing table counts as an empty one.
+- If a step skips P1 on a `yes` row, the build log holds `Skipped: P1 (chart row: step {n}, {reason})`.
 - P0 stops only when a backlog entry is too vague to draft a brief from. Print `Blocked:` with the entry and what is missing. The exception stops in Exception Stops still apply, including the credential stop.
 - P0 applies the step's `Bump` (`major`, `minor`, or `patch`, default `minor`) to the initiative branch's version. That is the last known version from Discovery Start Actions step 8. The initiative branch's version comes from `product.yml`, or from `docs/about.md` when `product.yml` is absent. The downgrade block still applies.
 
@@ -223,17 +278,31 @@ The driver appends three labels to `OTEL_RESOURCE_ATTRIBUTES` in the child envir
 
 The driver keeps the old value byte for byte and joins the labels with commas. It percent-encodes each label value (`%` first, then `,`, `=`, and space). The labels hold identifiers only.
 
+#### Restart stop
+
+The driver loads its code once. After a merged step, it compares the initiative branch ref before and after the step. If the step changed `ravintio-zero/scripts/initiative-run.mjs`, `ravintio-zero/scripts/initiative-watch.mjs`, or `ravintio-zero/skills/ravintio-initiative/SKILL.md`, the driver stops.
+
+- The stop line is `I-D Advance: Restart: step {n} changed {files}. Start a new driver so step {next} runs the new code.` The driver releases the lock and exits 1.
+- The check runs after the delivery, block, and not-merged checks, so a delivered initiative never restarts.
+- If git or the branch ref is unreadable, the driver skips the check.
+- The initiative skill treats the line as a restart and not a failure. It starts a new driver and a new watcher without asking.
+- The new driver reads the position from the branch ref and carries no other state. Its final report lists only the steps it ran.
+
 #### Step logs
 
-The driver writes the child's stdout and stderr to `plan/.initiative-logs/step-{position}.log`, in arrival order.
+The driver writes the child's stdout and stderr to `plan/.initiative-logs/step-{position}.log`, in arrival order. It starts `claude` with `--output-format stream-json --verbose`, so stdout holds one JSON event per line.
 
-- Each step start will truncate its log, so a rerun leaves only the latest attempt.
+- `initiative-watch.mjs` reads new bytes of the current step's log every 10 seconds. It prints one `I-C Run: activity:` line per tool call, subagent start, and assistant text, in the order received. Each line is 200 characters or fewer. It never prints tool results.
+- The watcher prints a stale line only when a commit is at least 15 minutes newer than the last build log write, and it prints each stale state once. If the last-seen commit is not an ancestor of `HEAD`, it prints one `branch changed` line instead of a line for each commit. Each heartbeat reads the lock file again.
+- The initiative skill relays each activity line to the human.
+
+- If `step-{position}.log` exists when a step starts, the driver renames it to `step-{position}.attempt-{k}.log` first. `k` is the lowest number whose path is free. The driver then opens a fresh `step-{position}.log`, so a rerun keeps every earlier attempt and the latest attempt keeps the plain name.
 - The driver copies the child's stderr to its own stderr. It never prints the child's stdout or any log content.
 - The driver adds `plan/.initiative-logs/` to `.git/info/exclude`, not `.gitignore`, and adds the line once.
-- Every stop after a step starts ends with `Log: plan/.initiative-logs/step-{position}.log`. Stops before any step starts name no log.
+- Every stop after a step starts ends with `Log: plan/.initiative-logs/step-{position}.log`. Stops before any step starts name no log. If attempt logs exist for the step, the stop line also names them as `Earlier: {paths}.` before the `Log:` field.
 - If the driver cannot open the log, it stops with `I-C Run: Blocked: could not open the step log` and launches no `claude`.
-- The driver refuses a symlink at `plan`, at `plan/.initiative-logs`, or at the log file. It stops with `I-C Run: Blocked: refused a symlinked step log path`, releases the lock, and launches no `claude`.
-- Logs are private to the user. The driver creates the folder with mode 700 and each log with mode 600.
+- The driver refuses a symlink at `plan`, at `plan/.initiative-logs`, at the log file, or at an attempt path. It stops with `I-C Run: Blocked: refused a symlinked step log path`, releases the lock, and launches no `claude`.
+- Logs are private to the user. The driver creates the folder with mode 700 and each log with mode 600, and each attempt log keeps mode 600.
 - A log may hold file content the session read. Treat it as private.
 
 ## Merge carve-out
@@ -278,7 +347,7 @@ Every message in this stage begins with `I-D Advance:` after the `P4 Ship:` pref
       I-D Advance: Blocked: CI failed on PR #{n}. Fix the failing check, then tell me to retry.
       ```
 
-4. If every check is green, squash-merge the PR. The `--delete-branch` flag removes the feature branch from `origin`.
+4. If every check is green, squash-merge the PR. The `--delete-branch` flag removes the feature branch from `origin`. Write `{n}` as the literal PR number from the `gh pr create` output. Use no command substitution, variables, or pipes on this line, or `merge-guard` blocks it.
 
    ```bash
    gh pr merge --squash --delete-branch {n}

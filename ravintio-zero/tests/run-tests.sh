@@ -7,8 +7,13 @@
 #   RAVINTIO_REQUIRE_PWSH=1     fail the run when pwsh is missing (0000036 ADR-002)
 #   RAVINTIO_PREFLIGHT_ONLY=1   check for stray files, run no suite, and exit
 #   RAVINTIO_TEST_QUIET=1       hide PASS lines and banners, keep every failure and the summary
+#
+# The runner clears RAVINTIO_INITIATIVE_STEP before it starts any suite (0000251). The initiative
+# driver sets it in every step session, and the hooks read it, so an inherited value fails hook
+# tests. A suite that needs the variable sets it for its own hook call.
 
 set -uo pipefail
+unset RAVINTIO_INITIATIVE_STEP
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REGRESSION_DIR="$SCRIPT_DIR/regression"
@@ -49,6 +54,7 @@ KNOWN_NON_SUITES=(
   "fixtures/0000039-setup-hardening/single-object-hooks.json" # single-object hooks values (0000039 req-002)
   "fixtures/0000039-setup-hardening/deep-settings.json"       # a value nested 15 levels deep (0000039 req-003)
   "fixtures/0000151-orchestrator-skill-base.md"               # orchestrator SKILL.md at the base commit (0000151 req-011)
+  "fixtures/0000243-resume-detection-base.md"                 # the Resume Detection section before 0000243 (0000243 req-005)
 )
 
 is_known_file() {

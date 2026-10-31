@@ -29,16 +29,21 @@ description: Coordinates an initiative from chart to delivery in the human's ses
 
 ## Session start
 
-1. If a migration is pending, run `ravintio-migrator` first.
-2. Read `plan/current-initiative/initiative.md`.
-3. If no initiative is `active`, offer I-A Chart. Say whether an earlier initiative exists.
-4. If one is `active` and the driver lock is held, report and start the monitor. Do not start a second driver.
-5. If one is `active` and the lock is free, report the position and offer to restart the driver.
+1. Read the resume findings that the session start hook injected. If none are in context, run `node ravintio-zero/scripts/resume-detect.mjs`. If a finding reads `resume detection did not run`, check the files yourself.
+2. If a `pending migration` finding names a migration whose `Applies when:` condition is true, run `ravintio-migrator` first.
+3. Read `plan/current-initiative/initiative.md`. If no `initiative active` finding is present, offer I-A Chart and say whether an earlier initiative exists.
+4. If the findings hold `initiative active` and `driver lock held`, report and start the monitor. Do not start a second driver.
+5. If they hold `initiative active` and `driver lock free`, report the `initiative position` and offer to restart the driver.
 6. If `position` is past the last step and `initiative.md` remains, run I-E Delivery.
 
 ## I-A Chart and I-B Activate
 
-Follow the I-A Chart and I-B Activate sections of the roadmap standards. Take the human's confirmation per item. Chart builds the `## Decisions`, `## Baselines`, and `## Criteria` tables. At Activate, start two background tasks:
+Follow the I-A Chart and I-B Activate sections of the roadmap standards. Take the human's confirmation per item. Chart builds the `## Decisions`, `## Baselines`, `## Criteria`, and `## P1 skips` tables. Chart also does these:
+
+- **Guard.** Run a guard check on each entry. Check whether it widens a guard, such as `merge-guard`, `gate-write`, `ratchet-check`, or another fail-closed hook. Name the guard and the new forms it would allow. Ask for a separate approval for each widening, apart from the chart confirmation.
+- **Confirmation.** Plan each step confirmation. List each confirmation that a step's skills ask for. Record the exact command as a `Confirmation:` row in `## Decisions`, or plan a human stop for that step.
+
+At Activate, start two background tasks:
 
 - The driver: `node ravintio-zero/scripts/initiative-run.mjs`.
 - The monitor: `node ravintio-zero/scripts/initiative-watch.mjs`. It prints one line per event and a heartbeat every 5 minutes.
@@ -57,6 +62,8 @@ An interval report names:
 - any stop
 - whether the driver still runs
 
+While the step runs, the monitor also prints `I-C Run: activity:` lines, one per tool call, subagent start, or assistant text. Relay each one to the human at once, in the order received. Do not wait for the next interval report.
+
 If nothing changed, say so and give the time since the last change. If the step keeps committing and its build log has not changed for 15 minutes, say the log is stale.
 
 A progress report, on request and at each phase end, has two parts:
@@ -68,9 +75,19 @@ A progress report, on request and at each phase end, has two parts:
 
 If the driver prints `Blocked:` or exits non-zero, report the stop line and the step log path `plan/.initiative-logs/step-{position}.log`. Never resume the step. Ask the human how to proceed. After the human acts, offer to restart the driver.
 
+A `Restart:` line is not a failure. It means a merged step changed the driver, the watcher, or this skill, and the running code is old. Report the line. Then start a new driver and a new watcher without asking. Read this skill again first if the line names it.
+
 ## Backlog queue
 
-While the lock is held, write each new backlog entry to `plan/.initiative-queue/{id}-{slug}/entry.md`. Reserve its id with `node ravintio-zero/scripts/reserve-id.mjs`. When a step merges and the driver is between steps or has exited, move the queued entries to `plan/backlog/` on the initiative branch. Commit each entry on its own. Never touch the queue while a step runs.
+While the lock is held, write each new backlog entry to `plan/.initiative-queue/{id}-{slug}/entry.md`. Reserve its id with `node ravintio-zero/scripts/reserve-id.mjs --commit`, which commits `plan/backlog/.next-id` alone at once. When a step merges and the driver is between steps or has exited, move the queued entries to `plan/backlog/` on the initiative branch. Commit each entry on its own. Never touch the queue while a step runs.
+
+## Repo instructions during a run
+
+If the human asks for a repo instruction while a step runs, add it to the scope of the current or next pending step in `plan/current-initiative/initiative.md`. The skill never writes the override from the initiative session, because `gate-write` blocks that write. The step writes the file.
+
+- If the driver lock is held, queue the instruction in `plan/.initiative-queue/{slug}/instruction.md`. The step that runs has already read its scope, so the instruction goes to the next pending step.
+- When the driver is between steps or has exited, add the instruction to that step's scope in `initiative.md`. Commit the edit on the initiative branch.
+- Tell the human which step took the instruction.
 
 ## I-E Delivery
 

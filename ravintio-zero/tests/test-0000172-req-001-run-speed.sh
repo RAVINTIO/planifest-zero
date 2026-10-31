@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 SHIP="$ZERO_DIR/skills/ravintio-ship/SKILL.md"
 ROAD="$ZERO_DIR/standards/roadmap-standards.md"
 TPL="$ZERO_DIR/templates/initiative.template.md"

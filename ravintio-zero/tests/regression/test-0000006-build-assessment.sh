@@ -27,7 +27,7 @@ assert_file_exists() {
   fi
 }
 
-ORCH=$(cat "$SKILLS/ravintio-orchestrator/SKILL.md")
+ORCH=$(cat "$(orch_combined "$SKILLS/ravintio-orchestrator")")
 assert_contains "build-log.md"               "$ORCH" "req-001: orchestrator references build-log.md"
 assert_contains "build-log.template.md"      "$ORCH" "req-001: orchestrator references build-log template"
 assert_contains "append"                     "$ORCH" "req-001: orchestrator has append instruction for resume"

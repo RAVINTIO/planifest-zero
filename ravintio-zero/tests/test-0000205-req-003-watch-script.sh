@@ -71,7 +71,7 @@ assert_contains "add the x file" "$OUT" "req-003 AC-1: commit event carries the 
 R="$(make_repo ac2)"
 node -e "const t=new Date('2026-01-01T00:00:00Z');require('fs').utimesSync(process.argv[1],t,t)" "$R/plan/current/build-log.md"
 echo y > "$R/y.txt"; git -C "$R" add y.txt
-GIT_COMMITTER_DATE="2026-01-01T00:10:00Z" git -C "$R" commit -q -m "newer commit"
+GIT_COMMITTER_DATE="2026-01-01T00:16:00Z" git -C "$R" commit -q -m "newer commit"
 watch "$R" --now "2026-01-01T00:16:30Z"
 assert_contains "I-C Run: stale:" "$OUT" "req-003 AC-2: stale line printed"
 assert_contains "I-C Run: heartbeat:" "$OUT" "req-003 AC-2: heartbeat printed"
@@ -104,7 +104,7 @@ assert_equals "$BEFORE_HASH" "$(hash_tree)" "req-003 AC-3: file hashes unchanged
 
 # --- Constants, flags, refusals ----------------------------------------
 assert_contains "HEARTBEAT_MS = 300000" "$(grep 'HEARTBEAT_MS' "$WATCH")" "req-003: heartbeat constant is 300000"
-assert_contains "POLL_MS = 30000" "$(grep 'POLL_MS' "$WATCH")" "req-003: poll constant is 30000"
+assert_contains "POLL_MS = 10000" "$(grep 'POLL_MS' "$WATCH")" "req-003: poll constant is 10000"
 assert_contains "STALE_MS = 900000" "$(grep 'STALE_MS' "$WATCH")" "req-003: stale constant is 900000"
 
 watch "$R" --state "$WORK/state.json"

@@ -12,9 +12,19 @@ ROOT_DIR="$(cd "$ZERO_DIR/.." && pwd)"
 STD="$ZERO_DIR/standards/roadmap-standards.md"
 ENTRY="$ZERO_DIR/templates/initiative.template.md"
 DESIGN="$ZERO_DIR/templates/design.template.md"
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 IMPL="$ZERO_DIR/skills/ravintio-implement/SKILL.md"
 PLAN="$ZERO_DIR/skills/ravintio-plan/SKILL.md"
+
+# Prints a file without any ravintio-overrides:instructions marker block (0000245 REQ-004).
+without_override_block() {
+  awk '/<!-- ravintio-overrides:instructions:start -->/ {skip=1; next}
+       /<!-- ravintio-overrides:instructions:end -->/ {skip=0; next}
+       !skip' "$1"
+}
+same_ignoring_override_block() { # pack file, installed file
+  [ "$(without_override_block "$1")" = "$(without_override_block "$2")" ]
+}
 
 has() { grep -qF -- "$1" "$2" && echo yes || echo no; }
 
@@ -65,13 +75,26 @@ done
 
 echo "=== (c) installed copies ==="
 # .claude/ exists only after setup, so a clean CI checkout skips this loop.
-DIFFS=0
-for src in "$IMPL" "$PLAN"; do
-  n=$(basename "$(dirname "$src")")
-  inst="$ROOT_DIR/.claude/skills/$n/SKILL.md"
-  [ -e "$inst" ] || continue
-  cmp -s "$src" "$inst" || DIFFS=$((DIFFS + 1))
-done
-assert_equals "0" "$DIFFS" "installed skill copies match the source"
+# In an active initiative the install lags the pack by design (0000239 req-002).
+if SKIP_REASON="$(stale_install_skip_reason "$ROOT_DIR")"; then
+  echo "  SKIP: $SKIP_REASON"
+else
+  DIFFS=0
+  for src in "$IMPL" "$PLAN"; do
+    n=$(basename "$(dirname "$src")")
+    inst="$ROOT_DIR/.claude/skills/$n/SKILL.md"
+    [ -e "$inst" ] || continue
+    same_ignoring_override_block "$src" "$inst" || DIFFS=$((DIFFS + 1))
+  done
+  assert_equals "0" "$DIFFS" "installed skill copies match the source"
+fi
+
+echo "=== (c) the comparison ignores an appended override block ==="
+TMP_C="$(mktemp -d)"
+trap 'rm -rf "$TMP_C"' EXIT
+{ cat "$IMPL"; printf '\n<!-- ravintio-overrides:instructions:start -->\n\nExtra rule.\n\n<!-- ravintio-overrides:instructions:end -->\n'; } > "$TMP_C/with-block.md"
+assert_equals "yes" "$(same_ignoring_override_block "$IMPL" "$TMP_C/with-block.md" && echo yes || echo no)" "a skill with an appended block matches the pack"
+{ cat "$IMPL"; printf '\nChanged line outside any block.\n'; } > "$TMP_C/drift.md"
+assert_equals "no" "$(same_ignoring_override_block "$IMPL" "$TMP_C/drift.md" && echo yes || echo no)" "real drift is still reported"
 
 print_summary

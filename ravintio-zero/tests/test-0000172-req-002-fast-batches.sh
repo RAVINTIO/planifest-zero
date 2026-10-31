@@ -8,8 +8,7 @@ ZERO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/helpers/assert.sh"
 
 STD="$ZERO_DIR/standards/agent-dispatch-standards.md"
-ORCH="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
-
+ORCH="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
 echo ""
 echo "=== 0000172 req-002 fast-batches-per-phase ==="
 

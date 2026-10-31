@@ -30,8 +30,11 @@
 // Only the child sees the change. The labels hold identifiers, never prompt or file text.
 //
 // Logs: each step writes the child's stdout and stderr, in arrival order, to
-// plan/.initiative-logs/step-{position}.log. Each step start will truncate its log, so a
-// rerun leaves only the latest attempt. The driver copies the child's stderr to its own
+// plan/.initiative-logs/step-{position}.log. If that log already exists, the driver first
+// renames it to step-{position}.attempt-{k}.log, with the lowest k whose path is free, and
+// then opens a fresh step-{position}.log. A rerun keeps every earlier attempt, and the
+// latest attempt keeps the plain name. A stop line that names a log also names the earlier
+// attempts, as "Earlier: {paths}. Log: {path}". The driver copies the child's stderr to its own
 // stderr and never prints the child's stdout or any log content. It excludes the folder
 // through .git/info/exclude. The driver refuses a symlink at plan, at the log folder, or at
 // the log file, and stops with "I-C Run: Blocked: refused a symlinked step log path". Logs
@@ -42,7 +45,7 @@
 //   1. Reads plan/current-initiative/initiative.md and stops unless status is "active".
 //   2. Takes plan/.initiative-runner.lock. If the lock exists, it refuses to start
 //      and leaves the lock alone.
-//   3. Runs `claude -p --permission-mode auto --model {model} [--max-turns {n}]
+//   3. Runs `claude -p --output-format stream-json --verbose --permission-mode auto --model {model} [--max-turns {n}]
 //      "Run initiative step {position}"`
 //      and waits. It never passes --continue or --resume, so each step gets a
 //      fresh session. The position goes to claude as one argument, never
@@ -61,7 +64,13 @@
 //      stayed at {n}". If the ref is unreadable or the root is not a git work tree, it
 //      reads the working-tree file. The driver passes git its arguments as an array, with
 //      no shell.
-//   6. It repeats until delivery: initiative.md is gone and
+//   6. After a merged step it compares the initiative branch ref before and after the step.
+//      If the step changed initiative-run.mjs, initiative-watch.mjs, or the initiative skill,
+//      the running driver and its watcher hold old code. The driver prints
+//      "I-D Advance: Restart: step {n} changed {files}. Start a new driver so step {next}
+//      runs the new code.", releases the lock, and exits 1. The initiative skill starts a new
+//      driver and watcher at once. If git or the ref is unreadable, the check is skipped.
+//   7. It repeats until delivery: initiative.md is gone and
 //      plan/_archive/{id}-{slug}-initiative-*/ exists. It then exits 0.
 //      If every step in the "## Steps" table has merged but the archive is not there yet,
 //      it prints "I-E Delivery: Pending: all {n} steps merged, initiative delivery runs
@@ -87,14 +96,14 @@
 // Exit codes:
 //   0  Delivery is complete.
 //   1  A stop: invalid or inactive initiative, existing lock, block, stalled
-//      position, failed claude call, or interruption.
+//      position, failed claude call, interruption, or a restart for a tooling change.
 //
 // The lock is released on every exit path, including SIGINT and SIGTERM.
 // The driver never edits the working tree. The steps it launches do that.
 // It has no dependencies beyond Node.
 
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, closeSync, constants as fsConstants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
+import { appendFileSync, chmodSync, closeSync, constants as fsConstants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, renameSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve } from 'node:path';
 import { withInitiativeLabels } from './initiative-labels.mjs';
 
@@ -104,6 +113,12 @@ const LOGS = 'plan/.initiative-logs';
 const QUEUE = 'plan/.initiative-queue/';
 const BUILD_LOG = 'plan/current/build-log.md';
 const ARCHIVE = 'plan/_archive';
+// Files whose change leaves the running driver, or the session that relays its output, on old code.
+const WATCHED = [
+  'ravintio-zero/scripts/initiative-run.mjs',
+  'ravintio-zero/scripts/initiative-watch.mjs',
+  'ravintio-zero/skills/ravintio-initiative/SKILL.md',
+];
 const STATUS = /^(proposed|charted|draft|active|blocked|delivered|done)$/;
 const POSITION = /^[1-9][0-9]{0,2}$/;
 const BRANCH = /^initiative\/([0-9]{7})-([a-z0-9]+(-[a-z0-9]+)*)$/;
@@ -242,11 +257,36 @@ function isLink(path) {
   }
 }
 
-// Opens plan/.initiative-logs/step-{position}.log for writing and truncates it.
-// Refuses a symlink at plan, at the log folder, or at the log file, and a log folder
-// whose real path leaves the real root. The open adds O_NOFOLLOW where the platform has it.
-// The folder gets mode 0o700 and the log 0o600. Returns the file descriptor and the
-// root-relative path.
+// True when anything sits at the path, including a dangling symlink.
+function present(path) {
+  try {
+    lstatSync(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Returns the root-relative paths of the kept attempt logs for a step, in attempt order.
+function attemptLogs(root, position) {
+  const re = new RegExp(`^step-${position}\\.attempt-([1-9][0-9]*)\\.log$`);
+  try {
+    return readdirSync(join(root, LOGS))
+      .map((name) => ({ name, k: Number((re.exec(name) || [])[1]) }))
+      .filter((e) => e.k)
+      .sort((a, b) => a.k - b.k)
+      .map((e) => `${LOGS}/${e.name}`);
+  } catch {
+    return [];
+  }
+}
+
+// Opens plan/.initiative-logs/step-{position}.log for writing. If the log exists, it first
+// renames it to the next free step-{position}.attempt-{k}.log, so a rerun keeps the earlier
+// output. Refuses a symlink at plan, at the log folder, at the log file, or at an attempt
+// path, and a log folder whose real path leaves the real root. The open adds O_NOFOLLOW
+// where the platform has it. The folder gets mode 0o700 and each log 0o600. Returns the file
+// descriptor, the root-relative path, and the root-relative paths of the attempt logs.
 function openLog(root, position) {
   const rel = `${LOGS}/step-${position}.log`;
   const refuse = () => new Stop('I-C Run: Blocked: refused a symlinked step log path');
@@ -259,8 +299,18 @@ function openLog(root, position) {
     if (within.startsWith('..') || isAbsolute(within)) throw refuse();
     const file = join(root, rel);
     if (isLink(file)) throw refuse();
+    if (present(file)) {
+      let k = 1;
+      let kept = join(dir, `step-${position}.attempt-${k}.log`);
+      while (present(kept)) {
+        if (isLink(kept)) throw refuse();
+        kept = join(dir, `step-${position}.attempt-${++k}.log`);
+      }
+      renameSync(file, kept);
+      chmodSync(kept, 0o600);
+    }
     const { O_WRONLY, O_CREAT, O_TRUNC, O_NOFOLLOW = 0 } = fsConstants;
-    return { fd: openSync(file, O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW, 0o600), rel };
+    return { fd: openSync(file, O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW, 0o600), rel, earlier: attemptLogs(root, position) };
   } catch (e) {
     if (e instanceof Stop) throw e;
     throw new Stop('I-C Run: Blocked: could not open the step log');
@@ -311,6 +361,22 @@ function archivedBlock(root, featureId, since) {
   return null;
 }
 
+// Returns the commit that the branch ref points to, or '' if git or the ref is unreadable.
+function branchHead(root, branch) {
+  const r = spawnSync('git', ['rev-parse', '--verify', '--quiet', `refs/heads/${branch}`], { cwd: root, encoding: 'utf8' });
+  return !r.error && r.status === 0 ? r.stdout.trim() : '';
+}
+
+// Returns the watched files that changed between two commits. Returns [] if either commit is
+// missing, the two are equal, or git cannot compare them.
+function changedWatched(root, before, after) {
+  if (!before || !after || before === after) return [];
+  const r = spawnSync('git', ['diff', '--name-only', before, after, '--', ...WATCHED], { cwd: root, encoding: 'utf8' });
+  if (r.error || r.status !== 0) return [];
+  const names = new Set(r.stdout.split(/\r?\n/).filter(Boolean));
+  return WATCHED.filter((f) => names.has(f));
+}
+
 function delivered(root, id, slug) {
   if (existsSync(join(root, INITIATIVE))) return false;
   const dir = join(root, ARCHIVE);
@@ -323,7 +389,7 @@ function delivered(root, id, slug) {
 function runStep(root, position, cfg, fd, labels) {
   return new Promise((resolveStep) => {
     const bin = process.env.CLAUDE_BIN || 'claude';
-    const args = ['-p', '--permission-mode', 'auto', '--model', cfg.model];
+    const args = ['-p', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'auto', '--model', cfg.model];
     if (cfg.turns) args.push('--max-turns', cfg.turns);
     args.push(`Run initiative step ${position}`);
     const child = spawn(bin, args, {
@@ -344,8 +410,13 @@ function runStep(root, position, cfg, fd, labels) {
 
 let activeChild = null;
 let currentLog = null;
+let earlierLogs = [];
 
-const withLog = (line) => (currentLog ? `${line} Log: ${currentLog}` : line);
+const withLog = (line) => {
+  if (!currentLog) return line;
+  const earlier = earlierLogs.length > 0 ? ` Earlier: ${earlierLogs.join(', ')}.` : '';
+  return `${line}${earlier} Log: ${currentLog}`;
+};
 let lockPath = null;
 
 function releaseLock() {
@@ -390,9 +461,12 @@ async function main() {
     const position = rm.position;
     const featureId = featureIdFor(rm.text, position);
     const started = Date.now();
+    const headBefore = branchHead(root, rm.branch);
     currentLog = null;
+    earlierLogs = [];
     const log = openLog(root, position);
     currentLog = log.rel;
+    earlierLogs = log.earlier;
     out(`I-C Run: Starting: initiative step ${position} in a fresh session`);
     let res;
     try {
@@ -428,6 +502,10 @@ async function main() {
       return;
     }
     out(`I-D Advance: Complete: step ${position} done, position now ${rm.position}`);
+    const changed = changedWatched(root, headBefore, branchHead(root, rm.branch));
+    if (changed.length > 0) {
+      throw new Stop(`I-D Advance: Restart: step ${position} changed ${changed.join(', ')}. Start a new driver so step ${rm.position} runs the new code.`);
+    }
   }
 }
 

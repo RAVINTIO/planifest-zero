@@ -24,6 +24,11 @@ status: "proposed"  # proposed | charted | active | delivered | blocked
 >
 > `## Decisions`, `## Baselines`, and `## Criteria` hold the Chart-time decisions. The human
 > approves the rows at Chart. See Chart-time decisions in the same file.
+>
+> A `## Decisions` row whose Fork starts with `Confirmation:` pre-approves one confirmation that a
+> step's skill asks for. See Chart-time confirmations in the same file.
+>
+> `## P1 skips` says whether each step may skip P1. See Chart-time P1 skips in the same file.
 
 **Goal:** {{What the whole chain delivers, in one or two sentences.}}
 **Branch:** initiative/{{id}}-{{slug}}
@@ -54,6 +59,7 @@ status: "proposed"  # proposed | charted | active | delivered | blocked
 | Step | Fork | Pre-approved answer | Bump effect |
 |------|------|---------------------|-------------|
 | 1 | {{a likely fork, or none}} | {{the answer, and any fallback scope it adds}} | {{the bump change, or none}} |
+| 1 | Confirmation: {{skill and its step, such as ravintio-refresh-setup Step 4}} | {{Run the exact command: the command in full. Or: Human stop: the step waits for the human}} | none |
 
 ## Baselines
 
@@ -66,6 +72,12 @@ status: "proposed"  # proposed | charted | active | delivered | blocked
 | Step | Criterion | Noise and margin | Checked in |
 |------|-----------|------------------|------------|
 | 1 | {{a measurable criterion, or none}} | {{noise across runs, and whether the margin covers it}} | {{local | CI}} |
+
+## P1 skips
+
+| Step | Skip P1 | Reason |
+|------|---------|--------|
+| 1 | {{yes or no}} | {{yes only for a chore with exact tasks or a change with no code. Otherwise no, with the reason}} |
 
 ## Steps
 

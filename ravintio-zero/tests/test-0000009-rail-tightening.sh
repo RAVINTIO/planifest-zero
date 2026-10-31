@@ -10,7 +10,8 @@ source "$SCRIPT_DIR/helpers/assert.sh"
 ZERO_DIR="$SCRIPT_DIR/.."
 SETUP_SH="$ZERO_DIR/setup.sh"
 SETUP_PS1="$ZERO_DIR/setup.ps1"
-ORCHESTRATOR="$ZERO_DIR/skills/ravintio-orchestrator/SKILL.md"
+ORCHESTRATOR="$(orch_combined "$ZERO_DIR/skills/ravintio-orchestrator")"
+ORCH_RESUME_REF="$ZERO_DIR/skills/ravintio-orchestrator/references/orchestrator-resume-detection.md"
 SHIP_AGENT="$ZERO_DIR/skills/ravintio-ship/SKILL.md"
 GATE_WRITE="$ZERO_DIR/hooks/enforcement/gate-write.mjs"
 AUTO_TRIGGER="$ZERO_DIR/hooks/enforcement/auto-trigger-orchestrator.mjs"
@@ -31,7 +32,7 @@ echo ""
 echo "=== REQ-001: .skips path corrected to plan/current/.skips ==="
 
 assert_contains "plan/current/.skips" \
-  "$(grep_str "\.skips" "$ORCHESTRATOR")" \
+  "$(grep_str "\.skips" "$ORCHESTRATOR")$(grep_str "\.skips" "$ORCH_RESUME_REF")" \
   "REQ-001: orchestrator references plan/current/.skips"
 
 # ── REQ-002: auto-trigger-orchestrator hook ───────────────────────────────────
@@ -54,8 +55,8 @@ assert_equals "yes" "$(grep_has "auto-trigger-orchestrator" "$SETUP_SH")" \
 assert_equals "yes" "$(grep_has "RAVINTIO_TRIGGER" "$SETUP_SH")" \
   "REQ-002: setup.sh passes trigger cmd to UserPromptSubmit wiring"
 
-assert_equals "yes" "$(grep_has "auto-trigger-orchestrator" "$STANDARD_BOOT")" \
-  "REQ-002: standard-boot.md documents auto-trigger hook"
+assert_equals "yes" "$(grep_has "auto-trigger-orchestrator" "$ZERO_DIR/standards/hook-enforcement.md")" \
+  "REQ-002: hook-enforcement.md documents auto-trigger hook"
 
 assert_equals "yes" "$(grep_has "ravintio-orchestrator skill" "$STANDARD_BOOT")" \
   "REQ-002: standard-boot.md has fallback instruction"
