@@ -1,6 +1,6 @@
 ---
 title: "Initiative: 0000312 - guards, history, and test noise"
-summary: "Clears 15 backlog entries in 9 feature steps, with a setup rerun after each step that changes installed pack files."
+summary: "Clears 16 backlog entries in 9 feature steps, with a setup rerun after each step that changes installed pack files."
 status: "proposed"
 ---
 # Initiative: 0000312 - guards, history, and test noise
@@ -44,7 +44,7 @@ The human asked for this draft on 2026-10-31 and confirmed the scope and order t
 | 5 | `Setup:` | The step adds a hook. |
 | 6 | `Restart:` and `Setup:` | The step changes the initiative skill and other skills. |
 | 7 | `Setup:` if the step changes the pack's hooks | The step adds a script and changes CI. |
-| 8 | `Setup:` | The step changes a hook, a script, and the migrator skill. |
+| 8 | `Setup:` | The step changes two hooks, a script, and the migrator skill. |
 | 9 | `Setup:`, before I-E Delivery | The step changes the backlog template and the orchestrator skill. |
 
 ## Schema changes
@@ -91,7 +91,7 @@ Chart fills this table on `main`. Every step changes code, so the expected answe
 | 5 | 0000317-block-forced-adds | 0000276 | minor | 0.43.0 | pending |
 | 6 | 0000318-titled-coordinator-prs | 0000274 | minor | 0.44.0 | pending |
 | 7 | 0000319-initiative-history-checks | 0000275, 0000277, 0000278 | minor | 0.45.0 | pending |
-| 8 | 0000320-quiet-session-start | 0000307, 0000282 | minor | 0.46.0 | pending |
+| 8 | 0000320-quiet-session-start | 0000307, 0000282, 0000322 | minor | 0.46.0 | pending |
 | 9 | 0000321-backlog-triage | 0000310 | minor | 0.47.0 | pending |
 
 ### Step grouping
@@ -100,4 +100,4 @@ Chart fills this table on `main`. Every step changes code, so the expected answe
 - **Step 3:** both entries stop session state from changing test results.
 - **Step 4:** both entries keep the guards working when the working directory moves.
 - **Step 7:** all three entries catch an untitled or squashed history before or as it reaches `main`.
-- **Step 8:** both entries stop session-start text repeating on every prompt.
+- **Step 8:** all three entries stop hook text that repeats or misfires: the load instruction, the migration findings, and the false prefix warning.
