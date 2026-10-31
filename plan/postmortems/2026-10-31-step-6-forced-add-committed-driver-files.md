@@ -41,5 +41,6 @@ First missed chance to catch it: `e71fbbe`. No hook checks a forced add, and no 
 
 | Type | Action | Owner | Lives in | Verified by | Filed as |
 |------|--------|-------|----------|-------------|----------|
+| corrective | Rewrite the unpushed step 6 history to drop the driver files, keeping the final tree. Done on 2026-10-28 with the human's approval. | coordinator | `feat/0000244-split-orchestrator-skill` | tree unchanged, push accepted | PR #61 |
 | preventive | Forbid `git add -f` and `git add --force` in step sessions, in the orchestrator rules and a PreToolUse Bash hook | orchestrator skill, hooks | `ravintio-zero/skills/ravintio-orchestrator/`, `ravintio-zero/hooks/` | hook tests | backlog entry 0000276 |
 | detective | Fail ship and CI when `git ls-files -ci --exclude-standard` lists any file | ship skill, CI | `ravintio-zero/skills/ravintio-ship/`, `.github/workflows/` | CI test with an ignored file committed | backlog entry 0000276 |
