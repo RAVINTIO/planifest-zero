@@ -42,4 +42,6 @@ First missed chance to catch it: `05abbb9`. A test run or CI on that change woul
 
 | Type | Action | Owner | Lives in | Verified by | Filed as |
 |------|--------|-------|----------|-------------|----------|
+| corrective | Reword line 38 of entry 0000257 so `test-0000042-req-010` passes. Done on 2026-10-28 with the human's approval. | coordinator | `plan/backlog/0000257-timestamp-reply-prefixes/entry.md` | `test-0000042-req-010` passes, archived `build-log.md` line 79 | `f2838fa` |
 | preventive | Route coordinator work through a titled PR into `initiative/*`, so CI runs the suite before it lands | roadmap standards, initiative skill | `ravintio-zero/standards/roadmap-standards.md` | skill text tests, CI on the chore PR | backlog entry 0000274 |
+| detective | Run CI on every push to `initiative/**`, so a direct commit that breaks a test is flagged at once | CI | `.github/workflows/ravintio.yml` | workflow trigger test | backlog entry 0000277 |
