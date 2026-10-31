@@ -35,7 +35,9 @@ A team that tracks work in Jira can't see or shape that plan where it already wo
 
   The default needs no level above Epic, so it works on every Jira plan.
 - Let each developer change the mapping for themselves, for example to put an Initiative item above Epic, with each feature as an Epic and its user stories as Stories. Keep the change in a local, untracked config file.
-- Use the Atlassian MCP server to read and write Jira issues from the skills.
+- Use Atlassian's official remote MCP server to read and write Jira issues from the skills. It signs in with OAuth, so no API token reaches the repo or the agent's context. The human decided this on 2026-10-31.
+  - At pickup, confirm the server's current name, tools, and plan requirements before design, because Atlassian's MCP offering is new.
+  - Community servers that take an API token may follow later, behind the same config.
 - Keep ADRs in the repo, in `docs/adr/` once entry 0000280 lands. Each Story links to the ADRs its feature wrote. The human decided this on 2026-10-31.
 - Never put Jira credentials in the repo or in context. The MCP server holds them.
 
@@ -94,7 +96,6 @@ With `--jira-planning`, the human plans and tracks pack work in Jira instead of 
 
 ## Open questions
 
-- Which Atlassian MCP server does the pack support?
 - If two developers on one Jira project use different mappings, their issues won't match. Should the mapping be per repo, with a per-developer override only for personal views?
 
 ## Why Deferred
