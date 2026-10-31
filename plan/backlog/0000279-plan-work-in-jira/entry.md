@@ -43,6 +43,9 @@ A team that tracks work in Jira can't see or shape that plan where it already wo
 
 The human decided this on 2026-10-31. Planning records move to Jira, and run records stay in the repo.
 
+- With the flag, Jira is the only source of truth for the records that move. `plan/` keeps no copy of them, so nothing needs two-way sync. The two summary files below are the only exception, and they hold only what the hooks and the driver read.
+- Without the flag, all work stays in `plan/` as it does today.
+
 - Chart writes the initiative as a draft Epic. Confirming the chart moves the Epic out of draft.
 - Discovery writes the design as a draft User Story. Confirming the design moves the Story out of draft.
 - At confirmation, `plan/current/design.md` becomes a brief summary. It holds the Story link and key, the feature id, the version, and the component fields that `gate-write` and `check-design` read, in their current format. The rest of the design lives on the Story.
@@ -91,7 +94,6 @@ With `--jira-planning`, the human plans and tracks pack work in Jira instead of 
 
 ## Open questions
 
-- Is Jira the source of truth, or a mirror of `plan/`?
 - Which Atlassian MCP server does the pack support?
 - If two developers on one Jira project use different mappings, their issues won't match. Should the mapping be per repo, with a per-developer override only for personal views?
 
