@@ -16,7 +16,7 @@ status: "open"
 
 Consumer repos install and update Zero in ways the pack doesn't support or check:
 
-- In `rapid-prototypes`, Zero 0.30.1 was copied in on 2026-10-27 (`06e9dea`), but setup never ran. `CLAUDE.md` still holds the old Planifest rules, and `.claude/skills/` still holds 21 old skills.
+- In `rapid-prototypes`, Zero 0.30.1 was copied in on 2026-10-27 (`06e9dea`), but setup never ran. `CLAUDE.md` still holds the rules from before the rename, and `.claude/skills/` still holds 21 old skills.
 - In `ravintio/docs`, two update scripts disagree. `refresh-ravintio-zero-dir.ps1` copies from `../zero` and hard-codes `--strict-orchestrator`. An untracked `update-ravintio-zero.local-only.sh` copies from another folder.
 - Setup doesn't create `plan/current/`. A run in `ravintio/docs` had to add `mkdir -p plan/current` (`0000009` build-log line 50).
 - Leftover state from the old pack needed manual cleanup, such as a stale `plan/.run-mode` holding `continuous` (`0000005` build-log line 42).
