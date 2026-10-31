@@ -36,7 +36,8 @@ A team that tracks work in Jira can't see or shape that plan where it already wo
   The default needs no level above Epic, so it works on every Jira plan.
 - Let each developer change the mapping for themselves, for example to put an Initiative item above Epic, with each feature as an Epic and its user stories as Stories. Keep the change in a local, untracked config file.
 - Use the Atlassian MCP server to read and write Jira issues from the skills.
-- Decide which records stay in the repo. The build log, the design, and the archive may still need to live beside the code.
+- Keep ADRs in the repo, in `docs/adr/` once entry 0000280 lands. Each Story links to the ADRs its feature wrote. The human decided this on 2026-10-31.
+- Decide which other records stay in the repo. The build log, the design, and the archive may still need to live beside the code.
 - Never put Jira credentials in the repo or in context. The MCP server holds them.
 
 ## Wanted outcome
@@ -49,6 +50,7 @@ With `--jira-planning`, the human plans and tracks pack work in Jira instead of 
 - With the flag, discovery writes the feature's user stories and requirements as acceptance criteria on its Story.
 - A local config file changes the mapping, and the default applies when the file is missing.
 - No Jira credential appears in a tracked file.
+- With the flag, ADRs stay in the repo, and each Story links to its feature's ADRs.
 
 ## Open questions
 
