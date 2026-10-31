@@ -34,7 +34,11 @@ A team that tracks work in Jira can't see or shape that plan where it already wo
   | Backlog entry | Story, Task, or Bug in the backlog. At pickup, it closes into the feature's Story or becomes it. |
 
   The default needs no level above Epic, so it works on every Jira plan.
-- Let each developer change the mapping for themselves, for example to put an Initiative item above Epic, with each feature as an Epic and its user stories as Stories. Keep the change in a local, untracked config file.
+- Keep the Jira config per repo, in a tracked file. The human decided this on 2026-10-31.
+  - The tracked config names the Jira instance (site URL) and the space (project key) the repo works in.
+  - It sets the issue types, statuses, and transitions for everyone. A team that wants another mapping changes it through a reviewed commit, for example to put an Initiative item above Epic, with each feature as an Epic and its user stories as Stories.
+  - A developer's local, untracked file can override only fields that change no shared Jira data, such as the board or filter they view.
+  - Before every Jira read or write, the skills check that the MCP connection is on the tracked instance and the issue is in the tracked space. On a mismatch, the skill stops and names both values. It never writes to another instance or space.
 - Use Atlassian's official remote MCP server to read and write Jira issues from the skills. It signs in with OAuth, so no API token reaches the repo or the agent's context. The human decided this on 2026-10-31.
   - At pickup, confirm the server's current name, tools, and plan requirements before design, because Atlassian's MCP offering is new.
   - Community servers that take an API token may follow later, behind the same config.
@@ -86,7 +90,9 @@ With `--jira-planning`, the human plans and tracks pack work in Jira instead of 
 - Without the flag, the pack behaves as it does today.
 - With the flag, chart creates an Epic for the initiative and one Story per step.
 - With the flag, discovery writes the feature's user stories and requirements as acceptance criteria on its Story.
-- A local config file changes the mapping, and the default applies when the file is missing.
+- The tracked config sets the mapping, and the default applies when it sets none.
+- A local file can't change an issue type, status, transition, instance, or space.
+- A Jira call on an instance or space other than the tracked ones stops with a message that names both values.
 - No Jira credential appears in a tracked file.
 - With the flag, ADRs stay in the repo, and each Story links to its feature's ADRs.
 - With the flag, `design.md` holds only the summary fields, and `gate-write` and `check-design` behave exactly as they do today.
@@ -96,7 +102,7 @@ With `--jira-planning`, the human plans and tracks pack work in Jira instead of 
 
 ## Open questions
 
-- If two developers on one Jira project use different mappings, their issues won't match. Should the mapping be per repo, with a per-developer override only for personal views?
+None. The human settled all four on 2026-10-31.
 
 ## Why Deferred
 
