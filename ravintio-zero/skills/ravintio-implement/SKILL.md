@@ -7,6 +7,8 @@ description: Implements requirements with tests and documentation landing togeth
 
 > You implement the system the plan describes. Code, tests, and documentation land together in this phase. You build against the contract, not beyond it.
 
+**Prefix.** Begin every reply with `P2 Implement:`, in the form `{prefix} {Status}: {one-liner}`, as in `P2 Implement: Starting: {one-liner}`.
+
 **Pack files.** Read each of these from the pack folder before the step that uses it:
 
 - `ravintio-zero/templates/component.template.yml`
@@ -64,6 +66,7 @@ for each requirement:
     2. dispatch ravintio-implementer  -> wait for GREEN (zero exit)
     if GREEN:
       3. dispatch ravintio-refactor   -> wait for all-suite GREEN
+      4. run the improvement loop     -> up to 2 cycles
       break
     else if attempt >= 5:
       ESCALATE to the human. Do not proceed to the next requirement.
@@ -76,6 +79,10 @@ After 5 failed attempts on one requirement, stop in both run modes with `P2 Impl
 For each attempt on a requirement after the first, append `Rework: REQ-{nnn}: {reason} ({ISO-8601 timestamp})` to the build log. The marker forms are in `ravintio-zero/standards/workflow-governance-standards.md`.
 
 Every requirement must have a mapped test whose name includes the requirement ID (for example `describe('req-001-auth: login flow', ...)`). Write E2E tests for critical user flows named in the acceptance criteria. Write to disk after each subagent, and mark each one per "Progress Markers and Interrupted Units" in `ravintio-zero/standards/agent-dispatch-standards.md`. Do not accumulate work in memory across requirements.
+
+## Improvement loop
+
+After refactor confirms all-suite GREEN, run up to 2 cycles per requirement, as `## Improvement loop` in `ravintio-zero/standards/agent-dispatch-standards.md` describes. Each cycle dispatches a fresh-context reviewer, then ravintio-refactor in improvement mode with its finding, and appends an `Improve:` marker. The loop stops early on `no change worth making`.
 
 ## Rules
 
@@ -129,8 +136,8 @@ Docs rules:
 Independent requirements MUST be dispatched in parallel per `ravintio-zero/standards/agent-dispatch-standards.md`. Before writing any code:
 
 1. List all requirements for the phase.
-2. Map dependencies. A requirement depends on a sibling only if it imports its types, reads its files, or builds on its contract.
-3. Dispatch all leaf requirements in a single parallel batch, then dependent batches.
+2. Take the batches from the `## Concurrency plan` in `plan/current/execution-plan.md`. Do not map dependencies afresh.
+3. Dispatch each batch in a single parallel message, in batch order. Record a departure from the batches in the build log with its reason.
 4. Record the batch count in the build log. If nothing can be parallelised, state the dependency reason there.
 
 Per-component docs for independent components also parallelise. The registry and dependency graph wait until all component docs exist. If a dispatched subagent finds an out-of-scope bug or gap, it files a `plan/backlog/` entry directly per the dispatch standards.
@@ -139,7 +146,7 @@ Per-component docs for independent components also parallelise. The registry and
 
 When `plan/.run-speed` holds `fast`, dispatch these batches in order, each in one message. Within a batch, every unit writes its own files.
 
-1. One TDD track per leaf requirement whose files no other track writes. Each track runs test-writer, implementer, and refactor in sequence.
+1. One TDD track per leaf requirement whose files no other track writes. Each track runs test-writer, implementer, refactor, and the improvement loop in sequence.
 2. One TDD track per dependent requirement, after its dependencies finish.
 3. One unit per independent living doc and per-component doc set, while the full test suite runs in the background.
 4. Inline: the registry and dependency graph, then the component manifest close-out.

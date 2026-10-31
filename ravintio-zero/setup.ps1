@@ -14,38 +14,24 @@
 # Manual arg parsing — supports --flag style for cross-platform consistency
 $Tool = $null
 $StrictOrchestrator = $false
-# Flags that earlier releases removed (0000034 ADR-001). An older install's
-# flags marker can still list them, so setup warns and skips each one instead
-# of failing the refresh. --backend-url also took a value: skip the next
-# argument unless it is another flag or a tool name, and never print or
-# store it.
+# Flags that earlier releases removed (0000034 ADR-001). A retired flag does
+# nothing, so setup fails on it during argument parsing, before any change
+# (0000196 ADR-002). The message names the flag and never prints what follows
+# it, so a --backend-url value never reaches the output.
 # Matching is case-sensitive, the same as setup.sh.
 $RetiredFlags = @('--structured-telemetry-mcp', '--backend-url', '--context-mode-mcp', '--include-full-skill-library')
-# Keep in step with $ValidTools below, which is set after argument parsing.
-$RetiredFlagTools = @('claude-code')
+function Stop-OnRetiredFlag {
+    param([string]$Flag)
+    [Console]::Error.WriteLine("! Error: retired flag $Flag was removed in an earlier release and does nothing.")
+    [Console]::Error.WriteLine("  Remove it from the command, then rerun setup.")
+    exit 1
+}
 $i = 0
 while ($i -lt $args.Count) {
-    if ("$($args[$i])".StartsWith('--backend-url=')) {
-        Write-Host "  ! Warning: ignoring retired flag --backend-url (removed in an earlier release)"
-        # PowerShell 7 splits a -File argument such as --backend-url=https://x
-        # at its first colon and drops the colon, so the rest of the value
-        # arrives as the next argument. A form with no colon left was split.
-        # Skip the rest by the spaced-form rule, so it is never taken for the
-        # tool name and never printed (0000036 P3, found by the Windows CI).
-        # A rest that starts with // is skipped too, in case a host keeps the colon.
-        $splitAtColon = -not "$($args[$i])".Contains(':')
-        $i++
-        if ($i -lt $args.Count -and "$($args[$i])".StartsWith('//')) { $i++; continue }
-        if ($splitAtColon -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
-        continue
-    }
-    if ($RetiredFlags -ccontains $args[$i]) {
-        Write-Host "  ! Warning: ignoring retired flag $($args[$i]) (removed in an earlier release)"
-        $isBackendUrl = $args[$i] -ceq '--backend-url'
-        $i++
-        if ($isBackendUrl -and $i -lt $args.Count -and -not "$($args[$i])".StartsWith('--') -and $RetiredFlagTools -cnotcontains $args[$i]) { $i++ }
-        continue
-    }
+    # PowerShell 7 splits a -File argument such as --backend-url=https://x at
+    # its first colon, so match the flag by prefix and print the name only.
+    if ("$($args[$i])".StartsWith('--backend-url=')) { Stop-OnRetiredFlag '--backend-url' }
+    if ($RetiredFlags -ccontains $args[$i]) { Stop-OnRetiredFlag "$($args[$i])" }
     # Case-sensitive, the same as setup.sh (0000035 ADR-003).
     switch -CaseSensitive ($args[$i]) {
         '--strict-orchestrator' { $StrictOrchestrator = $true; $i++ }
@@ -64,7 +50,7 @@ $SkillsSrc = Join-Path $ScriptDir 'skills'
 $WorkflowsSrc = Join-Path $ScriptDir 'workflows'
 $SetupDir = Join-Path $ScriptDir 'setup'
 
-$ValidTools = @('claude-code')
+$ValidTools = @('claude-code', 'codex')
 
 # --- Shared functions ---
 
@@ -443,10 +429,10 @@ function Read-SettingsObject {
 }
 
 function Merge-EnforcementHookSettings {
-    # Merge the seven enforcement hooks into settings.json: gate-write,
+    # Merge the eight enforcement hooks into settings.json: gate-write,
     # ratchet-check, em-dash-guard, and merge-guard (PreToolUse), then
     # auto-trigger-orchestrator, check-orchestrator-presence, and check-design
-    # (UserPromptSubmit). Idempotent. The entries match setup.sh in event,
+    # (UserPromptSubmit), then check-reply-prefix (Stop). Idempotent. The entries match setup.sh in event,
     # matcher, and order (0000035 ADR-001), and a parity suite checks it.
     param(
         [string]$SettingsPath,
@@ -467,6 +453,9 @@ function Merge-EnforcementHookSettings {
         (New-HookEntry '.*' 'auto-trigger-orchestrator' $HooksDir),
         (New-HookEntry '.*' 'check-orchestrator-presence' $HooksDir),
         (New-HookEntry '.*' 'check-design' $HooksDir)
+    )
+    $stopEntries = @(
+        (New-HookEntry '.*' 'check-reply-prefix' $HooksDir)
     )
 
     if (Test-Path $SettingsPath) {
@@ -498,7 +487,7 @@ function Merge-EnforcementHookSettings {
         # warning. Test the property directly, never through the pipeline, so
         # Windows PowerShell 5.1 can't unwrap or wrap it (0000035 ADR-002).
         # setup.sh prints the same text.
-        foreach ($eventName in @('PreToolUse', 'UserPromptSubmit')) {
+        foreach ($eventName in @('PreToolUse', 'UserPromptSubmit', 'Stop')) {
             $prop = $existing.hooks.PSObject.Properties[$eventName]
             if ($null -eq $prop -or $null -eq $prop.Value) { continue }
             if ($prop.Value -is [array]) { continue }
@@ -546,6 +535,14 @@ function Merge-EnforcementHookSettings {
             -Pattern '(^|[\s"''/\\])(auto-trigger-orchestrator|check-orchestrator-presence|check-design)\.mjs\b')
         $existing.hooks.UserPromptSubmit = $filtered + $userPromptEntries
 
+        # Merge Stop the same way (0000200 req-004).
+        if (-not $existing.hooks.Stop) {
+            $existing.hooks | Add-Member -NotePropertyName 'Stop' -NotePropertyValue @() -Force
+        }
+        $filtered = @(Remove-RavintioHookCommands -Entries $existing.hooks.Stop `
+            -Pattern '(^|[\s"''/\\])(check-reply-prefix)\.mjs\b')
+        $existing.hooks.Stop = $filtered + $stopEntries
+
         # Depth 100 keeps deep user values whole (0000039 req-003).
         Write-SettingsOrExit -Path $SettingsPath -Json ($existing | ConvertTo-Json -Depth 100) -SettingsRel $SettingsRel
         Write-Host "  ~ .claude/settings.json (enforcement hook entries merged)"
@@ -558,6 +555,7 @@ function Merge-EnforcementHookSettings {
             hooks = [PSCustomObject]@{
                 PreToolUse       = @($preToolEntries)
                 UserPromptSubmit = @($userPromptEntries)
+                Stop             = @($stopEntries)
             }
         }
         Write-SettingsOrExit -Path $SettingsPath -Json ($settings | ConvertTo-Json -Depth 100) -SettingsRel $SettingsRel
@@ -713,6 +711,82 @@ function Install-EnforcementHooks {
     Remove-RetiredHooks -HooksRootRel (Split-Path -Parent $HooksDirRel)
 
     Merge-EnforcementHookSettings -SettingsPath $settings -HooksDir $HooksDirRel -SettingsRel $SettingsRel
+}
+
+function Install-CodexHooks {
+    # Wire the Codex hooks (0000207 ADR-002). Only merge-guard has a Codex
+    # contract that the Codex docs confirm: a PreToolUse group for Bash, exit
+    # 2, and the reason on stderr. Every other RAVINTIO hook stays an
+    # instruction in AGENTS.md. setup.sh prints the same report.
+    param(
+        [string]$HooksDirRel,
+        [string]$HooksFileRel
+    )
+
+    $src = Join-Path (Join-Path $ScriptDir 'hooks') 'enforcement'
+    $dest = Join-Path $ProjectRoot $HooksDirRel
+    $hooksFile = Join-Path $ProjectRoot $HooksFileRel
+
+    if (-not [System.IO.Directory]::Exists($src)) {
+        Write-Host "  ! Warning: enforcement hook scripts not found at $src - skipping"
+        return
+    }
+
+    Write-Host ""
+    Write-Host "  Installing RAVINTIO Codex hooks"
+
+    [System.IO.Directory]::CreateDirectory($dest) | Out-Null
+    foreach ($name in @('merge-guard.mjs', 'read-stdin.mjs')) {
+        Copy-RavintioItem (Join-Path $src $name) $dest
+        Write-Host "  + $HooksDirRel/$name"
+    }
+
+    $mark = "$HooksDirRel/merge-guard.mjs"
+    $commandLine = 'node "$(git rev-parse --show-toplevel)/' + $mark + '"'
+    $entry = [ordered]@{
+        matcher = 'Bash'
+        hooks   = @([ordered]@{ type = 'command'; command = $commandLine; statusMessage = 'Checking merge command' })
+    }
+
+    if (Test-Path -LiteralPath $hooksFile) {
+        $raw = "$(Get-Content -Raw -Path $hooksFile -Encoding UTF8)"
+        $existing = $null
+        $check = Read-SettingsObject -Raw $raw -Settings ([ref]$existing)
+        if ($check -eq 'invalid') {
+            [Console]::Error.WriteLine("! Error: $HooksFileRel is not valid JSON. Fix it and rerun setup.")
+            exit 1
+        }
+        if ($check -eq 'shape') {
+            [Console]::Error.WriteLine("! Error: $HooksFileRel is valid JSON but not a hooks file setup can read. Fix it and rerun setup.")
+            exit 1
+        }
+        if ($null -eq $existing.PSObject.Properties['hooks'] -or $null -eq $existing.hooks) {
+            $existing | Add-Member -NotePropertyName 'hooks' -NotePropertyValue ([PSCustomObject]@{}) -Force
+        }
+        if (-not $existing.hooks.PreToolUse) {
+            $existing.hooks | Add-Member -NotePropertyName 'PreToolUse' -NotePropertyValue @() -Force
+        }
+        $pattern = '(^|[\s"''/\\])' + [regex]::Escape($mark)
+        $filtered = @(Remove-RavintioHookCommands -Entries $existing.hooks.PreToolUse -Pattern $pattern)
+        $existing.hooks.PreToolUse = $filtered + @($entry)
+        Write-SettingsOrExit -Path $hooksFile -Json ($existing | ConvertTo-Json -Depth 100) -SettingsRel $HooksFileRel
+    }
+    else {
+        $dir = Split-Path -Parent $hooksFile
+        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        $settings = [PSCustomObject]@{ hooks = [PSCustomObject]@{ PreToolUse = @($entry) } }
+        Write-SettingsOrExit -Path $hooksFile -Json ($settings | ConvertTo-Json -Depth 100) -SettingsRel $HooksFileRel
+    }
+    Write-Host "  + $HooksFileRel (merge-guard wired)"
+
+    Write-Host ""
+    Write-Host "  Active hooks:"
+    Write-Host "    merge-guard (PreToolUse: Bash)"
+    Write-Host "  Fallback hooks, stated as instructions in AGENTS.md:"
+    Write-Host "    gate-write, ratchet-check, em-dash-guard, auto-trigger-orchestrator,"
+    Write-Host "    check-orchestrator-presence, check-design, check-reply-prefix"
+    Write-Host "  Review and trust the project hooks with /hooks in Codex."
+    Write-Host "  Until you trust it, Codex skips merge-guard, including in codex exec."
 }
 
 function Invoke-RavintioGuardrails {
@@ -1172,6 +1246,11 @@ function Invoke-RavintioSetup {
             -SettingsRel $toolConfig.SettingsFile
     }
 
+    # Codex wires its own hook set (0000207).
+    if ($toolConfig.CodexHooksFile -and $toolConfig.CodexHooksDir) {
+        Install-CodexHooks -HooksDirRel $toolConfig.CodexHooksDir -HooksFileRel $toolConfig.CodexHooksFile
+    }
+
     # Add Agent to allowedTools so sub-agent dispatch works without per-use confirmation (REQ-002)
     if ($toolConfig.SettingsFile) {
         $settingsPath = Join-Path $ProjectRoot $toolConfig.SettingsFile
@@ -1326,6 +1405,17 @@ if (-not $Tool) {
     exit 0
 }
 
+# Reject an unknown tool before anything changes in the repo (0000196 REQ-001).
+# Exact, case-sensitive match, the same as setup.sh (0000035 S-008).
+if (-not ($ValidTools -ccontains $Tool)) {
+    # Print only a plain name, so a stray flag value never reaches the
+    # output (0000036 S-003).
+    if ($Tool -cmatch '^[a-z0-9-]+$') { Write-Host "Unknown tool: $Tool" }
+    else { Write-Host "Unknown tool (name not shown)" }
+    Write-Host "Valid tools: $($ValidTools -join ', ')"
+    exit 1
+}
+
 # Stop before installing anything if an old-brand folder is still present
 # (0000160 REQ-002, ADR-003). The migration renames it first.
 foreach ($oldFolder in @('planifest-zero', 'planifest-overrides')) {
@@ -1352,18 +1442,7 @@ if ($StrictOrchestrator) {
     Write-Host "  + plan/.orchestrator-strict (strict orchestrator mode enabled)"
 }
 
-# Exact, case-sensitive match, the same as setup.sh (0000035 S-008).
-if ($ValidTools -ccontains $Tool) {
-    Invoke-RavintioSetup -ToolName $Tool
-}
-else {
-    # Print only a plain name, so a stray flag value never reaches the
-    # output (0000036 S-003).
-    if ($Tool -cmatch '^[a-z0-9-]+$') { Write-Host "Unknown tool: $Tool" }
-    else { Write-Host "Unknown tool (name not shown)" }
-    Write-Host "Valid tools: $($ValidTools -join ', ')"
-    exit 1
-}
+Invoke-RavintioSetup -ToolName $Tool
 
 Write-Host ""
 Write-Host "Setup complete."

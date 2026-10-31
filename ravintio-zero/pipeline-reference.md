@@ -72,8 +72,11 @@ Twelve skills drive the pipeline.
 | `ravintio-migrator` | Applies pending pack migrations interactively |
 | `ravintio-refresh-setup` | Re-runs setup with the flags currently in effect |
 | `ravintio-file-backlog` | Files one uncommitted backlog entry in another repo |
+| `ravintio-postmortem` | Writes one blameless postmortem per failed CI run or Blocked stop, and files its actions |
+| `ravintio-retrospective` | Writes one blameless retrospective per shipped run and per delivered initiative, and files its changes |
+| `ravintio-initiative` | Coordinates an initiative from chart to delivery in the human's session, reports progress, and never runs a step |
 
-The TDD trio (`ravintio-test-writer`, `ravintio-implementer`, `ravintio-refactor`) is dispatched by `ravintio-implement`, once per requirement.
+The TDD trio (`ravintio-test-writer`, `ravintio-implementer`, `ravintio-refactor`) is dispatched by `ravintio-implement`, once per requirement. After GREEN and refactor, the improvement loop runs up to 2 cycles per requirement and records an `Improve:` marker for each.
 
 ---
 
@@ -185,11 +188,12 @@ Setup wires the enforcement hooks into `.claude/settings.json` on every install.
 | Hook | Trigger | What it does |
 |------|---------|--------------|
 | `gate-write` | PreToolUse (Write, Edit) | Gates every in-project path that is not always permitted. Blocks the write unless `plan/current/design.md` exists and the target path matches a declared component. Writes to `plan/current/` also need the `plan/.orchestrator-active` sentinel. Targets outside the project pass |
-| `ratchet-check` | PreToolUse (Write, Edit) | While a loop or reversal is active, blocks edits that weaken acceptance criteria (checkbox and Gherkin step lines) or in-scope lines in `plan/current/` |
+| `ratchet-check` | PreToolUse (Write, Edit) | While a loop or reversal is active, blocks edits that weaken acceptance criteria (checkbox and Gherkin step lines) or in-scope lines in `plan/current/`. The block message cuts each removed line to 200 characters |
 | `em-dash-guard` | PreToolUse (Write, Edit) | Rejects U+2014 in scoped prose paths |
 | `check-design` | UserPromptSubmit | Injects active component scope from `design.md`, or a hard STOP when no brief or sentinel exists |
 | `check-orchestrator-presence` | UserPromptSubmit | Injects a reminder banner while a pipeline is active. Hard-blocks under strict mode |
 | `auto-trigger-orchestrator` | UserPromptSubmit | Loads the orchestrator skill at session start when no pipeline is active yet |
+| `check-reply-prefix` | Stop | Warns when a reply in an active run lacks a valid prefix, and logs each miss. Never blocks |
 
 A blocking hook exits 2 with a human-readable message. Every hook fails open on an unexpected error, so a broken hook never stops a session.
 

@@ -22,7 +22,7 @@ foreach ($f in $refFiles) {
 # A Windows checkout may convert line endings to CRLF, so count the bytes
 # with LF endings, as the repository stores them.
 $skillText = [IO.File]::ReadAllText((Join-Path $skillDir 'SKILL.md')) -replace "`r`n", "`n"
-Assert-True ([Text.Encoding]::UTF8.GetByteCount($skillText) -le 27162) "req-011 (a): SKILL.md is 27162 bytes or fewer"
+Assert-True ([Text.Encoding]::UTF8.GetByteCount($skillText) -le 27800) "req-011 (a): SKILL.md is 27800 bytes or fewer"
 
 Write-Host ""
 Write-Host "=== req-011 (c): setup installs the reference files ==="

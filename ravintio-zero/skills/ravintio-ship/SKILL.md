@@ -7,6 +7,8 @@ description: Archive, build assessment, changelog, version, and PR, behind the f
 
 > You close the run. You write the changelog, archive the plan, assess the build, bump the version, and hand off the PR. You do not add features or fix bugs. Your job is a clean, complete handoff.
 
+**Prefix.** Begin every reply with `P4 Ship:`, in the form `{prefix} {Status}: {one-liner}`, as in `P4 Ship: Starting: {one-liner}`.
+
 ## Hard Limits
 
 1. Every response begins with `P4 Ship:`. No exceptions.
@@ -63,10 +65,13 @@ Read the archived `build-log.md`. It is now the only copy. Write `build-report.m
 - Parallelism used, and multi-task phases that ran sequentially.
 - Self-corrections, with whether each was avoidable.
 - One improvement suggestion per phase where warranted.
+- The postmortems the run wrote to `plan/postmortems/`, by path, or `Postmortems: none`.
 
 Then run `node ravintio-zero/scripts/workflow-metrics.mjs "{archive-folder}"` and append its output to `build-report.md`. If it exits non-zero, write `Workflow governance: not measured ({reason})` instead. The reason is `build log unreadable` or `thresholds invalid`, never a path or error text. A breach does not stop ship in either run mode.
 
 Source every metric from the build log. Never infer or fabricate. If routing or parallelism is not evidenced, treat it as not applied.
+
+Last, run `ravintio-retrospective` in run mode. It writes the record to `plan/retrospectives/`. Append `Retrospective: {path}` to `build-report.md`, or `Retrospective: none` if the skill wrote no record. A missing retrospective never blocks ship.
 
 ### Step 6: Version bump
 

@@ -1,6 +1,6 @@
 # Dependency Graph
 
-Last updated: 0000189-name-the-roadmap-initiative
+Last updated: 0000205-initiative-skill
 
 ## Component dependency diagram
 
@@ -11,7 +11,7 @@ graph TD
         STANDARDS["standards/, templates/, schemas/"]
         SETUP["setup.sh / setup.ps1"]
         GITHOOKS["git hooks\n(commit-msg, pre-commit, pre-push)"]
-        ENFORCE["hooks/enforcement/\n(gate-write, check-design, ratchet-check,\nem-dash-guard, merge-guard,\nauto-trigger-orchestrator, check-orchestrator-presence)"]
+        ENFORCE["hooks/enforcement/\n(gate-write, check-design, ratchet-check,\nem-dash-guard, merge-guard,\nauto-trigger-orchestrator, check-orchestrator-presence,\ncheck-reply-prefix)"]
         ENFSHARED["hooks/enforcement/read-stdin.mjs\nshared module, always installed"]
         VERSION["scripts/product-version.mjs"]
         DRIVER["scripts/initiative-run.mjs"]
@@ -70,13 +70,13 @@ graph TD
 
 ## Edges that matter
 
-**Every enforcement hook imports `read-stdin.mjs`.** All seven hooks share the one module. Setup copies `hooks/enforcement/` as a unit, so the import always resolves.
+**Every enforcement hook imports `read-stdin.mjs`.** All eight hooks share the one module. Setup copies `hooks/enforcement/` as a unit, so the import always resolves.
 
-**Setup wires seven hooks into `.claude/settings.json`.** `gate-write`, `ratchet-check`, and `em-dash-guard` run on `PreToolUse` for Write and Edit. `merge-guard` runs on `PreToolUse` for Bash. `auto-trigger-orchestrator`, `check-orchestrator-presence`, and `check-design` run on `UserPromptSubmit`, in that order. Setup finds its own entries by module name on any matcher, and replaces a non-array event value with a warning.
+**Setup wires eight hooks into `.claude/settings.json`.** `gate-write`, `ratchet-check`, and `em-dash-guard` run on `PreToolUse` for Write and Edit. `merge-guard` runs on `PreToolUse` for Bash. `auto-trigger-orchestrator`, `check-orchestrator-presence`, and `check-design` run on `UserPromptSubmit`, in that order. `check-reply-prefix` runs on `Stop`. Setup finds its own entries by module name on any matcher, and replaces a non-array event value with a warning.
 
 **Two components make network calls, both on request.** `merge-guard` runs `gh pr view` to read a PR base before a merge. `initiative-run.mjs` starts `claude` and `gh` child processes. No other hook or script makes an outbound network call. `node` is the only dependency of the pack itself.
 
-**The driver depends on `claude` and `gh`.** `initiative-run.mjs` uses Node built-ins, `initiative-labels.mjs`, the `claude` command, and `gh`. It reads `plan/current-initiative/initiative.md` and `plan/current/build-log.md`. It never edits the working tree.
+**The driver depends on `claude` and `gh`.** `initiative-run.mjs` uses Node built-ins, `initiative-labels.mjs`, the `claude` command, and `gh`. It reads `plan/current-initiative/initiative.md` from the initiative branch ref, and `plan/current/build-log.md` and the newest archived build log for a `Blocked:` line. It never edits the working tree. `initiative-watch.mjs` uses Node built-ins and `git log`, and it only reads.
 
 **The driver passes a model and labels to each child.** It passes `--model` from `RAVINTIO_INITIATIVE_MODEL`, which defaults to `sonnet`. It passes `--max-turns` only when `RAVINTIO_INITIATIVE_MAX_TURNS` is set. If a `RAVINTIO_*` name is unset, the driver reads the legacy `PLANIFEST_ROADMAP_MODEL` or `PLANIFEST_ROADMAP_MAX_TURNS` in 0.x, and the `RAVINTIO_*` value wins if both are set. It appends `work.kind`, `ravintio.initiative`, and `ravintio.step` labels to `OTEL_RESOURCE_ATTRIBUTES` in the child environment.
 

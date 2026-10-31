@@ -77,13 +77,15 @@ assert_contains 'attemptStatus: "pending"' "$STEP2" \
 echo ""
 echo "=== req-004: the record's values are validated, not just its shape ==="
 
-if echo "$STEP3" | grep -q -- "--structured-telemetry-mcp"; then
+# 0000196 REQ-003: Step 3 names a retired flag to report and omit it, but the
+# allowed set stays --strict-orchestrator alone.
+if echo "$STEP3" | grep -- "allowed set" | grep -q -- "--structured-telemetry-mcp"; then
   NAMES_REMOVED_FLAG="yes"
 else
   NAMES_REMOVED_FLAG="no"
 fi
 assert_equals "no" "$NAMES_REMOVED_FLAG" \
-  "req-004: Step 3 no longer names the removed flag --structured-telemetry-mcp"
+  "req-004: the allowed set no longer holds the removed flag --structured-telemetry-mcp"
 assert_contains "--strict-orchestrator" "$STEP3" \
   "req-004: Step 3 names the allowed flag --strict-orchestrator"
 assert_contains "allowed set" "$STEP3" \

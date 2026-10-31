@@ -29,7 +29,17 @@ sed -e "s/PLANIFEST/RAVINTIO/g" -e "s/Planifest\([A-Z]\)/Ravintio\1/g" \
 # Apply the same rewrite to the base lines.
 sed -e "/^bundle_templates:/d" -e "/^bundle_standards:/d" \
   -e 's|(see `roadmap-standards.md`)|(see `ravintio-zero/standards/roadmap-standards.md`)|' \
-  "$BASE_RENAMED.tmp" > "$BASE_RENAMED"
+  "$BASE_RENAMED.tmp" > "$BASE_RENAMED.tmp2"
+# 0000199 replaced the folder-scan id rule in backlog pickup with the counter file.
+sed -e 's|Backlog ids come from their own monotonic sequence: the next id is the highest ever allocated plus one, including spent ids\. Check `plan/_archive/` and `plan/changelog/` for the high-water mark\.|Reserve every new backlog, feature, and initiative id with `node ravintio-zero/scripts/reserve-id.mjs [qty]`. It takes ids from the counter file `plan/backlog/.next-id`, so spent ids never return.|' \
+  "$BASE_RENAMED.tmp2" > "$BASE_RENAMED.tmp3"
+# 0000205 split initiative resume out of the orchestrator. Drop the old step 3 lines that the
+# initiative skill now owns, and add the new step 3 lines.
+sed -e '/^   - If an initiative is `active` and `plan\/current\/` holds artifacts, resume that step/d' \
+  -e '/^   - If an initiative is `active`, `plan\/current\/` is empty, and `position` is past/d' \
+  -e '/^   - If an initiative is `active` and `plan\/current\/` is empty, start the step/d' \
+  -e 's|^3\. \*\*Check the initiative, then scan `plan/current/`\.\*\* Check `plan/current-initiative/` first\.$|3. **Check the initiative, then scan `plan/current/`.** Check `plan/current-initiative/` first. The orchestrator never resumes an initiative.\n   - A step session has `RAVINTIO_INITIATIVE_STEP=1` or the prompt `Run initiative step {n}`. With `plan/current/` artifacts, resume that step through the rest of this list.\n   - A step session with `plan/current/` empty starts the step at `position` and opens with `I-C Run: Starting: {step}`.\n   - If an initiative is `active` and this is not a step session, load `ravintio-initiative` and stop. It owns I-A, I-B, and I-E.|' \
+  "$BASE_RENAMED.tmp3" > "$BASE_RENAMED"
 
 # Print every non-blank, non-heading line of $1 that no later file holds as a
 # whole line. Usage: missing_lines base file...
@@ -46,9 +56,13 @@ echo "=== (a) size target ==="
 SKILL_BYTES=$(wc -c < "$SKILL" | tr -d ' ')
 CLAUDE_BYTES=$(wc -c < "$ROOT_DIR/CLAUDE.md" | tr -d ' ')
 assert_equals "36275" "$(wc -c < "$BASE" | tr -d ' ')" "fixture holds the 36,275 byte baseline"
-assert_equals "yes" "$([ "$SKILL_BYTES" -le 27162 ] && echo yes || echo no)" "SKILL.md is 27,162 bytes or fewer ($SKILL_BYTES)"
+assert_equals "yes" "$([ "$SKILL_BYTES" -le 27800 ] && echo yes || echo no)" "SKILL.md is 27,800 bytes or fewer ($SKILL_BYTES)"
 # Cap raised from 35,484 to 35,600 for the initiative rename (0000189).
-assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le 35600 ] && echo yes || echo no)" "CLAUDE.md plus SKILL.md is 35,600 bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
+# Caps raised to 27,700 and 37,800 for the reporting rule and the Supervise prefix (0000200).
+# Cap raised to 27,800 for the initiative resume split (0000205).
+# Cap raised to 38,200 for the standing setup refresh override that the repo CLAUDE.md carries (0000208).
+# The combined cap also covers the Reply Conventions section that the boot template adds to CLAUDE.md.
+assert_equals "yes" "$([ $((SKILL_BYTES + CLAUDE_BYTES)) -le 38200 ] && echo yes || echo no)" "CLAUDE.md plus SKILL.md is 38,200 bytes or fewer ($((SKILL_BYTES + CLAUDE_BYTES)))"
 
 echo "=== (a) no rule line was lost ==="
 REF_FILES=$(ls "$REFS"/orchestrator-*.md 2>/dev/null)

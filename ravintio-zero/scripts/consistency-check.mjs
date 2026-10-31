@@ -25,6 +25,16 @@
  *      story-map.md exists, every requirement Source US-nnn appears in it, and
  *      every Backbone row has a Requirement cell. The cell names a REQ-nnn that
  *      has a req-nnn-*.md file, or reads "gap: {disposition}".
+ *   8. Concurrency plan (feature 0000201, ADR-002) — when execution-plan.md
+ *      exists, it holds a "## Concurrency plan" table with the columns Unit,
+ *      Depends on, Writes, Batch, and Sequential reason, and at least one unit
+ *      row. Each Batch is a positive whole number. A unit alone in its batch
+ *      has a Sequential reason. Two units in one batch share no Writes path.
+ *      Each Depends on names a unit in an earlier batch. A missing
+ *      execution-plan.md skips the check.
+ *
+ * A finding that echoes a story map row label prints at most 200 characters of
+ * it, with a trailing marker if it cut the label (feature 0000198).
  *
  * Exit codes: 0 = clean, 1 = findings (listed on stdout).
  */
@@ -37,6 +47,13 @@ const findings = [];
 
 function read(p) {
   try { return readFileSync(p, "utf-8"); } catch { return null; }
+}
+
+/** Cuts an echoed plan line to 200 code points and marks the cut (feature 0000198). */
+function cap(line) {
+  const chars = Array.from(line);
+  if (chars.length <= 200) return line;
+  return chars.slice(0, 200).join("") + " …[truncated]";
 }
 
 function section(text, heading) {
@@ -129,7 +146,7 @@ if (reqFiles.length > 0) {
         continue;
       }
       if (col === -1) continue;
-      const label = cells[1] || cells[0] || "(unnamed row)";
+      const label = cap(cells[1] || cells[0] || "(unnamed row)");
       const cell = cells[col] ?? "";
       if (cell === "") {
         findings.push(`story-map.md: row "${label}" has an empty Requirement cell`);
@@ -140,6 +157,72 @@ if (reqFiles.length > 0) {
         if (!reqFiles.some((f) => f.startsWith(prefix))) {
           findings.push(`story-map.md: row "${label}" names ${ref} but no ${prefix}*.md file exists`);
         }
+      }
+    }
+  }
+}
+
+// ---- 8: concurrency plan (feature 0000201, ADR-002) --------------------------
+const planText = read(join(dir, "execution-plan.md"));
+if (planText !== null) {
+  const body = section(planText, "Concurrency plan");
+  const cols = ["unit", "depends on", "writes", "batch", "sequential reason"];
+  const list = (c) => c.replace(/`/g, "").split(",").map((s) => s.trim())
+    .filter((s) => s !== "" && s.toLowerCase() !== "none" && s !== "-");
+  const units = [];
+  let idx = null;
+  if (body === null) {
+    findings.push("execution-plan.md: no '## Concurrency plan' section — plan has no batches");
+  } else {
+    for (const line of body.split(/\r?\n/)) {
+      if (!line.trim().startsWith("|")) continue;
+      const cells = line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      if (cells.every((c) => /^:?-{3,}:?$/.test(c))) continue; // separator row, a lone "-" is data
+      if (idx === null) {
+        const found = cols.map((n) => cells.findIndex((c) => c.toLowerCase() === n));
+        if (found.every((i) => i !== -1)) idx = found;
+        continue;
+      }
+      units.push({
+        name: cells[idx[0]] ?? "",
+        deps: list(cells[idx[1]] ?? ""),
+        writes: list(cells[idx[2]] ?? ""),
+        batchRaw: (cells[idx[3]] ?? "").replace(/`/g, "").trim(),
+        reason: (cells[idx[4]] ?? "").replace(/`/g, "").trim(),
+      });
+    }
+    if (idx === null) {
+      findings.push("execution-plan.md: Concurrency plan has no table with the columns Unit, Depends on, Writes, Batch, Sequential reason");
+    } else if (units.length === 0) {
+      findings.push("execution-plan.md: Concurrency plan table has no unit row");
+    }
+  }
+  for (const u of units) {
+    u.label = cap(u.name || "(unnamed unit)");
+    u.batch = /^[1-9]\d*$/.test(u.batchRaw) ? Number(u.batchRaw) : null;
+    if (u.batch === null) {
+      findings.push(`execution-plan.md: unit ${u.label} has Batch "${cap(u.batchRaw)}", not a positive whole number`);
+    }
+  }
+  const byName = new Map(units.map((u) => [u.name, u]));
+  for (const u of units) {
+    if (u.batch === null) continue;
+    const mates = units.filter((o) => o !== u && o.batch === u.batch);
+    if (mates.length === 0 && ["", "none", "-"].includes(u.reason.toLowerCase())) {
+      findings.push(`execution-plan.md: unit ${u.label} is alone in batch ${u.batch} with no Sequential reason`);
+    }
+    for (const dep of u.deps) {
+      const target = byName.get(dep);
+      if (!target) {
+        findings.push(`execution-plan.md: unit ${u.label} depends on ${cap(dep)}, which is not a unit in the table`);
+      } else if (target.batch !== null && target.batch >= u.batch) {
+        findings.push(`execution-plan.md: unit ${u.label} depends on ${cap(dep)}, which is in batch ${target.batch}, not an earlier batch than ${u.batch}`);
+      }
+    }
+    for (const o of mates) {
+      if (units.indexOf(o) < units.indexOf(u)) continue; // report each pair once
+      for (const p of u.writes.filter((w) => o.writes.includes(w))) {
+        findings.push(`execution-plan.md: units ${u.label} and ${cap(o.name)} both write ${cap(p)} in batch ${u.batch}`);
       }
     }
   }
